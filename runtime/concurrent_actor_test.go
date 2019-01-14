@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,21 +10,6 @@ import (
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	"github.com/thewizardplusplus/tick-tock/tests"
 )
-
-type synchronousWaiter struct {
-	*runtimemocks.Waiter
-	*sync.WaitGroup
-}
-
-func (waiter synchronousWaiter) Add(delta int) {
-	waiter.Waiter.Add(delta)
-	waiter.WaitGroup.Add(delta)
-}
-
-func (waiter synchronousWaiter) Done() {
-	waiter.Waiter.Done()
-	waiter.WaitGroup.Done()
-}
 
 func TestConcurrentActor(test *testing.T) {
 	type args struct {
@@ -105,7 +89,7 @@ func TestConcurrentActor(test *testing.T) {
 			var log commandLog
 			actor.states = testData.args.makeStates(context, &log)
 
-			waiter := synchronousWaiter{new(runtimemocks.Waiter), new(sync.WaitGroup)}
+			waiter := tests.NewSynchronousWaiter()
 			if messageCount := len(testData.args.messages); messageCount != 0 {
 				waiter.On("Add", 1).Times(messageCount)
 				waiter.On("Done").Times(messageCount)
@@ -177,7 +161,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			waiter := synchronousWaiter{new(runtimemocks.Waiter), new(sync.WaitGroup)}
+			waiter := tests.NewSynchronousWaiter()
 			if messageCount := len(testData.args) * len(testData.messages); messageCount != 0 {
 				waiter.On("Add", 1).Times(messageCount)
 				waiter.On("Done").Times(messageCount)

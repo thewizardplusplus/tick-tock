@@ -2,8 +2,10 @@ package tests
 
 import (
 	"io"
+	"sync"
 
 	"github.com/spf13/afero"
+	"github.com/thewizardplusplus/tick-tock/runtime/mocks"
 )
 
 // ...
@@ -40,6 +42,29 @@ type File interface {
 //go:generate mockery -name=Exiter -case=underscore
 type Exiter interface {
 	Exit(code int)
+}
+
+// SynchronousWaiter ...
+type SynchronousWaiter struct {
+	*mocks.Waiter
+	*sync.WaitGroup
+}
+
+// NewSynchronousWaiter ...
+func NewSynchronousWaiter() SynchronousWaiter {
+	return SynchronousWaiter{new(mocks.Waiter), new(sync.WaitGroup)}
+}
+
+// Add ...
+func (waiter SynchronousWaiter) Add(delta int) {
+	waiter.Waiter.Add(delta)
+	waiter.WaitGroup.Add(delta)
+}
+
+// Done ...
+func (waiter SynchronousWaiter) Done() {
+	waiter.Waiter.Done()
+	waiter.WaitGroup.Done()
 }
 
 // GetAddress ...
