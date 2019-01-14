@@ -17,3 +17,12 @@ func TestDefaultContext_SetMessageSender(test *testing.T) {
 	mock.AssertExpectationsForObjects(test, sender)
 	assert.Equal(test, context.DefaultContext{MessageSender: sender}, defaultContext)
 }
+
+func TestDefaultContext_SetStateHolder(test *testing.T) {
+	holder := new(mocks.StateHolder)
+	defaultContext := context.DefaultContext{}
+	defaultContext.SetStateHolder(holder)
+
+	mock.AssertExpectationsForObjects(test, holder)
+	assert.Equal(test, context.DefaultContext{StateHolder: holder}, defaultContext)
+}
