@@ -29,9 +29,9 @@ func (waiter synchronousWaiter) Done() {
 
 func TestConcurrentActor(test *testing.T) {
 	type args struct {
-		inboxSize    int
-		initialState string
 		makeStates   func(context context.Context, log *commandLog) StateGroup
+		initialState string
+		inboxSize    int
 		messages     []string
 	}
 
@@ -44,52 +44,52 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "success with messages (with an unbuffered inbox)",
 			args: args{
-				initialState: "state_1",
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
 					})
 				},
-				messages: []string{"message_2", "message_3"},
+				initialState: "state_1",
+				messages:     []string{"message_2", "message_3"},
 			},
 			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 		},
 		{
 			name: "success with messages (with a buffered inbox)",
 			args: args{
-				inboxSize:    tests.BufferedInbox,
-				initialState: "state_1",
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
 					})
 				},
-				messages: []string{"message_2", "message_3"},
+				initialState: "state_1",
+				inboxSize:    tests.BufferedInbox,
+				messages:     []string{"message_2", "message_3"},
 			},
 			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 		},
 		{
 			name: "success without messages",
 			args: args{
-				initialState: "state_1",
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), nil)
 				},
+				initialState: "state_1",
 			},
 		},
 		{
 			name: "error",
 			args: args{
-				initialState: "state_1",
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_2": {withErrOn(2)},
 						"message_3": {withErrOn(2)},
 					})
 				},
-				messages: []string{"message_2", "message_3"},
+				initialState: "state_1",
+				messages:     []string{"message_2", "message_3"},
 			},
 			errCount: 2,
 			wantLog:  []int{10, 11, 12, 15, 16, 17},
@@ -119,7 +119,7 @@ func TestConcurrentActor(test *testing.T) {
 			}
 
 			dependencies := Dependencies{waiter, errorHandler}
-			concurrentActor := NewConcurrentActor(testData.args.inboxSize, actor, dependencies)
+			concurrentActor := NewConcurrentActor(actor, testData.args.inboxSize, dependencies)
 			concurrentActor.Start(context)
 
 			for _, message := range testData.args.messages {
@@ -136,8 +136,8 @@ func TestConcurrentActor(test *testing.T) {
 
 func TestConcurrentActorGroup(test *testing.T) {
 	type args struct {
-		initialState string
 		makeStates   func(context context.Context, log *commandLog) StateGroup
+		initialState string
 	}
 
 	for _, testData := range []struct {
@@ -150,22 +150,22 @@ func TestConcurrentActorGroup(test *testing.T) {
 			name: "success with actors",
 			args: []args{
 				{
-					initialState: "state_1",
 					makeStates: func(context context.Context, log *commandLog) StateGroup {
 						return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
 						})
 					},
+					initialState: "state_1",
 				},
 				{
-					initialState: "state_1",
 					makeStates: func(context context.Context, log *commandLog) StateGroup {
 						return newLoggableStates(context, log, 2, 2, group(5, 20), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
 						})
 					},
+					initialState: "state_1",
 				},
 			},
 			messages: []string{"message_2", "message_3"},
@@ -195,7 +195,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				actor := &Actor{states, args.initialState}
 				context.On("SetStateHolder", actor).Return()
 
-				concurrentActor := NewConcurrentActor(tests.UnbufferedInbox, actor, dependencies)
+				concurrentActor := NewConcurrentActor(actor, tests.UnbufferedInbox, dependencies)
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 

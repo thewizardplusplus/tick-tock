@@ -1,8 +1,6 @@
 package runtime
 
-import (
-	"github.com/thewizardplusplus/tick-tock/runtime/context"
-)
+import "github.com/thewizardplusplus/tick-tock/runtime/context"
 
 // Waiter ...
 //go:generate mockery -name=Waiter -case=underscore
@@ -19,14 +17,14 @@ type Dependencies struct {
 
 // ConcurrentActor ...
 type ConcurrentActor struct {
-	inbox        chan string
 	innerActor   *Actor
+	inbox        chan string
 	dependencies Dependencies
 }
 
 // NewConcurrentActor ...
-func NewConcurrentActor(inboxSize int, actor *Actor, dependencies Dependencies) ConcurrentActor {
-	return ConcurrentActor{make(chan string, inboxSize), actor, dependencies}
+func NewConcurrentActor(actor *Actor, inboxSize int, dependencies Dependencies) ConcurrentActor {
+	return ConcurrentActor{actor, make(chan string, inboxSize), dependencies}
 }
 
 // Start ...

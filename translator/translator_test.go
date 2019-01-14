@@ -39,8 +39,8 @@ func TestTranslate(test *testing.T) {
 				actorOne, _ := runtime.NewActor(runtime.StateGroup{"one": runtime.MessageGroup{}}, "one")
 				actorTwo, _ := runtime.NewActor(runtime.StateGroup{"two": runtime.MessageGroup{}}, "two")
 				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(tests.BufferedInbox, actorOne, dependencies.Dependencies),
-					runtime.NewConcurrentActor(tests.BufferedInbox, actorTwo, dependencies.Dependencies),
+					runtime.NewConcurrentActor(actorOne, tests.BufferedInbox, dependencies.Dependencies),
+					runtime.NewConcurrentActor(actorTwo, tests.BufferedInbox, dependencies.Dependencies),
 				}
 			},
 			wantErr: assert.NoError,

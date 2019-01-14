@@ -29,8 +29,8 @@ func Translate(inboxSize int, actors []*parser.Actor, dependencies Dependencies)
 
 		translatedActor, _ := runtime.NewActor(translatedStates, initialState) // nolint: gosec
 		translatedActors = append(translatedActors, runtime.NewConcurrentActor(
-			inboxSize,
 			translatedActor,
+			inboxSize,
 			dependencies.Dependencies,
 		))
 	}
