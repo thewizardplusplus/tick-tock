@@ -13,8 +13,9 @@ type StateHolder interface {
 // Context ...
 //go:generate mockery -name=Context -case=underscore
 type Context interface {
-	SendMessage(message string)
-	SetState(state string) error
+	MessageSender
+	StateHolder
+
 	SetMessageSender(sender MessageSender)
 	SetStateHolder(holder StateHolder)
 }
