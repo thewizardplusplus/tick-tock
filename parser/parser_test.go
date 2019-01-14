@@ -83,6 +83,18 @@ func TestParseToAST(test *testing.T) {
 			wantAST: &Message{"test", nil},
 			wantErr: assert.NoError,
 		},
+		{
+			name:    "State/nonempty",
+			args:    args{"state test message one; message two;;", new(State)},
+			wantAST: &State{"test", []*Message{{"one", nil}, {"two", nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "State/empty",
+			args:    args{"state test;", new(State)},
+			wantAST: &State{"test", nil},
+			wantErr: assert.NoError,
+		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			err := ParseToAST(testData.args.code, testData.args.ast)
