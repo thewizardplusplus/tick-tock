@@ -13,6 +13,14 @@
   version = "v0.1.0"
 
 [[projects]]
+  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   branch = "master"
   digest = "1:4fa88ce4b5db1fe44fafe915fbcdc14375acf804155ddd6baa4dd54341540247"
   name = "golang.org/x/exp"
@@ -23,6 +31,9 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/alecthomas/participle"]
+  input-imports = [
+    "github.com/alecthomas/participle",
+    "github.com/pkg/errors",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
