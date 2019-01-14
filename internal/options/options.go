@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/thewizardplusplus/tick-tock/interpreter"
+	"github.com/thewizardplusplus/tick-tock/runtime"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -22,7 +23,7 @@ const (
 type Dependencies struct {
 	UsageWriter io.Writer
 	ErrorWriter io.Writer
-	Exiter      func(code int)
+	Exiter      runtime.Exiter
 }
 
 // Parse ...

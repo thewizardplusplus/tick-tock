@@ -16,14 +16,17 @@ type ErrorHandler interface {
 	HandleError(err error)
 }
 
+// Exiter ...
+type Exiter func(code int)
+
 // DefaultErrorHandler ...
 type DefaultErrorHandler struct {
 	writer io.Writer
-	exiter func(code int)
+	exiter Exiter
 }
 
 // NewDefaultErrorHandler ...
-func NewDefaultErrorHandler(writer io.Writer, exiter func(code int)) DefaultErrorHandler {
+func NewDefaultErrorHandler(writer io.Writer, exiter Exiter) DefaultErrorHandler {
 	return DefaultErrorHandler{writer, exiter}
 }
 
