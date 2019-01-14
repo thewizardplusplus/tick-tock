@@ -37,6 +37,16 @@ type Command struct {
 	Exit bool    `parser:"| @\"exit\""`
 }
 
+// Parse parses a program from a code string.
+func Parse(code string) (*Program, error) {
+	program := new(Program)
+	if err := ParseToAST(code, program); err != nil {
+		return nil, errors.Wrap(err, "unable to parse the program")
+	}
+
+	return program, nil
+}
+
 // ParseToAST parses a code string to a structure representing an AST.
 func ParseToAST(code string, ast interface{}) error {
 	parser, err := participle.Build(ast)
