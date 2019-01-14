@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
@@ -13,6 +14,6 @@ func TestSendCommand(test *testing.T) {
 
 	err := NewSendCommand("test").Run(context)
 
-	context.AssertExpectations(test)
+	mock.AssertExpectationsForObjects(test, context)
 	assert.NoError(test, err)
 }

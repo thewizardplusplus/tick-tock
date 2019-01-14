@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
@@ -146,7 +147,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 
 			err := actor.ProcessMessage(context, testData.args.message)
 
-			context.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, context)
 			assert.Equal(test, testData.wantLog, log.commands)
 			checkStates(test, actor.states)
 			testData.wantErr(test, err)

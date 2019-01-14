@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/tests/mocks"
 )
 
@@ -51,8 +52,7 @@ func TestDefaultErrorHandler(test *testing.T) {
 
 			NewDefaultErrorHandler(writer, exiter.Exit).HandleError(testData.args.err)
 
-			writer.AssertExpectations(test)
-			exiter.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, writer, exiter)
 		})
 	}
 }

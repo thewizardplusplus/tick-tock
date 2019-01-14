@@ -6,6 +6,7 @@ import (
 	"testing"
 	"testing/iotest"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/mocks"
 )
@@ -157,7 +158,7 @@ func newLoggableStates(
 
 func checkCommands(test *testing.T, commands CommandGroup) {
 	for _, command := range commands {
-		command.(*loggableCommand).AssertExpectations(test)
+		mock.AssertExpectationsForObjects(test, command)
 	}
 }
 

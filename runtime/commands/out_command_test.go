@@ -5,6 +5,7 @@ import (
 	"testing/iotest"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	testsmocks "github.com/thewizardplusplus/tick-tock/tests/mocks"
 )
@@ -48,8 +49,7 @@ func TestOutCommand(test *testing.T) {
 			context := new(contextmocks.Context)
 			err := NewOutCommand(testData.fields.message, writer).Run(context)
 
-			writer.AssertExpectations(test)
-			context.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, writer, context)
 			testData.wantErr(test, err)
 		})
 	}

@@ -7,6 +7,7 @@ import (
 	"unsafe"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
@@ -58,18 +59,16 @@ func TestTranslate(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			waiter := new(runtimemocks.Waiter)
+			errorHandler := new(runtimemocks.ErrorHandler)
+			outWriter := new(testsmocks.Writer)
 			dependencies := Dependencies{
-				Dependencies: runtime.Dependencies{
-					Waiter:       new(runtimemocks.Waiter),
-					ErrorHandler: new(runtimemocks.ErrorHandler),
-				},
-				OutWriter: new(testsmocks.Writer),
+				Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
+				OutWriter:    outWriter,
 			}
 			got, err := Translate(tests.BufferedInbox, testData.args.actors, dependencies)
 
-			dependencies.Dependencies.Waiter.(*runtimemocks.Waiter).AssertExpectations(test)
-			dependencies.Dependencies.ErrorHandler.(*runtimemocks.ErrorHandler).AssertExpectations(test)
-			dependencies.OutWriter.(*testsmocks.Writer).AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, waiter, errorHandler, outWriter)
 			assert.Equal(test, cleanInboxes(testData.makeWant(dependencies)), cleanInboxes(got))
 			testData.wantErr(test, err)
 		})
@@ -192,7 +191,7 @@ func TestTranslateStates(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			gotStates, gotInitialState, err := translateStates(testData.args.states, outWriter)
 
-			outWriter.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, outWriter)
 			assert.Equal(test, testData.makeWantStates(outWriter), gotStates)
 			assert.Equal(test, testData.wantInitialState, gotInitialState)
 			testData.wantErr(test, err)
@@ -335,7 +334,7 @@ func TestTranslateMessages(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			gotMessages, gotStates, err := translateMessages(testData.args.messages, outWriter)
 
-			outWriter.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, outWriter)
 			assert.Equal(test, testData.makeWantMessages(outWriter), gotMessages)
 			assert.Equal(test, testData.wantStates, gotStates)
 			testData.wantErr(test, err)
@@ -395,7 +394,7 @@ func TestTranslateCommands(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			gotCommands, gotState, err := translateCommands(testData.args.commands, outWriter)
 
-			outWriter.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, outWriter)
 			assert.Equal(test, testData.makeWantCommands(outWriter), gotCommands)
 			assert.Equal(test, testData.wantState, gotState)
 			testData.wantErr(test, err)
@@ -453,7 +452,7 @@ func TestTranslateCommand(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			gotCommand, gotState := translateCommand(testData.args.command, outWriter)
 
-			outWriter.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, outWriter)
 			assert.Equal(test, testData.makeWantCommand(outWriter), gotCommand)
 			assert.Equal(test, testData.wantState, gotState)
 		})

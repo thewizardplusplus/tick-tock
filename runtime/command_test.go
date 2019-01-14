@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
@@ -43,7 +44,7 @@ func TestCommandGroup(test *testing.T) {
 			commands := testData.makeCommands(context, &log)
 			err := commands.Run(context)
 
-			context.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, context)
 			assert.Equal(test, testData.wantLog, log.commands)
 			checkCommands(test, commands)
 			testData.wantErr(test, err)

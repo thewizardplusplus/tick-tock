@@ -127,11 +127,9 @@ func TestConcurrentActor(test *testing.T) {
 			}
 			waiter.Wait()
 
-			context.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, context, waiter, errorHandler)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
 			checkStates(test, actor.states)
-			waiter.AssertExpectations(test)
-			errorHandler.AssertExpectations(test)
 		})
 	}
 }
@@ -208,10 +206,8 @@ func TestConcurrentActorGroup(test *testing.T) {
 			}
 			waiter.Wait()
 
-			context.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, context, waiter, errorHandler)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
-			waiter.AssertExpectations(test)
-			errorHandler.AssertExpectations(test)
 		})
 	}
 }

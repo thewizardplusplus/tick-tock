@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
@@ -63,7 +64,7 @@ func TestMessageGroup(test *testing.T) {
 			messages := testData.makeMessages(context, &log)
 			err := messages.ProcessMessage(context, testData.args.message)
 
-			context.AssertExpectations(test)
+			mock.AssertExpectationsForObjects(test, context)
 			assert.Equal(test, testData.wantLog, log.commands)
 			checkMessages(test, messages)
 			testData.wantErr(test, err)
