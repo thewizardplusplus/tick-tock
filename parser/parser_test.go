@@ -162,6 +162,18 @@ func TestParseToAST(test *testing.T) {
 			wantAST: new(Program),
 			wantErr: assert.NoError,
 		},
+		{
+			name:    "comment/inline",
+			args:    args{"actor state one;;\n// actor state two;;\nactor state three;;", new(Program)},
+			wantAST: &Program{[]*Actor{{[]*State{{false, "one", nil}}}, {[]*State{{false, "three", nil}}}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "comment/block",
+			args:    args{"actor state one;; /* actor state two;; */ actor state three;;", new(Program)},
+			wantAST: &Program{[]*Actor{{[]*State{{false, "one", nil}}}, {[]*State{{false, "three", nil}}}}},
+			wantErr: assert.NoError,
+		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			err := ParseToAST(testData.args.code, testData.args.ast)
