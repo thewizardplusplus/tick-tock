@@ -7,22 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testCommand struct {
-	MockCommand
-
-	log *[]int
-	id  int
-}
-
-func newTestCommand(log *[]int, id int) *testCommand {
-	return &testCommand{MockCommand{}, log, id}
-}
-
-func (command *testCommand) Run() error {
-	*command.log = append(*command.log, command.id)
-	return command.MockCommand.Run()
-}
-
 func TestCommandGroup_Run(test *testing.T) {
 	for _, testData := range []struct {
 		name         string
@@ -55,7 +39,7 @@ func TestCommandGroup_Run(test *testing.T) {
 
 			assert.Equal(test, testData.wantLog, log)
 			for _, command := range commands {
-				command.(*testCommand).AssertExpectations(test)
+				command.(*loggableCommand).AssertExpectations(test)
 			}
 			testData.wantErr(test, err)
 		})
@@ -65,7 +49,7 @@ func TestCommandGroup_Run(test *testing.T) {
 func makeCommands(log *[]int, count int, errIndex int) CommandGroup {
 	var commands CommandGroup
 	for i := 0; i < count; i++ {
-		command := newTestCommand(log, i)
+		command := newLoggableCommand(log, i)
 		// expect execution of all commands from first to failed one, inclusive
 		if i <= errIndex {
 			var err error
