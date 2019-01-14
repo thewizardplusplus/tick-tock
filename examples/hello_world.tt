@@ -1,6 +1,6 @@
 actor
   initial state main
-    message __initialization__
+    message __initialize__
       out "Hello, world!\n"
     ;
   ;
