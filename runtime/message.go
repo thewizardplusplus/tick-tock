@@ -1,12 +1,18 @@
 package runtime
 
-import "github.com/thewizardplusplus/tick-tock/runtime/context"
+import (
+	"github.com/pkg/errors"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+)
 
 // MessageGroup ...
 type MessageGroup map[string]CommandGroup
 
 // ProcessMessage ...
-// TODO: wrap the error with the message name.
 func (messages MessageGroup) ProcessMessage(context context.Context, message string) error {
-	return messages[message].Run(context)
+	if err := messages[message].Run(context); err != nil {
+		return errors.Wrapf(err, "unable to process the message %s", message)
+	}
+
+	return nil
 }

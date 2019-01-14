@@ -30,7 +30,6 @@ func (actor *Actor) SetState(state string) error {
 }
 
 // ProcessMessage ...
-// TODO: wrap the ProcessMessage() error with the method name.
 func (actor *Actor) ProcessMessage(context context.Context, message string) error {
 	context.SetStateHolder(actor)
 	return actor.states.ProcessMessage(context, actor.currentState, message)
