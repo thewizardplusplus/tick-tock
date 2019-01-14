@@ -17,7 +17,12 @@ type Dependencies struct {
 }
 
 // Translate ...
-func Translate(actors []*parser.Actor, inboxSize int, dependencies Dependencies) (
+func Translate(
+	actors []*parser.Actor,
+	inboxSize int,
+	initialState string,
+	dependencies Dependencies,
+) (
 	translatedActors runtime.ConcurrentActorGroup,
 	err error,
 ) {
@@ -27,7 +32,11 @@ func Translate(actors []*parser.Actor, inboxSize int, dependencies Dependencies)
 			return nil, errors.Wrapf(err, "unable to translate the actor #%d", index)
 		}
 
-		translatedActor, _ := runtime.NewActor(translatedStates, "__initialization__") // nolint: gosec
+		translatedActor, err := runtime.NewActor(translatedStates, initialState)
+		if err != nil {
+			return nil, errors.Wrapf(err, "unable to construct the actor #%d", index)
+		}
+
 		translatedActors = append(translatedActors, runtime.NewConcurrentActor(
 			translatedActor,
 			inboxSize,
