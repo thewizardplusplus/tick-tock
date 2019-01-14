@@ -9,8 +9,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 )
 
-// TranslateStates ...
-func TranslateStates(writer io.Writer, states []*parser.State) (
+func translateStates(states []*parser.State, outWriter io.Writer) (
 	translatedStates runtime.StateGroup,
 	initialState string,
 	err error,
@@ -35,7 +34,7 @@ func TranslateStates(writer io.Writer, states []*parser.State) (
 			initialState = state.Name
 		}
 
-		translatedMessages, settedStates, err := translateMessages(state.Messages, writer)
+		translatedMessages, settedStates, err := translateMessages(state.Messages, outWriter)
 		if err != nil {
 			return nil, "", errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}

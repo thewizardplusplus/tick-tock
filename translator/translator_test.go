@@ -20,7 +20,7 @@ func TestTranslateStates(test *testing.T) {
 	for _, testData := range []struct {
 		name             string
 		args             args
-		makeWantStates   func(writer io.Writer) runtime.StateGroup
+		makeWantStates   func(outWriter io.Writer) runtime.StateGroup
 		wantInitialState string
 		wantErr          assert.ErrorAssertionFunc
 	}{
@@ -32,7 +32,7 @@ func TestTranslateStates(test *testing.T) {
 					{false, "state_1", []*parser.Message{{"message_2", nil}, {"message_3", nil}}},
 				},
 			},
-			makeWantStates: func(writer io.Writer) runtime.StateGroup {
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{
 					"state_0": runtime.MessageGroup{"message_0": nil, "message_1": nil},
 					"state_1": runtime.MessageGroup{"message_2": nil, "message_3": nil},
@@ -44,7 +44,7 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "success with empty states (with an implicit initial state)",
 			args: args{[]*parser.State{{false, "state_0", nil}, {false, "state_1", nil}}},
-			makeWantStates: func(writer io.Writer) runtime.StateGroup {
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{"state_0": runtime.MessageGroup{}, "state_1": runtime.MessageGroup{}}
 			},
 			wantInitialState: "state_0",
@@ -53,7 +53,7 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "success with empty states (with an explicit initial state)",
 			args: args{[]*parser.State{{false, "state_0", nil}, {true, "state_1", nil}}},
-			makeWantStates: func(writer io.Writer) runtime.StateGroup {
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{"state_0": runtime.MessageGroup{}, "state_1": runtime.MessageGroup{}}
 			},
 			wantInitialState: "state_1",
@@ -61,13 +61,13 @@ func TestTranslateStates(test *testing.T) {
 		},
 		{
 			name:           "error without states",
-			makeWantStates: func(writer io.Writer) runtime.StateGroup { return nil },
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 		{
 			name:           "error with duplicate states",
 			args:           args{[]*parser.State{{false, "test", nil}, {false, "test", nil}}},
-			makeWantStates: func(writer io.Writer) runtime.StateGroup { return nil },
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 		{
@@ -80,7 +80,7 @@ func TestTranslateStates(test *testing.T) {
 					{true, "state_3", nil},
 				},
 			},
-			makeWantStates: func(writer io.Writer) runtime.StateGroup { return nil },
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 		{
@@ -91,7 +91,7 @@ func TestTranslateStates(test *testing.T) {
 					{false, "state_1", []*parser.Message{{"test", nil}, {"test", nil}}},
 				},
 			},
-			makeWantStates: func(writer io.Writer) runtime.StateGroup { return nil },
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 		{
@@ -120,17 +120,16 @@ func TestTranslateStates(test *testing.T) {
 					},
 				},
 			},
-			makeWantStates: func(writer io.Writer) runtime.StateGroup { return nil },
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			writer := new(mocks.Writer)
-			wantStates := testData.makeWantStates(writer)
-			gotStates, gotInitialState, err := TranslateStates(writer, testData.args.states)
+			outWriter := new(mocks.Writer)
+			gotStates, gotInitialState, err := translateStates(testData.args.states, outWriter)
 
-			writer.AssertExpectations(test)
-			assert.Equal(test, wantStates, gotStates)
+			outWriter.AssertExpectations(test)
+			assert.Equal(test, testData.makeWantStates(outWriter), gotStates)
 			assert.Equal(test, testData.wantInitialState, gotInitialState)
 			testData.wantErr(test, err)
 		})
