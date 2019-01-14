@@ -4,6 +4,6 @@ package runtime
 type MessageGroup map[string]CommandGroup
 
 // ProcessMessage ...
-func (messages MessageGroup) ProcessMessage(message string) error {
-	return messages[message].Run(nil)
+func (messages MessageGroup) ProcessMessage(context Context, message string) error {
+	return messages[message].Run(context)
 }

@@ -10,5 +10,5 @@ func (states StateGroup) ProcessMessage(state string, message string) error {
 		return newUnknownStateError(state)
 	}
 
-	return messages.ProcessMessage(message)
+	return messages.ProcessMessage(nil, message)
 }

@@ -61,10 +61,12 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			context := new(MockContext)
 			var log commandLog
-			messages := testData.makeMessages(nil, &log)
-			err := messages.ProcessMessage(testData.args.message)
+			messages := testData.makeMessages(context, &log)
+			err := messages.ProcessMessage(context, testData.args.message)
 
+			context.AssertExpectations(test)
 			assert.Equal(test, testData.wantLog, log.commands)
 			checkMessages(test, messages)
 			testData.wantErr(test, err)
