@@ -138,9 +138,8 @@ func TestConcurrentActor(test *testing.T) {
 					Times(testData.errCount)
 			}
 
-			dependencies := Dependencies{waiter, errorHandler}
-			concurrentActor := NewConcurrentActor(testData.args.inboxSize, actor, dependencies)
-			concurrentActor.Start()
+			concurrentActor := NewConcurrentActor(testData.args.inboxSize, actor, errorHandler)
+			concurrentActor.Start(waiter)
 
 			for _, message := range testData.args.messages {
 				concurrentActor.SendMessage(message)
@@ -232,7 +231,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				actor, err := NewActor(args.initialState, states)
 				require.NoError(test, err)
 
-				concurrentActor := NewConcurrentActor(0, actor, Dependencies{waiter, errorHandler})
+				concurrentActor := NewConcurrentActor(0, actor, errorHandler)
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
