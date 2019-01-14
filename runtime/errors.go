@@ -1,6 +1,11 @@
 package runtime
 
-import "github.com/pkg/errors"
+import (
+	"fmt"
+	"io"
+
+	"github.com/pkg/errors"
+)
 
 // ErrUserExit ...
 var ErrUserExit = errors.New("user exit")
@@ -16,9 +21,18 @@ type ErrorHandler interface {
 }
 
 // DefaultErrorHandler ...
-type DefaultErrorHandler struct{}
+type DefaultErrorHandler struct {
+	writer io.Writer
+	exiter func(code int)
+}
 
 // HandleError ...
 func (handler DefaultErrorHandler) HandleError(err error) {
-	panic(err)
+	var code int
+	if errors.Cause(err) != ErrUserExit {
+		handler.writer.Write([]byte(fmt.Sprintf("error: %s", err))) // nolint: gosec
+		code = 1
+	}
+
+	handler.exiter(code)
 }
