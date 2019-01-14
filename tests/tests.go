@@ -12,6 +12,12 @@ const (
 	BufferedInbox
 )
 
+// Reader ...
+//go:generate mockery -name=Reader -case=underscore
+type Reader interface {
+	io.Reader
+}
+
 // Writer ...
 //go:generate mockery -name=Writer -case=underscore
 type Writer interface {
