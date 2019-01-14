@@ -1,7 +1,5 @@
 package runtime
 
-import "github.com/pkg/errors"
-
 // StateGroup represents a map of states names to message maps.
 type StateGroup map[string]MessageGroup
 
@@ -10,7 +8,7 @@ type StateGroup map[string]MessageGroup
 func (states StateGroup) ProcessMessage(state string, message string) error {
 	messages, ok := states[state]
 	if !ok {
-		return errors.Errorf("unknown state %s", state)
+		return newUnknownStateError(state)
 	}
 
 	return messages.ProcessMessage(message)
