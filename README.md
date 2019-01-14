@@ -3,6 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/thewizardplusplus/tick-tock?status.svg)](https://godoc.org/github.com/thewizardplusplus/tick-tock)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thewizardplusplus/tick-tock)](https://goreportcard.com/report/github.com/thewizardplusplus/tick-tock)
 [![Build Status](https://travis-ci.org/thewizardplusplus/tick-tock.svg?branch=master)](https://travis-ci.org/thewizardplusplus/tick-tock)
+[![codecov](https://codecov.io/gh/thewizardplusplus/tick-tock/branch/master/graph/badge.svg)](https://codecov.io/gh/thewizardplusplus/tick-tock)
 
 Interpreter of the Tick-tock programming language.
 
