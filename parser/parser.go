@@ -5,6 +5,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Program represents an actor list.
+type Program struct {
+	Actors []*Actor `parser:"{ @@ }"`
+}
+
 // Actor represents a description of an actor (green thread) with several states.
 type Actor struct {
 	States []*State `parser:"\"actor\" { @@ } \";\""`
