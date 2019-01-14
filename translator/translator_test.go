@@ -12,6 +12,72 @@ import (
 	"github.com/thewizardplusplus/tick-tock/tests/mocks"
 )
 
+func TestTranslateMessages(test *testing.T) {
+	type args struct {
+		messages []*parser.Message
+	}
+
+	for _, testData := range []struct {
+		name     string
+		args     args
+		makeWant func(writer io.Writer) runtime.MessageGroup
+	}{
+		{
+			name: "success with nonempty messages",
+			args: args{
+				messages: []*parser.Message{
+					{
+						Name: "message_0",
+						Commands: []*parser.Command{
+							{Send: tests.GetAddress("command_0")},
+							{Send: tests.GetAddress("command_1")},
+						},
+					},
+					{
+						Name: "message_1",
+						Commands: []*parser.Command{
+							{Send: tests.GetAddress("command_2")},
+							{Send: tests.GetAddress("command_3")},
+						},
+					},
+				},
+			},
+			makeWant: func(writer io.Writer) runtime.MessageGroup {
+				return runtime.MessageGroup{
+					"message_0": runtime.CommandGroup{
+						commands.NewSendCommand("command_0"),
+						commands.NewSendCommand("command_1"),
+					},
+					"message_1": runtime.CommandGroup{
+						commands.NewSendCommand("command_2"),
+						commands.NewSendCommand("command_3"),
+					},
+				}
+			},
+		},
+		{
+			name: "success with empty messages",
+			args: args{[]*parser.Message{{"message_0", nil}, {"message_1", nil}}},
+			makeWant: func(writer io.Writer) runtime.MessageGroup {
+				return runtime.MessageGroup{"message_0": nil, "message_1": nil}
+			},
+		},
+		{
+			name:     "success without messages",
+			makeWant: func(writer io.Writer) runtime.MessageGroup { return runtime.MessageGroup{} },
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			writer := new(mocks.Writer)
+			want := testData.makeWant(writer)
+			got := TranslateMessages(writer, testData.args.messages)
+
+			writer.AssertExpectations(test)
+			assert.Equal(test, want, got)
+		})
+	}
+}
+
 func TestTranslateCommands(test *testing.T) {
 	type args struct {
 		commands []*parser.Command
