@@ -416,7 +416,22 @@ func TestTranslateCommands(test *testing.T) {
 			wantErr:          assert.NoError,
 		},
 		{
-			name: "error",
+			name: "error with command translation",
+			args: args{
+				commands: []*parser.Command{
+					{
+						Sleep: &parser.SleepCommand{
+							Minimum: tests.GetNumberAddress(3.4),
+							Maximum: tests.GetNumberAddress(1.2),
+						},
+					},
+				},
+			},
+			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
+			wantErr:          assert.Error,
+		},
+		{
+			name: "error with a second set command",
 			args: args{
 				commands: []*parser.Command{
 					{Send: tests.GetStringAddress("one")},
@@ -496,6 +511,35 @@ func TestTranslateCommand(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "Command/sleep/success",
+			args: args{
+				command: &parser.Command{
+					Sleep: &parser.SleepCommand{
+						Minimum: tests.GetNumberAddress(1.2),
+						Maximum: tests.GetNumberAddress(3.4),
+					},
+				},
+			},
+			makeWantCommand: func(outWriter io.Writer) runtime.Command {
+				command, _ := commands.NewSleepCommand(1.2, 3.4, commands.SleepDependencies{})
+				return command
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/sleep/error",
+			args: args{
+				command: &parser.Command{
+					Sleep: &parser.SleepCommand{
+						Minimum: tests.GetNumberAddress(3.4),
+						Maximum: tests.GetNumberAddress(1.2),
+					},
+				},
+			},
+			makeWantCommand: func(outWriter io.Writer) runtime.Command { return nil },
+			wantErr:         assert.Error,
+		},
+		{
 			name:            "Command/exit",
 			args:            args{&parser.Command{Exit: true}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command { return commands.ExitCommand{} },
@@ -514,6 +558,10 @@ func TestTranslateCommand(test *testing.T) {
 				},
 			}
 			gotCommand, gotState, err := translateCommand(testData.args.command, dependencies)
+			if sleepCommand, ok := gotCommand.(commands.SleepCommand); ok {
+				cleanSleepDependencies(&sleepCommand)
+				gotCommand = sleepCommand
+			}
 
 			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, testData.makeWantCommand(outWriter), gotCommand)
@@ -531,4 +579,9 @@ func cleanInboxes(actors runtime.ConcurrentActorGroup) runtime.ConcurrentActorGr
 	}
 
 	return actors
+}
+
+func cleanSleepDependencies(command *commands.SleepCommand) {
+	field := reflect.ValueOf(command).Elem().FieldByName("dependencies")
+	*(*commands.SleepDependencies)(unsafe.Pointer(field.UnsafeAddr())) = commands.SleepDependencies{}
 }
