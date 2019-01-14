@@ -38,8 +38,8 @@ type Command struct {
 
 // SleepCommand ...
 type SleepCommand struct {
-	Minimum *float64 `parser:"\"sleep\" @Float"`
-	Maximum *float64 `parser:"\",\" @Float"`
+	Minimum *float64 `parser:"\"sleep\" ( @Int | @Float )"`
+	Maximum *float64 `parser:"\",\" ( @Int | @Float )"`
 }
 
 // Parse ...

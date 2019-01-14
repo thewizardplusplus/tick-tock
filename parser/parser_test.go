@@ -104,7 +104,15 @@ func TestParseToAST(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "Command/sleep",
+			name: "Command/sleep/integer",
+			args: args{`sleep 1, 2`, new(Command)},
+			wantAST: &Command{
+				Sleep: &SleepCommand{tests.GetNumberAddress(1), tests.GetNumberAddress(2)},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/sleep/floating-point",
 			args: args{`sleep 1.2, 3.4`, new(Command)},
 			wantAST: &Command{
 				Sleep: &SleepCommand{tests.GetNumberAddress(1.2), tests.GetNumberAddress(3.4)},
