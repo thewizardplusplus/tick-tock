@@ -80,10 +80,12 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			context := new(MockContext)
 			var log commandLog
-			states := testData.makeStates(nil, &log)
-			err := states.ProcessMessage(testData.args.state, testData.args.message)
+			states := testData.makeStates(context, &log)
+			err := states.ProcessMessage(context, testData.args.state, testData.args.message)
 
+			context.AssertExpectations(test)
 			assert.Equal(test, testData.wantLog, log.commands)
 			checkStates(test, states)
 			testData.wantErr(test, err)

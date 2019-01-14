@@ -27,5 +27,5 @@ func (actor *Actor) SetState(state string) error {
 
 // ProcessMessage ...
 func (actor Actor) ProcessMessage(message string) error {
-	return actor.states.ProcessMessage(actor.currentState, message)
+	return actor.states.ProcessMessage(nil, actor.currentState, message)
 }
