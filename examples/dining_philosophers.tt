@@ -68,7 +68,7 @@ actor
   ;
   state thinking
     message start_thinking_john
-      sleep 0.25, 0.5
+      sleep 0.5, 1
       send stop_thinking_john
     ;
     message stop_thinking_john
@@ -104,7 +104,7 @@ actor
   ;
   state eating
     message start_eating_john
-      sleep 0.25, 0.5
+      sleep 0.5, 1
       send stop_eating_john
     ;
     message stop_eating_john
@@ -127,7 +127,7 @@ actor
   ;
   state thinking
     message start_thinking_jane
-      sleep 0.25, 0.5
+      sleep 0.5, 1
       send stop_thinking_jane
     ;
     message stop_thinking_jane
@@ -163,7 +163,7 @@ actor
   ;
   state eating
     message start_eating_jane
-      sleep 0.25, 0.5
+      sleep 0.5, 1
       send stop_eating_jane
     ;
     message stop_eating_jane
