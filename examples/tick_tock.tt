@@ -5,10 +5,12 @@ actor
     ;
     message tick
       out "\x1b[32mtick\x1b[m\n"
+      sleep 1, 1
       send tock
     ;
     message tock
       out "\x1b[34mtock\x1b[m\n"
+      sleep 1, 1
       send tick
     ;
   ;
