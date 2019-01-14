@@ -38,3 +38,8 @@ func (context *DefaultContext) SetMessageSender(sender MessageSender) {
 func (context *DefaultContext) SetStateHolder(holder StateHolder) {
 	context.StateHolder = holder
 }
+
+// Copy ...
+func (context DefaultContext) Copy() Context {
+	return &DefaultContext{context.MessageSender, context.StateHolder}
+}
