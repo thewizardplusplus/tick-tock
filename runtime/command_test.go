@@ -36,10 +36,12 @@ func TestCommandGroup_Run(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			context := new(MockContext)
 			var log commandLog
-			commands := testData.makeCommands(nil, &log)
-			err := commands.Run()
+			commands := testData.makeCommands(context, &log)
+			err := commands.Run(context)
 
+			context.AssertExpectations(test)
 			assert.Equal(test, testData.wantLog, log.commands)
 			checkCommands(test, commands)
 			testData.wantErr(test, err)

@@ -19,9 +19,9 @@ type Command interface {
 type CommandGroup []Command
 
 // Run ...
-func (commands CommandGroup) Run() error {
+func (commands CommandGroup) Run(context Context) error {
 	for index, command := range commands {
-		if err := command.Run(nil); err != nil {
+		if err := command.Run(context); err != nil {
 			return errors.Wrapf(err, "unable to run the command #%d", index)
 		}
 	}

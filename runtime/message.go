@@ -5,5 +5,5 @@ type MessageGroup map[string]CommandGroup
 
 // ProcessMessage ...
 func (messages MessageGroup) ProcessMessage(message string) error {
-	return messages[message].Run()
+	return messages[message].Run(nil)
 }
