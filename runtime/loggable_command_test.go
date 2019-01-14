@@ -21,31 +21,64 @@ func (command *loggableCommand) Run() error {
 	return command.MockCommand.Run()
 }
 
-func newLoggableCommands(log *[]int, count int, idOffset int) CommandGroup {
-	var commands CommandGroup
-	for i := 0; i < count; i++ {
-		commands = append(commands, newLoggableCommand(log, i+idOffset))
-	}
+type loggableCommandMode int
 
-	return commands
+const (
+	loggableCommandQuiet loggableCommandMode = iota
+	loggableCommandCalls
+	loggableCommandErr
+)
+
+type loggableCommandConfig struct {
+	mode     loggableCommandMode
+	idOffset int
+	errIndex int
 }
 
-func newCalledLoggableCommands(log *[]int, count int, idOffset int, errIndex int) CommandGroup {
-	commands := newLoggableCommands(log, count, idOffset)
-	for index, command := range commands {
-		// expect execution of all commands from first to failed one, inclusive;
-		// error index -1 means a failed command is missing
-		if errIndex != -1 && index > errIndex {
-			break
+func (config loggableCommandConfig) moddedErrIndex() int {
+	if config.mode != loggableCommandErr {
+		return -1
+	}
+
+	return config.errIndex
+}
+
+type loggableCommandOption func(*loggableCommandConfig)
+
+func withIdFrom(offset int) loggableCommandOption {
+	return func(config *loggableCommandConfig) { config.idOffset = offset }
+}
+
+func withCalls() loggableCommandOption {
+	return func(config *loggableCommandConfig) { config.mode = loggableCommandCalls }
+}
+
+func withErrOn(index int) loggableCommandOption {
+	return func(config *loggableCommandConfig) {
+		config.mode = loggableCommandErr
+		config.errIndex = index
+	}
+}
+
+func newLoggableCommands(log *[]int, count int, options ...loggableCommandOption) CommandGroup {
+	var config loggableCommandConfig
+	for _, option := range options {
+		option(&config)
+	}
+
+	var commands CommandGroup
+	for i := 0; i < count; i++ {
+		command := newLoggableCommand(log, i+config.idOffset)
+		if config.mode == loggableCommandCalls || i <= config.moddedErrIndex() {
+			var err error
+			if i == config.moddedErrIndex() {
+				err = iotest.ErrTimeout
+			}
+
+			command.On("Run").Return(err)
 		}
 
-		var err error
-		// return an error from a failed command
-		if index == errIndex {
-			err = iotest.ErrTimeout
-		}
-
-		command.(*loggableCommand).On("Run").Return(err)
+		commands = append(commands, command)
 	}
 
 	return commands

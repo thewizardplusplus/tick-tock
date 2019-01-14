@@ -20,13 +20,13 @@ func TestCommandGroup_Run(test *testing.T) {
 		},
 		{
 			name:         "success with commands",
-			makeCommands: func(log *[]int) CommandGroup { return newCalledLoggableCommands(log, 5, 0, -1) },
+			makeCommands: func(log *[]int) CommandGroup { return newLoggableCommands(log, 5, withCalls()) },
 			wantLog:      []int{0, 1, 2, 3, 4},
 			wantErr:      assert.NoError,
 		},
 		{
 			name:         "error",
-			makeCommands: func(log *[]int) CommandGroup { return newCalledLoggableCommands(log, 5, 0, 2) },
+			makeCommands: func(log *[]int) CommandGroup { return newLoggableCommands(log, 5, withErrOn(2)) },
 			wantLog:      []int{0, 1, 2},
 			wantErr:      assert.Error,
 		},
