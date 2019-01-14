@@ -40,7 +40,7 @@ type Command struct {
 func Parse(code string) (*Program, error) {
 	program := new(Program)
 	if err := parseToAST(code, program); err != nil {
-		return nil, errors.Wrap(err, "unable to parse the program")
+		return nil, err
 	}
 
 	return program, nil
