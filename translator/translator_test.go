@@ -132,29 +132,57 @@ func TestTranslateCommands(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name     string
-		args     args
-		makeWant func(writer io.Writer) runtime.CommandGroup
+		name             string
+		args             args
+		makeWantCommands func(writer io.Writer) runtime.CommandGroup
+		wantState        string
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
-			name: "success with commands",
+			name: "success with commands (without a set command)",
 			args: args{[]*parser.Command{{Send: tests.GetAddress("one")}, {Send: tests.GetAddress("two")}}},
-			makeWant: func(writer io.Writer) runtime.CommandGroup {
+			makeWantCommands: func(writer io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSendCommand("two")}
 			},
+			wantErr: assert.NoError,
 		},
 		{
-			name:     "success without commands",
-			makeWant: func(writer io.Writer) runtime.CommandGroup { return nil },
+			name: "success with commands (with a set command)",
+			args: args{[]*parser.Command{{Send: tests.GetAddress("one")}, {Set: tests.GetAddress("two")}}},
+			makeWantCommands: func(writer io.Writer) runtime.CommandGroup {
+				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSetCommand("two")}
+			},
+			wantState: "two",
+			wantErr:   assert.NoError,
+		},
+		{
+			name:             "success without commands",
+			makeWantCommands: func(writer io.Writer) runtime.CommandGroup { return nil },
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "error",
+			args: args{
+				commands: []*parser.Command{
+					{Send: tests.GetAddress("one")},
+					{Set: tests.GetAddress("two")},
+					{Send: tests.GetAddress("three")},
+					{Set: tests.GetAddress("four")},
+				},
+			},
+			makeWantCommands: func(writer io.Writer) runtime.CommandGroup { return nil },
+			wantErr:          assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			writer := new(mocks.Writer)
-			want := testData.makeWant(writer)
-			got := TranslateCommands(writer, testData.args.commands)
+			wantCommands := testData.makeWantCommands(writer)
+			gotCommands, gotState, err := TranslateCommands(writer, testData.args.commands)
 
 			writer.AssertExpectations(test)
-			assert.Equal(test, want, got)
+			assert.Equal(test, wantCommands, gotCommands)
+			assert.Equal(test, testData.wantState, gotState)
+			testData.wantErr(test, err)
 		})
 	}
 }
