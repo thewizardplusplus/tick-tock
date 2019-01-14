@@ -1,0 +1,25 @@
+// pinger
+actor
+  state __initialization__
+    message __initialize__
+      out "\x1b[34mpinger\x1b[m sent \x1b[34mping\x1b[m\n"
+      send ping
+    ;
+    message pong
+      out "\x1b[34mpinger\x1b[m received \x1b[32mpong\x1b[m\n"
+      out "\x1b[34mpinger\x1b[m finished\n"
+    ;
+  ;
+;
+
+// ponger
+actor
+  state __initialization__
+    message ping
+      out "\x1b[32mponger\x1b[m received \x1b[34mping\x1b[m\n"
+      out "\x1b[32mponger\x1b[m sent \x1b[32mpong\x1b[m\n"
+      send pong
+      out "\x1b[32mponger\x1b[m finished\n"
+    ;
+  ;
+;
