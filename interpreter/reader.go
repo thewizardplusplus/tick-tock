@@ -24,7 +24,7 @@ func readCode(filename string, dependencies ReaderDependencies) (string, error) 
 		if err != nil {
 			return "", errors.Wrapf(err, "unable to open the file %s", filename)
 		}
-		defer file.Close()
+		defer file.Close() // nolint: errcheck
 
 		reader = file
 	}

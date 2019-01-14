@@ -57,8 +57,7 @@ func group(size int, idOffset ...int) groupConfig {
 type loggableCommandMode int
 
 const (
-	loggableCommandQuiet loggableCommandMode = iota
-	loggableCommandCalls
+	loggableCommandCalls loggableCommandMode = iota + 1
 	loggableCommandErr
 )
 

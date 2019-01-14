@@ -31,7 +31,7 @@ func NewDefaultErrorHandler(writer io.Writer, exiter func(code int)) DefaultErro
 func (handler DefaultErrorHandler) HandleError(err error) {
 	var code int
 	if errors.Cause(err) != ErrUserExit {
-		handler.writer.Write([]byte(fmt.Sprintf("error: %s\n", err))) // nolint: gosec
+		handler.writer.Write([]byte(fmt.Sprintf("error: %s\n", err))) // nolint: gosec, errcheck
 		code = 1
 	}
 

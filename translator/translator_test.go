@@ -27,8 +27,8 @@ func TestTranslate(test *testing.T) {
 			name: "success with actors",
 			makeActors: func(options Options) []*parser.Actor {
 				return []*parser.Actor{
-					{[]*parser.State{{options.InitialState, nil}, {"one", nil}}},
-					{[]*parser.State{{options.InitialState, nil}, {"two", nil}}},
+					{States: []*parser.State{{Name: options.InitialState}, {Name: "one"}}},
+					{States: []*parser.State{{Name: options.InitialState}, {Name: "two"}}},
 				}
 			},
 			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
@@ -64,7 +64,7 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "error with states translation",
 			makeActors: func(options Options) []*parser.Actor {
-				return []*parser.Actor{{[]*parser.State{{options.InitialState, nil}}}, {}}
+				return []*parser.Actor{{States: []*parser.State{{Name: options.InitialState}}}, {}}
 			},
 			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
@@ -74,7 +74,10 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "error with actor construction",
 			makeActors: func(options Options) []*parser.Actor {
-				return []*parser.Actor{{[]*parser.State{{"one", nil}}}, {[]*parser.State{{"two", nil}}}}
+				return []*parser.Actor{
+					{States: []*parser.State{{Name: "one"}}},
+					{States: []*parser.State{{Name: "two"}}},
+				}
 			},
 			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
@@ -116,8 +119,8 @@ func TestTranslateStates(test *testing.T) {
 			name: "success with nonempty states",
 			args: args{
 				states: []*parser.State{
-					{"state_0", []*parser.Message{{"message_0", nil}, {"message_1", nil}}},
-					{"state_1", []*parser.Message{{"message_2", nil}, {"message_3", nil}}},
+					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
+					{Name: "state_1", Messages: []*parser.Message{{Name: "message_2"}, {Name: "message_3"}}},
 				},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
@@ -130,7 +133,7 @@ func TestTranslateStates(test *testing.T) {
 		},
 		{
 			name: "success with empty states",
-			args: args{[]*parser.State{{"state_0", nil}, {"state_1", nil}}},
+			args: args{[]*parser.State{{Name: "state_0"}, {Name: "state_1"}}},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{"state_0": runtime.MessageGroup{}, "state_1": runtime.MessageGroup{}}
 			},
@@ -143,7 +146,7 @@ func TestTranslateStates(test *testing.T) {
 		},
 		{
 			name:           "error with duplicate states",
-			args:           args{[]*parser.State{{"test", nil}, {"test", nil}}},
+			args:           args{[]*parser.State{{Name: "test"}, {Name: "test"}}},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
@@ -151,8 +154,8 @@ func TestTranslateStates(test *testing.T) {
 			name: "error with messages translation",
 			args: args{
 				states: []*parser.State{
-					{"state_0", []*parser.Message{{"message_0", nil}, {"message_1", nil}}},
-					{"state_1", []*parser.Message{{"test", nil}, {"test", nil}}},
+					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
+					{Name: "state_1", Messages: []*parser.Message{{Name: "test"}, {Name: "test"}}},
 				},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
@@ -282,7 +285,7 @@ func TestTranslateMessages(test *testing.T) {
 		},
 		{
 			name: "success with empty messages",
-			args: args{[]*parser.Message{{"message_0", nil}, {"message_1", nil}}},
+			args: args{[]*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{"message_0": nil, "message_1": nil}
 			},
@@ -299,7 +302,7 @@ func TestTranslateMessages(test *testing.T) {
 		},
 		{
 			name:             "error with duplicate messages",
-			args:             args{[]*parser.Message{{"test", nil}, {"test", nil}}},
+			args:             args{[]*parser.Message{{Name: "test"}, {Name: "test"}}},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup { return nil },
 			wantErr:          assert.Error,
 		},

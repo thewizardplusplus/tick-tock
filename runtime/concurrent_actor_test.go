@@ -5,10 +5,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/thewizardplusplus/tick-tock/internal/tests"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
-	"github.com/thewizardplusplus/tick-tock/internal/tests"
 )
 
 func TestConcurrentActor(test *testing.T) {

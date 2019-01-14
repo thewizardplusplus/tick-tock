@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
+	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestOutCommand(test *testing.T) {
