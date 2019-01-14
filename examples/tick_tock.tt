@@ -1,0 +1,15 @@
+actor
+  initial state main
+    message __initialization__
+      send tick
+    ;
+    message tick
+      out "\x1b[34mtick\x1b[m\n"
+      send tock
+    ;
+    message tock
+      out "\x1b[32mtock\x1b[m\n"
+      send tick
+    ;
+  ;
+;

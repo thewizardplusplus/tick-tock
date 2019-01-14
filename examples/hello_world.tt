@@ -1,0 +1,7 @@
+actor
+  initial state main
+    message __initialization__
+      out "Hello, world!\n"
+    ;
+  ;
+;
