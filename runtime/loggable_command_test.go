@@ -1,23 +1,37 @@
 package runtime
 
 import (
+	"sync"
 	"testing"
 	"testing/iotest"
 )
 
+type commandLog struct {
+	sync.Mutex
+
+	commands []int
+}
+
+func (log *commandLog) registerCommand(command int) {
+	log.Lock()
+	defer log.Unlock()
+
+	log.commands = append(log.commands, command)
+}
+
 type loggableCommand struct {
 	MockCommand
 
-	log *[]int
+	log *commandLog
 	id  int
 }
 
-func newLoggableCommand(log *[]int, id int) *loggableCommand {
+func newLoggableCommand(log *commandLog, id int) *loggableCommand {
 	return &loggableCommand{MockCommand{}, log, id}
 }
 
 func (command *loggableCommand) Run() error {
-	*command.log = append(*command.log, command.id)
+	command.log.registerCommand(command.id)
 	return command.MockCommand.Run()
 }
 
@@ -60,7 +74,11 @@ func withErrOn(index int) loggableCommandOption {
 	}
 }
 
-func newLoggableCommands(log *[]int, count int, options ...loggableCommandOption) CommandGroup {
+func newLoggableCommands(
+	log *commandLog,
+	count int,
+	options ...loggableCommandOption,
+) CommandGroup {
 	var config loggableCommandConfig
 	for _, option := range options {
 		option(&config)

@@ -28,7 +28,7 @@ func TestConcurrentActor(test *testing.T) {
 	type args struct {
 		inboxSize    int
 		initialState string
-		makeStates   func(log *[]int) StateGroup
+		makeStates   func(log *commandLog) StateGroup
 		messages     []string
 	}
 
@@ -42,7 +42,7 @@ func TestConcurrentActor(test *testing.T) {
 			name: "success with messages (with an unbuffered inbox)",
 			args: args{
 				initialState: "state_two",
-				makeStates: func(log *[]int) StateGroup {
+				makeStates: func(log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
@@ -63,7 +63,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				inboxSize:    1,
 				initialState: "state_two",
-				makeStates: func(log *[]int) StateGroup {
+				makeStates: func(log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
@@ -83,7 +83,7 @@ func TestConcurrentActor(test *testing.T) {
 			name: "success without messages",
 			args: args{
 				initialState: "state_two",
-				makeStates: func(log *[]int) StateGroup {
+				makeStates: func(log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
@@ -101,7 +101,7 @@ func TestConcurrentActor(test *testing.T) {
 			name: "error",
 			args: args{
 				initialState: "state_two",
-				makeStates: func(log *[]int) StateGroup {
+				makeStates: func(log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
@@ -120,7 +120,7 @@ func TestConcurrentActor(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			var log []int
+			var log commandLog
 			states := testData.args.makeStates(&log)
 			actor, err := NewActor(testData.args.initialState, states)
 			require.NoError(test, err)
@@ -147,7 +147,7 @@ func TestConcurrentActor(test *testing.T) {
 			}
 			waiter.Wait()
 
-			assert.ElementsMatch(test, testData.wantLog, log)
+			assert.ElementsMatch(test, testData.wantLog, log.commands)
 			checkStates(test, states)
 			waiter.AssertExpectations(test)
 			errorHandler.AssertExpectations(test)
@@ -158,7 +158,7 @@ func TestConcurrentActor(test *testing.T) {
 func TestConcurrentActorGroup(test *testing.T) {
 	type args struct {
 		initialState string
-		makeStates   func(log *[]int) StateGroup
+		makeStates   func(log *commandLog) StateGroup
 	}
 
 	for _, testData := range []struct {
@@ -172,7 +172,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			args: []args{
 				{
 					initialState: "state_two",
-					makeStates: func(log *[]int) StateGroup {
+					makeStates: func(log *commandLog) StateGroup {
 						return StateGroup{
 							"state_one": MessageGroup{
 								"message_one": newLoggableCommands(log, 5),
@@ -187,7 +187,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				},
 				{
 					initialState: "state_two",
-					makeStates: func(log *[]int) StateGroup {
+					makeStates: func(log *commandLog) StateGroup {
 						return StateGroup{
 							"state_one": MessageGroup{
 								"message_one": newLoggableCommands(log, 5, withIDFrom(20)),
@@ -216,7 +216,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				waiter.On("Done").Times(messageCount)
 			}
 
-			var log []int
+			var log commandLog
 			var concurrentActors ConcurrentActorGroup
 			errorHandler := new(MockErrorHandler)
 			for _, args := range testData.args {
@@ -236,7 +236,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			}
 			waiter.Wait()
 
-			assert.ElementsMatch(test, testData.wantLog, log)
+			assert.ElementsMatch(test, testData.wantLog, log.commands)
 			waiter.AssertExpectations(test)
 			errorHandler.AssertExpectations(test)
 		})

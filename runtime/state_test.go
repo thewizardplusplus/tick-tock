@@ -14,14 +14,14 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 
 	for _, testData := range []struct {
 		name       string
-		makeStates func(log *[]int) StateGroup
+		makeStates func(log *commandLog) StateGroup
 		args       args
 		wantLog    []int
 		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success",
-			makeStates: func(log *[]int) StateGroup {
+			makeStates: func(log *commandLog) StateGroup {
 				return StateGroup{
 					"state_one": MessageGroup{
 						"message_one": newLoggableCommands(log, 5),
@@ -39,13 +39,13 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		},
 		{
 			name:       "error with an empty group",
-			makeStates: func(log *[]int) StateGroup { return nil },
+			makeStates: func(log *commandLog) StateGroup { return nil },
 			args:       args{"state_unknown", "message_unknown"},
 			wantErr:    assert.Error,
 		},
 		{
 			name: "error with an unknown state",
-			makeStates: func(log *[]int) StateGroup {
+			makeStates: func(log *commandLog) StateGroup {
 				return StateGroup{
 					"state_one": MessageGroup{
 						"message_one": newLoggableCommands(log, 5),
@@ -62,7 +62,7 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		},
 		{
 			name: "error on command execution",
-			makeStates: func(log *[]int) StateGroup {
+			makeStates: func(log *commandLog) StateGroup {
 				return StateGroup{
 					"state_one": MessageGroup{
 						"message_one": newLoggableCommands(log, 5),
@@ -80,11 +80,11 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			var log []int
+			var log commandLog
 			states := testData.makeStates(&log)
 			err := states.ProcessMessage(testData.args.state, testData.args.message)
 
-			assert.Equal(test, testData.wantLog, log)
+			assert.Equal(test, testData.wantLog, log.commands)
 			checkStates(test, states)
 			testData.wantErr(test, err)
 		})

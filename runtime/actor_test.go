@@ -91,7 +91,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 	type (
 		fields struct {
 			currentState string
-			makeStates   func(log *[]int) StateGroup
+			makeStates   func(log *commandLog) StateGroup
 		}
 		args struct {
 			message string
@@ -109,7 +109,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "success",
 			fields: fields{
 				currentState: "state_two",
-				makeStates: func(log *[]int) StateGroup {
+				makeStates: func(log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
@@ -130,7 +130,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "error",
 			fields: fields{
 				currentState: "state_two",
-				makeStates: func(log *[]int) StateGroup {
+				makeStates: func(log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
@@ -149,11 +149,11 @@ func TestActor_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			var log []int
+			var log commandLog
 			states := testData.fields.makeStates(&log)
 			err := Actor{testData.fields.currentState, states}.ProcessMessage(testData.args.message)
 
-			assert.Equal(test, testData.wantLog, log)
+			assert.Equal(test, testData.wantLog, log.commands)
 			checkStates(test, states)
 			testData.wantErr(test, err)
 		})
