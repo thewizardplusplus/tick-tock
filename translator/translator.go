@@ -8,6 +8,16 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 )
 
+// TranslateMessages ...
+func TranslateMessages(writer io.Writer, messages []*parser.Message) runtime.MessageGroup {
+	translatedMessages := make(runtime.MessageGroup)
+	for _, message := range messages {
+		translatedMessages[message.Name] = TranslateCommands(writer, message.Commands)
+	}
+
+	return translatedMessages
+}
+
 // TranslateCommands ...
 func TranslateCommands(writer io.Writer, commands []*parser.Command) runtime.CommandGroup {
 	var translatedCommands runtime.CommandGroup
