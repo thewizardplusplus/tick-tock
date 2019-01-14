@@ -19,86 +19,71 @@ import (
 func TestTranslate(test *testing.T) {
 	for _, testData := range []struct {
 		name       string
-		makeActors func(initialState string) []*parser.Actor
-		makeWant   func(
-			inboxSize int,
-			initialState string,
-			dependencies Dependencies,
-		) runtime.ConcurrentActorGroup
-		wantErr assert.ErrorAssertionFunc
+		makeActors func(options Options) []*parser.Actor
+		makeWant   func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup
+		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with actors",
-			makeActors: func(initialState string) []*parser.Actor {
+			makeActors: func(options Options) []*parser.Actor {
 				return []*parser.Actor{
-					{[]*parser.State{{initialState, nil}, {"one", nil}}},
-					{[]*parser.State{{initialState, nil}, {"two", nil}}},
+					{[]*parser.State{{options.InitialState, nil}, {"one", nil}}},
+					{[]*parser.State{{options.InitialState, nil}, {"two", nil}}},
 				}
 			},
-			makeWant: func(
-				inboxSize int,
-				initialState string,
-				dependencies Dependencies,
-			) runtime.ConcurrentActorGroup {
+			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
-					runtime.StateGroup{initialState: runtime.MessageGroup{}, "one": runtime.MessageGroup{}},
-					initialState,
+					runtime.StateGroup{
+						options.InitialState: runtime.MessageGroup{},
+						"one":                runtime.MessageGroup{},
+					},
+					options.InitialState,
 				)
 				actorTwo, _ := runtime.NewActor(
-					runtime.StateGroup{initialState: runtime.MessageGroup{}, "two": runtime.MessageGroup{}},
-					initialState,
+					runtime.StateGroup{
+						options.InitialState: runtime.MessageGroup{},
+						"two":                runtime.MessageGroup{},
+					},
+					options.InitialState,
 				)
 				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(actorOne, inboxSize, dependencies.Dependencies),
-					runtime.NewConcurrentActor(actorTwo, inboxSize, dependencies.Dependencies),
+					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies.Dependencies),
+					runtime.NewConcurrentActor(actorTwo, options.InboxSize, dependencies.Dependencies),
 				}
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name:       "success without actors",
-			makeActors: func(initialState string) []*parser.Actor { return nil },
-			makeWant: func(
-				inboxSize int,
-				initialState string,
-				dependencies Dependencies,
-			) runtime.ConcurrentActorGroup {
+			makeActors: func(options Options) []*parser.Actor { return nil },
+			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "error with states translation",
-			makeActors: func(initialState string) []*parser.Actor {
-				return []*parser.Actor{{[]*parser.State{{initialState, nil}}}, {}}
+			makeActors: func(options Options) []*parser.Actor {
+				return []*parser.Actor{{[]*parser.State{{options.InitialState, nil}}}, {}}
 			},
-			makeWant: func(
-				inboxSize int,
-				initialState string,
-				dependencies Dependencies,
-			) runtime.ConcurrentActorGroup {
+			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.Error,
 		},
 		{
 			name: "error with actor construction",
-			makeActors: func(initialState string) []*parser.Actor {
+			makeActors: func(options Options) []*parser.Actor {
 				return []*parser.Actor{{[]*parser.State{{"one", nil}}}, {[]*parser.State{{"two", nil}}}}
 			},
-			makeWant: func(
-				inboxSize int,
-				initialState string,
-				dependencies Dependencies,
-			) runtime.ConcurrentActorGroup {
+			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			const inboxSize = tests.BufferedInbox
-			const initialState = "__initialization__"
+			options := Options{tests.BufferedInbox, "__initialization__"}
 			waiter := new(runtimemocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			outWriter := new(testsmocks.Writer)
@@ -106,8 +91,8 @@ func TestTranslate(test *testing.T) {
 				Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
 				OutWriter:    outWriter,
 			}
-			want := testData.makeWant(inboxSize, initialState, dependencies)
-			got, err := Translate(testData.makeActors(initialState), inboxSize, initialState, dependencies)
+			want := testData.makeWant(options, dependencies)
+			got, err := Translate(testData.makeActors(options), options, dependencies)
 
 			mock.AssertExpectationsForObjects(test, waiter, errorHandler, outWriter)
 			assert.Equal(test, cleanInboxes(want), cleanInboxes(got))
