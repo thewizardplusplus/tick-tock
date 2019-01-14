@@ -2,6 +2,12 @@ package tests
 
 import "io"
 
+// ...
+const (
+	UnbufferedInbox = iota
+	BufferedInbox
+)
+
 // Writer ...
 //go:generate mockery -name=Writer -case=underscore
 type Writer interface {

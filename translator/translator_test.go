@@ -38,8 +38,8 @@ func TestTranslate(test *testing.T) {
 				actorOne, _ := runtime.NewActor(runtime.StateGroup{"one": runtime.MessageGroup{}}, "one")
 				actorTwo, _ := runtime.NewActor(runtime.StateGroup{"two": runtime.MessageGroup{}}, "two")
 				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(1, actorOne, dependencies.Dependencies),
-					runtime.NewConcurrentActor(1, actorTwo, dependencies.Dependencies),
+					runtime.NewConcurrentActor(tests.BufferedInbox, actorOne, dependencies.Dependencies),
+					runtime.NewConcurrentActor(tests.BufferedInbox, actorTwo, dependencies.Dependencies),
 				}
 			},
 			wantErr: assert.NoError,
@@ -65,7 +65,7 @@ func TestTranslate(test *testing.T) {
 				},
 				OutWriter: new(testsmocks.Writer),
 			}
-			got, err := Translate(1, testData.args.actors, dependencies)
+			got, err := Translate(tests.BufferedInbox, testData.args.actors, dependencies)
 
 			dependencies.Dependencies.Waiter.(*runtimemocks.Waiter).AssertExpectations(test)
 			dependencies.Dependencies.ErrorHandler.(*runtimemocks.ErrorHandler).AssertExpectations(test)

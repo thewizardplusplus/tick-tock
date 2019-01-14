@@ -9,6 +9,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
+	"github.com/thewizardplusplus/tick-tock/tests"
 )
 
 type synchronousWaiter struct {
@@ -57,7 +58,7 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "success with messages (with a buffered inbox)",
 			args: args{
-				inboxSize:    1,
+				inboxSize:    tests.BufferedInbox,
 				initialState: "state_1",
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
@@ -188,6 +189,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			var log commandLog
 			var concurrentActors ConcurrentActorGroup
 			errorHandler := new(runtimemocks.ErrorHandler)
+			dependencies := Dependencies{waiter, errorHandler}
 			for _, args := range testData.args {
 				states := args.makeStates(context, &log)
 				defer checkStates(test, states)
@@ -195,7 +197,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				actor := &Actor{states, args.initialState}
 				context.On("SetStateHolder", actor).Return()
 
-				concurrentActor := NewConcurrentActor(0, actor, Dependencies{waiter, errorHandler})
+				concurrentActor := NewConcurrentActor(tests.UnbufferedInbox, actor, dependencies)
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
