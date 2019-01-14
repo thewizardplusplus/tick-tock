@@ -235,6 +235,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
+			context.On("SetActors", concurrentActors).Return()
 			concurrentActors.Start(context)
 			for _, message := range testData.messages {
 				concurrentActors.SendMessage(message)

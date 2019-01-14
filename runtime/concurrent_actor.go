@@ -52,6 +52,8 @@ type ConcurrentActorGroup []ConcurrentActor
 
 // Start ...
 func (actors ConcurrentActorGroup) Start(context Context) {
+	context.SetActors(actors)
+
 	for _, actor := range actors {
 		actor.Start(context)
 	}
