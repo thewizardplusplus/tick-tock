@@ -138,16 +138,19 @@ func TestActor_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			contextCopy := new(mocks.Context)
+			contextOriginal := new(mocks.Context)
+			contextOriginal.On("Copy").Return(contextCopy)
+
 			actor := Actor{nil, testData.fields.currentState}
-			context := new(mocks.Context)
-			context.On("SetStateHolder", &actor).Return()
+			contextCopy.On("SetStateHolder", &actor).Return()
 
 			var log commandLog
-			actor.states = testData.fields.makeStates(context, &log)
+			actor.states = testData.fields.makeStates(contextCopy, &log)
 
-			err := actor.ProcessMessage(context, testData.args.message)
+			err := actor.ProcessMessage(contextOriginal, testData.args.message)
 
-			mock.AssertExpectationsForObjects(test, context)
+			mock.AssertExpectationsForObjects(test, contextCopy, contextOriginal)
 			assert.Equal(test, testData.wantLog, log.commands)
 			checkStates(test, actor.states)
 			testData.wantErr(test, err)

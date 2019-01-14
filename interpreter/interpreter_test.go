@@ -41,6 +41,7 @@ func TestInterpret(test *testing.T) {
 			) {
 				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
+				context.On("Copy").Return(context)
 
 				waiter.On("Add", 1).Return()
 				waiter.On("Done").Return()
