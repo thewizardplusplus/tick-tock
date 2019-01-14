@@ -149,12 +149,18 @@ func TestActor_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			var log commandLog
-			states := testData.fields.makeStates(nil, &log)
-			err := Actor{testData.fields.currentState, states}.ProcessMessage(testData.args.message)
+			actor := Actor{testData.fields.currentState, nil}
+			context := new(MockContext)
+			context.On("SetActor", &actor).Return()
 
+			var log commandLog
+			actor.states = testData.fields.makeStates(context, &log)
+
+			err := actor.ProcessMessage(context, testData.args.message)
+
+			context.AssertExpectations(test)
 			assert.Equal(test, testData.wantLog, log.commands)
-			checkStates(test, states)
+			checkStates(test, actor.states)
 			testData.wantErr(test, err)
 		})
 	}

@@ -28,10 +28,10 @@ func NewConcurrentActor(inboxSize int, actor *Actor, dependencies Dependencies) 
 }
 
 // Start ...
-func (actor ConcurrentActor) Start() {
+func (actor ConcurrentActor) Start(context Context) {
 	go func() {
 		for message := range actor.inbox {
-			if err := actor.innerActor.ProcessMessage(message); err != nil {
+			if err := actor.innerActor.ProcessMessage(context, message); err != nil {
 				err = errors.Wrapf(err, "unable to process the message %s", message)
 				actor.dependencies.ErrorHandler.HandleError(err)
 			}
@@ -51,9 +51,9 @@ func (actor ConcurrentActor) SendMessage(message string) {
 type ConcurrentActorGroup []ConcurrentActor
 
 // Start ...
-func (actors ConcurrentActorGroup) Start() {
+func (actors ConcurrentActorGroup) Start(context Context) {
 	for _, actor := range actors {
-		actor.Start()
+		actor.Start(context)
 	}
 }
 

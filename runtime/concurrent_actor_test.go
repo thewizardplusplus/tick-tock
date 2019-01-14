@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 type synchronousWaiter struct {
@@ -120,10 +119,14 @@ func TestConcurrentActor(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			actor := &Actor{testData.args.initialState, nil}
+			context := new(MockContext)
+			if len(testData.args.messages) != 0 {
+				context.On("SetActor", actor).Return()
+			}
+
 			var log commandLog
-			states := testData.args.makeStates(nil, &log)
-			actor, err := NewActor(testData.args.initialState, states)
-			require.NoError(test, err)
+			actor.states = testData.args.makeStates(context, &log)
 
 			waiter := synchronousWaiter{new(MockWaiter), new(sync.WaitGroup)}
 			if messageCount := len(testData.args.messages); messageCount != 0 {
@@ -140,15 +143,16 @@ func TestConcurrentActor(test *testing.T) {
 
 			dependencies := Dependencies{waiter, errorHandler}
 			concurrentActor := NewConcurrentActor(testData.args.inboxSize, actor, dependencies)
-			concurrentActor.Start()
+			concurrentActor.Start(context)
 
 			for _, message := range testData.args.messages {
 				concurrentActor.SendMessage(message)
 			}
 			waiter.Wait()
 
+			context.AssertExpectations(test)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
-			checkStates(test, states)
+			checkStates(test, actor.states)
 			waiter.AssertExpectations(test)
 			errorHandler.AssertExpectations(test)
 		})
@@ -216,26 +220,28 @@ func TestConcurrentActorGroup(test *testing.T) {
 				waiter.On("Done").Times(messageCount)
 			}
 
+			context := new(MockContext)
 			var log commandLog
 			var concurrentActors ConcurrentActorGroup
 			errorHandler := new(MockErrorHandler)
 			for _, args := range testData.args {
-				states := args.makeStates(nil, &log)
+				states := args.makeStates(context, &log)
 				defer checkStates(test, states)
 
-				actor, err := NewActor(args.initialState, states)
-				require.NoError(test, err)
+				actor := &Actor{args.initialState, states}
+				context.On("SetActor", actor).Return()
 
 				concurrentActor := NewConcurrentActor(0, actor, Dependencies{waiter, errorHandler})
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
-			concurrentActors.Start()
+			concurrentActors.Start(context)
 			for _, message := range testData.messages {
 				concurrentActors.SendMessage(message)
 			}
 			waiter.Wait()
 
+			context.AssertExpectations(test)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
 			waiter.AssertExpectations(test)
 			errorHandler.AssertExpectations(test)
