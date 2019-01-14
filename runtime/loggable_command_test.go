@@ -25,19 +25,18 @@ func (log *commandLog) registerCommand(command int) {
 }
 
 type loggableCommand struct {
-	mocks.Command
-
-	log *commandLog
-	id  int
+	mock *mocks.Command
+	log  *commandLog
+	id   int
 }
 
-func newLoggableCommand(log *commandLog, id int) *loggableCommand {
-	return &loggableCommand{mocks.Command{}, log, id}
+func newLoggableCommand(log *commandLog, id int) loggableCommand {
+	return loggableCommand{new(mocks.Command), log, id}
 }
 
-func (command *loggableCommand) Run(context context.Context) error {
+func (command loggableCommand) Run(context context.Context) error {
 	command.log.registerCommand(command.id)
-	return command.Command.Run(context)
+	return command.mock.Run(context)
 }
 
 type groupConfig struct {
@@ -109,7 +108,7 @@ func newLoggableCommands(
 				err = iotest.ErrTimeout
 			}
 
-			command.On("Run", context).Return(err)
+			command.mock.On("Run", context).Return(err)
 		}
 
 		commands = append(commands, command)
@@ -157,7 +156,7 @@ func newLoggableStates(
 
 func checkCommands(test *testing.T, commands CommandGroup) {
 	for _, command := range commands {
-		mock.AssertExpectationsForObjects(test, command)
+		mock.AssertExpectationsForObjects(test, command.(loggableCommand).mock)
 	}
 }
 
