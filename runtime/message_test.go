@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"testing"
-	"testing/iotest"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -29,8 +28,8 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 			name: "success with an unknown message",
 			makeMessages: func(log *[]int) MessageGroup {
 				return MessageGroup{
-					"one": newLoggableCommands(log, 2, 0),
-					"two": newLoggableCommands(log, 2, 2),
+					"one": newLoggableCommands(log, 5, 0),
+					"two": newLoggableCommands(log, 5, 5),
 				}
 			},
 			args:    args{"unknown"},
@@ -39,32 +38,25 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "success with a known message",
 			makeMessages: func(log *[]int) MessageGroup {
-				messages := MessageGroup{
-					"one": newLoggableCommands(log, 2, 0),
-					"two": newLoggableCommands(log, 2, 2),
+				return MessageGroup{
+					"one": newLoggableCommands(log, 5, 0),
+					"two": newCalledLoggableCommands(log, 5, 5, -1),
 				}
-				messages["two"][0].(*loggableCommand).On("Run").Return(nil)
-				messages["two"][1].(*loggableCommand).On("Run").Return(nil)
-
-				return messages
 			},
 			args:    args{"two"},
-			wantLog: []int{2, 3},
+			wantLog: []int{5, 6, 7, 8, 9},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "error",
 			makeMessages: func(log *[]int) MessageGroup {
-				messages := MessageGroup{
-					"one": newLoggableCommands(log, 2, 0),
-					"two": newLoggableCommands(log, 2, 2),
+				return MessageGroup{
+					"one": newLoggableCommands(log, 5, 0),
+					"two": newCalledLoggableCommands(log, 5, 5, 2),
 				}
-				messages["two"][0].(*loggableCommand).On("Run").Return(iotest.ErrTimeout)
-
-				return messages
 			},
 			args:    args{"two"},
-			wantLog: []int{2},
+			wantLog: []int{5, 6, 7},
 			wantErr: assert.Error,
 		},
 	} {

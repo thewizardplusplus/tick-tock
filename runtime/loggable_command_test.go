@@ -1,6 +1,9 @@
 package runtime
 
-import "testing"
+import (
+	"testing"
+	"testing/iotest"
+)
 
 type loggableCommand struct {
 	MockCommand
@@ -17,6 +20,27 @@ func newLoggableCommands(log *[]int, count int, idOffset int) CommandGroup {
 	var commands CommandGroup
 	for i := 0; i < count; i++ {
 		commands = append(commands, newLoggableCommand(log, i+idOffset))
+	}
+
+	return commands
+}
+
+func newCalledLoggableCommands(log *[]int, count int, idOffset int, errIndex int) CommandGroup {
+	commands := newLoggableCommands(log, count, idOffset)
+	for index, command := range commands {
+		// expect execution of all commands from first to failed one, inclusive;
+		// error index -1 means a failed command is missing
+		if errIndex != -1 && index > errIndex {
+			break
+		}
+
+		var err error
+		// return an error from a failed command
+		if index == errIndex {
+			err = iotest.ErrTimeout
+		}
+
+		command.(*loggableCommand).On("Run").Return(err)
 	}
 
 	return commands

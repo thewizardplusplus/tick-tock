@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"testing"
-	"testing/iotest"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,13 +20,13 @@ func TestCommandGroup_Run(test *testing.T) {
 		},
 		{
 			name:         "success with commands",
-			makeCommands: func(log *[]int) CommandGroup { return makeCommands(log, 5, 5) },
+			makeCommands: func(log *[]int) CommandGroup { return newCalledLoggableCommands(log, 5, 0, -1) },
 			wantLog:      []int{0, 1, 2, 3, 4},
 			wantErr:      assert.NoError,
 		},
 		{
 			name:         "error",
-			makeCommands: func(log *[]int) CommandGroup { return makeCommands(log, 5, 2) },
+			makeCommands: func(log *[]int) CommandGroup { return newCalledLoggableCommands(log, 5, 0, 2) },
 			wantLog:      []int{0, 1, 2},
 			wantErr:      assert.Error,
 		},
@@ -42,22 +41,4 @@ func TestCommandGroup_Run(test *testing.T) {
 			testData.wantErr(test, err)
 		})
 	}
-}
-
-func makeCommands(log *[]int, count int, errIndex int) CommandGroup {
-	commands := newLoggableCommands(log, count, 0)
-	// expect execution of all commands from first to failed one, inclusive
-	for i := 0; i <= errIndex; i++ {
-		var err error
-		// return an error from a failed command
-		if i == errIndex {
-			err = iotest.ErrTimeout
-		}
-
-		if i < len(commands) {
-			commands[i].(*loggableCommand).On("Run").Return(err)
-		}
-	}
-
-	return commands
 }
