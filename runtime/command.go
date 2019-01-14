@@ -8,6 +8,7 @@ type Context interface {
 	SendMessage(message string)
 	SetState(state string) error
 	SetActor(actor *Actor)
+	SetActors(actors ConcurrentActorGroup)
 }
 
 // Command ...

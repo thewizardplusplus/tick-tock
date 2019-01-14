@@ -19,6 +19,11 @@ func (_m *MockContext) SetActor(actor *Actor) {
 	_m.Called(actor)
 }
 
+// SetActors provides a mock function with given fields: actors
+func (_m *MockContext) SetActors(actors ConcurrentActorGroup) {
+	_m.Called(actors)
+}
+
 // SetState provides a mock function with given fields: state
 func (_m *MockContext) SetState(state string) error {
 	ret := _m.Called(state)
