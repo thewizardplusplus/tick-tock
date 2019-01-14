@@ -7,6 +7,7 @@ type MessageSender interface {
 }
 
 // StateHolder ...
+//go:generate mockery -name=StateHolder -case=underscore
 type StateHolder interface {
 	SetState(state string) error
 }
