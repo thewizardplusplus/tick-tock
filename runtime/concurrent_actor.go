@@ -41,3 +41,17 @@ func (actor ConcurrentActor) SendMessage(message string) {
 	actor.waiter.Add(1)
 	go func() { actor.inbox <- message }()
 }
+
+type ConcurrentActorGroup []ConcurrentActor
+
+func (actors ConcurrentActorGroup) Start() {
+	for _, actor := range actors {
+		actor.Start()
+	}
+}
+
+func (actors ConcurrentActorGroup) SendMessage(message string) {
+	for _, actor := range actors {
+		actor.SendMessage(message)
+	}
+}
