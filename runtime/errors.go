@@ -26,6 +26,11 @@ type DefaultErrorHandler struct {
 	exiter func(code int)
 }
 
+// NewDefaultErrorHandler ...
+func NewDefaultErrorHandler(writer io.Writer, exiter func(code int)) DefaultErrorHandler {
+	return DefaultErrorHandler{writer, exiter}
+}
+
 // HandleError ...
 func (handler DefaultErrorHandler) HandleError(err error) {
 	var code int

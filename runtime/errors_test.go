@@ -49,7 +49,7 @@ func TestDefaultErrorHandler(test *testing.T) {
 			exiter := new(mocks.Exiter)
 			exiter.On("Exit", testData.wantCode).Return()
 
-			DefaultErrorHandler{writer, func(code int) { exiter.Exit(code) }}.HandleError(testData.args.err)
+			NewDefaultErrorHandler(writer, exiter.Exit).HandleError(testData.args.err)
 
 			writer.AssertExpectations(test)
 			exiter.AssertExpectations(test)
