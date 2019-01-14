@@ -12,7 +12,7 @@ type Context interface {
 // Command ...
 //go:generate mockery -name=Command -inpkg -case=underscore -testonly
 type Command interface {
-	Run() error
+	Run(context Context) error
 }
 
 // CommandGroup ...
@@ -21,7 +21,7 @@ type CommandGroup []Command
 // Run ...
 func (commands CommandGroup) Run() error {
 	for index, command := range commands {
-		if err := command.Run(); err != nil {
+		if err := command.Run(nil); err != nil {
 			return errors.Wrapf(err, "unable to run the command #%d", index)
 		}
 	}

@@ -30,9 +30,9 @@ func newLoggableCommand(log *commandLog, id int) *loggableCommand {
 	return &loggableCommand{MockCommand{}, log, id}
 }
 
-func (command *loggableCommand) Run() error {
+func (command *loggableCommand) Run(context Context) error {
 	command.log.registerCommand(command.id)
-	return command.MockCommand.Run()
+	return command.MockCommand.Run(context)
 }
 
 type loggableCommandMode int
@@ -75,6 +75,7 @@ func withErrOn(index int) loggableCommandOption {
 }
 
 func newLoggableCommands(
+	context Context,
 	log *commandLog,
 	count int,
 	options ...loggableCommandOption,
@@ -93,7 +94,7 @@ func newLoggableCommands(
 				err = iotest.ErrTimeout
 			}
 
-			command.On("Run").Return(err)
+			command.On("Run", context).Return(err)
 		}
 
 		commands = append(commands, command)

@@ -13,23 +13,23 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 
 	for _, testData := range []struct {
 		name         string
-		makeMessages func(log *commandLog) MessageGroup
+		makeMessages func(context Context, log *commandLog) MessageGroup
 		args         args
 		wantLog      []int
 		wantErr      assert.ErrorAssertionFunc
 	}{
 		{
 			name:         "success with an empty group",
-			makeMessages: func(log *commandLog) MessageGroup { return nil },
+			makeMessages: func(context Context, log *commandLog) MessageGroup { return nil },
 			args:         args{"two"},
 			wantErr:      assert.NoError,
 		},
 		{
 			name: "success with an unknown message",
-			makeMessages: func(log *commandLog) MessageGroup {
+			makeMessages: func(context Context, log *commandLog) MessageGroup {
 				return MessageGroup{
-					"one": newLoggableCommands(log, 5),
-					"two": newLoggableCommands(log, 5, withIDFrom(5)),
+					"one": newLoggableCommands(context, log, 5),
+					"two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 				}
 			},
 			args:    args{"unknown"},
@@ -37,10 +37,10 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		},
 		{
 			name: "success with a known message",
-			makeMessages: func(log *commandLog) MessageGroup {
+			makeMessages: func(context Context, log *commandLog) MessageGroup {
 				return MessageGroup{
-					"one": newLoggableCommands(log, 5),
-					"two": newLoggableCommands(log, 5, withIDFrom(5), withCalls()),
+					"one": newLoggableCommands(context, log, 5),
+					"two": newLoggableCommands(context, log, 5, withIDFrom(5), withCalls()),
 				}
 			},
 			args:    args{"two"},
@@ -49,10 +49,10 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		},
 		{
 			name: "error",
-			makeMessages: func(log *commandLog) MessageGroup {
+			makeMessages: func(context Context, log *commandLog) MessageGroup {
 				return MessageGroup{
-					"one": newLoggableCommands(log, 5),
-					"two": newLoggableCommands(log, 5, withIDFrom(5), withErrOn(2)),
+					"one": newLoggableCommands(context, log, 5),
+					"two": newLoggableCommands(context, log, 5, withIDFrom(5), withErrOn(2)),
 				}
 			},
 			args:    args{"two"},
@@ -62,7 +62,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			var log commandLog
-			messages := testData.makeMessages(&log)
+			messages := testData.makeMessages(nil, &log)
 			err := messages.ProcessMessage(testData.args.message)
 
 			assert.Equal(test, testData.wantLog, log.commands)

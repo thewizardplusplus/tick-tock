@@ -28,7 +28,7 @@ func TestConcurrentActor(test *testing.T) {
 	type args struct {
 		inboxSize    int
 		initialState string
-		makeStates   func(log *commandLog) StateGroup
+		makeStates   func(context Context, log *commandLog) StateGroup
 		messages     []string
 	}
 
@@ -42,15 +42,15 @@ func TestConcurrentActor(test *testing.T) {
 			name: "success with messages (with an unbuffered inbox)",
 			args: args{
 				initialState: "state_two",
-				makeStates: func(log *commandLog) StateGroup {
+				makeStates: func(context Context, log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
+							"message_one": newLoggableCommands(context, log, 5),
+							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIDFrom(10), withCalls()),
-							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
+							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10), withCalls()),
+							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withCalls()),
 						},
 					}
 				},
@@ -63,15 +63,15 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				inboxSize:    1,
 				initialState: "state_two",
-				makeStates: func(log *commandLog) StateGroup {
+				makeStates: func(context Context, log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
+							"message_one": newLoggableCommands(context, log, 5),
+							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIDFrom(10), withCalls()),
-							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
+							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10), withCalls()),
+							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withCalls()),
 						},
 					}
 				},
@@ -83,15 +83,15 @@ func TestConcurrentActor(test *testing.T) {
 			name: "success without messages",
 			args: args{
 				initialState: "state_two",
-				makeStates: func(log *commandLog) StateGroup {
+				makeStates: func(context Context, log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
+							"message_one": newLoggableCommands(context, log, 5),
+							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIDFrom(10)),
-							"message_four":  newLoggableCommands(log, 5, withIDFrom(15)),
+							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
+							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15)),
 						},
 					}
 				},
@@ -101,15 +101,15 @@ func TestConcurrentActor(test *testing.T) {
 			name: "error",
 			args: args{
 				initialState: "state_two",
-				makeStates: func(log *commandLog) StateGroup {
+				makeStates: func(context Context, log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
+							"message_one": newLoggableCommands(context, log, 5),
+							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIDFrom(10), withErrOn(2)),
-							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withErrOn(2)),
+							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10), withErrOn(2)),
+							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withErrOn(2)),
 						},
 					}
 				},
@@ -121,7 +121,7 @@ func TestConcurrentActor(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			var log commandLog
-			states := testData.args.makeStates(&log)
+			states := testData.args.makeStates(nil, &log)
 			actor, err := NewActor(testData.args.initialState, states)
 			require.NoError(test, err)
 
@@ -158,7 +158,7 @@ func TestConcurrentActor(test *testing.T) {
 func TestConcurrentActorGroup(test *testing.T) {
 	type args struct {
 		initialState string
-		makeStates   func(log *commandLog) StateGroup
+		makeStates   func(context Context, log *commandLog) StateGroup
 	}
 
 	for _, testData := range []struct {
@@ -172,30 +172,30 @@ func TestConcurrentActorGroup(test *testing.T) {
 			args: []args{
 				{
 					initialState: "state_two",
-					makeStates: func(log *commandLog) StateGroup {
+					makeStates: func(context Context, log *commandLog) StateGroup {
 						return StateGroup{
 							"state_one": MessageGroup{
-								"message_one": newLoggableCommands(log, 5),
-								"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
+								"message_one": newLoggableCommands(context, log, 5),
+								"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 							},
 							"state_two": MessageGroup{
-								"message_three": newLoggableCommands(log, 5, withIDFrom(10), withCalls()),
-								"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
+								"message_three": newLoggableCommands(context, log, 5, withIDFrom(10), withCalls()),
+								"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withCalls()),
 							},
 						}
 					},
 				},
 				{
 					initialState: "state_two",
-					makeStates: func(log *commandLog) StateGroup {
+					makeStates: func(context Context, log *commandLog) StateGroup {
 						return StateGroup{
 							"state_one": MessageGroup{
-								"message_one": newLoggableCommands(log, 5, withIDFrom(20)),
-								"message_two": newLoggableCommands(log, 5, withIDFrom(25)),
+								"message_one": newLoggableCommands(context, log, 5, withIDFrom(20)),
+								"message_two": newLoggableCommands(context, log, 5, withIDFrom(25)),
 							},
 							"state_two": MessageGroup{
-								"message_three": newLoggableCommands(log, 5, withIDFrom(30), withCalls()),
-								"message_four":  newLoggableCommands(log, 5, withIDFrom(35), withCalls()),
+								"message_three": newLoggableCommands(context, log, 5, withIDFrom(30), withCalls()),
+								"message_four":  newLoggableCommands(context, log, 5, withIDFrom(35), withCalls()),
 							},
 						}
 					},
@@ -220,7 +220,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			var concurrentActors ConcurrentActorGroup
 			errorHandler := new(MockErrorHandler)
 			for _, args := range testData.args {
-				states := args.makeStates(&log)
+				states := args.makeStates(nil, &log)
 				defer checkStates(test, states)
 
 				actor, err := NewActor(args.initialState, states)

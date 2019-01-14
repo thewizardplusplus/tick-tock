@@ -9,13 +9,13 @@ type MockCommand struct {
 	mock.Mock
 }
 
-// Run provides a mock function with given fields:
-func (_m *MockCommand) Run() error {
-	ret := _m.Called()
+// Run provides a mock function with given fields: context
+func (_m *MockCommand) Run(context Context) error {
+	ret := _m.Called(context)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(Context) error); ok {
+		r0 = rf(context)
 	} else {
 		r0 = ret.Error(0)
 	}

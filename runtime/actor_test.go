@@ -91,7 +91,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 	type (
 		fields struct {
 			currentState string
-			makeStates   func(log *commandLog) StateGroup
+			makeStates   func(context Context, log *commandLog) StateGroup
 		}
 		args struct {
 			message string
@@ -109,15 +109,15 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "success",
 			fields: fields{
 				currentState: "state_two",
-				makeStates: func(log *commandLog) StateGroup {
+				makeStates: func(context Context, log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
+							"message_one": newLoggableCommands(context, log, 5),
+							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIDFrom(10)),
-							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
+							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
+							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withCalls()),
 						},
 					}
 				},
@@ -130,15 +130,15 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "error",
 			fields: fields{
 				currentState: "state_two",
-				makeStates: func(log *commandLog) StateGroup {
+				makeStates: func(context Context, log *commandLog) StateGroup {
 					return StateGroup{
 						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
+							"message_one": newLoggableCommands(context, log, 5),
+							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIDFrom(10)),
-							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withErrOn(2)),
+							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
+							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withErrOn(2)),
 						},
 					}
 				},
@@ -150,7 +150,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			var log commandLog
-			states := testData.fields.makeStates(&log)
+			states := testData.fields.makeStates(nil, &log)
 			err := Actor{testData.fields.currentState, states}.ProcessMessage(testData.args.message)
 
 			assert.Equal(test, testData.wantLog, log.commands)
