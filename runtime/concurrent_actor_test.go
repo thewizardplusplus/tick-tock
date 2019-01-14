@@ -127,7 +127,7 @@ func TestConcurrentActor(test *testing.T) {
 
 			waiter := synchronousWaiter{new(MockWaiter), new(sync.WaitGroup)}
 			if messageCount := len(testData.args.messages); messageCount != 0 {
-				waiter.WaitGroup.Add(messageCount)
+				waiter.On("Add", 1).Times(messageCount)
 				waiter.On("Done").Times(messageCount)
 			}
 
@@ -181,7 +181,6 @@ func TestConcurrentActorGroup(test *testing.T) {
 							"state_two": MessageGroup{
 								"message_three": newCalledLoggableCommands(log, 5, 10, -1),
 								"message_four":  newCalledLoggableCommands(log, 5, 15, -1),
-								"message_five":  newCalledLoggableCommands(log, 5, 20, -1),
 							},
 						}
 					},
@@ -191,39 +190,34 @@ func TestConcurrentActorGroup(test *testing.T) {
 					makeStates: func(log *[]int) StateGroup {
 						return StateGroup{
 							"state_one": MessageGroup{
-								"message_one": newLoggableCommands(log, 5, 25),
-								"message_two": newLoggableCommands(log, 5, 30),
+								"message_one": newLoggableCommands(log, 5, 20),
+								"message_two": newLoggableCommands(log, 5, 25),
 							},
 							"state_two": MessageGroup{
-								"message_three": newCalledLoggableCommands(log, 5, 35, -1),
-								"message_four":  newCalledLoggableCommands(log, 5, 40, -1),
-								"message_five":  newCalledLoggableCommands(log, 5, 45, -1),
+								"message_three": newCalledLoggableCommands(log, 5, 30, -1),
+								"message_four":  newCalledLoggableCommands(log, 5, 35, -1),
 							},
 						}
 					},
 				},
 			},
-			messages: []string{"message_three", "message_four", "message_five"},
-			wantLog: []int{
-				10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-				35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-			},
+			messages: []string{"message_three", "message_four"},
+			wantLog:  []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39},
 		},
 		{
 			name:     "success without actors",
-			messages: []string{"message_three", "message_four", "message_five"},
+			messages: []string{"message_three", "message_four"},
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			waiter := synchronousWaiter{new(MockWaiter), new(sync.WaitGroup)}
-			actorCount, messageCount := len(testData.args), len(testData.messages)
-			waiter.On("Add", actorCount).Times(messageCount)
-			if actorCount != 0 {
-				waiter.On("Done").Times(actorCount * messageCount)
+			if messageCount := len(testData.args) * len(testData.messages); messageCount != 0 {
+				waiter.On("Add", 1).Times(messageCount)
+				waiter.On("Done").Times(messageCount)
 			}
 
 			var log []int
-			var concurrentActors []ConcurrentActor
+			var concurrentActors ConcurrentActorGroup
 			errorHandler := new(MockErrorHandler)
 			for _, args := range testData.args {
 				states := args.makeStates(&log)
@@ -236,10 +230,9 @@ func TestConcurrentActorGroup(test *testing.T) {
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
-			group := NewConcurrentActorGroup(concurrentActors, waiter)
-			group.Start()
+			concurrentActors.Start()
 			for _, message := range testData.messages {
-				group.SendMessage(message)
+				concurrentActors.SendMessage(message)
 			}
 			waiter.Wait()
 

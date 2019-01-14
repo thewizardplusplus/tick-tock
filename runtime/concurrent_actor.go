@@ -42,28 +42,20 @@ func (actor ConcurrentActor) Start() {
 }
 
 func (actor ConcurrentActor) SendMessage(message string) {
+	actor.dependencies.Waiter.Add(1)
 	go func() { actor.inbox <- message }()
 }
 
-type ConcurrentActorGroup struct {
-	actors []ConcurrentActor
-	waiter Waiter
-}
+type ConcurrentActorGroup []ConcurrentActor
 
-func NewConcurrentActorGroup(actors []ConcurrentActor, waiter Waiter) ConcurrentActorGroup {
-	return ConcurrentActorGroup{actors, waiter}
-}
-
-func (group ConcurrentActorGroup) Start() {
-	for _, actor := range group.actors {
+func (actors ConcurrentActorGroup) Start() {
+	for _, actor := range actors {
 		actor.Start()
 	}
 }
 
-func (group ConcurrentActorGroup) SendMessage(message string) {
-	group.waiter.Add(len(group.actors))
-
-	for _, actor := range group.actors {
+func (actors ConcurrentActorGroup) SendMessage(message string) {
+	for _, actor := range actors {
 		actor.SendMessage(message)
 	}
 }
