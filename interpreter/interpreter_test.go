@@ -124,11 +124,11 @@ func TestInterpret(test *testing.T) {
 
 			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{
-				Dependencies: translator.Dependencies{
+				Reader: ReaderDependencies{defaultReader, fileSystem},
+				Translator: translator.Dependencies{
 					OutWriter: outWriter,
 					Runtime:   runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},
 				},
-				ReaderDependencies: ReaderDependencies{defaultReader, fileSystem},
 			}
 			err := Interpret(context, options, dependencies)
 			synchronousWaiter.Wait()

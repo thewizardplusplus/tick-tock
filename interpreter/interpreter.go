@@ -15,13 +15,13 @@ type Options struct {
 
 // Dependencies ...
 type Dependencies struct {
-	translator.Dependencies
-	ReaderDependencies
+	Reader     ReaderDependencies
+	Translator translator.Dependencies
 }
 
 // Interpret ...
 func Interpret(context context.Context, options Options, dependencies Dependencies) error {
-	code, err := readCode(options.Filename, dependencies.ReaderDependencies)
+	code, err := readCode(options.Filename, dependencies.Reader)
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func Interpret(context context.Context, options Options, dependencies Dependenci
 		return err
 	}
 
-	actors, err := translator.Translate(program.Actors, options.Translator, dependencies.Dependencies)
+	actors, err := translator.Translate(program.Actors, options.Translator, dependencies.Translator)
 	if err != nil {
 		return err
 	}

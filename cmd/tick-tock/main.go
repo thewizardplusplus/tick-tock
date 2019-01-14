@@ -25,13 +25,10 @@ func main() {
 
 	var waiter sync.WaitGroup
 	if err := interpreter.Interpret(new(context.DefaultContext), options, interpreter.Dependencies{
-		Dependencies: translator.Dependencies{
+		Reader: interpreter.ReaderDependencies{DefaultReader: os.Stdin, FileSystem: afero.NewOsFs()},
+		Translator: translator.Dependencies{
 			OutWriter: os.Stdout,
 			Runtime:   runtime.Dependencies{Waiter: &waiter, ErrorHandler: errorHandler},
-		},
-		ReaderDependencies: interpreter.ReaderDependencies{
-			DefaultReader: os.Stdin,
-			FileSystem:    afero.NewOsFs(),
 		},
 	}); err != nil {
 		errorHandler.HandleError(err)
