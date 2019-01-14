@@ -30,7 +30,7 @@ func main() {
 	if err := interpreter.Interpret(new(context.DefaultContext), options, interpreter.Dependencies{
 		Reader: interpreter.ReaderDependencies{DefaultReader: os.Stdin, FileSystem: afero.NewOsFs()},
 		Translator: translator.Dependencies{
-			Commands: translator.CommandsDependencies{
+			Commands: commands.Dependencies{
 				OutWriter: os.Stdout,
 				Sleep:     commands.SleepDependencies{Randomizer: rand.Float64, Sleeper: time.Sleep},
 			},

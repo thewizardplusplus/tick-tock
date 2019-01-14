@@ -94,7 +94,7 @@ func TestTranslate(test *testing.T) {
 			waiter := new(waitermocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			dependencies := Dependencies{
-				Commands: CommandsDependencies{
+				Commands: commands.Dependencies{
 					OutWriter: outWriter,
 					Sleep: commands.SleepDependencies{
 						Randomizer: randomizer.Randomize,
@@ -203,7 +203,7 @@ func TestTranslateStates(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
 			sleeper := new(testsmocks.Sleeper)
-			dependencies := CommandsDependencies{
+			dependencies := commands.Dependencies{
 				OutWriter: outWriter,
 				Sleep: commands.SleepDependencies{
 					Randomizer: randomizer.Randomize,
@@ -354,7 +354,7 @@ func TestTranslateMessages(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
 			sleeper := new(testsmocks.Sleeper)
-			dependencies := CommandsDependencies{
+			dependencies := commands.Dependencies{
 				OutWriter: outWriter,
 				Sleep: commands.SleepDependencies{
 					Randomizer: randomizer.Randomize,
@@ -423,7 +423,7 @@ func TestTranslateCommands(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
 			sleeper := new(testsmocks.Sleeper)
-			dependencies := CommandsDependencies{
+			dependencies := commands.Dependencies{
 				OutWriter: outWriter,
 				Sleep: commands.SleepDependencies{
 					Randomizer: randomizer.Randomize,
@@ -496,7 +496,7 @@ func TestTranslateCommand(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
 			sleeper := new(testsmocks.Sleeper)
-			dependencies := CommandsDependencies{
+			dependencies := commands.Dependencies{
 				OutWriter: outWriter,
 				Sleep: commands.SleepDependencies{
 					Randomizer: randomizer.Randomize,

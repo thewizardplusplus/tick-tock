@@ -129,7 +129,7 @@ func TestInterpret(test *testing.T) {
 			dependencies := Dependencies{
 				Reader: ReaderDependencies{defaultReader, fileSystem},
 				Translator: translator.Dependencies{
-					Commands: translator.CommandsDependencies{
+					Commands: commands.Dependencies{
 						OutWriter: outWriter,
 						Sleep: commands.SleepDependencies{
 							Randomizer: randomizer.Randomize,

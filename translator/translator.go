@@ -1,8 +1,6 @@
 package translator
 
 import (
-	"io"
-
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
@@ -15,15 +13,9 @@ type Options struct {
 	InitialState string
 }
 
-// CommandsDependencies ...
-type CommandsDependencies struct {
-	OutWriter io.Writer
-	Sleep     commands.SleepDependencies
-}
-
 // Dependencies ...
 type Dependencies struct {
-	Commands CommandsDependencies
+	Commands commands.Dependencies
 	Runtime  runtime.Dependencies
 }
 
@@ -53,7 +45,7 @@ func Translate(actors []*parser.Actor, options Options, dependencies Dependencie
 	return translatedActors, nil
 }
 
-func translateStates(states []*parser.State, dependencies CommandsDependencies) (
+func translateStates(states []*parser.State, dependencies commands.Dependencies) (
 	translatedStates runtime.StateGroup,
 	err error,
 ) {
@@ -90,7 +82,7 @@ func translateStates(states []*parser.State, dependencies CommandsDependencies) 
 
 type settedStateGroup map[string]string
 
-func translateMessages(messages []*parser.Message, dependencies CommandsDependencies) (
+func translateMessages(messages []*parser.Message, dependencies commands.Dependencies) (
 	translatedMessages runtime.MessageGroup,
 	settedStates settedStateGroup,
 	err error,
@@ -116,7 +108,7 @@ func translateMessages(messages []*parser.Message, dependencies CommandsDependen
 	return translatedMessages, settedStates, nil
 }
 
-func translateCommands(commands []*parser.Command, dependencies CommandsDependencies) (
+func translateCommands(commands []*parser.Command, dependencies commands.Dependencies) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
@@ -142,7 +134,7 @@ func translateCommands(commands []*parser.Command, dependencies CommandsDependen
 	return translatedCommands, settedState, nil
 }
 
-func translateCommand(command *parser.Command, dependencies CommandsDependencies) (
+func translateCommand(command *parser.Command, dependencies commands.Dependencies) (
 	translatedCommand runtime.Command,
 	settedState string,
 	err error,
