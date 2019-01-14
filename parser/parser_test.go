@@ -6,6 +6,37 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestParse(test *testing.T) {
+	type args struct {
+		code string
+	}
+
+	for _, testData := range []struct {
+		name    string
+		args    args
+		want    *Program
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name:    "success",
+			args:    args{"actor state one;; actor state two;;"},
+			want:    &Program{[]*Actor{{[]*State{{false, "one", nil}}}, {[]*State{{false, "two", nil}}}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "error",
+			args:    args{"incorrect"},
+			wantErr: assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			got, err := Parse(testData.args.code)
+			assert.Equal(test, testData.want, got)
+			testData.wantErr(test, err)
+		})
+	}
+}
+
 func TestParseToAST(test *testing.T) {
 	type (
 		args struct {
