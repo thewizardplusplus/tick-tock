@@ -1,10 +1,9 @@
 package runtime
 
-// MessageGroup represents a map of message names to command lists.
+// MessageGroup ...
 type MessageGroup map[string]CommandGroup
 
-// ProcessMessage executes a command list corresponding to a certain message.
-// It supports empty groups and unknown messages, in both cases nothing happens.
+// ProcessMessage ...
 func (messages MessageGroup) ProcessMessage(message string) error {
 	return messages[message].Run()
 }

@@ -2,32 +2,38 @@ package runtime
 
 import "github.com/pkg/errors"
 
+// Waiter ...
 //go:generate mockery -name=Waiter -inpkg -case=underscore -testonly
 type Waiter interface {
 	Add(delta int)
 	Done()
 }
 
+// ErrorHandler ...
 //go:generate mockery -name=ErrorHandler -inpkg -case=underscore -testonly
 type ErrorHandler interface {
 	HandleError(err error)
 }
 
+// Dependencies ...
 type Dependencies struct {
 	Waiter       Waiter
 	ErrorHandler ErrorHandler
 }
 
+// ConcurrentActor ...
 type ConcurrentActor struct {
 	inbox        chan string
 	innerActor   *Actor
 	dependencies Dependencies
 }
 
+// NewConcurrentActor ...
 func NewConcurrentActor(inboxSize int, actor *Actor, dependencies Dependencies) ConcurrentActor {
 	return ConcurrentActor{make(chan string, inboxSize), actor, dependencies}
 }
 
+// Start ...
 func (actor ConcurrentActor) Start() {
 	go func() {
 		for message := range actor.inbox {
@@ -41,19 +47,23 @@ func (actor ConcurrentActor) Start() {
 	}()
 }
 
+// SendMessage ...
 func (actor ConcurrentActor) SendMessage(message string) {
 	actor.dependencies.Waiter.Add(1)
 	go func() { actor.inbox <- message }()
 }
 
+// ConcurrentActorGroup ...
 type ConcurrentActorGroup []ConcurrentActor
 
+// Start ...
 func (actors ConcurrentActorGroup) Start() {
 	for _, actor := range actors {
 		actor.Start()
 	}
 }
 
+// SendMessage ...
 func (actors ConcurrentActorGroup) SendMessage(message string) {
 	for _, actor := range actors {
 		actor.SendMessage(message)
