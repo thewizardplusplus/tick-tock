@@ -2,6 +2,9 @@ package runtime
 
 import "github.com/pkg/errors"
 
+// ErrUserExit ...
+var ErrUserExit = errors.New("user exit")
+
 func newUnknownStateError(state string) error {
 	return errors.Errorf("unknown state %s", state)
 }
