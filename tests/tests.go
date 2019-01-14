@@ -24,6 +24,12 @@ type FileSystem interface {
 	afero.Fs
 }
 
+// File ...
+//go:generate mockery -name=File -case=underscore
+type File interface {
+	afero.File
+}
+
 // Exiter ...
 //go:generate mockery -name=Exiter -case=underscore
 type Exiter interface {
