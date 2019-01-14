@@ -54,3 +54,76 @@ func TestActor_SetState(test *testing.T) {
 		})
 	}
 }
+
+func TestActor_ProcessMessage(test *testing.T) {
+	type (
+		fields struct {
+			currentState string
+			makeStates   func(log *[]int) StateGroup
+		}
+		args struct {
+			message string
+		}
+	)
+
+	for _, testData := range []struct {
+		name    string
+		fields  fields
+		args    args
+		wantLog []int
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "success",
+			fields: fields{
+				currentState: "state_two",
+				makeStates: func(log *[]int) StateGroup {
+					return StateGroup{
+						"state_one": MessageGroup{
+							"message_one": newLoggableCommands(log, 5, 0),
+							"message_two": newLoggableCommands(log, 5, 5),
+						},
+						"state_two": MessageGroup{
+							"message_three": newLoggableCommands(log, 5, 10),
+							"message_four":  newCalledLoggableCommands(log, 5, 15, -1),
+						},
+					}
+				},
+			},
+			args:    args{"message_four"},
+			wantLog: []int{15, 16, 17, 18, 19},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error",
+			fields: fields{
+				currentState: "state_two",
+				makeStates: func(log *[]int) StateGroup {
+					return StateGroup{
+						"state_one": MessageGroup{
+							"message_one": newLoggableCommands(log, 5, 0),
+							"message_two": newLoggableCommands(log, 5, 5),
+						},
+						"state_two": MessageGroup{
+							"message_three": newLoggableCommands(log, 5, 10),
+							"message_four":  newCalledLoggableCommands(log, 5, 15, 2),
+						},
+					}
+				},
+			},
+			args:    args{"message_four"},
+			wantLog: []int{15, 16, 17},
+			wantErr: assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			var log []int
+			states := testData.fields.makeStates(&log)
+			err := Actor{testData.fields.currentState, states}.ProcessMessage(testData.args.message)
+
+			assert.Equal(test, testData.wantLog, log)
+			checkStates(test, states)
+			testData.wantErr(test, err)
+		})
+	}
+}
