@@ -35,7 +35,7 @@ func TranslateStates(writer io.Writer, states []*parser.State) (
 			initialState = state.Name
 		}
 
-		translatedMessages, settedStates, err := TranslateMessages(writer, state.Messages)
+		translatedMessages, settedStates, err := translateMessages(state.Messages, writer)
 		if err != nil {
 			return nil, "", errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}
@@ -59,23 +59,21 @@ func TranslateStates(writer io.Writer, states []*parser.State) (
 	return translatedStates, initialState, nil
 }
 
-// SettedStateGroup ...
-type SettedStateGroup map[string]string
+type settedStateGroup map[string]string
 
-// TranslateMessages ...
-func TranslateMessages(writer io.Writer, messages []*parser.Message) (
+func translateMessages(messages []*parser.Message, outWriter io.Writer) (
 	translatedMessages runtime.MessageGroup,
-	settedStates SettedStateGroup,
+	settedStates settedStateGroup,
 	err error,
 ) {
 	translatedMessages = make(runtime.MessageGroup)
-	settedStates = make(SettedStateGroup)
+	settedStates = make(settedStateGroup)
 	for _, message := range messages {
 		if _, ok := translatedMessages[message.Name]; ok {
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, settedState, err := translateCommands(message.Commands, writer)
+		translatedCommands, settedState, err := translateCommands(message.Commands, outWriter)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
