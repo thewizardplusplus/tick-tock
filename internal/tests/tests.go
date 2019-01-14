@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/spf13/afero"
-	"github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/waiter"
 )
 
 // ...
@@ -46,25 +46,30 @@ type Exiter interface {
 
 // SynchronousWaiter ...
 type SynchronousWaiter struct {
-	*mocks.Waiter
-	*sync.WaitGroup
+	mock   waiter.Waiter
+	syncer *sync.WaitGroup
 }
 
 // NewSynchronousWaiter ...
-func NewSynchronousWaiter() SynchronousWaiter {
-	return SynchronousWaiter{new(mocks.Waiter), new(sync.WaitGroup)}
+func NewSynchronousWaiter(waiter waiter.Waiter) SynchronousWaiter {
+	return SynchronousWaiter{waiter, new(sync.WaitGroup)}
 }
 
 // Add ...
 func (waiter SynchronousWaiter) Add(delta int) {
-	waiter.Waiter.Add(delta)
-	waiter.WaitGroup.Add(delta)
+	waiter.mock.Add(delta)
+	waiter.syncer.Add(delta)
 }
 
 // Done ...
 func (waiter SynchronousWaiter) Done() {
-	waiter.Waiter.Done()
-	waiter.WaitGroup.Done()
+	waiter.mock.Done()
+	waiter.syncer.Done()
+}
+
+// Wait ...
+func (waiter SynchronousWaiter) Wait() {
+	waiter.syncer.Wait()
 }
 
 // GetAddress ...

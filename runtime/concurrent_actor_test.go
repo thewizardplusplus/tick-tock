@@ -9,6 +9,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
+	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
 func TestConcurrentActor(test *testing.T) {
@@ -89,7 +90,7 @@ func TestConcurrentActor(test *testing.T) {
 			var log commandLog
 			actor.states = testData.args.makeStates(context, &log)
 
-			waiter := tests.NewSynchronousWaiter()
+			waiter := new(waitermocks.Waiter)
 			if messageCount := len(testData.args.messages); messageCount != 0 {
 				waiter.On("Add", 1).Times(messageCount)
 				waiter.On("Done").Times(messageCount)
@@ -102,14 +103,15 @@ func TestConcurrentActor(test *testing.T) {
 					Times(testData.errCount)
 			}
 
-			dependencies := Dependencies{waiter, errorHandler}
+			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
+			dependencies := Dependencies{synchronousWaiter, errorHandler}
 			concurrentActor := NewConcurrentActor(actor, testData.args.inboxSize, dependencies)
 			concurrentActor.Start(context)
 
 			for _, message := range testData.args.messages {
 				concurrentActor.SendMessage(message)
 			}
-			waiter.Wait()
+			synchronousWaiter.Wait()
 
 			mock.AssertExpectationsForObjects(test, context, waiter, errorHandler)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
@@ -161,7 +163,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			waiter := tests.NewSynchronousWaiter()
+			waiter := new(waitermocks.Waiter)
 			if messageCount := len(testData.args) * len(testData.messages); messageCount != 0 {
 				waiter.On("Add", 1).Times(messageCount)
 				waiter.On("Done").Times(messageCount)
@@ -170,8 +172,9 @@ func TestConcurrentActorGroup(test *testing.T) {
 			context := new(contextmocks.Context)
 			var log commandLog
 			var concurrentActors ConcurrentActorGroup
+			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
-			dependencies := Dependencies{waiter, errorHandler}
+			dependencies := Dependencies{synchronousWaiter, errorHandler}
 			for _, args := range testData.args {
 				states := args.makeStates(context, &log)
 				defer checkStates(test, states)
@@ -188,7 +191,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			for _, message := range testData.messages {
 				concurrentActors.SendMessage(message)
 			}
-			waiter.Wait()
+			synchronousWaiter.Wait()
 
 			mock.AssertExpectationsForObjects(test, context, waiter, errorHandler)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)

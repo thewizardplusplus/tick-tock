@@ -13,6 +13,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
+	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 	"github.com/thewizardplusplus/tick-tock/translator"
 )
 
@@ -22,7 +23,7 @@ func TestInterpret(test *testing.T) {
 		initializeDependencies func(
 			options Options,
 			context *contextmocks.Context,
-			waiter tests.SynchronousWaiter,
+			waiter *waitermocks.Waiter,
 			outWriter *testsmocks.Writer,
 			defaultReader *testsmocks.Reader,
 		)
@@ -33,7 +34,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *contextmocks.Context,
-				waiter tests.SynchronousWaiter,
+				waiter *waitermocks.Waiter,
 				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
 			) {
@@ -64,7 +65,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *contextmocks.Context,
-				waiter tests.SynchronousWaiter,
+				waiter *waitermocks.Waiter,
 				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
 			) {
@@ -77,7 +78,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *contextmocks.Context,
-				waiter tests.SynchronousWaiter,
+				waiter *waitermocks.Waiter,
 				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
 			) {
@@ -92,7 +93,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *contextmocks.Context,
-				waiter tests.SynchronousWaiter,
+				waiter *waitermocks.Waiter,
 				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
 			) {
@@ -114,22 +115,23 @@ func TestInterpret(test *testing.T) {
 				InitialMessage: "__initialize__",
 			}
 			context := new(contextmocks.Context)
-			waiter := tests.NewSynchronousWaiter()
+			waiter := new(waitermocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			outWriter := new(testsmocks.Writer)
 			defaultReader := new(testsmocks.Reader)
 			fileSystem := new(testsmocks.FileSystem)
 			testData.initializeDependencies(options, context, waiter, outWriter, defaultReader)
 
+			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{
 				Dependencies: translator.Dependencies{
-					Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
+					Dependencies: runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},
 					OutWriter:    outWriter,
 				},
 				ReaderDependencies: ReaderDependencies{defaultReader, fileSystem},
 			}
 			err := Interpret(context, options, dependencies)
-			waiter.Wait()
+			synchronousWaiter.Wait()
 
 			mock.AssertExpectationsForObjects(
 				test,
