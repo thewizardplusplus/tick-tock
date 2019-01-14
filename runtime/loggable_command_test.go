@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 	"testing/iotest"
@@ -105,29 +106,35 @@ func newLoggableCommands(
 
 type loggableCommandOptions map[string][]loggableCommandOption
 
+func newLoggableMessages(
+	context Context,
+	log *commandLog,
+	messageCount int,
+	messageIDOffset int,
+	commandCount int,
+	commandIDOffset int,
+	options loggableCommandOptions,
+) MessageGroup {
+	messages := make(MessageGroup)
+	for i := messageIDOffset; i < messageIDOffset+messageCount; i++ {
+		message := fmt.Sprintf("message_%d", i)
+		comletedOptions := append(options[message], withIDFrom(i*commandCount+commandIDOffset))
+		messages[message] = newLoggableCommands(context, log, commandCount, comletedOptions...)
+	}
+
+	return messages
+}
+
 func newLoggableStates(
 	context Context,
 	log *commandLog,
-	groupSize int,
-	idOffset int,
+	commandCount int,
+	commandIDOffset int,
 	options loggableCommandOptions,
 ) StateGroup {
-	messages := make(MessageGroup)
-	for index, name := range []string{"one", "two", "three", "four"} {
-		completedName := "message_" + name
-		comletedOptions := append(options[completedName], withIDFrom(index*groupSize+idOffset))
-		messages[completedName] = newLoggableCommands(context, log, groupSize, comletedOptions...)
-	}
-
 	return StateGroup{
-		"state_one": MessageGroup{
-			"message_one": messages["message_one"],
-			"message_two": messages["message_two"],
-		},
-		"state_two": MessageGroup{
-			"message_three": messages["message_three"],
-			"message_four":  messages["message_four"],
-		},
+		"state_one": newLoggableMessages(context, log, 2, 0, commandCount, commandIDOffset, options),
+		"state_two": newLoggableMessages(context, log, 2, 2, commandCount, commandIDOffset, options),
 	}
 }
 

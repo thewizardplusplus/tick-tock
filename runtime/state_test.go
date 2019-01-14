@@ -23,10 +23,10 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 			name: "success",
 			makeStates: func(context Context, log *commandLog) StateGroup {
 				return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-					"message_four": {withCalls()},
+					"message_3": {withCalls()},
 				})
 			},
-			args:    args{"state_two", "message_four"},
+			args:    args{"state_two", "message_3"},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
 		},
@@ -48,10 +48,10 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 			name: "error on command execution",
 			makeStates: func(context Context, log *commandLog) StateGroup {
 				return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-					"message_four": {withErrOn(2)},
+					"message_3": {withErrOn(2)},
 				})
 			},
-			args:    args{"state_two", "message_four"},
+			args:    args{"state_two", "message_3"},
 			wantLog: []int{15, 16, 17},
 			wantErr: assert.Error,
 		},

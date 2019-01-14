@@ -43,11 +43,11 @@ func TestConcurrentActor(test *testing.T) {
 				initialState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-						"message_three": {withCalls()},
-						"message_four":  {withCalls()},
+						"message_2": {withCalls()},
+						"message_3": {withCalls()},
 					})
 				},
-				messages: []string{"message_three", "message_four"},
+				messages: []string{"message_2", "message_3"},
 			},
 			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 		},
@@ -58,11 +58,11 @@ func TestConcurrentActor(test *testing.T) {
 				initialState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-						"message_three": {withCalls()},
-						"message_four":  {withCalls()},
+						"message_2": {withCalls()},
+						"message_3": {withCalls()},
 					})
 				},
-				messages: []string{"message_three", "message_four"},
+				messages: []string{"message_2", "message_3"},
 			},
 			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 		},
@@ -81,11 +81,11 @@ func TestConcurrentActor(test *testing.T) {
 				initialState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-						"message_three": {withErrOn(2)},
-						"message_four":  {withErrOn(2)},
+						"message_2": {withErrOn(2)},
+						"message_3": {withErrOn(2)},
 					})
 				},
-				messages: []string{"message_three", "message_four"},
+				messages: []string{"message_2", "message_3"},
 			},
 			errCount: 2,
 			wantLog:  []int{10, 11, 12, 15, 16, 17},
@@ -151,8 +151,8 @@ func TestConcurrentActorGroup(test *testing.T) {
 					initialState: "state_two",
 					makeStates: func(context Context, log *commandLog) StateGroup {
 						return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-							"message_three": {withCalls()},
-							"message_four":  {withCalls()},
+							"message_2": {withCalls()},
+							"message_3": {withCalls()},
 						})
 					},
 				},
@@ -160,18 +160,18 @@ func TestConcurrentActorGroup(test *testing.T) {
 					initialState: "state_two",
 					makeStates: func(context Context, log *commandLog) StateGroup {
 						return newLoggableStates(context, log, 5, 20, loggableCommandOptions{
-							"message_three": {withCalls()},
-							"message_four":  {withCalls()},
+							"message_2": {withCalls()},
+							"message_3": {withCalls()},
 						})
 					},
 				},
 			},
-			messages: []string{"message_three", "message_four"},
+			messages: []string{"message_2", "message_3"},
 			wantLog:  []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39},
 		},
 		{
 			name:     "success without actors",
-			messages: []string{"message_three", "message_four"},
+			messages: []string{"message_2", "message_3"},
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {

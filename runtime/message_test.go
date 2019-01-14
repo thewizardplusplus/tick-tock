@@ -27,10 +27,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "success with an unknown message",
 			makeMessages: func(context Context, log *commandLog) MessageGroup {
-				return MessageGroup{
-					"one": newLoggableCommands(context, log, 5),
-					"two": newLoggableCommands(context, log, 5, withIDFrom(5)),
-				}
+				return newLoggableMessages(context, log, 2, 0, 5, 0, nil)
 			},
 			args:    args{"unknown"},
 			wantErr: assert.NoError,
@@ -38,24 +35,22 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "success with a known message",
 			makeMessages: func(context Context, log *commandLog) MessageGroup {
-				return MessageGroup{
-					"one": newLoggableCommands(context, log, 5),
-					"two": newLoggableCommands(context, log, 5, withIDFrom(5), withCalls()),
-				}
+				return newLoggableMessages(context, log, 2, 0, 5, 0, loggableCommandOptions{
+					"message_1": {withCalls()},
+				})
 			},
-			args:    args{"two"},
+			args:    args{"message_1"},
 			wantLog: []int{5, 6, 7, 8, 9},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "error",
 			makeMessages: func(context Context, log *commandLog) MessageGroup {
-				return MessageGroup{
-					"one": newLoggableCommands(context, log, 5),
-					"two": newLoggableCommands(context, log, 5, withIDFrom(5), withErrOn(2)),
-				}
+				return newLoggableMessages(context, log, 2, 0, 5, 0, loggableCommandOptions{
+					"message_1": {withErrOn(2)},
+				})
 			},
-			args:    args{"two"},
+			args:    args{"message_1"},
 			wantLog: []int{5, 6, 7},
 			wantErr: assert.Error,
 		},

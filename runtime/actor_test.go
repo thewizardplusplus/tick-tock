@@ -111,11 +111,11 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-						"message_four": {withCalls()},
+						"message_3": {withCalls()},
 					})
 				},
 			},
-			args:    args{"message_four"},
+			args:    args{"message_3"},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
 		},
@@ -125,11 +125,11 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
-						"message_four": {withErrOn(2)},
+						"message_3": {withErrOn(2)},
 					})
 				},
 			},
-			args:    args{"message_four"},
+			args:    args{"message_3"},
 			wantLog: []int{15, 16, 17},
 			wantErr: assert.Error,
 		},
