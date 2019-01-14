@@ -5,6 +5,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Actor represents a description of an actor (green thread) with several states.
+type Actor struct {
+	States []*State `parser:"\"actor\" { @@ } \";\""`
+}
+
 // State represents a description of a state in which several messages can be received.
 // Also, it keeps additional state parameters.
 type State struct {
