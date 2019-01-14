@@ -13,15 +13,19 @@ type ErrorHandler interface {
 	HandleError(err error)
 }
 
+type Dependencies struct {
+	Waiter       Waiter
+	ErrorHandler ErrorHandler
+}
+
 type ConcurrentActor struct {
 	inbox        chan string
 	innerActor   *Actor
-	waiter       Waiter
-	errorHandler ErrorHandler
+	dependencies Dependencies
 }
 
-func NewConcurrentActor(actor *Actor, waiter Waiter, errorHandler ErrorHandler) ConcurrentActor {
-	return ConcurrentActor{make(chan string), actor, waiter, errorHandler}
+func NewConcurrentActor(inboxSize int, actor *Actor, dependencies Dependencies) ConcurrentActor {
+	return ConcurrentActor{make(chan string, inboxSize), actor, dependencies}
 }
 
 func (actor ConcurrentActor) Start() {
@@ -29,16 +33,16 @@ func (actor ConcurrentActor) Start() {
 		for message := range actor.inbox {
 			if err := actor.innerActor.ProcessMessage(message); err != nil {
 				err = errors.Wrapf(err, "unable to process the message %s", message)
-				actor.errorHandler.HandleError(err)
+				actor.dependencies.ErrorHandler.HandleError(err)
 			}
 
-			actor.waiter.Done()
+			actor.dependencies.Waiter.Done()
 		}
 	}()
 }
 
 func (actor ConcurrentActor) SendMessage(message string) {
-	actor.waiter.Add(1)
+	actor.dependencies.Waiter.Add(1)
 	go func() { actor.inbox <- message }()
 }
 

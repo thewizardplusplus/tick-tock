@@ -26,6 +26,7 @@ func (waiter synchronousWaiter) Done() {
 
 func TestConcurrentActor(test *testing.T) {
 	type args struct {
+		inboxSize    int
 		initialState string
 		makeStates   func(log *[]int) StateGroup
 		messages     []string
@@ -38,8 +39,29 @@ func TestConcurrentActor(test *testing.T) {
 		wantLog  []int
 	}{
 		{
-			name: "success with messages",
+			name: "success with messages (with an unbuffered inbox)",
 			args: args{
+				initialState: "state_two",
+				makeStates: func(log *[]int) StateGroup {
+					return StateGroup{
+						"state_one": MessageGroup{
+							"message_one": newLoggableCommands(log, 5, 0),
+							"message_two": newLoggableCommands(log, 5, 5),
+						},
+						"state_two": MessageGroup{
+							"message_three": newCalledLoggableCommands(log, 5, 10, -1),
+							"message_four":  newCalledLoggableCommands(log, 5, 15, -1),
+						},
+					}
+				},
+				messages: []string{"message_three", "message_four"},
+			},
+			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
+		},
+		{
+			name: "success with messages (with a buffered inbox)",
+			args: args{
+				inboxSize:    1,
 				initialState: "state_two",
 				makeStates: func(log *[]int) StateGroup {
 					return StateGroup{
@@ -116,7 +138,8 @@ func TestConcurrentActor(test *testing.T) {
 					Times(testData.errCount)
 			}
 
-			concurrentActor := NewConcurrentActor(actor, waiter, errorHandler)
+			dependencies := Dependencies{waiter, errorHandler}
+			concurrentActor := NewConcurrentActor(testData.args.inboxSize, actor, dependencies)
 			concurrentActor.Start()
 
 			for _, message := range testData.args.messages {
@@ -203,7 +226,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				actor, err := NewActor(args.initialState, states)
 				require.NoError(test, err)
 
-				concurrentActor := NewConcurrentActor(actor, waiter, errorHandler)
+				concurrentActor := NewConcurrentActor(0, actor, Dependencies{waiter, errorHandler})
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
