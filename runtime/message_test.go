@@ -66,9 +66,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 			err := messages.ProcessMessage(testData.args.message)
 
 			assert.Equal(test, testData.wantLog, log)
-			for _, commands := range messages {
-				checkLoggableCommands(test, commands)
-			}
+			checkMessages(test, messages)
 			testData.wantErr(test, err)
 		})
 	}

@@ -37,7 +37,7 @@ func TestCommandGroup_Run(test *testing.T) {
 			err := commands.Run()
 
 			assert.Equal(test, testData.wantLog, log)
-			checkLoggableCommands(test, commands)
+			checkCommands(test, commands)
 			testData.wantErr(test, err)
 		})
 	}

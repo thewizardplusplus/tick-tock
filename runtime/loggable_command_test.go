@@ -46,9 +46,15 @@ func newCalledLoggableCommands(log *[]int, count int, idOffset int, errIndex int
 	return commands
 }
 
-func checkLoggableCommands(test *testing.T, commands CommandGroup) {
+func checkCommands(test *testing.T, commands CommandGroup) {
 	for _, command := range commands {
 		command.(*loggableCommand).AssertExpectations(test)
+	}
+}
+
+func checkMessages(test *testing.T, messages MessageGroup) {
+	for _, commands := range messages {
+		checkCommands(test, commands)
 	}
 }
 
