@@ -10,18 +10,53 @@ import (
 )
 
 // TranslateStates ...
-// TODO: disable the empty state group.
-// TODO: disable few initial states.
-// TODO: disable same states names.
-// TODO: check setted states for existence.
-// TODO: return an initial state.
-func TranslateStates(writer io.Writer, states []*parser.State) runtime.StateGroup {
-	translatedStates := make(runtime.StateGroup)
-	for _, state := range states {
-		translatedStates[state.Name], _, _ = TranslateMessages(writer, state.Messages)
+func TranslateStates(writer io.Writer, states []*parser.State) (
+	translatedStates runtime.StateGroup,
+	initialState string,
+	err error,
+) {
+	if len(states) == 0 {
+		return nil, "", errors.New("no states")
 	}
 
-	return translatedStates
+	translatedStates = make(runtime.StateGroup)
+	messagesWithSettings := make(map[string][]string)
+	for _, state := range states {
+		if _, ok := translatedStates[state.Name]; ok {
+			return nil, "", errors.Errorf("duplicate state %s", state.Name)
+		}
+
+		if state.Initial {
+			if len(initialState) != 0 {
+				err := errors.Errorf("second initial state %s (first was %s)", state.Name, initialState)
+				return nil, "", err
+			}
+
+			initialState = state.Name
+		}
+
+		translatedMessages, settedStates, err := TranslateMessages(writer, state.Messages)
+		if err != nil {
+			return nil, "", errors.Wrapf(err, "unable to translate the state %s", state.Name)
+		}
+
+		translatedStates[state.Name] = translatedMessages
+		for message, state := range settedStates {
+			messagesWithSettings[state] = append(messagesWithSettings[state], message)
+		}
+	}
+
+	for state, messages := range messagesWithSettings {
+		if _, ok := translatedStates[state]; !ok {
+			return nil, "", errors.Errorf("unknown state %s in messages %v", state, messages)
+		}
+	}
+
+	if len(initialState) == 0 {
+		initialState = states[0].Name
+	}
+
+	return translatedStates, initialState, nil
 }
 
 // SettedStateGroup ...
