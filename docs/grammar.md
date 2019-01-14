@@ -29,7 +29,7 @@ LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;
 INTEGER NUMBER = ? /\b((0x[\da-f]+)|(0[0-7]+)|(\d+(e\d+)?)|(\d+e[\+\-]\d+))\b/i ?;
 FLOATING-POINT NUMBER = ? /(\.\d+(e[\+\-]\d+)?)\b|\b\d+\.\d*((e[\+\-]\d+)?\b)?/i ?;
-INTERPRETED STRING = ? /"(\\.|[^"\n])*?"/ ?;
+INTERPRETED STRING = ? /"(\\x[\da-f]{2}|\\.|[^"\n])*?"/i ?;
 RAW STRING = ? /`[^`]*?`/ ?
 IDENTIFIER = ? /[a-z_]\w*/i ?;
 ```
