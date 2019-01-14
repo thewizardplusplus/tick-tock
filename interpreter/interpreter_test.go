@@ -20,7 +20,7 @@ func TestInterpret(test *testing.T) {
 	for _, testData := range []struct {
 		name                   string
 		initializeDependencies func(
-			initialMessage string,
+			options Options,
 			context *contextmocks.Context,
 			waiter tests.SynchronousWaiter,
 			outWriter *testsmocks.Writer,
@@ -31,7 +31,7 @@ func TestInterpret(test *testing.T) {
 		{
 			name: "success",
 			initializeDependencies: func(
-				initialMessage string,
+				options Options,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -49,16 +49,20 @@ func TestInterpret(test *testing.T) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
-						code := fmt.Sprintf(`actor state test message %s out "%s";;;`, initialMessage, message)
-						return copy(buffer, code)
+						return copy(buffer, fmt.Sprintf(
+							`actor state %s message %s out "%s";;;`,
+							options.InitialState,
+							options.InitialMessage,
+							message,
+						))
 					}, io.EOF)
 			},
 			wantErr: assert.NoError,
 		},
 		{
-			name: "error on a code reading",
+			name: "error on code reading",
 			initializeDependencies: func(
-				initialMessage string,
+				options Options,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -69,9 +73,9 @@ func TestInterpret(test *testing.T) {
 			wantErr: assert.Error,
 		},
 		{
-			name: "error on a code parsing",
+			name: "error on code parsing",
 			initializeDependencies: func(
-				initialMessage string,
+				options Options,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -84,9 +88,9 @@ func TestInterpret(test *testing.T) {
 			wantErr: assert.Error,
 		},
 		{
-			name: "error on a code translating",
+			name: "error on code translation",
 			initializeDependencies: func(
-				initialMessage string,
+				options Options,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -94,22 +98,29 @@ func TestInterpret(test *testing.T) {
 			) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
-					Return(func(buffer []byte) int { return copy(buffer, "actor state test;; actor;") }, io.EOF)
+					Return(func(buffer []byte) int {
+						return copy(buffer, fmt.Sprintf("actor state %s;; actor;", options.InitialState))
+					}, io.EOF)
 			},
 			wantErr: assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			const initialMessage = "__initialize__"
+			options := Options{
+				Options: translator.Options{
+					InboxSize:    tests.BufferedInbox,
+					InitialState: "__initialization__",
+				},
+				InitialMessage: "__initialize__",
+			}
 			context := new(contextmocks.Context)
 			waiter := tests.NewSynchronousWaiter()
 			errorHandler := new(runtimemocks.ErrorHandler)
 			outWriter := new(testsmocks.Writer)
 			defaultReader := new(testsmocks.Reader)
 			fileSystem := new(testsmocks.FileSystem)
-			testData.initializeDependencies(initialMessage, context, waiter, outWriter, defaultReader)
+			testData.initializeDependencies(options, context, waiter, outWriter, defaultReader)
 
-			options := Options{"", tests.BufferedInbox, initialMessage}
 			dependencies := Dependencies{
 				Dependencies: translator.Dependencies{
 					Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
