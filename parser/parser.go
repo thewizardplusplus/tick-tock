@@ -39,15 +39,14 @@ type Command struct {
 // Parse ...
 func Parse(code string) (*Program, error) {
 	program := new(Program)
-	if err := ParseToAST(code, program); err != nil {
+	if err := parseToAST(code, program); err != nil {
 		return nil, errors.Wrap(err, "unable to parse the program")
 	}
 
 	return program, nil
 }
 
-// ParseToAST ...
-func ParseToAST(code string, ast interface{}) error {
+func parseToAST(code string, ast interface{}) error {
 	parser, err := participle.Build(ast)
 	if err != nil {
 		return errors.Wrap(err, "unable to build the parser")
