@@ -30,6 +30,10 @@ Arguments:
 
 - [Atom](http://atom.io/) plugin: [language-tick-tock](tools/atom-plugin/language-tick-tock).
 
+## Docs
+
+[Docs](docs/) (RU).
+
 ## License
 
 The MIT License (MIT)
