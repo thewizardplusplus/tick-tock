@@ -348,20 +348,20 @@ func TestTranslateCommand(test *testing.T) {
 	for _, testData := range []struct {
 		name            string
 		args            args
-		makeWantCommand func(writer io.Writer) runtime.Command
+		makeWantCommand func(outWriter io.Writer) runtime.Command
 		wantState       string
 	}{
 		{
 			name: "Command/send",
 			args: args{&parser.Command{Send: tests.GetAddress("test")}},
-			makeWantCommand: func(writer io.Writer) runtime.Command {
+			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSendCommand("test")
 			},
 		},
 		{
 			name: "Command/set",
 			args: args{&parser.Command{Set: tests.GetAddress("test")}},
-			makeWantCommand: func(writer io.Writer) runtime.Command {
+			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSetCommand("test")
 			},
 			wantState: "test",
@@ -369,30 +369,29 @@ func TestTranslateCommand(test *testing.T) {
 		{
 			name: "Command/out/nonempty",
 			args: args{&parser.Command{Out: tests.GetAddress("test")}},
-			makeWantCommand: func(writer io.Writer) runtime.Command {
-				return commands.NewOutCommand("test", writer)
+			makeWantCommand: func(outWriter io.Writer) runtime.Command {
+				return commands.NewOutCommand("test", outWriter)
 			},
 		},
 		{
 			name: "Command/out/empty",
 			args: args{&parser.Command{Out: tests.GetAddress("")}},
-			makeWantCommand: func(writer io.Writer) runtime.Command {
-				return commands.NewOutCommand("", writer)
+			makeWantCommand: func(outWriter io.Writer) runtime.Command {
+				return commands.NewOutCommand("", outWriter)
 			},
 		},
 		{
 			name:            "Command/exit",
 			args:            args{&parser.Command{Exit: true}},
-			makeWantCommand: func(writer io.Writer) runtime.Command { return commands.ExitCommand{} },
+			makeWantCommand: func(outWriter io.Writer) runtime.Command { return commands.ExitCommand{} },
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			writer := new(mocks.Writer)
-			wantCommand := testData.makeWantCommand(writer)
-			gotCommand, gotState := TranslateCommand(writer, testData.args.command)
+			outWriter := new(mocks.Writer)
+			gotCommand, gotState := translateCommand(testData.args.command, outWriter)
 
-			writer.AssertExpectations(test)
-			assert.Equal(test, wantCommand, gotCommand)
+			outWriter.AssertExpectations(test)
+			assert.Equal(test, testData.makeWantCommand(outWriter), gotCommand)
 			assert.Equal(test, testData.wantState, gotState)
 		})
 	}

@@ -96,7 +96,7 @@ func TranslateCommands(writer io.Writer, commands []*parser.Command) (
 	err error,
 ) {
 	for _, command := range commands {
-		translatedCommand, newSettedState := TranslateCommand(writer, command)
+		translatedCommand, newSettedState := translateCommand(command, writer)
 		translatedCommands = append(translatedCommands, translatedCommand)
 		if len(newSettedState) == 0 {
 			continue
@@ -112,8 +112,7 @@ func TranslateCommands(writer io.Writer, commands []*parser.Command) (
 	return translatedCommands, settedState, nil
 }
 
-// TranslateCommand ...
-func TranslateCommand(writer io.Writer, command *parser.Command) (
+func translateCommand(command *parser.Command, outWriter io.Writer) (
 	translatedCommand runtime.Command,
 	settedState string,
 ) {
@@ -125,7 +124,7 @@ func TranslateCommand(writer io.Writer, command *parser.Command) (
 		settedState = *command.Set
 	}
 	if command.Out != nil {
-		translatedCommand = commands.NewOutCommand(*command.Out, writer)
+		translatedCommand = commands.NewOutCommand(*command.Out, outWriter)
 	}
 	if command.Exit {
 		translatedCommand = commands.ExitCommand{}
