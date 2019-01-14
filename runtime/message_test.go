@@ -29,8 +29,8 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 			name: "success with an unknown message",
 			makeMessages: func(log *[]int) MessageGroup {
 				return MessageGroup{
-					"one": CommandGroup{newLoggableCommand(log, 1), newLoggableCommand(log, 2)},
-					"two": CommandGroup{newLoggableCommand(log, 3), newLoggableCommand(log, 4)},
+					"one": newLoggableCommands(log, 2, 0),
+					"two": newLoggableCommands(log, 2, 2),
 				}
 			},
 			args:    args{"unknown"},
@@ -40,8 +40,8 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 			name: "success with a known message",
 			makeMessages: func(log *[]int) MessageGroup {
 				messages := MessageGroup{
-					"one": CommandGroup{newLoggableCommand(log, 1), newLoggableCommand(log, 2)},
-					"two": CommandGroup{newLoggableCommand(log, 3), newLoggableCommand(log, 4)},
+					"one": newLoggableCommands(log, 2, 0),
+					"two": newLoggableCommands(log, 2, 2),
 				}
 				messages["two"][0].(*loggableCommand).On("Run").Return(nil)
 				messages["two"][1].(*loggableCommand).On("Run").Return(nil)
@@ -49,22 +49,22 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 				return messages
 			},
 			args:    args{"two"},
-			wantLog: []int{3, 4},
+			wantLog: []int{2, 3},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "error",
 			makeMessages: func(log *[]int) MessageGroup {
 				messages := MessageGroup{
-					"one": CommandGroup{newLoggableCommand(log, 1), newLoggableCommand(log, 2)},
-					"two": CommandGroup{newLoggableCommand(log, 3), newLoggableCommand(log, 4)},
+					"one": newLoggableCommands(log, 2, 0),
+					"two": newLoggableCommands(log, 2, 2),
 				}
 				messages["two"][0].(*loggableCommand).On("Run").Return(iotest.ErrTimeout)
 
 				return messages
 			},
 			args:    args{"two"},
-			wantLog: []int{3},
+			wantLog: []int{2},
 			wantErr: assert.Error,
 		},
 	} {

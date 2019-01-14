@@ -13,6 +13,15 @@ func newLoggableCommand(log *[]int, id int) *loggableCommand {
 	return &loggableCommand{MockCommand{}, log, id}
 }
 
+func newLoggableCommands(log *[]int, count int, idOffset int) CommandGroup {
+	var commands CommandGroup
+	for i := 0; i < count; i++ {
+		commands = append(commands, newLoggableCommand(log, i+idOffset))
+	}
+
+	return commands
+}
+
 func checkLoggableCommands(test *testing.T, commands CommandGroup) {
 	for _, command := range commands {
 		command.(*loggableCommand).AssertExpectations(test)

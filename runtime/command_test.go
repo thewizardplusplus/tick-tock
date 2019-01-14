@@ -45,21 +45,18 @@ func TestCommandGroup_Run(test *testing.T) {
 }
 
 func makeCommands(log *[]int, count int, errIndex int) CommandGroup {
-	var commands CommandGroup
-	for i := 0; i < count; i++ {
-		command := newLoggableCommand(log, i)
-		// expect execution of all commands from first to failed one, inclusive
-		if i <= errIndex {
-			var err error
-			// return an error from a failed command
-			if i == errIndex {
-				err = iotest.ErrTimeout
-			}
-
-			command.On("Run").Return(err)
+	commands := newLoggableCommands(log, count, 0)
+	// expect execution of all commands from first to failed one, inclusive
+	for i := 0; i <= errIndex; i++ {
+		var err error
+		// return an error from a failed command
+		if i == errIndex {
+			err = iotest.ErrTimeout
 		}
 
-		commands = append(commands, command)
+		if i < len(commands) {
+			commands[i].(*loggableCommand).On("Run").Return(err)
+		}
 	}
 
 	return commands
