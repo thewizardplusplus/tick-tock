@@ -5,31 +5,30 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Program represents an actor list.
+// Program ...
 type Program struct {
 	Actors []*Actor `parser:"{ @@ }"`
 }
 
-// Actor represents a description of an actor (green thread) with several states.
+// Actor ...
 type Actor struct {
 	States []*State `parser:"\"actor\" { @@ } \";\""`
 }
 
-// State represents a description of a state in which several messages can be received.
-// Also, it keeps additional state parameters.
+// State ...
 type State struct {
 	Initial  bool       `parser:"[ @\"initial\" ]"`
 	Name     string     `parser:"\"state\" @Ident"`
 	Messages []*Message `parser:"{ @@ } \";\""`
 }
 
-// Message represents a message handler containing several commands. Also, it keeps a handler name.
+// Message ...
 type Message struct {
 	Name     string     `parser:"\"message\" @Ident"`
 	Commands []*Command `parser:"{ @@ } \";\""`
 }
 
-// Command represents one of the supported commands and keeps their arguments if necessary.
+// Command ...
 type Command struct {
 	Send *string `parser:"\"send\" @Ident"`
 	Set  *string `parser:"| \"set\" @Ident"`
@@ -37,7 +36,7 @@ type Command struct {
 	Exit bool    `parser:"| @\"exit\""`
 }
 
-// Parse parses a program from a code string.
+// Parse ...
 func Parse(code string) (*Program, error) {
 	program := new(Program)
 	if err := ParseToAST(code, program); err != nil {
@@ -47,7 +46,7 @@ func Parse(code string) (*Program, error) {
 	return program, nil
 }
 
-// ParseToAST parses a code string to a structure representing an AST.
+// ParseToAST ...
 func ParseToAST(code string, ast interface{}) error {
 	parser, err := participle.Build(ast)
 	if err != nil {
