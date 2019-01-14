@@ -5,6 +5,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Message represents a message handler containing several commands. Also, it keeps a handler name.
+type Message struct {
+	Name     string     `parser:"\"message\" @Ident"`
+	Commands []*Command `parser:"{ @@ } \";\""`
+}
+
 // Command represents one of the supported commands and keeps their arguments if necessary.
 type Command struct {
 	Send *string `parser:"\"send\" @Ident"`
