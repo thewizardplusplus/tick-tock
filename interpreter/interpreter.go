@@ -6,6 +6,13 @@ import (
 	"github.com/thewizardplusplus/tick-tock/translator"
 )
 
+// Options ...
+type Options struct {
+	Filename       string
+	InboxSize      int
+	InitialMessage string
+}
+
 // Dependencies ...
 type Dependencies struct {
 	translator.Dependencies
@@ -13,14 +20,8 @@ type Dependencies struct {
 }
 
 // Interpret ...
-func Interpret(
-	context context.Context,
-	filename string,
-	inboxSize int,
-	initialMessage string,
-	dependencies Dependencies,
-) error {
-	code, err := readCode(filename, dependencies.ReaderDependencies)
+func Interpret(context context.Context, options Options, dependencies Dependencies) error {
+	code, err := readCode(options.Filename, dependencies.ReaderDependencies)
 	if err != nil {
 		return err
 	}
@@ -30,13 +31,13 @@ func Interpret(
 		return err
 	}
 
-	actors, err := translator.Translate(program.Actors, inboxSize, dependencies.Dependencies)
+	actors, err := translator.Translate(program.Actors, options.InboxSize, dependencies.Dependencies)
 	if err != nil {
 		return err
 	}
 
 	actors.Start(context)
-	actors.SendMessage(initialMessage)
+	actors.SendMessage(options.InitialMessage)
 
 	return nil
 }

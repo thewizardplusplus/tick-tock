@@ -109,6 +109,7 @@ func TestInterpret(test *testing.T) {
 			fileSystem := new(testsmocks.FileSystem)
 			testData.initializeDependencies(initialMessage, context, waiter, outWriter, defaultReader)
 
+			options := Options{"", tests.BufferedInbox, initialMessage}
 			dependencies := Dependencies{
 				Dependencies: translator.Dependencies{
 					Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
@@ -116,7 +117,7 @@ func TestInterpret(test *testing.T) {
 				},
 				ReaderDependencies: ReaderDependencies{defaultReader, fileSystem},
 			}
-			err := Interpret(context, "", tests.BufferedInbox, initialMessage, dependencies)
+			err := Interpret(context, options, dependencies)
 			waiter.Wait()
 
 			mock.AssertExpectationsForObjects(
