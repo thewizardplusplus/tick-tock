@@ -17,7 +17,6 @@ type Actor struct {
 
 // State ...
 type State struct {
-	Initial  bool       `parser:"[ @\"initial\" ]"`
 	Name     string     `parser:"\"state\" @Ident"`
 	Messages []*Message `parser:"{ @@ } \";\""`
 }
