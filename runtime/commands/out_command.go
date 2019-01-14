@@ -18,6 +18,7 @@ func NewOutCommand(writer io.Writer, message string) OutCommand {
 }
 
 // Run ...
+// TODO: wrap the Write() error with the method name.
 func (command OutCommand) Run(context context.Context) error {
 	_, err := command.writer.Write([]byte(command.message))
 	return err

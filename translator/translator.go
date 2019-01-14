@@ -9,6 +9,11 @@ import (
 )
 
 // TranslateStates ...
+// TODO: disable the empty state group.
+// TODO: disable few initial states.
+// TODO: disable same states names.
+// TODO: check setted states for existence.
+// TODO: return an initial state.
 func TranslateStates(writer io.Writer, states []*parser.State) runtime.StateGroup {
 	translatedStates := make(runtime.StateGroup)
 	for _, state := range states {
@@ -19,6 +24,8 @@ func TranslateStates(writer io.Writer, states []*parser.State) runtime.StateGrou
 }
 
 // TranslateMessages ...
+// TODO: disable same messages names.
+// TODO: return a map of messages names to setted states (with nonempty states only).
 func TranslateMessages(writer io.Writer, messages []*parser.Message) runtime.MessageGroup {
 	translatedMessages := make(runtime.MessageGroup)
 	for _, message := range messages {
@@ -29,6 +36,8 @@ func TranslateMessages(writer io.Writer, messages []*parser.Message) runtime.Mes
 }
 
 // TranslateCommands ...
+// TODO: disable few set commands.
+// TODO: return the setted state (by analogy with the TranslateCommand() function).
 func TranslateCommands(writer io.Writer, commands []*parser.Command) runtime.CommandGroup {
 	var translatedCommands runtime.CommandGroup
 	for _, command := range commands {

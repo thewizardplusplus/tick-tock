@@ -9,6 +9,7 @@ type Actor struct {
 }
 
 // NewActor ...
+// TODO: wrap the unknownStateError error with the function name.
 func NewActor(initialState string, states StateGroup) (*Actor, error) {
 	if _, ok := states[initialState]; !ok {
 		return nil, newUnknownStateError(initialState)
@@ -18,6 +19,7 @@ func NewActor(initialState string, states StateGroup) (*Actor, error) {
 }
 
 // SetState ...
+// TODO: wrap the unknownStateError error with the method name.
 func (actor *Actor) SetState(state string) error {
 	if _, ok := actor.states[state]; !ok {
 		return newUnknownStateError(state)
@@ -28,6 +30,7 @@ func (actor *Actor) SetState(state string) error {
 }
 
 // ProcessMessage ...
+// TODO: wrap the ProcessMessage() error with the method name.
 func (actor *Actor) ProcessMessage(context context.Context, message string) error {
 	context.SetStateHolder(actor)
 	return actor.states.ProcessMessage(context, actor.currentState, message)
