@@ -35,7 +35,7 @@ func Interpret(
 	}
 
 	actors.Start(context)
-	actors.SendMessage("__initialization__")
+	actors.SendMessage("__initialize__")
 
 	return nil
 }

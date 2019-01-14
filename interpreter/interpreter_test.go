@@ -8,11 +8,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/thewizardplusplus/tick-tock/internal/tests"
+	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
-	"github.com/thewizardplusplus/tick-tock/internal/tests"
-	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/translator"
 )
 
@@ -47,7 +47,7 @@ func TestInterpret(test *testing.T) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
-						code := fmt.Sprintf(`actor state test message __initialization__ out "%s";;;`, message)
+						code := fmt.Sprintf(`actor state test message __initialize__ out "%s";;;`, message)
 						return copy(buffer, code)
 					}, io.EOF)
 			},
