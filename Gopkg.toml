@@ -1,4 +1,4 @@
-required = ["github.com/vektra/mockery/cmd/mockery"]
+required = ["github.com/alecthomas/gometalinter", "github.com/vektra/mockery/cmd/mockery"]
 
 [prune]
   go-tests = true
