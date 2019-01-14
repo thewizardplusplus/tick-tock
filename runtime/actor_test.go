@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestNewActor(test *testing.T) {
@@ -91,7 +93,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 	type (
 		fields struct {
 			currentState string
-			makeStates   func(context Context, log *commandLog) StateGroup
+			makeStates   func(context context.Context, log *commandLog) StateGroup
 		}
 		args struct {
 			message string
@@ -109,7 +111,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "success",
 			fields: fields{
 				currentState: "state_1",
-				makeStates: func(context Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_3": {withCalls()},
 					})
@@ -123,7 +125,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "error",
 			fields: fields{
 				currentState: "state_1",
-				makeStates: func(context Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_3": {withErrOn(2)},
 					})
@@ -136,8 +138,8 @@ func TestActor_ProcessMessage(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			actor := Actor{testData.fields.currentState, nil}
-			context := new(MockContext)
-			context.On("SetActor", &actor).Return()
+			context := new(mocks.Context)
+			context.On("SetStateHolder", &actor).Return()
 
 			var log commandLog
 			actor.states = testData.fields.makeStates(context, &log)

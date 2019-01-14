@@ -5,6 +5,8 @@ import (
 	"sync"
 	"testing"
 	"testing/iotest"
+
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
 type commandLog struct {
@@ -31,7 +33,7 @@ func newLoggableCommand(log *commandLog, id int) *loggableCommand {
 	return &loggableCommand{MockCommand{}, log, id}
 }
 
-func (command *loggableCommand) Run(context Context) error {
+func (command *loggableCommand) Run(context context.Context) error {
 	command.log.registerCommand(command.id)
 	return command.MockCommand.Run(context)
 }
@@ -87,7 +89,7 @@ func withErrOn(index int) loggableCommandOption {
 }
 
 func newLoggableCommands(
-	context Context,
+	context context.Context,
 	log *commandLog,
 	config groupConfig,
 	options ...loggableCommandOption,
@@ -118,7 +120,7 @@ func newLoggableCommands(
 type loggableCommandOptions map[string][]loggableCommandOption
 
 func newLoggableMessages(
-	context Context,
+	context context.Context,
 	log *commandLog,
 	messageConfig groupConfig,
 	commandConfig groupConfig,
@@ -135,7 +137,7 @@ func newLoggableMessages(
 }
 
 func newLoggableStates(
-	context Context,
+	context context.Context,
 	log *commandLog,
 	stateCount int,
 	messageCount int,

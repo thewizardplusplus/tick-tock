@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/thewizardplusplus/tick-tock/runtime"
+import "github.com/thewizardplusplus/tick-tock/runtime/context"
 
 // SendCommand ...
 type SendCommand struct {
@@ -13,7 +13,7 @@ func NewSendCommand(message string) SendCommand {
 }
 
 // Run ...
-func (command SendCommand) Run(context runtime.Context) error {
+func (command SendCommand) Run(context context.Context) error {
 	context.SendMessage(command.message)
 	return nil
 }

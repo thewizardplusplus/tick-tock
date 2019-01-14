@@ -3,7 +3,7 @@ package commands
 import (
 	"io"
 
-	"github.com/thewizardplusplus/tick-tock/runtime"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
 // Writer ...
@@ -24,7 +24,7 @@ func NewOutCommand(writer io.Writer, message string) OutCommand {
 }
 
 // Run ...
-func (command OutCommand) Run(context runtime.Context) error {
+func (command OutCommand) Run(context context.Context) error {
 	_, err := command.writer.Write([]byte(command.message))
 	return err
 }

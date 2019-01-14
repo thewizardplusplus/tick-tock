@@ -6,6 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 type synchronousWaiter struct {
@@ -27,7 +29,7 @@ func TestConcurrentActor(test *testing.T) {
 	type args struct {
 		inboxSize    int
 		initialState string
-		makeStates   func(context Context, log *commandLog) StateGroup
+		makeStates   func(context context.Context, log *commandLog) StateGroup
 		messages     []string
 	}
 
@@ -41,7 +43,7 @@ func TestConcurrentActor(test *testing.T) {
 			name: "success with messages (with an unbuffered inbox)",
 			args: args{
 				initialState: "state_1",
-				makeStates: func(context Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
@@ -56,7 +58,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				inboxSize:    1,
 				initialState: "state_1",
-				makeStates: func(context Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
@@ -70,7 +72,7 @@ func TestConcurrentActor(test *testing.T) {
 			name: "success without messages",
 			args: args{
 				initialState: "state_1",
-				makeStates: func(context Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), nil)
 				},
 			},
@@ -79,7 +81,7 @@ func TestConcurrentActor(test *testing.T) {
 			name: "error",
 			args: args{
 				initialState: "state_1",
-				makeStates: func(context Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_2": {withErrOn(2)},
 						"message_3": {withErrOn(2)},
@@ -93,9 +95,9 @@ func TestConcurrentActor(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			actor := &Actor{testData.args.initialState, nil}
-			context := new(MockContext)
+			context := new(mocks.Context)
 			if len(testData.args.messages) != 0 {
-				context.On("SetActor", actor).Return()
+				context.On("SetStateHolder", actor).Return()
 			}
 
 			var log commandLog
@@ -135,7 +137,7 @@ func TestConcurrentActor(test *testing.T) {
 func TestConcurrentActorGroup(test *testing.T) {
 	type args struct {
 		initialState string
-		makeStates   func(context Context, log *commandLog) StateGroup
+		makeStates   func(context context.Context, log *commandLog) StateGroup
 	}
 
 	for _, testData := range []struct {
@@ -149,7 +151,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			args: []args{
 				{
 					initialState: "state_1",
-					makeStates: func(context Context, log *commandLog) StateGroup {
+					makeStates: func(context context.Context, log *commandLog) StateGroup {
 						return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
@@ -158,7 +160,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				},
 				{
 					initialState: "state_1",
-					makeStates: func(context Context, log *commandLog) StateGroup {
+					makeStates: func(context context.Context, log *commandLog) StateGroup {
 						return newLoggableStates(context, log, 2, 2, group(5, 20), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
@@ -181,7 +183,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				waiter.On("Done").Times(messageCount)
 			}
 
-			context := new(MockContext)
+			context := new(mocks.Context)
 			var log commandLog
 			var concurrentActors ConcurrentActorGroup
 			errorHandler := new(MockErrorHandler)
@@ -190,13 +192,13 @@ func TestConcurrentActorGroup(test *testing.T) {
 				defer checkStates(test, states)
 
 				actor := &Actor{args.initialState, states}
-				context.On("SetActor", actor).Return()
+				context.On("SetStateHolder", actor).Return()
 
 				concurrentActor := NewConcurrentActor(0, actor, Dependencies{waiter, errorHandler})
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
-			context.On("SetActors", concurrentActors).Return()
+			context.On("SetMessageSender", concurrentActors).Return()
 			concurrentActors.Start(context)
 			for _, message := range testData.messages {
 				concurrentActors.SendMessage(message)

@@ -1,5 +1,7 @@
 package runtime
 
+import "github.com/thewizardplusplus/tick-tock/runtime/context"
+
 // Actor ...
 type Actor struct {
 	currentState string
@@ -26,7 +28,7 @@ func (actor *Actor) SetState(state string) error {
 }
 
 // ProcessMessage ...
-func (actor *Actor) ProcessMessage(context Context, message string) error {
-	context.SetActor(actor)
+func (actor *Actor) ProcessMessage(context context.Context, message string) error {
+	context.SetStateHolder(actor)
 	return actor.states.ProcessMessage(context, actor.currentState, message)
 }

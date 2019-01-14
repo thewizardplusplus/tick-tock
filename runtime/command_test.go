@@ -4,23 +4,25 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestCommandGroup_Run(test *testing.T) {
 	for _, testData := range []struct {
 		name         string
-		makeCommands func(context Context, log *commandLog) CommandGroup
+		makeCommands func(context context.Context, log *commandLog) CommandGroup
 		wantLog      []int
 		wantErr      assert.ErrorAssertionFunc
 	}{
 		{
 			name:         "success without commands",
-			makeCommands: func(context Context, log *commandLog) CommandGroup { return nil },
+			makeCommands: func(context context.Context, log *commandLog) CommandGroup { return nil },
 			wantErr:      assert.NoError,
 		},
 		{
 			name: "success with commands",
-			makeCommands: func(context Context, log *commandLog) CommandGroup {
+			makeCommands: func(context context.Context, log *commandLog) CommandGroup {
 				return newLoggableCommands(context, log, group(5), withCalls())
 			},
 			wantLog: []int{0, 1, 2, 3, 4},
@@ -28,7 +30,7 @@ func TestCommandGroup_Run(test *testing.T) {
 		},
 		{
 			name: "error",
-			makeCommands: func(context Context, log *commandLog) CommandGroup {
+			makeCommands: func(context context.Context, log *commandLog) CommandGroup {
 				return newLoggableCommands(context, log, group(5), withErrOn(2))
 			},
 			wantLog: []int{0, 1, 2},
@@ -36,7 +38,7 @@ func TestCommandGroup_Run(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			context := new(MockContext)
+			context := new(mocks.Context)
 			var log commandLog
 			commands := testData.makeCommands(context, &log)
 			err := commands.Run(context)

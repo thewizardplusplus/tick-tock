@@ -5,6 +5,7 @@ import (
 	"testing/iotest"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestSetCommand(test *testing.T) {
@@ -24,7 +25,7 @@ func TestSetCommand(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			context := new(MockContext)
+			context := new(mocks.Context)
 			context.On("SetState", "test").Return(testData.settingErr)
 
 			err := NewSetCommand("test").Run(context)

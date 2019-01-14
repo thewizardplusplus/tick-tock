@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/thewizardplusplus/tick-tock/runtime"
+import "github.com/thewizardplusplus/tick-tock/runtime/context"
 
 // SetCommand ...
 type SetCommand struct {
@@ -13,6 +13,6 @@ func NewSetCommand(state string) SetCommand {
 }
 
 // Run ...
-func (command SetCommand) Run(context runtime.Context) error {
+func (command SetCommand) Run(context context.Context) error {
 	return context.SetState(command.state)
 }

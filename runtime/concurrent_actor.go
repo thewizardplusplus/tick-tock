@@ -1,6 +1,9 @@
 package runtime
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+)
 
 // Waiter ...
 //go:generate mockery -name=Waiter -inpkg -case=underscore -testonly
@@ -28,7 +31,7 @@ func NewConcurrentActor(inboxSize int, actor *Actor, dependencies Dependencies) 
 }
 
 // Start ...
-func (actor ConcurrentActor) Start(context Context) {
+func (actor ConcurrentActor) Start(context context.Context) {
 	go func() {
 		for message := range actor.inbox {
 			if err := actor.innerActor.ProcessMessage(context, message); err != nil {
@@ -51,8 +54,8 @@ func (actor ConcurrentActor) SendMessage(message string) {
 type ConcurrentActorGroup []ConcurrentActor
 
 // Start ...
-func (actors ConcurrentActorGroup) Start(context Context) {
-	context.SetActors(actors)
+func (actors ConcurrentActorGroup) Start(context context.Context) {
+	context.SetMessageSender(actors)
 
 	for _, actor := range actors {
 		actor.Start(context)
