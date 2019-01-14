@@ -137,13 +137,19 @@ func newLoggableMessages(
 func newLoggableStates(
 	context Context,
 	log *commandLog,
+	stateCount int,
+	messageCount int,
 	commandConfig groupConfig,
 	options loggableCommandOptions,
 ) StateGroup {
-	return StateGroup{
-		"state_one": newLoggableMessages(context, log, group(2), commandConfig, options),
-		"state_two": newLoggableMessages(context, log, group(2, 2), commandConfig, options),
+	states := make(StateGroup)
+	for i := 0; i < stateCount; i++ {
+		state := fmt.Sprintf("state_%d", i)
+		config := group(messageCount, i*messageCount)
+		states[state] = newLoggableMessages(context, log, config, commandConfig, options)
 	}
+
+	return states
 }
 
 func checkCommands(test *testing.T, commands CommandGroup) {

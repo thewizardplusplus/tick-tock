@@ -22,11 +22,11 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "success",
 			makeStates: func(context Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, group(5), loggableCommandOptions{
+				return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 					"message_3": {withCalls()},
 				})
 			},
-			args:    args{"state_two", "message_3"},
+			args:    args{"state_1", "message_3"},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
 		},
@@ -39,7 +39,7 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "error with an unknown state",
 			makeStates: func(context Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, group(5), nil)
+				return newLoggableStates(context, log, 2, 2, group(5), nil)
 			},
 			args:    args{"state_unknown", "message_unknown"},
 			wantErr: assert.Error,
@@ -47,11 +47,11 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "error on command execution",
 			makeStates: func(context Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, group(5), loggableCommandOptions{
+				return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 					"message_3": {withErrOn(2)},
 				})
 			},
-			args:    args{"state_two", "message_3"},
+			args:    args{"state_1", "message_3"},
 			wantLog: []int{15, 16, 17},
 			wantErr: assert.Error,
 		},

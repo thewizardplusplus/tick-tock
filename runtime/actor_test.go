@@ -20,13 +20,13 @@ func TestNewActor(test *testing.T) {
 	}{
 		{
 			name:    "success",
-			args:    args{"state_one", StateGroup{"state_one": nil, "state_two": nil}},
-			want:    &Actor{"state_one", StateGroup{"state_one": nil, "state_two": nil}},
+			args:    args{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
+			want:    &Actor{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "error",
-			args:    args{"state_unknown", StateGroup{"state_one": nil, "state_two": nil}},
+			args:    args{"state_unknown", StateGroup{"state_0": nil, "state_1": nil}},
 			wantErr: assert.Error,
 		},
 	} {
@@ -58,23 +58,23 @@ func TestActor_SetState(test *testing.T) {
 	}{
 		{
 			name:             "success with a different state",
-			fields:           fields{"state_one", StateGroup{"state_one": nil, "state_two": nil}},
-			args:             args{"state_two"},
-			wantCurrentState: "state_two",
+			fields:           fields{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
+			args:             args{"state_1"},
+			wantCurrentState: "state_1",
 			wantErr:          assert.NoError,
 		},
 		{
 			name:             "success with a same state",
-			fields:           fields{"state_one", StateGroup{"state_one": nil, "state_two": nil}},
-			args:             args{"state_one"},
-			wantCurrentState: "state_one",
+			fields:           fields{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
+			args:             args{"state_0"},
+			wantCurrentState: "state_0",
 			wantErr:          assert.NoError,
 		},
 		{
 			name:             "error",
-			fields:           fields{"state_one", StateGroup{"state_one": nil, "state_two": nil}},
+			fields:           fields{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
 			args:             args{"state_unknown"},
-			wantCurrentState: "state_one",
+			wantCurrentState: "state_0",
 			wantErr:          assert.Error,
 		},
 	} {
@@ -108,9 +108,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				currentState: "state_two",
+				currentState: "state_1",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_3": {withCalls()},
 					})
 				},
@@ -122,9 +122,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "error",
 			fields: fields{
-				currentState: "state_two",
+				currentState: "state_1",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_3": {withErrOn(2)},
 					})
 				},
