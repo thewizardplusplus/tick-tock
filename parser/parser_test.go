@@ -41,6 +41,36 @@ func TestParseToAST(test *testing.T) {
 			wantAST: new(testAST),
 			wantErr: assert.Error,
 		},
+		{
+			name:    "Command/send",
+			args:    args{"send test", new(Command)},
+			wantAST: &Command{Send: getAddress("test")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Command/set",
+			args:    args{"set test", new(Command)},
+			wantAST: &Command{Set: getAddress("test")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Command/out/nonempty",
+			args:    args{`out "test"`, new(Command)},
+			wantAST: &Command{Out: getAddress("test")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Command/out/empty",
+			args:    args{`out ""`, new(Command)},
+			wantAST: &Command{Out: getAddress("")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Command/exit",
+			args:    args{"exit", new(Command)},
+			wantAST: &Command{Exit: true},
+			wantErr: assert.NoError,
+		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			err := ParseToAST(testData.args.code, testData.args.ast)
@@ -48,4 +78,8 @@ func TestParseToAST(test *testing.T) {
 			testData.wantErr(test, err)
 		})
 	}
+}
+
+func getAddress(s string) *string {
+	return &s
 }
