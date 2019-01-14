@@ -1,18 +1,14 @@
 package runtime
 
-import "github.com/thewizardplusplus/tick-tock/runtime/context"
-
-// Waiter ...
-//go:generate mockery -name=Waiter -case=underscore
-type Waiter interface {
-	Add(delta int)
-	Done()
-}
+import (
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+	"github.com/thewizardplusplus/tick-tock/runtime/waiter"
+)
 
 // Dependencies ...
 type Dependencies struct {
-	Waiter       Waiter
-	ErrorHandler ErrorHandler
+	waiter.Waiter
+	ErrorHandler
 }
 
 // ConcurrentActor ...

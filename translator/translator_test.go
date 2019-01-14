@@ -14,6 +14,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
+	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
 func TestTranslate(test *testing.T) {
@@ -87,7 +88,7 @@ func TestTranslate(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			options := Options{tests.BufferedInbox, "__initialization__"}
-			waiter := new(runtimemocks.Waiter)
+			waiter := new(waitermocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			outWriter := new(testsmocks.Writer)
 			dependencies := Dependencies{

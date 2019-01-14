@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/spf13/afero"
-	"github.com/thewizardplusplus/tick-tock/runtime/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
 // ...
