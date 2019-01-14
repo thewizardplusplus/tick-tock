@@ -3,6 +3,7 @@ package runtime
 import "github.com/pkg/errors"
 
 // Command is implemented by any command. Real type doesn't have to be pure and can store a state.
+//go:generate mockery -name=Command -inpkg -case=underscore -testonly
 type Command interface {
 	Run() error
 }
