@@ -1,6 +1,10 @@
 package tests
 
-import "io"
+import (
+	"io"
+
+	"github.com/spf13/afero"
+)
 
 // ...
 const (
@@ -12,6 +16,12 @@ const (
 //go:generate mockery -name=Writer -case=underscore
 type Writer interface {
 	io.Writer
+}
+
+// FileSystem ...
+//go:generate mockery -name=FileSystem -case=underscore
+type FileSystem interface {
+	afero.Fs
 }
 
 // Exiter ...
