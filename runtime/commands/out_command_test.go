@@ -46,7 +46,7 @@ func TestOutCommand(test *testing.T) {
 			}
 
 			context := new(contextmocks.Context)
-			err := NewOutCommand(writer, testData.fields.message).Run(context)
+			err := NewOutCommand(testData.fields.message, writer).Run(context)
 
 			writer.AssertExpectations(test)
 			context.AssertExpectations(test)

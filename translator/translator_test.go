@@ -370,14 +370,14 @@ func TestTranslateCommand(test *testing.T) {
 			name: "Command/out/nonempty",
 			args: args{&parser.Command{Out: tests.GetAddress("test")}},
 			makeWantCommand: func(writer io.Writer) runtime.Command {
-				return commands.NewOutCommand(writer, "test")
+				return commands.NewOutCommand("test", writer)
 			},
 		},
 		{
 			name: "Command/out/empty",
 			args: args{&parser.Command{Out: tests.GetAddress("")}},
 			makeWantCommand: func(writer io.Writer) runtime.Command {
-				return commands.NewOutCommand(writer, "")
+				return commands.NewOutCommand("", writer)
 			},
 		},
 		{

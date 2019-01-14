@@ -8,13 +8,13 @@ import (
 
 // OutCommand ...
 type OutCommand struct {
-	writer  io.Writer
 	message string
+	writer  io.Writer
 }
 
 // NewOutCommand ...
-func NewOutCommand(writer io.Writer, message string) OutCommand {
-	return OutCommand{writer, message}
+func NewOutCommand(message string, writer io.Writer) OutCommand {
+	return OutCommand{message, writer}
 }
 
 // Run ...

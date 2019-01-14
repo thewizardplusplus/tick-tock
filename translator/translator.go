@@ -125,7 +125,7 @@ func TranslateCommand(writer io.Writer, command *parser.Command) (
 		settedState = *command.Set
 	}
 	if command.Out != nil {
-		translatedCommand = commands.NewOutCommand(writer, *command.Out)
+		translatedCommand = commands.NewOutCommand(*command.Out, writer)
 	}
 	if command.Exit {
 		translatedCommand = commands.ExitCommand{}
