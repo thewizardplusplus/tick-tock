@@ -11,8 +11,7 @@ type Command interface {
 // CommandGroup represents a list of commands in a certain order.
 type CommandGroup []Command
 
-// Run executes commands sequentially one by one.
-// If any command fails, execution stops and the error is returned.
+// Run executes commands sequentially one by one. If any command fails, execution stops.
 func (commands CommandGroup) Run() error {
 	for index, command := range commands {
 		if err := command.Run(); err != nil {
