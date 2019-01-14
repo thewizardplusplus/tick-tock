@@ -19,3 +19,19 @@ type Context interface {
 	SetMessageSender(sender MessageSender)
 	SetStateHolder(holder StateHolder)
 }
+
+// DefaultContext ...
+type DefaultContext struct {
+	MessageSender
+	StateHolder
+}
+
+// SetMessageSender ...
+func (context *DefaultContext) SetMessageSender(sender MessageSender) {
+	context.MessageSender = sender
+}
+
+// SetStateHolder ...
+func (context *DefaultContext) SetStateHolder(holder StateHolder) {
+	context.StateHolder = holder
+}
