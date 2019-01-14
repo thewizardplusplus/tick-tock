@@ -5,6 +5,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Command represents one of the supported commands and keeps their arguments if necessary.
+type Command struct {
+	Send *string `parser:"\"send\" @Ident"`
+	Set  *string `parser:"| \"set\" @Ident"`
+	Out  *string `parser:"| \"out\" @String"`
+	Exit bool    `parser:"| @\"exit\""`
+}
+
 // ParseToAST parses a code string to a structure representing an AST.
 func ParseToAST(code string, ast interface{}) error {
 	parser, err := participle.Build(ast)
