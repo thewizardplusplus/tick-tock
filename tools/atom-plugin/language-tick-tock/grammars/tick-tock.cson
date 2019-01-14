@@ -16,6 +16,18 @@
     'name': 'comment.block.ticktock'
   }
 
+  # integer literals
+  {
+    'match': '\\b((0x[0-9a-fA-F]+)|(0[0-7]+)|(\\d+([Ee]\\d+)?)|(\\d+[Ee][\-\+]\\d+))\\b'
+    'name': 'constant.numeric.integer.ticktock'
+  }
+
+  # floating-point literals
+  {
+    'match': '(\\.\\d+([Ee][\-\+]\\d+)?)\\b|\\b\\d+\\.\\d*(([Ee][\-\+]\\d+)?\\b)?'
+    'name': 'constant.numeric.floating-point.ticktock'
+  }
+
   # interpreted string literals
   {
     'begin': '"'
@@ -48,7 +60,7 @@
 
   # built-in functions
   {
-    'match': '\\b(send|set|out|exit)\\b'
+    'match': '\\b(send|set|out|sleep|exit)\\b'
     'name': 'support.function.builtin.ticktock'
   }
 
@@ -58,9 +70,9 @@
     'name': 'variable.other.ticktock'
   }
 
-  # terminators
+  # delimiters
   {
-    'match': ';'
-    'name': 'punctuation.terminator.ticktock'
+    'match': '[,;]'
+    'name': 'punctuation.other.ticktock'
   }
 ]
