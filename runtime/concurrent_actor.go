@@ -9,12 +9,6 @@ type Waiter interface {
 	Done()
 }
 
-// ErrorHandler ...
-//go:generate mockery -name=ErrorHandler -inpkg -case=underscore -testonly
-type ErrorHandler interface {
-	HandleError(err error)
-}
-
 // Dependencies ...
 type Dependencies struct {
 	Waiter       Waiter
