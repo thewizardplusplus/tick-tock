@@ -1,5 +1,7 @@
 # ![](docs/logo/logo.png) Tick-tock
 
+[![GoDoc](https://godoc.org/github.com/thewizardplusplus/tick-tock?status.svg)](https://godoc.org/github.com/thewizardplusplus/tick-tock)
+
 Interpreter of the Tick-tock programming language.
 
 ## Installation
