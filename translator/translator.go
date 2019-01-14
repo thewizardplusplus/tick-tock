@@ -32,7 +32,7 @@ func TranslateMessages(writer io.Writer, messages []*parser.Message) runtime.Mes
 func TranslateCommands(writer io.Writer, commands []*parser.Command) runtime.CommandGroup {
 	var translatedCommands runtime.CommandGroup
 	for _, command := range commands {
-		translatedCommand := TranslateCommand(writer, command)
+		translatedCommand, _ := TranslateCommand(writer, command)
 		translatedCommands = append(translatedCommands, translatedCommand)
 	}
 
@@ -40,13 +40,16 @@ func TranslateCommands(writer io.Writer, commands []*parser.Command) runtime.Com
 }
 
 // TranslateCommand ...
-func TranslateCommand(writer io.Writer, command *parser.Command) runtime.Command {
-	var translatedCommand runtime.Command
+func TranslateCommand(writer io.Writer, command *parser.Command) (
+	translatedCommand runtime.Command,
+	settedState string,
+) {
 	if command.Send != nil {
 		translatedCommand = commands.NewSendCommand(*command.Send)
 	}
 	if command.Set != nil {
 		translatedCommand = commands.NewSetCommand(*command.Set)
+		settedState = *command.Set
 	}
 	if command.Out != nil {
 		translatedCommand = commands.NewOutCommand(writer, *command.Out)
@@ -55,5 +58,5 @@ func TranslateCommand(writer io.Writer, command *parser.Command) runtime.Command
 		translatedCommand = commands.ExitCommand{}
 	}
 
-	return translatedCommand
+	return translatedCommand, settedState
 }

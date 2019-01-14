@@ -165,45 +165,54 @@ func TestTranslateCommand(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name     string
-		args     args
-		makeWant func(writer io.Writer) runtime.Command
+		name            string
+		args            args
+		makeWantCommand func(writer io.Writer) runtime.Command
+		wantState       string
 	}{
 		{
-			name:     "Command/send",
-			args:     args{&parser.Command{Send: tests.GetAddress("test")}},
-			makeWant: func(writer io.Writer) runtime.Command { return commands.NewSendCommand("test") },
+			name: "Command/send",
+			args: args{&parser.Command{Send: tests.GetAddress("test")}},
+			makeWantCommand: func(writer io.Writer) runtime.Command {
+				return commands.NewSendCommand("test")
+			},
 		},
 		{
-			name:     "Command/set",
-			args:     args{&parser.Command{Set: tests.GetAddress("test")}},
-			makeWant: func(writer io.Writer) runtime.Command { return commands.NewSetCommand("test") },
+			name: "Command/set",
+			args: args{&parser.Command{Set: tests.GetAddress("test")}},
+			makeWantCommand: func(writer io.Writer) runtime.Command {
+				return commands.NewSetCommand("test")
+			},
+			wantState: "test",
 		},
 		{
 			name: "Command/out/nonempty",
 			args: args{&parser.Command{Out: tests.GetAddress("test")}},
-			makeWant: func(writer io.Writer) runtime.Command {
+			makeWantCommand: func(writer io.Writer) runtime.Command {
 				return commands.NewOutCommand(writer, "test")
 			},
 		},
 		{
-			name:     "Command/out/empty",
-			args:     args{&parser.Command{Out: tests.GetAddress("")}},
-			makeWant: func(writer io.Writer) runtime.Command { return commands.NewOutCommand(writer, "") },
+			name: "Command/out/empty",
+			args: args{&parser.Command{Out: tests.GetAddress("")}},
+			makeWantCommand: func(writer io.Writer) runtime.Command {
+				return commands.NewOutCommand(writer, "")
+			},
 		},
 		{
-			name:     "Command/exit",
-			args:     args{&parser.Command{Exit: true}},
-			makeWant: func(writer io.Writer) runtime.Command { return commands.ExitCommand{} },
+			name:            "Command/exit",
+			args:            args{&parser.Command{Exit: true}},
+			makeWantCommand: func(writer io.Writer) runtime.Command { return commands.ExitCommand{} },
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			writer := new(mocks.Writer)
-			want := testData.makeWant(writer)
-			got := TranslateCommand(writer, testData.args.command)
+			wantCommand := testData.makeWantCommand(writer)
+			gotCommand, gotState := TranslateCommand(writer, testData.args.command)
 
 			writer.AssertExpectations(test)
-			assert.Equal(test, want, got)
+			assert.Equal(test, wantCommand, gotCommand)
+			assert.Equal(test, testData.wantState, gotState)
 		})
 	}
 }
