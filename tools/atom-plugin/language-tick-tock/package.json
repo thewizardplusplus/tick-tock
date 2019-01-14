@@ -1,0 +1,11 @@
+{
+  "name": "language-tick-tock",
+  "description": "Tick-tock language support in Atom",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "thewizardplusplus <thewizardplusplus@yandex.ru>",
+  "repository": "https://github.com/thewizardplusplus/tick-tock",
+  "engines": {
+    "atom": ">=1.33.0 <2.0.0"
+  }
+}

@@ -1,0 +1,78 @@
+'name': 'Tick-tock'
+'scopeName': 'source.ticktock'
+'fileTypes': ['tt']
+'patterns': [
+  # line comments
+  {
+    'begin': '//'
+    'end': '$'
+    'name': 'comment.line.ticktock'
+  }
+
+  # block comments
+  {
+    'begin': '/\\*'
+    'end': '\\*/'
+    'name': 'comment.block.ticktock'
+  }
+
+  # floating-point literals
+  {
+    'match': '(\\.\\d+([Ee][\-\+]\\d+)?)\\b|\\b\\d+\\.\\d*(([Ee][\-\+]\\d+)?\\b)?'
+    'name': 'constant.numeric.floating-point.ticktock'
+  }
+
+  # integral literals
+  {
+    'match': '\\b((0x[0-9a-fA-F]+)|(0[0-7]+)|(\\d+([Ee]\\d+)?)|(\\d+[Ee][\-\+]\\d+))\\b'
+    'name': 'constant.numeric.integer.ticktock'
+  }
+
+  # interpreted string literals
+  {
+    'begin': '"'
+    'end': '"'
+    'name': 'string.quoted.double.ticktock'
+    'patterns': [{
+      'match': '\\\\([0-7]{3}|[abfnrtv\\\\\'"]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})'
+      'name': 'constant.character.escape.ticktock'
+    }]
+  }
+
+  # raw string literals
+  {
+    'begin': '`'
+    'end': '`'
+    'name': 'string.quoted.raw.ticktock',
+  }
+
+  # keywords
+  {
+    'match': '\\b(actor|state|message)\\b'
+    'name': 'keyword.ticktock'
+  }
+
+  # language constants
+  {
+    'match': '\\binitial\\b'
+    'name': 'constant.language.ticktock'
+  }
+
+  # built-in functions
+  {
+    'match': '\\b(send|set|out|exit)\\b'
+    'name': 'support.function.builtin.ticktock'
+  }
+
+  # variables
+  {
+    'match': '\\w+'
+    'name': 'variable.other.ticktock'
+  }
+
+  # terminators
+  {
+    'match': ';'
+    'name': 'punctuation.terminator.ticktock'
+  }
+]
