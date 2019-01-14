@@ -20,6 +20,7 @@ func TestInterpret(test *testing.T) {
 	for _, testData := range []struct {
 		name                   string
 		initializeDependencies func(
+			initialMessage string,
 			context *contextmocks.Context,
 			waiter tests.SynchronousWaiter,
 			outWriter *testsmocks.Writer,
@@ -30,6 +31,7 @@ func TestInterpret(test *testing.T) {
 		{
 			name: "success",
 			initializeDependencies: func(
+				initialMessage string,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -47,7 +49,7 @@ func TestInterpret(test *testing.T) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
-						code := fmt.Sprintf(`actor state test message __initialize__ out "%s";;;`, message)
+						code := fmt.Sprintf(`actor state test message %s out "%s";;;`, initialMessage, message)
 						return copy(buffer, code)
 					}, io.EOF)
 			},
@@ -56,6 +58,7 @@ func TestInterpret(test *testing.T) {
 		{
 			name: "error on a code reading",
 			initializeDependencies: func(
+				initialMessage string,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -68,6 +71,7 @@ func TestInterpret(test *testing.T) {
 		{
 			name: "error on a code parsing",
 			initializeDependencies: func(
+				initialMessage string,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -82,6 +86,7 @@ func TestInterpret(test *testing.T) {
 		{
 			name: "error on a code translating",
 			initializeDependencies: func(
+				initialMessage string,
 				context *contextmocks.Context,
 				waiter tests.SynchronousWaiter,
 				outWriter *testsmocks.Writer,
@@ -95,15 +100,15 @@ func TestInterpret(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			const initialMessage = "__initialize__"
 			context := new(contextmocks.Context)
 			waiter := tests.NewSynchronousWaiter()
 			errorHandler := new(runtimemocks.ErrorHandler)
 			outWriter := new(testsmocks.Writer)
 			defaultReader := new(testsmocks.Reader)
 			fileSystem := new(testsmocks.FileSystem)
-			testData.initializeDependencies(context, waiter, outWriter, defaultReader)
+			testData.initializeDependencies(initialMessage, context, waiter, outWriter, defaultReader)
 
-			inboxSize := tests.BufferedInbox
 			dependencies := Dependencies{
 				Dependencies: translator.Dependencies{
 					Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
@@ -111,7 +116,7 @@ func TestInterpret(test *testing.T) {
 				},
 				ReaderDependencies: ReaderDependencies{defaultReader, fileSystem},
 			}
-			err := Interpret(context, "", inboxSize, dependencies)
+			err := Interpret(context, "", tests.BufferedInbox, initialMessage, dependencies)
 			waiter.Wait()
 
 			mock.AssertExpectationsForObjects(

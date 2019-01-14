@@ -17,6 +17,7 @@ func Interpret(
 	context context.Context,
 	filename string,
 	inboxSize int,
+	initialMessage string,
 	dependencies Dependencies,
 ) error {
 	code, err := readCode(filename, dependencies.ReaderDependencies)
@@ -35,7 +36,7 @@ func Interpret(
 	}
 
 	actors.Start(context)
-	actors.SendMessage("__initialize__")
+	actors.SendMessage(initialMessage)
 
 	return nil
 }
