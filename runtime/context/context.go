@@ -1,6 +1,7 @@
 package context
 
 // MessageSender ...
+//go:generate mockery -name=MessageSender -case=underscore
 type MessageSender interface {
 	SendMessage(message string)
 }
