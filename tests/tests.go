@@ -7,3 +7,8 @@ import "io"
 type Writer interface {
 	io.Writer
 }
+
+// GetAddress ...
+func GetAddress(s string) *string {
+	return &s
+}

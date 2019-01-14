@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thewizardplusplus/tick-tock/tests"
 )
 
 func TestParse(test *testing.T) {
@@ -75,25 +76,25 @@ func TestParseToAST(test *testing.T) {
 		{
 			name:    "Command/send",
 			args:    args{"send test", new(Command)},
-			wantAST: &Command{Send: getAddress("test")},
+			wantAST: &Command{Send: tests.GetAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/set",
 			args:    args{"set test", new(Command)},
-			wantAST: &Command{Set: getAddress("test")},
+			wantAST: &Command{Set: tests.GetAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/out/nonempty",
 			args:    args{`out "test"`, new(Command)},
-			wantAST: &Command{Out: getAddress("test")},
+			wantAST: &Command{Out: tests.GetAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/out/empty",
 			args:    args{`out ""`, new(Command)},
-			wantAST: &Command{Out: getAddress("")},
+			wantAST: &Command{Out: tests.GetAddress("")},
 			wantErr: assert.NoError,
 		},
 		{
@@ -103,9 +104,12 @@ func TestParseToAST(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Message/nonempty",
-			args:    args{"message test send one send two;", new(Message)},
-			wantAST: &Message{"test", []*Command{{Send: getAddress("one")}, {Send: getAddress("two")}}},
+			name: "Message/nonempty",
+			args: args{"message test send one send two;", new(Message)},
+			wantAST: &Message{
+				Name:     "test",
+				Commands: []*Command{{Send: tests.GetAddress("one")}, {Send: tests.GetAddress("two")}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -181,8 +185,4 @@ func TestParseToAST(test *testing.T) {
 			testData.wantErr(test, err)
 		})
 	}
-}
-
-func getAddress(s string) *string {
-	return &s
 }
