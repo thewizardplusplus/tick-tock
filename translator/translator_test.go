@@ -12,6 +12,54 @@ import (
 	"github.com/thewizardplusplus/tick-tock/tests/mocks"
 )
 
+func TestTranslateStates(test *testing.T) {
+	type args struct {
+		states []*parser.State
+	}
+
+	for _, testData := range []struct {
+		name     string
+		args     args
+		makeWant func(writer io.Writer) runtime.StateGroup
+	}{
+		{
+			name: "success with nonempty states",
+			args: args{
+				states: []*parser.State{
+					{false, "state_0", []*parser.Message{{"message_0", nil}, {"message_1", nil}}},
+					{false, "state_1", []*parser.Message{{"message_2", nil}, {"message_3", nil}}},
+				},
+			},
+			makeWant: func(writer io.Writer) runtime.StateGroup {
+				return runtime.StateGroup{
+					"state_0": runtime.MessageGroup{"message_0": nil, "message_1": nil},
+					"state_1": runtime.MessageGroup{"message_2": nil, "message_3": nil},
+				}
+			},
+		},
+		{
+			name: "success with empty states",
+			args: args{[]*parser.State{{false, "state_0", nil}, {false, "state_1", nil}}},
+			makeWant: func(writer io.Writer) runtime.StateGroup {
+				return runtime.StateGroup{"state_0": runtime.MessageGroup{}, "state_1": runtime.MessageGroup{}}
+			},
+		},
+		{
+			name:     "success without states",
+			makeWant: func(writer io.Writer) runtime.StateGroup { return runtime.StateGroup{} },
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			writer := new(mocks.Writer)
+			want := testData.makeWant(writer)
+			got := TranslateStates(writer, testData.args.states)
+
+			writer.AssertExpectations(test)
+			assert.Equal(test, want, got)
+		})
+	}
+}
+
 func TestTranslateMessages(test *testing.T) {
 	type args struct {
 		messages []*parser.Message
