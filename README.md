@@ -1,0 +1,37 @@
+# Tick-tock
+
+Interpreter of the Tick-tock programming language.
+
+## Installation
+
+```
+$ go get github.com/thewizardplusplus/tick-tock/...
+```
+
+## Usage
+
+```
+$ tick-tock -v | --version
+$ tick-tock -h | --help
+$ tick-tock [-i SIZE | --inbox SIZE] [<filename>]
+```
+
+Options:
+
+- `-v`, `--version` &mdash; show application version;
+- `-h`, `--help` &mdash; show application help;
+- `-i SIZE`, `--inbox SIZE` &mdash; inbox buffer size (default: `10`).
+
+Arguments:
+
+- `<filename>` &mdash; source file name; empty or `-` means stdin.
+
+## IDE support
+
+- [Atom](http://atom.io/) plugin: [language-tick-tock](tools/atom-plugin/language-tick-tock).
+
+## License
+
+The MIT License (MIT)
+
+Copyright &copy; 2018 thewizardplusplus
