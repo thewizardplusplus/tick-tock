@@ -88,17 +88,25 @@ func TestTranslate(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			options := Options{tests.BufferedInbox, "__initialization__"}
+			outWriter := new(testsmocks.Writer)
+			randomizer := new(testsmocks.Randomizer)
+			sleeper := new(testsmocks.Sleeper)
 			waiter := new(waitermocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
-			outWriter := new(testsmocks.Writer)
 			dependencies := Dependencies{
-				OutWriter: outWriter,
-				Runtime:   runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
+				Commands: CommandsDependencies{
+					OutWriter: outWriter,
+					Sleep: commands.SleepDependencies{
+						Randomizer: randomizer.Randomize,
+						Sleeper:    sleeper.Sleep,
+					},
+				},
+				Runtime: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
 			}
 			want := testData.makeWant(options, dependencies)
 			got, err := Translate(testData.makeActors(options), options, dependencies)
 
-			mock.AssertExpectationsForObjects(test, waiter, errorHandler, outWriter)
+			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper, waiter, errorHandler)
 			assert.Equal(test, cleanInboxes(want), cleanInboxes(got))
 			testData.wantErr(test, err)
 		})
@@ -193,9 +201,18 @@ func TestTranslateStates(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
-			gotStates, err := translateStates(testData.args.states, outWriter)
+			randomizer := new(testsmocks.Randomizer)
+			sleeper := new(testsmocks.Sleeper)
+			dependencies := CommandsDependencies{
+				OutWriter: outWriter,
+				Sleep: commands.SleepDependencies{
+					Randomizer: randomizer.Randomize,
+					Sleeper:    sleeper.Sleep,
+				},
+			}
+			gotStates, err := translateStates(testData.args.states, dependencies)
 
-			mock.AssertExpectationsForObjects(test, outWriter)
+			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, testData.makeWantStates(outWriter), gotStates)
 			testData.wantErr(test, err)
 		})
@@ -335,9 +352,18 @@ func TestTranslateMessages(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
-			gotMessages, gotStates, err := translateMessages(testData.args.messages, outWriter)
+			randomizer := new(testsmocks.Randomizer)
+			sleeper := new(testsmocks.Sleeper)
+			dependencies := CommandsDependencies{
+				OutWriter: outWriter,
+				Sleep: commands.SleepDependencies{
+					Randomizer: randomizer.Randomize,
+					Sleeper:    sleeper.Sleep,
+				},
+			}
+			gotMessages, gotStates, err := translateMessages(testData.args.messages, dependencies)
 
-			mock.AssertExpectationsForObjects(test, outWriter)
+			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, testData.makeWantMessages(outWriter), gotMessages)
 			assert.Equal(test, testData.wantStates, gotStates)
 			testData.wantErr(test, err)
@@ -395,9 +421,18 @@ func TestTranslateCommands(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
-			gotCommands, gotState, err := translateCommands(testData.args.commands, outWriter)
+			randomizer := new(testsmocks.Randomizer)
+			sleeper := new(testsmocks.Sleeper)
+			dependencies := CommandsDependencies{
+				OutWriter: outWriter,
+				Sleep: commands.SleepDependencies{
+					Randomizer: randomizer.Randomize,
+					Sleeper:    sleeper.Sleep,
+				},
+			}
+			gotCommands, gotState, err := translateCommands(testData.args.commands, dependencies)
 
-			mock.AssertExpectationsForObjects(test, outWriter)
+			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, testData.makeWantCommands(outWriter), gotCommands)
 			assert.Equal(test, testData.wantState, gotState)
 			testData.wantErr(test, err)
@@ -415,6 +450,7 @@ func TestTranslateCommand(test *testing.T) {
 		args            args
 		makeWantCommand func(outWriter io.Writer) runtime.Command
 		wantState       string
+		wantErr         assert.ErrorAssertionFunc
 	}{
 		{
 			name: "Command/send",
@@ -422,6 +458,7 @@ func TestTranslateCommand(test *testing.T) {
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSendCommand("test")
 			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "Command/set",
@@ -430,6 +467,7 @@ func TestTranslateCommand(test *testing.T) {
 				return commands.NewSetCommand("test")
 			},
 			wantState: "test",
+			wantErr:   assert.NoError,
 		},
 		{
 			name: "Command/out/nonempty",
@@ -437,6 +475,7 @@ func TestTranslateCommand(test *testing.T) {
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("test", outWriter)
 			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "Command/out/empty",
@@ -444,20 +483,32 @@ func TestTranslateCommand(test *testing.T) {
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("", outWriter)
 			},
+			wantErr: assert.NoError,
 		},
 		{
 			name:            "Command/exit",
 			args:            args{&parser.Command{Exit: true}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command { return commands.ExitCommand{} },
+			wantErr:         assert.NoError,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
-			gotCommand, gotState := translateCommand(testData.args.command, outWriter)
+			randomizer := new(testsmocks.Randomizer)
+			sleeper := new(testsmocks.Sleeper)
+			dependencies := CommandsDependencies{
+				OutWriter: outWriter,
+				Sleep: commands.SleepDependencies{
+					Randomizer: randomizer.Randomize,
+					Sleeper:    sleeper.Sleep,
+				},
+			}
+			gotCommand, gotState, err := translateCommand(testData.args.command, dependencies)
 
-			mock.AssertExpectationsForObjects(test, outWriter)
+			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, testData.makeWantCommand(outWriter), gotCommand)
 			assert.Equal(test, testData.wantState, gotState)
+			testData.wantErr(test, err)
 		})
 	}
 }

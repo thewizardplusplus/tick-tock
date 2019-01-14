@@ -11,6 +11,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/internal/tests"
 	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
+	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
@@ -120,14 +121,22 @@ func TestInterpret(test *testing.T) {
 			outWriter := new(testsmocks.Writer)
 			defaultReader := new(testsmocks.Reader)
 			fileSystem := new(testsmocks.FileSystem)
+			randomizer := new(testsmocks.Randomizer)
+			sleeper := new(testsmocks.Sleeper)
 			testData.initializeDependencies(options, context, waiter, outWriter, defaultReader)
 
 			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{
 				Reader: ReaderDependencies{defaultReader, fileSystem},
 				Translator: translator.Dependencies{
-					OutWriter: outWriter,
-					Runtime:   runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},
+					Commands: translator.CommandsDependencies{
+						OutWriter: outWriter,
+						Sleep: commands.SleepDependencies{
+							Randomizer: randomizer.Randomize,
+							Sleeper:    sleeper.Sleep,
+						},
+					},
+					Runtime: runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},
 				},
 			}
 			err := Interpret(context, options, dependencies)
@@ -141,6 +150,8 @@ func TestInterpret(test *testing.T) {
 				outWriter,
 				defaultReader,
 				fileSystem,
+				randomizer,
+				sleeper,
 			)
 			testData.wantErr(test, err)
 		})

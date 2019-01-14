@@ -15,10 +15,16 @@ type Options struct {
 	InitialState string
 }
 
+// CommandsDependencies ...
+type CommandsDependencies struct {
+	OutWriter io.Writer
+	Sleep     commands.SleepDependencies
+}
+
 // Dependencies ...
 type Dependencies struct {
-	OutWriter io.Writer
-	Runtime   runtime.Dependencies
+	Commands CommandsDependencies
+	Runtime  runtime.Dependencies
 }
 
 // Translate ...
@@ -27,7 +33,7 @@ func Translate(actors []*parser.Actor, options Options, dependencies Dependencie
 	err error,
 ) {
 	for index, actor := range actors {
-		translatedStates, err := translateStates(actor.States, dependencies.OutWriter)
+		translatedStates, err := translateStates(actor.States, dependencies.Commands)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the actor #%d", index)
 		}
@@ -47,7 +53,7 @@ func Translate(actors []*parser.Actor, options Options, dependencies Dependencie
 	return translatedActors, nil
 }
 
-func translateStates(states []*parser.State, outWriter io.Writer) (
+func translateStates(states []*parser.State, dependencies CommandsDependencies) (
 	translatedStates runtime.StateGroup,
 	err error,
 ) {
@@ -62,7 +68,7 @@ func translateStates(states []*parser.State, outWriter io.Writer) (
 			return nil, errors.Errorf("duplicate state %s", state.Name)
 		}
 
-		translatedMessages, settedStates, err := translateMessages(state.Messages, outWriter)
+		translatedMessages, settedStates, err := translateMessages(state.Messages, dependencies)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}
@@ -84,7 +90,7 @@ func translateStates(states []*parser.State, outWriter io.Writer) (
 
 type settedStateGroup map[string]string
 
-func translateMessages(messages []*parser.Message, outWriter io.Writer) (
+func translateMessages(messages []*parser.Message, dependencies CommandsDependencies) (
 	translatedMessages runtime.MessageGroup,
 	settedStates settedStateGroup,
 	err error,
@@ -96,7 +102,7 @@ func translateMessages(messages []*parser.Message, outWriter io.Writer) (
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, settedState, err := translateCommands(message.Commands, outWriter)
+		translatedCommands, settedState, err := translateCommands(message.Commands, dependencies)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
@@ -110,13 +116,17 @@ func translateMessages(messages []*parser.Message, outWriter io.Writer) (
 	return translatedMessages, settedStates, nil
 }
 
-func translateCommands(commands []*parser.Command, outWriter io.Writer) (
+func translateCommands(commands []*parser.Command, dependencies CommandsDependencies) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
 ) {
-	for _, command := range commands {
-		translatedCommand, newSettedState := translateCommand(command, outWriter)
+	for index, command := range commands {
+		translatedCommand, newSettedState, err := translateCommand(command, dependencies)
+		if err != nil {
+			return nil, "", errors.Wrapf(err, "unable to translate the command #%d", index)
+		}
+
 		translatedCommands = append(translatedCommands, translatedCommand)
 		if len(newSettedState) == 0 {
 			continue
@@ -132,9 +142,10 @@ func translateCommands(commands []*parser.Command, outWriter io.Writer) (
 	return translatedCommands, settedState, nil
 }
 
-func translateCommand(command *parser.Command, outWriter io.Writer) (
+func translateCommand(command *parser.Command, dependencies CommandsDependencies) (
 	translatedCommand runtime.Command,
 	settedState string,
+	err error,
 ) {
 	if command.Send != nil {
 		translatedCommand = commands.NewSendCommand(*command.Send)
@@ -144,11 +155,20 @@ func translateCommand(command *parser.Command, outWriter io.Writer) (
 		settedState = *command.Set
 	}
 	if command.Out != nil {
-		translatedCommand = commands.NewOutCommand(*command.Out, outWriter)
+		translatedCommand = commands.NewOutCommand(*command.Out, dependencies.OutWriter)
+	}
+	if command.Sleep != nil {
+		if translatedCommand, err = commands.NewSleepCommand(
+			*command.Sleep.Minimum,
+			*command.Sleep.Maximum,
+			dependencies.Sleep,
+		); err != nil {
+			return nil, "", err
+		}
 	}
 	if command.Exit {
 		translatedCommand = commands.ExitCommand{}
 	}
 
-	return translatedCommand, settedState
+	return translatedCommand, settedState, nil
 }
