@@ -75,7 +75,7 @@ func TranslateMessages(writer io.Writer, messages []*parser.Message) (
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, settedState, err := TranslateCommands(writer, message.Commands)
+		translatedCommands, settedState, err := translateCommands(message.Commands, writer)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
@@ -89,14 +89,13 @@ func TranslateMessages(writer io.Writer, messages []*parser.Message) (
 	return translatedMessages, settedStates, nil
 }
 
-// TranslateCommands ...
-func TranslateCommands(writer io.Writer, commands []*parser.Command) (
+func translateCommands(commands []*parser.Command, outWriter io.Writer) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
 ) {
 	for _, command := range commands {
-		translatedCommand, newSettedState := translateCommand(command, writer)
+		translatedCommand, newSettedState := translateCommand(command, outWriter)
 		translatedCommands = append(translatedCommands, translatedCommand)
 		if len(newSettedState) == 0 {
 			continue

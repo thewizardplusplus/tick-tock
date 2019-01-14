@@ -287,14 +287,14 @@ func TestTranslateCommands(test *testing.T) {
 	for _, testData := range []struct {
 		name             string
 		args             args
-		makeWantCommands func(writer io.Writer) runtime.CommandGroup
+		makeWantCommands func(outWriter io.Writer) runtime.CommandGroup
 		wantState        string
 		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with commands (without a set command)",
 			args: args{[]*parser.Command{{Send: tests.GetAddress("one")}, {Send: tests.GetAddress("two")}}},
-			makeWantCommands: func(writer io.Writer) runtime.CommandGroup {
+			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSendCommand("two")}
 			},
 			wantErr: assert.NoError,
@@ -302,7 +302,7 @@ func TestTranslateCommands(test *testing.T) {
 		{
 			name: "success with commands (with a set command)",
 			args: args{[]*parser.Command{{Send: tests.GetAddress("one")}, {Set: tests.GetAddress("two")}}},
-			makeWantCommands: func(writer io.Writer) runtime.CommandGroup {
+			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSetCommand("two")}
 			},
 			wantState: "two",
@@ -310,7 +310,7 @@ func TestTranslateCommands(test *testing.T) {
 		},
 		{
 			name:             "success without commands",
-			makeWantCommands: func(writer io.Writer) runtime.CommandGroup { return nil },
+			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.NoError,
 		},
 		{
@@ -323,17 +323,16 @@ func TestTranslateCommands(test *testing.T) {
 					{Set: tests.GetAddress("four")},
 				},
 			},
-			makeWantCommands: func(writer io.Writer) runtime.CommandGroup { return nil },
+			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			writer := new(mocks.Writer)
-			wantCommands := testData.makeWantCommands(writer)
-			gotCommands, gotState, err := TranslateCommands(writer, testData.args.commands)
+			outWriter := new(mocks.Writer)
+			gotCommands, gotState, err := translateCommands(testData.args.commands, outWriter)
 
-			writer.AssertExpectations(test)
-			assert.Equal(test, wantCommands, gotCommands)
+			outWriter.AssertExpectations(test)
+			assert.Equal(test, testData.makeWantCommands(outWriter), gotCommands)
 			assert.Equal(test, testData.wantState, gotState)
 			testData.wantErr(test, err)
 		})
