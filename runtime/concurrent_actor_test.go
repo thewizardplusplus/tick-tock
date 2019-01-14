@@ -95,7 +95,7 @@ func TestConcurrentActor(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			actor := &Actor{testData.args.initialState, nil}
+			actor := &Actor{nil, testData.args.initialState}
 			context := new(contextmocks.Context)
 			if len(testData.args.messages) != 0 {
 				context.On("SetStateHolder", actor).Return()
@@ -192,7 +192,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				states := args.makeStates(context, &log)
 				defer checkStates(test, states)
 
-				actor := &Actor{args.initialState, states}
+				actor := &Actor{states, args.initialState}
 				context.On("SetStateHolder", actor).Return()
 
 				concurrentActor := NewConcurrentActor(0, actor, Dependencies{waiter, errorHandler})

@@ -10,8 +10,8 @@ import (
 
 func TestNewActor(test *testing.T) {
 	type args struct {
-		initialState string
 		states       StateGroup
+		initialState string
 	}
 
 	for _, testData := range []struct {
@@ -22,18 +22,18 @@ func TestNewActor(test *testing.T) {
 	}{
 		{
 			name:    "success",
-			args:    args{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
-			want:    &Actor{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
+			args:    args{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
+			want:    &Actor{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "error",
-			args:    args{"state_unknown", StateGroup{"state_0": nil, "state_1": nil}},
+			args:    args{StateGroup{"state_0": nil, "state_1": nil}, "state_unknown"},
 			wantErr: assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			got, err := NewActor(testData.args.initialState, testData.args.states)
+			got, err := NewActor(testData.args.states, testData.args.initialState)
 			assert.Equal(test, testData.want, got)
 			testData.wantErr(test, err)
 		})
@@ -43,8 +43,8 @@ func TestNewActor(test *testing.T) {
 func TestActor_SetState(test *testing.T) {
 	type (
 		fields struct {
-			currentState string
 			states       StateGroup
+			currentState string
 		}
 		args struct {
 			state string
@@ -60,28 +60,28 @@ func TestActor_SetState(test *testing.T) {
 	}{
 		{
 			name:             "success with a different state",
-			fields:           fields{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
+			fields:           fields{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
 			args:             args{"state_1"},
 			wantCurrentState: "state_1",
 			wantErr:          assert.NoError,
 		},
 		{
 			name:             "success with a same state",
-			fields:           fields{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
+			fields:           fields{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
 			args:             args{"state_0"},
 			wantCurrentState: "state_0",
 			wantErr:          assert.NoError,
 		},
 		{
 			name:             "error",
-			fields:           fields{"state_0", StateGroup{"state_0": nil, "state_1": nil}},
+			fields:           fields{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
 			args:             args{"state_unknown"},
 			wantCurrentState: "state_0",
 			wantErr:          assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			actor := Actor{testData.fields.currentState, testData.fields.states}
+			actor := Actor{testData.fields.states, testData.fields.currentState}
 			err := actor.SetState(testData.args.state)
 			assert.Equal(test, testData.wantCurrentState, actor.currentState)
 			testData.wantErr(test, err)
@@ -92,8 +92,8 @@ func TestActor_SetState(test *testing.T) {
 func TestActor_ProcessMessage(test *testing.T) {
 	type (
 		fields struct {
-			currentState string
 			makeStates   func(context context.Context, log *commandLog) StateGroup
+			currentState string
 		}
 		args struct {
 			message string
@@ -110,12 +110,12 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				currentState: "state_1",
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_3": {withCalls()},
 					})
 				},
+				currentState: "state_1",
 			},
 			args:    args{"message_3"},
 			wantLog: []int{15, 16, 17, 18, 19},
@@ -124,12 +124,12 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "error",
 			fields: fields{
-				currentState: "state_1",
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
 					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
 						"message_3": {withErrOn(2)},
 					})
 				},
+				currentState: "state_1",
 			},
 			args:    args{"message_3"},
 			wantLog: []int{15, 16, 17},
@@ -137,7 +137,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			actor := Actor{testData.fields.currentState, nil}
+			actor := Actor{nil, testData.fields.currentState}
 			context := new(mocks.Context)
 			context.On("SetStateHolder", &actor).Return()
 
