@@ -5,6 +5,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+// State represents a description of a state in which several messages can be received.
+// Also, it keeps a state name.
+type State struct {
+	Name     string     `parser:"\"state\" @Ident"`
+	Messages []*Message `parser:"{ @@ } \";\""`
+}
+
 // Message represents a message handler containing several commands. Also, it keeps a handler name.
 type Message struct {
 	Name     string     `parser:"\"message\" @Ident"`
