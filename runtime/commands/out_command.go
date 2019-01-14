@@ -6,12 +6,6 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
-// Writer ...
-//go:generate mockery -name=Writer -case=underscore
-type Writer interface {
-	io.Writer
-}
-
 // OutCommand ...
 type OutCommand struct {
 	writer  io.Writer
