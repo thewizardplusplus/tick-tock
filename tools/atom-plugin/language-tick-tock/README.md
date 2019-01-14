@@ -29,4 +29,4 @@ Restart Atom.
 
 The MIT License (MIT)
 
-Copyright &copy; 2018 thewizardplusplus
+Copyright &copy; 2019 thewizardplusplus
