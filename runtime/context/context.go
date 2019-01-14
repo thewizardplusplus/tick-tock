@@ -20,6 +20,7 @@ type Context interface {
 
 	SetMessageSender(sender MessageSender)
 	SetStateHolder(holder StateHolder)
+	Copy() Context
 }
 
 // DefaultContext ...

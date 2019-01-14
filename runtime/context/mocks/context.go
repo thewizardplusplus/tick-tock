@@ -10,6 +10,22 @@ type Context struct {
 	mock.Mock
 }
 
+// Copy provides a mock function with given fields:
+func (_m *Context) Copy() context.Context {
+	ret := _m.Called()
+
+	var r0 context.Context
+	if rf, ok := ret.Get(0).(func() context.Context); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(context.Context)
+		}
+	}
+
+	return r0
+}
+
 // SendMessage provides a mock function with given fields: message
 func (_m *Context) SendMessage(message string) {
 	_m.Called(message)
