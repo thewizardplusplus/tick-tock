@@ -85,9 +85,7 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 			err := states.ProcessMessage(testData.args.state, testData.args.message)
 
 			assert.Equal(test, testData.wantLog, log)
-			for _, messages := range states {
-				checkMessages(test, messages)
-			}
+			checkStates(test, states)
 			testData.wantErr(test, err)
 		})
 	}

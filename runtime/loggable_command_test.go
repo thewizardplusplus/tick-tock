@@ -58,6 +58,12 @@ func checkMessages(test *testing.T, messages MessageGroup) {
 	}
 }
 
+func checkStates(test *testing.T, states StateGroup) {
+	for _, messages := range states {
+		checkMessages(test, messages)
+	}
+}
+
 func (command *loggableCommand) Run() error {
 	*command.log = append(*command.log, command.id)
 	return command.MockCommand.Run()
