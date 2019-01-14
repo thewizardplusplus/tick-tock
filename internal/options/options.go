@@ -40,11 +40,11 @@ func Parse(args []string, dependencies Dependencies) (interpreter.Options, error
 	app.Flag("inbox", "Inbox buffer size.").
 		Short('i').
 		Default(strconv.Itoa(DefaultInboxSize)).
-		IntVar(&options.InboxSize)
+		IntVar(&options.Translator.InboxSize)
 	app.Flag("state", "Initial state.").
 		Short('s').
 		Default(DefaultInitialState).
-		StringVar(&options.InitialState)
+		StringVar(&options.Translator.InitialState)
 	app.Flag("message", "Initial message.").
 		Short('m').
 		Default(DefaultInitialMessage).

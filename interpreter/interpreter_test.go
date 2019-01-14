@@ -52,7 +52,7 @@ func TestInterpret(test *testing.T) {
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
 							`actor state %s message %s out "%s";;;`,
-							options.InitialState,
+							options.Translator.InitialState,
 							options.InitialMessage,
 							message,
 						))
@@ -100,7 +100,7 @@ func TestInterpret(test *testing.T) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
-						return copy(buffer, fmt.Sprintf("actor state %s;; actor;", options.InitialState))
+						return copy(buffer, fmt.Sprintf("actor state %s;; actor;", options.Translator.InitialState))
 					}, io.EOF)
 			},
 			wantErr: assert.Error,
@@ -108,11 +108,11 @@ func TestInterpret(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			options := Options{
-				Options: translator.Options{
+				InitialMessage: "__initialize__",
+				Translator: translator.Options{
 					InboxSize:    tests.BufferedInbox,
 					InitialState: "__initialization__",
 				},
-				InitialMessage: "__initialize__",
 			}
 			context := new(contextmocks.Context)
 			waiter := new(waitermocks.Waiter)

@@ -2,6 +2,7 @@ package options
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -35,11 +36,11 @@ Args:
 
 `
 	defaultOptions := interpreter.Options{
-		Options: translator.Options{
+		InitialMessage: DefaultInitialMessage,
+		Translator: translator.Options{
 			InboxSize:    DefaultInboxSize,
 			InitialState: DefaultInitialState,
 		},
-		InitialMessage: DefaultInitialMessage,
 	}
 	for _, testData := range []struct {
 		name                   string
@@ -92,28 +93,28 @@ Args:
 			name:                   "success with the -i flag",
 			args:                   args{[]string{executablePath, "-i", "1000"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "InboxSize", 1000),
+			want:                   setOption(defaultOptions, "Translator.InboxSize", 1000),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the --inbox flag",
 			args:                   args{[]string{executablePath, "--inbox", "1000"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "InboxSize", 1000),
+			want:                   setOption(defaultOptions, "Translator.InboxSize", 1000),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the -s flag",
 			args:                   args{[]string{executablePath, "-s", "test"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "InitialState", "test"),
+			want:                   setOption(defaultOptions, "Translator.InitialState", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the --state flag",
 			args:                   args{[]string{executablePath, "--state", "test"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "InitialState", "test"),
+			want:                   setOption(defaultOptions, "Translator.InitialState", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
@@ -207,7 +208,13 @@ func initializeForUsage(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exite
 	exiter.On("Exit", 0).Return()
 }
 
-func setOption(options interpreter.Options, name string, value interface{}) interpreter.Options {
-	reflect.ValueOf(&options).Elem().FieldByName(name).Set(reflect.ValueOf(value))
+func setOption(options interpreter.Options, path string, value interface{}) interpreter.Options {
+	optionReflection := reflect.ValueOf(&options).Elem()
+	for _, field := range strings.Split(path, ".") {
+		optionReflection = optionReflection.FieldByName(field)
+	}
+
+	optionReflection.Set(reflect.ValueOf(value))
+
 	return options
 }

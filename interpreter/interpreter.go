@@ -8,10 +8,9 @@ import (
 
 // Options ...
 type Options struct {
-	translator.Options
-
 	Filename       string
 	InitialMessage string
+	Translator     translator.Options
 }
 
 // Dependencies ...
@@ -32,7 +31,7 @@ func Interpret(context context.Context, options Options, dependencies Dependenci
 		return err
 	}
 
-	actors, err := translator.Translate(program.Actors, options.Options, dependencies.Dependencies)
+	actors, err := translator.Translate(program.Actors, options.Translator, dependencies.Dependencies)
 	if err != nil {
 		return err
 	}
