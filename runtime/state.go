@@ -9,7 +9,6 @@ import (
 type StateGroup map[string]MessageGroup
 
 // ProcessMessage ...
-// TODO: wrap the unknownStateError error with the method name.
 func (states StateGroup) ProcessMessage(
 	context context.Context,
 	state string,
