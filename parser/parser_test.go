@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thewizardplusplus/tick-tock/tests"
+	"github.com/thewizardplusplus/tick-tock/internal/tests"
 )
 
 func TestParse(test *testing.T) {

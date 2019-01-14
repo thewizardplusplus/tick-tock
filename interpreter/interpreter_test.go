@@ -11,8 +11,8 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
-	"github.com/thewizardplusplus/tick-tock/tests"
-	testsmocks "github.com/thewizardplusplus/tick-tock/tests/mocks"
+	"github.com/thewizardplusplus/tick-tock/internal/tests"
+	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/translator"
 )
 

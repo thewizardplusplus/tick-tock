@@ -12,8 +12,8 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
-	"github.com/thewizardplusplus/tick-tock/tests"
-	testsmocks "github.com/thewizardplusplus/tick-tock/tests/mocks"
+	"github.com/thewizardplusplus/tick-tock/internal/tests"
+	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 )
 
 func TestTranslate(test *testing.T) {
