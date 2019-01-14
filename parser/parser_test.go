@@ -119,6 +119,18 @@ func TestParseToAST(test *testing.T) {
 			wantAST: new(Actor),
 			wantErr: assert.NoError,
 		},
+		{
+			name:    "Program/nonempty",
+			args:    args{"actor state one;; actor state two;;", new(Program)},
+			wantAST: &Program{[]*Actor{{[]*State{{false, "one", nil}}}, {[]*State{{false, "two", nil}}}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Program/empty",
+			args:    args{"", new(Program)},
+			wantAST: new(Program),
+			wantErr: assert.NoError,
+		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			err := ParseToAST(testData.args.code, testData.args.ast)
