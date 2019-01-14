@@ -29,4 +29,10 @@ Restart Atom.
 
 The MIT License (MIT)
 
+Copyright &copy; 2009 Rasmus Andersson
+
+Copyright &copy; 2012 The GoSublime Authors
+
+Copyright &copy; 2014 GitHub Inc.
+
 Copyright &copy; 2019 thewizardplusplus
