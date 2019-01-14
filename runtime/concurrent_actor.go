@@ -2,6 +2,12 @@ package runtime
 
 import "github.com/pkg/errors"
 
+//go:generate mockery -name=Waiter -inpkg -case=underscore -testonly
+type Waiter interface {
+	Add(delta int)
+	Done()
+}
+
 //go:generate mockery -name=ErrorHandler -inpkg -case=underscore -testonly
 type ErrorHandler interface {
 	HandleError(err error)
@@ -10,11 +16,12 @@ type ErrorHandler interface {
 type ConcurrentActor struct {
 	inbox        chan string
 	innerActor   *Actor
+	waiter       Waiter
 	errorHandler ErrorHandler
 }
 
-func NewConcurrentActor(actor *Actor, errorHandler ErrorHandler) ConcurrentActor {
-	return ConcurrentActor{make(chan string), actor, errorHandler}
+func NewConcurrentActor(actor *Actor, waiter Waiter, errorHandler ErrorHandler) ConcurrentActor {
+	return ConcurrentActor{make(chan string), actor, waiter, errorHandler}
 }
 
 func (actor ConcurrentActor) Start() {
@@ -24,10 +31,13 @@ func (actor ConcurrentActor) Start() {
 				err = errors.Wrapf(err, "unable to process the message %s", message)
 				actor.errorHandler.HandleError(err)
 			}
+
+			actor.waiter.Done()
 		}
 	}()
 }
 
 func (actor ConcurrentActor) SendMessage(message string) {
+	actor.waiter.Add(1)
 	go func() { actor.inbox <- message }()
 }
