@@ -66,12 +66,14 @@ func TestTranslateMessages(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name     string
-		args     args
-		makeWant func(writer io.Writer) runtime.MessageGroup
+		name             string
+		args             args
+		makeWantMessages func(writer io.Writer) runtime.MessageGroup
+		wantStates       SettedStateGroup
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
-			name: "success with nonempty messages",
+			name: "success with nonempty messages (without set commands)",
 			args: args{
 				messages: []*parser.Message{
 					{
@@ -90,7 +92,7 @@ func TestTranslateMessages(test *testing.T) {
 					},
 				},
 			},
-			makeWant: func(writer io.Writer) runtime.MessageGroup {
+			makeWantMessages: func(writer io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{
 					"message_0": runtime.CommandGroup{
 						commands.NewSendCommand("command_0"),
@@ -102,26 +104,100 @@ func TestTranslateMessages(test *testing.T) {
 					},
 				}
 			},
+			wantStates: make(SettedStateGroup),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success with nonempty messages (with set commands)",
+			args: args{
+				messages: []*parser.Message{
+					{
+						Name: "message_0",
+						Commands: []*parser.Command{
+							{Send: tests.GetAddress("command_0")},
+							{Set: tests.GetAddress("command_1")},
+						},
+					},
+					{
+						Name: "message_1",
+						Commands: []*parser.Command{
+							{Send: tests.GetAddress("command_2")},
+							{Set: tests.GetAddress("command_3")},
+						},
+					},
+				},
+			},
+			makeWantMessages: func(writer io.Writer) runtime.MessageGroup {
+				return runtime.MessageGroup{
+					"message_0": runtime.CommandGroup{
+						commands.NewSendCommand("command_0"),
+						commands.NewSetCommand("command_1"),
+					},
+					"message_1": runtime.CommandGroup{
+						commands.NewSendCommand("command_2"),
+						commands.NewSetCommand("command_3"),
+					},
+				}
+			},
+			wantStates: SettedStateGroup{"message_0": "command_1", "message_1": "command_3"},
+			wantErr:    assert.NoError,
 		},
 		{
 			name: "success with empty messages",
 			args: args{[]*parser.Message{{"message_0", nil}, {"message_1", nil}}},
-			makeWant: func(writer io.Writer) runtime.MessageGroup {
+			makeWantMessages: func(writer io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{"message_0": nil, "message_1": nil}
 			},
+			wantStates: make(SettedStateGroup),
+			wantErr:    assert.NoError,
 		},
 		{
-			name:     "success without messages",
-			makeWant: func(writer io.Writer) runtime.MessageGroup { return runtime.MessageGroup{} },
+			name:             "success without messages",
+			makeWantMessages: func(writer io.Writer) runtime.MessageGroup { return runtime.MessageGroup{} },
+			wantStates:       make(SettedStateGroup),
+			wantErr:          assert.NoError,
+		},
+		{
+			name:             "error with duplicate messages",
+			args:             args{[]*parser.Message{{"test", nil}, {"test", nil}}},
+			makeWantMessages: func(writer io.Writer) runtime.MessageGroup { return nil },
+			wantErr:          assert.Error,
+		},
+		{
+			name: "error with commands translation",
+			args: args{
+				messages: []*parser.Message{
+					{
+						Name: "message_0",
+						Commands: []*parser.Command{
+							{Send: tests.GetAddress("command_0")},
+							{Send: tests.GetAddress("command_1")},
+						},
+					},
+					{
+						Name: "message_1",
+						Commands: []*parser.Command{
+							{Send: tests.GetAddress("command_2")},
+							{Set: tests.GetAddress("command_3")},
+							{Send: tests.GetAddress("command_4")},
+							{Set: tests.GetAddress("command_5")},
+						},
+					},
+				},
+			},
+			makeWantMessages: func(writer io.Writer) runtime.MessageGroup { return nil },
+			wantErr:          assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			writer := new(mocks.Writer)
-			want := testData.makeWant(writer)
-			got := TranslateMessages(writer, testData.args.messages)
+			wantMessages := testData.makeWantMessages(writer)
+			gotMessages, gotStates, err := TranslateMessages(writer, testData.args.messages)
 
 			writer.AssertExpectations(test)
-			assert.Equal(test, want, got)
+			assert.Equal(test, wantMessages, gotMessages)
+			assert.Equal(test, testData.wantStates, gotStates)
+			testData.wantErr(test, err)
 		})
 	}
 }

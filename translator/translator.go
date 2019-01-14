@@ -18,22 +18,40 @@ import (
 func TranslateStates(writer io.Writer, states []*parser.State) runtime.StateGroup {
 	translatedStates := make(runtime.StateGroup)
 	for _, state := range states {
-		translatedStates[state.Name] = TranslateMessages(writer, state.Messages)
+		translatedStates[state.Name], _, _ = TranslateMessages(writer, state.Messages)
 	}
 
 	return translatedStates
 }
 
+// SettedStateGroup ...
+type SettedStateGroup map[string]string
+
 // TranslateMessages ...
-// TODO: disable same messages names.
-// TODO: return a map of messages names to setted states (with nonempty states only).
-func TranslateMessages(writer io.Writer, messages []*parser.Message) runtime.MessageGroup {
-	translatedMessages := make(runtime.MessageGroup)
+func TranslateMessages(writer io.Writer, messages []*parser.Message) (
+	translatedMessages runtime.MessageGroup,
+	settedStates SettedStateGroup,
+	err error,
+) {
+	translatedMessages = make(runtime.MessageGroup)
+	settedStates = make(SettedStateGroup)
 	for _, message := range messages {
-		translatedMessages[message.Name], _, _ = TranslateCommands(writer, message.Commands)
+		if _, ok := translatedMessages[message.Name]; ok {
+			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
+		}
+
+		translatedCommands, settedState, err := TranslateCommands(writer, message.Commands)
+		if err != nil {
+			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
+		}
+
+		translatedMessages[message.Name] = translatedCommands
+		if len(settedState) != 0 {
+			settedStates[message.Name] = settedState
+		}
 	}
 
-	return translatedMessages
+	return translatedMessages, settedStates, nil
 }
 
 // TranslateCommands ...
@@ -49,7 +67,7 @@ func TranslateCommands(writer io.Writer, commands []*parser.Command) (
 			continue
 		}
 		if len(settedState) != 0 {
-			err = errors.Errorf("second set command %s (first was %s)", newSettedState, settedState)
+			err := errors.Errorf("second set command %s (first was %s)", newSettedState, settedState)
 			return nil, "", err
 		}
 
