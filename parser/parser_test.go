@@ -86,8 +86,14 @@ func TestParseToAST(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Command/out/nonempty",
+			name:    "Command/out/nonempty/interpreted",
 			args:    args{`out "test"`, new(Command)},
+			wantAST: &Command{Out: tests.GetAddress("test")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Command/out/nonempty/raw",
+			args:    args{"out `test`", new(Command)},
 			wantAST: &Command{Out: tests.GetAddress("test")},
 			wantErr: assert.NoError,
 		},
