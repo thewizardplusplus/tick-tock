@@ -2,15 +2,79 @@ package translator
 
 import (
 	"io"
+	"reflect"
 	"testing"
+	"unsafe"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	"github.com/thewizardplusplus/tick-tock/tests"
-	"github.com/thewizardplusplus/tick-tock/tests/mocks"
+	testsmocks "github.com/thewizardplusplus/tick-tock/tests/mocks"
 )
+
+func TestTranslate(test *testing.T) {
+	type args struct {
+		actors []*parser.Actor
+	}
+
+	for _, testData := range []struct {
+		name     string
+		args     args
+		makeWant func(dependencies Dependencies) runtime.ConcurrentActorGroup
+		wantErr  assert.ErrorAssertionFunc
+	}{
+		{
+			name: "success with actors",
+			args: args{
+				actors: []*parser.Actor{
+					{[]*parser.State{{false, "one", nil}}},
+					{[]*parser.State{{false, "two", nil}}},
+				},
+			},
+			makeWant: func(dependencies Dependencies) runtime.ConcurrentActorGroup {
+				actorOne, _ := runtime.NewActor(runtime.StateGroup{"one": runtime.MessageGroup{}}, "one")
+				actorTwo, _ := runtime.NewActor(runtime.StateGroup{"two": runtime.MessageGroup{}}, "two")
+				return runtime.ConcurrentActorGroup{
+					runtime.NewConcurrentActor(1, actorOne, dependencies.Dependencies),
+					runtime.NewConcurrentActor(1, actorTwo, dependencies.Dependencies),
+				}
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:     "success without actors",
+			args:     args{},
+			makeWant: func(dependencies Dependencies) runtime.ConcurrentActorGroup { return nil },
+			wantErr:  assert.NoError,
+		},
+		{
+			name:     "error",
+			args:     args{[]*parser.Actor{{[]*parser.State{{false, "test", nil}}}, {}}},
+			makeWant: func(dependencies Dependencies) runtime.ConcurrentActorGroup { return nil },
+			wantErr:  assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			dependencies := Dependencies{
+				Dependencies: runtime.Dependencies{
+					Waiter:       new(runtimemocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+				OutWriter: new(testsmocks.Writer),
+			}
+			got, err := Translate(1, testData.args.actors, dependencies)
+
+			dependencies.Dependencies.Waiter.(*runtimemocks.Waiter).AssertExpectations(test)
+			dependencies.Dependencies.ErrorHandler.(*runtimemocks.ErrorHandler).AssertExpectations(test)
+			dependencies.OutWriter.(*testsmocks.Writer).AssertExpectations(test)
+			assert.Equal(test, cleanInboxes(testData.makeWant(dependencies)), cleanInboxes(got))
+			testData.wantErr(test, err)
+		})
+	}
+}
 
 func TestTranslateStates(test *testing.T) {
 	type args struct {
@@ -125,7 +189,7 @@ func TestTranslateStates(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			outWriter := new(mocks.Writer)
+			outWriter := new(testsmocks.Writer)
 			gotStates, gotInitialState, err := translateStates(testData.args.states, outWriter)
 
 			outWriter.AssertExpectations(test)
@@ -268,7 +332,7 @@ func TestTranslateMessages(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			outWriter := new(mocks.Writer)
+			outWriter := new(testsmocks.Writer)
 			gotMessages, gotStates, err := translateMessages(testData.args.messages, outWriter)
 
 			outWriter.AssertExpectations(test)
@@ -328,7 +392,7 @@ func TestTranslateCommands(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			outWriter := new(mocks.Writer)
+			outWriter := new(testsmocks.Writer)
 			gotCommands, gotState, err := translateCommands(testData.args.commands, outWriter)
 
 			outWriter.AssertExpectations(test)
@@ -386,7 +450,7 @@ func TestTranslateCommand(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			outWriter := new(mocks.Writer)
+			outWriter := new(testsmocks.Writer)
 			gotCommand, gotState := translateCommand(testData.args.command, outWriter)
 
 			outWriter.AssertExpectations(test)
@@ -394,4 +458,14 @@ func TestTranslateCommand(test *testing.T) {
 			assert.Equal(test, testData.wantState, gotState)
 		})
 	}
+}
+
+func cleanInboxes(actors runtime.ConcurrentActorGroup) runtime.ConcurrentActorGroup {
+	actorsReflection := reflect.ValueOf(actors)
+	for index := range actors {
+		field := actorsReflection.Index(index).FieldByName("inbox")
+		*(*chan string)(unsafe.Pointer(field.UnsafeAddr())) = nil
+	}
+
+	return actors
 }
