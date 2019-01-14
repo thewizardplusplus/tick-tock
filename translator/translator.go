@@ -17,7 +17,7 @@ type Dependencies struct {
 }
 
 // Translate ...
-func Translate(inboxSize int, actors []*parser.Actor, dependencies Dependencies) (
+func Translate(actors []*parser.Actor, inboxSize int, dependencies Dependencies) (
 	translatedActors runtime.ConcurrentActorGroup,
 	err error,
 ) {

@@ -24,7 +24,7 @@ func TestTranslate(test *testing.T) {
 	for _, testData := range []struct {
 		name     string
 		args     args
-		makeWant func(dependencies Dependencies) runtime.ConcurrentActorGroup
+		makeWant func(inboxSize int, dependencies Dependencies) runtime.ConcurrentActorGroup
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
@@ -35,30 +35,34 @@ func TestTranslate(test *testing.T) {
 					{[]*parser.State{{false, "two", nil}}},
 				},
 			},
-			makeWant: func(dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWant: func(inboxSize int, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(runtime.StateGroup{"one": runtime.MessageGroup{}}, "one")
 				actorTwo, _ := runtime.NewActor(runtime.StateGroup{"two": runtime.MessageGroup{}}, "two")
 				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(actorOne, tests.BufferedInbox, dependencies.Dependencies),
-					runtime.NewConcurrentActor(actorTwo, tests.BufferedInbox, dependencies.Dependencies),
+					runtime.NewConcurrentActor(actorOne, inboxSize, dependencies.Dependencies),
+					runtime.NewConcurrentActor(actorTwo, inboxSize, dependencies.Dependencies),
 				}
 			},
 			wantErr: assert.NoError,
 		},
 		{
-			name:     "success without actors",
-			args:     args{},
-			makeWant: func(dependencies Dependencies) runtime.ConcurrentActorGroup { return nil },
-			wantErr:  assert.NoError,
+			name: "success without actors",
+			makeWant: func(inboxSize int, dependencies Dependencies) runtime.ConcurrentActorGroup {
+				return nil
+			},
+			wantErr: assert.NoError,
 		},
 		{
-			name:     "error",
-			args:     args{[]*parser.Actor{{[]*parser.State{{false, "test", nil}}}, {}}},
-			makeWant: func(dependencies Dependencies) runtime.ConcurrentActorGroup { return nil },
-			wantErr:  assert.Error,
+			name: "error",
+			args: args{[]*parser.Actor{{[]*parser.State{{false, "test", nil}}}, {}}},
+			makeWant: func(inboxSize int, dependencies Dependencies) runtime.ConcurrentActorGroup {
+				return nil
+			},
+			wantErr: assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			inboxSize := tests.BufferedInbox
 			waiter := new(runtimemocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			outWriter := new(testsmocks.Writer)
@@ -66,10 +70,10 @@ func TestTranslate(test *testing.T) {
 				Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
 				OutWriter:    outWriter,
 			}
-			got, err := Translate(tests.BufferedInbox, testData.args.actors, dependencies)
+			got, err := Translate(testData.args.actors, inboxSize, dependencies)
 
 			mock.AssertExpectationsForObjects(test, waiter, errorHandler, outWriter)
-			assert.Equal(test, cleanInboxes(testData.makeWant(dependencies)), cleanInboxes(got))
+			assert.Equal(test, cleanInboxes(testData.makeWant(inboxSize, dependencies)), cleanInboxes(got))
 			testData.wantErr(test, err)
 		})
 	}
