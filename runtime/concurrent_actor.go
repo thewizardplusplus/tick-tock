@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
@@ -35,7 +34,6 @@ func (actor ConcurrentActor) Start(context context.Context) {
 	go func() {
 		for message := range actor.inbox {
 			if err := actor.innerActor.ProcessMessage(context, message); err != nil {
-				err = errors.Wrapf(err, "unable to process the message %s", message)
 				actor.dependencies.ErrorHandler.HandleError(err)
 			}
 
