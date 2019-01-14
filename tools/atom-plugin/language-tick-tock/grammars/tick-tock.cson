@@ -42,7 +42,7 @@
 
   # language constants
   {
-    'match': '\\b(initial|__initialize__)\\b'
+    'match': '\\b(__initialization__|__initialize__)\\b'
     'name': 'constant.language.ticktock'
   }
 
