@@ -10,11 +10,6 @@ import (
 	"github.com/thewizardplusplus/tick-tock/tests/mocks"
 )
 
-func TestNewUnknownStateError(test *testing.T) {
-	got := newUnknownStateError("test")
-	assert.Equal(test, "unknown state test", got.Error())
-}
-
 func TestDefaultErrorHandler(test *testing.T) {
 	type args struct {
 		err error
@@ -29,7 +24,7 @@ func TestDefaultErrorHandler(test *testing.T) {
 		{
 			name:        "success with a common error",
 			args:        args{iotest.ErrTimeout},
-			wantMessage: "error: timeout",
+			wantMessage: "error: timeout\n",
 			wantCode:    1,
 		},
 		{
@@ -55,4 +50,9 @@ func TestDefaultErrorHandler(test *testing.T) {
 			mock.AssertExpectationsForObjects(test, writer, exiter)
 		})
 	}
+}
+
+func TestNewUnknownStateError(test *testing.T) {
+	got := newUnknownStateError("test")
+	assert.Equal(test, "unknown state test", got.Error())
 }

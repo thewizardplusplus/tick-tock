@@ -10,10 +10,6 @@ import (
 // ErrUserExit ...
 var ErrUserExit = errors.New("user exit")
 
-func newUnknownStateError(state string) error {
-	return errors.Errorf("unknown state %s", state)
-}
-
 // ErrorHandler ...
 //go:generate mockery -name=ErrorHandler -case=underscore
 type ErrorHandler interface {
@@ -35,9 +31,13 @@ func NewDefaultErrorHandler(writer io.Writer, exiter func(code int)) DefaultErro
 func (handler DefaultErrorHandler) HandleError(err error) {
 	var code int
 	if errors.Cause(err) != ErrUserExit {
-		handler.writer.Write([]byte(fmt.Sprintf("error: %s", err))) // nolint: gosec
+		handler.writer.Write([]byte(fmt.Sprintf("error: %s\n", err))) // nolint: gosec
 		code = 1
 	}
 
 	handler.exiter(code)
+}
+
+func newUnknownStateError(state string) error {
+	return errors.Errorf("unknown state %s", state)
 }
