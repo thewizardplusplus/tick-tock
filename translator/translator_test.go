@@ -574,14 +574,18 @@ func TestTranslateCommand(test *testing.T) {
 func cleanInboxes(actors runtime.ConcurrentActorGroup) runtime.ConcurrentActorGroup {
 	actorsReflection := reflect.ValueOf(actors)
 	for index := range actors {
-		field := actorsReflection.Index(index).FieldByName("inbox")
-		*(*chan string)(unsafe.Pointer(field.UnsafeAddr())) = nil
+		fieldAddress := getFieldAddress(actorsReflection.Index(index), "inbox")
+		*(*chan string)(fieldAddress) = nil
 	}
 
 	return actors
 }
 
 func cleanSleepDependencies(command *commands.SleepCommand) {
-	field := reflect.ValueOf(command).Elem().FieldByName("dependencies")
-	*(*commands.SleepDependencies)(unsafe.Pointer(field.UnsafeAddr())) = commands.SleepDependencies{}
+	fieldAddress := getFieldAddress(reflect.ValueOf(command).Elem(), "dependencies")
+	*(*commands.SleepDependencies)(fieldAddress) = commands.SleepDependencies{}
+}
+
+func getFieldAddress(value reflect.Value, name string) unsafe.Pointer {
+	return unsafe.Pointer(value.FieldByName(name).UnsafeAddr())
 }
