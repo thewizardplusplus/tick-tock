@@ -6,7 +6,7 @@ const (
 	BufferedInbox
 )
 
-// GetAddress ...
-func GetAddress(s string) *string {
+// GetStringAddress ...
+func GetStringAddress(s string) *string {
 	return &s
 }

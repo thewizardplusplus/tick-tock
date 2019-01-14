@@ -180,15 +180,15 @@ func TestTranslateStates(test *testing.T) {
 							{
 								Name: "message_0",
 								Commands: []*parser.Command{
-									{Send: tests.GetAddress("command_0")},
-									{Set: tests.GetAddress("state_unknown")},
+									{Send: tests.GetStringAddress("command_0")},
+									{Set: tests.GetStringAddress("state_unknown")},
 								},
 							},
 							{
 								Name: "message_1",
 								Commands: []*parser.Command{
-									{Send: tests.GetAddress("command_2")},
-									{Set: tests.GetAddress("state_unknown")},
+									{Send: tests.GetStringAddress("command_2")},
+									{Set: tests.GetStringAddress("state_unknown")},
 								},
 							},
 						},
@@ -238,15 +238,15 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: tests.GetAddress("command_0")},
-							{Send: tests.GetAddress("command_1")},
+							{Send: tests.GetStringAddress("command_0")},
+							{Send: tests.GetStringAddress("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: tests.GetAddress("command_2")},
-							{Send: tests.GetAddress("command_3")},
+							{Send: tests.GetStringAddress("command_2")},
+							{Send: tests.GetStringAddress("command_3")},
 						},
 					},
 				},
@@ -273,15 +273,15 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: tests.GetAddress("command_0")},
-							{Set: tests.GetAddress("command_1")},
+							{Send: tests.GetStringAddress("command_0")},
+							{Set: tests.GetStringAddress("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: tests.GetAddress("command_2")},
-							{Set: tests.GetAddress("command_3")},
+							{Send: tests.GetStringAddress("command_2")},
+							{Set: tests.GetStringAddress("command_3")},
 						},
 					},
 				},
@@ -331,17 +331,17 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: tests.GetAddress("command_0")},
-							{Send: tests.GetAddress("command_1")},
+							{Send: tests.GetStringAddress("command_0")},
+							{Send: tests.GetStringAddress("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: tests.GetAddress("command_2")},
-							{Set: tests.GetAddress("command_3")},
-							{Send: tests.GetAddress("command_4")},
-							{Set: tests.GetAddress("command_5")},
+							{Send: tests.GetStringAddress("command_2")},
+							{Set: tests.GetStringAddress("command_3")},
+							{Send: tests.GetStringAddress("command_4")},
+							{Set: tests.GetStringAddress("command_5")},
 						},
 					},
 				},
@@ -385,7 +385,12 @@ func TestTranslateCommands(test *testing.T) {
 	}{
 		{
 			name: "success with commands (without a set command)",
-			args: args{[]*parser.Command{{Send: tests.GetAddress("one")}, {Send: tests.GetAddress("two")}}},
+			args: args{
+				commands: []*parser.Command{
+					{Send: tests.GetStringAddress("one")},
+					{Send: tests.GetStringAddress("two")},
+				},
+			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSendCommand("two")}
 			},
@@ -393,7 +398,12 @@ func TestTranslateCommands(test *testing.T) {
 		},
 		{
 			name: "success with commands (with a set command)",
-			args: args{[]*parser.Command{{Send: tests.GetAddress("one")}, {Set: tests.GetAddress("two")}}},
+			args: args{
+				commands: []*parser.Command{
+					{Send: tests.GetStringAddress("one")},
+					{Set: tests.GetStringAddress("two")},
+				},
+			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSetCommand("two")}
 			},
@@ -409,10 +419,10 @@ func TestTranslateCommands(test *testing.T) {
 			name: "error",
 			args: args{
 				commands: []*parser.Command{
-					{Send: tests.GetAddress("one")},
-					{Set: tests.GetAddress("two")},
-					{Send: tests.GetAddress("three")},
-					{Set: tests.GetAddress("four")},
+					{Send: tests.GetStringAddress("one")},
+					{Set: tests.GetStringAddress("two")},
+					{Send: tests.GetStringAddress("three")},
+					{Set: tests.GetStringAddress("four")},
 				},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
@@ -454,7 +464,7 @@ func TestTranslateCommand(test *testing.T) {
 	}{
 		{
 			name: "Command/send",
-			args: args{&parser.Command{Send: tests.GetAddress("test")}},
+			args: args{&parser.Command{Send: tests.GetStringAddress("test")}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSendCommand("test")
 			},
@@ -462,7 +472,7 @@ func TestTranslateCommand(test *testing.T) {
 		},
 		{
 			name: "Command/set",
-			args: args{&parser.Command{Set: tests.GetAddress("test")}},
+			args: args{&parser.Command{Set: tests.GetStringAddress("test")}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSetCommand("test")
 			},
@@ -471,7 +481,7 @@ func TestTranslateCommand(test *testing.T) {
 		},
 		{
 			name: "Command/out/nonempty",
-			args: args{&parser.Command{Out: tests.GetAddress("test")}},
+			args: args{&parser.Command{Out: tests.GetStringAddress("test")}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("test", outWriter)
 			},
@@ -479,7 +489,7 @@ func TestTranslateCommand(test *testing.T) {
 		},
 		{
 			name: "Command/out/empty",
-			args: args{&parser.Command{Out: tests.GetAddress("")}},
+			args: args{&parser.Command{Out: tests.GetStringAddress("")}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("", outWriter)
 			},

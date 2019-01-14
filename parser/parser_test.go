@@ -76,31 +76,31 @@ func TestParseToAST(test *testing.T) {
 		{
 			name:    "Command/send",
 			args:    args{"send test", new(Command)},
-			wantAST: &Command{Send: tests.GetAddress("test")},
+			wantAST: &Command{Send: tests.GetStringAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/set",
 			args:    args{"set test", new(Command)},
-			wantAST: &Command{Set: tests.GetAddress("test")},
+			wantAST: &Command{Set: tests.GetStringAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/out/nonempty/interpreted",
 			args:    args{`out "test"`, new(Command)},
-			wantAST: &Command{Out: tests.GetAddress("test")},
+			wantAST: &Command{Out: tests.GetStringAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/out/nonempty/raw",
 			args:    args{"out `test`", new(Command)},
-			wantAST: &Command{Out: tests.GetAddress("test")},
+			wantAST: &Command{Out: tests.GetStringAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/out/empty",
 			args:    args{`out ""`, new(Command)},
-			wantAST: &Command{Out: tests.GetAddress("")},
+			wantAST: &Command{Out: tests.GetStringAddress("")},
 			wantErr: assert.NoError,
 		},
 		{
@@ -119,8 +119,11 @@ func TestParseToAST(test *testing.T) {
 			name: "Message/nonempty",
 			args: args{"message test send one send two;", new(Message)},
 			wantAST: &Message{
-				Name:     "test",
-				Commands: []*Command{{Send: tests.GetAddress("one")}, {Send: tests.GetAddress("two")}},
+				Name: "test",
+				Commands: []*Command{
+					{Send: tests.GetStringAddress("one")},
+					{Send: tests.GetStringAddress("two")},
+				},
 			},
 			wantErr: assert.NoError,
 		},
