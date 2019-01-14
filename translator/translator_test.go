@@ -48,8 +48,8 @@ func TestTranslate(test *testing.T) {
 					options.InitialState,
 				)
 				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies.Dependencies),
-					runtime.NewConcurrentActor(actorTwo, options.InboxSize, dependencies.Dependencies),
+					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies.Runtime),
+					runtime.NewConcurrentActor(actorTwo, options.InboxSize, dependencies.Runtime),
 				}
 			},
 			wantErr: assert.NoError,
@@ -92,8 +92,8 @@ func TestTranslate(test *testing.T) {
 			errorHandler := new(runtimemocks.ErrorHandler)
 			outWriter := new(testsmocks.Writer)
 			dependencies := Dependencies{
-				Dependencies: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
-				OutWriter:    outWriter,
+				OutWriter: outWriter,
+				Runtime:   runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
 			}
 			want := testData.makeWant(options, dependencies)
 			got, err := Translate(testData.makeActors(options), options, dependencies)

@@ -26,8 +26,8 @@ func main() {
 	var waiter sync.WaitGroup
 	if err := interpreter.Interpret(new(context.DefaultContext), options, interpreter.Dependencies{
 		Dependencies: translator.Dependencies{
-			Dependencies: runtime.Dependencies{Waiter: &waiter, ErrorHandler: errorHandler},
-			OutWriter:    os.Stdout,
+			OutWriter: os.Stdout,
+			Runtime:   runtime.Dependencies{Waiter: &waiter, ErrorHandler: errorHandler},
 		},
 		ReaderDependencies: interpreter.ReaderDependencies{
 			DefaultReader: os.Stdin,

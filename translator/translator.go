@@ -17,9 +17,8 @@ type Options struct {
 
 // Dependencies ...
 type Dependencies struct {
-	runtime.Dependencies
-
 	OutWriter io.Writer
+	Runtime   runtime.Dependencies
 }
 
 // Translate ...
@@ -41,7 +40,7 @@ func Translate(actors []*parser.Actor, options Options, dependencies Dependencie
 		translatedActors = append(translatedActors, runtime.NewConcurrentActor(
 			translatedActor,
 			options.InboxSize,
-			dependencies.Dependencies,
+			dependencies.Runtime,
 		))
 	}
 
