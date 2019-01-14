@@ -25,8 +25,8 @@ func TestInterpret(test *testing.T) {
 			options Options,
 			context *contextmocks.Context,
 			waiter *waitermocks.Waiter,
-			outWriter *testsmocks.Writer,
 			defaultReader *testsmocks.Reader,
+			outWriter *testsmocks.Writer,
 		)
 		wantErr assert.ErrorAssertionFunc
 	}{
@@ -36,8 +36,8 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
+				outWriter *testsmocks.Writer,
 			) {
 				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
@@ -67,8 +67,8 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
+				outWriter *testsmocks.Writer,
 			) {
 				defaultReader.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
 			},
@@ -80,8 +80,8 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
+				outWriter *testsmocks.Writer,
 			) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
@@ -95,8 +95,8 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				outWriter *testsmocks.Writer,
 				defaultReader *testsmocks.Reader,
+				outWriter *testsmocks.Writer,
 			) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
@@ -117,13 +117,13 @@ func TestInterpret(test *testing.T) {
 			}
 			context := new(contextmocks.Context)
 			waiter := new(waitermocks.Waiter)
-			errorHandler := new(runtimemocks.ErrorHandler)
-			outWriter := new(testsmocks.Writer)
 			defaultReader := new(testsmocks.Reader)
 			fileSystem := new(testsmocks.FileSystem)
+			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
 			sleeper := new(testsmocks.Sleeper)
-			testData.initializeDependencies(options, context, waiter, outWriter, defaultReader)
+			errorHandler := new(runtimemocks.ErrorHandler)
+			testData.initializeDependencies(options, context, waiter, defaultReader, outWriter)
 
 			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{
@@ -146,12 +146,12 @@ func TestInterpret(test *testing.T) {
 				test,
 				context,
 				waiter,
-				errorHandler,
-				outWriter,
 				defaultReader,
 				fileSystem,
+				outWriter,
 				randomizer,
 				sleeper,
+				errorHandler,
 			)
 			testData.wantErr(test, err)
 		})
