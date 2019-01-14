@@ -36,6 +36,20 @@ func (command *loggableCommand) Run(context Context) error {
 	return command.MockCommand.Run(context)
 }
 
+type groupConfig struct {
+	size     int
+	idOffset int
+}
+
+func group(size int, idOffset ...int) groupConfig {
+	config := groupConfig{size: size}
+	if len(idOffset) != 0 {
+		config.idOffset = idOffset[0]
+	}
+
+	return config
+}
+
 type loggableCommandMode int
 
 const (
@@ -45,8 +59,9 @@ const (
 )
 
 type loggableCommandConfig struct {
+	groupConfig
+
 	mode     loggableCommandMode
-	idOffset int
 	errIndex int
 }
 
@@ -59,10 +74,6 @@ func (config loggableCommandConfig) moddedErrIndex() int {
 }
 
 type loggableCommandOption func(*loggableCommandConfig)
-
-func withIDFrom(offset int) loggableCommandOption {
-	return func(config *loggableCommandConfig) { config.idOffset = offset }
-}
 
 func withCalls() loggableCommandOption {
 	return func(config *loggableCommandConfig) { config.mode = loggableCommandCalls }
@@ -78,20 +89,20 @@ func withErrOn(index int) loggableCommandOption {
 func newLoggableCommands(
 	context Context,
 	log *commandLog,
-	count int,
+	config groupConfig,
 	options ...loggableCommandOption,
 ) CommandGroup {
-	var config loggableCommandConfig
+	commandConfig := loggableCommandConfig{groupConfig: config}
 	for _, option := range options {
-		option(&config)
+		option(&commandConfig)
 	}
 
 	var commands CommandGroup
-	for i := 0; i < count; i++ {
-		command := newLoggableCommand(log, i+config.idOffset)
-		if config.mode == loggableCommandCalls || i <= config.moddedErrIndex() {
+	for i := 0; i < commandConfig.size; i++ {
+		command := newLoggableCommand(log, i+commandConfig.idOffset)
+		if commandConfig.mode == loggableCommandCalls || i <= commandConfig.moddedErrIndex() {
 			var err error
-			if i == config.moddedErrIndex() {
+			if i == commandConfig.moddedErrIndex() {
 				err = iotest.ErrTimeout
 			}
 
@@ -109,17 +120,15 @@ type loggableCommandOptions map[string][]loggableCommandOption
 func newLoggableMessages(
 	context Context,
 	log *commandLog,
-	messageCount int,
-	messageIDOffset int,
-	commandCount int,
-	commandIDOffset int,
+	messageConfig groupConfig,
+	commandConfig groupConfig,
 	options loggableCommandOptions,
 ) MessageGroup {
 	messages := make(MessageGroup)
-	for i := messageIDOffset; i < messageIDOffset+messageCount; i++ {
+	for i := messageConfig.idOffset; i < messageConfig.idOffset+messageConfig.size; i++ {
 		message := fmt.Sprintf("message_%d", i)
-		comletedOptions := append(options[message], withIDFrom(i*commandCount+commandIDOffset))
-		messages[message] = newLoggableCommands(context, log, commandCount, comletedOptions...)
+		config := group(commandConfig.size, i*commandConfig.size+commandConfig.idOffset)
+		messages[message] = newLoggableCommands(context, log, config, options[message]...)
 	}
 
 	return messages
@@ -128,13 +137,12 @@ func newLoggableMessages(
 func newLoggableStates(
 	context Context,
 	log *commandLog,
-	commandCount int,
-	commandIDOffset int,
+	commandConfig groupConfig,
 	options loggableCommandOptions,
 ) StateGroup {
 	return StateGroup{
-		"state_one": newLoggableMessages(context, log, 2, 0, commandCount, commandIDOffset, options),
-		"state_two": newLoggableMessages(context, log, 2, 2, commandCount, commandIDOffset, options),
+		"state_one": newLoggableMessages(context, log, group(2), commandConfig, options),
+		"state_two": newLoggableMessages(context, log, group(2, 2), commandConfig, options),
 	}
 }
 

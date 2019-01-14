@@ -27,7 +27,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "success with an unknown message",
 			makeMessages: func(context Context, log *commandLog) MessageGroup {
-				return newLoggableMessages(context, log, 2, 0, 5, 0, nil)
+				return newLoggableMessages(context, log, group(2), group(5), nil)
 			},
 			args:    args{"unknown"},
 			wantErr: assert.NoError,
@@ -35,7 +35,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "success with a known message",
 			makeMessages: func(context Context, log *commandLog) MessageGroup {
-				return newLoggableMessages(context, log, 2, 0, 5, 0, loggableCommandOptions{
+				return newLoggableMessages(context, log, group(2), group(5), loggableCommandOptions{
 					"message_1": {withCalls()},
 				})
 			},
@@ -46,7 +46,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "error",
 			makeMessages: func(context Context, log *commandLog) MessageGroup {
-				return newLoggableMessages(context, log, 2, 0, 5, 0, loggableCommandOptions{
+				return newLoggableMessages(context, log, group(2), group(5), loggableCommandOptions{
 					"message_1": {withErrOn(2)},
 				})
 			},

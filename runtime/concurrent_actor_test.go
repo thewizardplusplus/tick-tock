@@ -42,7 +42,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				initialState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+					return newLoggableStates(context, log, group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
 					})
@@ -57,7 +57,7 @@ func TestConcurrentActor(test *testing.T) {
 				inboxSize:    1,
 				initialState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+					return newLoggableStates(context, log, group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
 					})
@@ -71,7 +71,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				initialState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 5, 0, nil)
+					return newLoggableStates(context, log, group(5), nil)
 				},
 			},
 		},
@@ -80,7 +80,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				initialState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+					return newLoggableStates(context, log, group(5), loggableCommandOptions{
 						"message_2": {withErrOn(2)},
 						"message_3": {withErrOn(2)},
 					})
@@ -150,7 +150,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				{
 					initialState: "state_two",
 					makeStates: func(context Context, log *commandLog) StateGroup {
-						return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+						return newLoggableStates(context, log, group(5), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
 						})
@@ -159,7 +159,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				{
 					initialState: "state_two",
 					makeStates: func(context Context, log *commandLog) StateGroup {
-						return newLoggableStates(context, log, 5, 20, loggableCommandOptions{
+						return newLoggableStates(context, log, group(5, 20), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
 						})

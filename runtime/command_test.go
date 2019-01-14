@@ -21,7 +21,7 @@ func TestCommandGroup_Run(test *testing.T) {
 		{
 			name: "success with commands",
 			makeCommands: func(context Context, log *commandLog) CommandGroup {
-				return newLoggableCommands(context, log, 5, withCalls())
+				return newLoggableCommands(context, log, group(5), withCalls())
 			},
 			wantLog: []int{0, 1, 2, 3, 4},
 			wantErr: assert.NoError,
@@ -29,7 +29,7 @@ func TestCommandGroup_Run(test *testing.T) {
 		{
 			name: "error",
 			makeCommands: func(context Context, log *commandLog) CommandGroup {
-				return newLoggableCommands(context, log, 5, withErrOn(2))
+				return newLoggableCommands(context, log, group(5), withErrOn(2))
 			},
 			wantLog: []int{0, 1, 2},
 			wantErr: assert.Error,
