@@ -16,6 +16,11 @@ func newLoggableCommand(log *[]int, id int) *loggableCommand {
 	return &loggableCommand{MockCommand{}, log, id}
 }
 
+func (command *loggableCommand) Run() error {
+	*command.log = append(*command.log, command.id)
+	return command.MockCommand.Run()
+}
+
 func newLoggableCommands(log *[]int, count int, idOffset int) CommandGroup {
 	var commands CommandGroup
 	for i := 0; i < count; i++ {
@@ -62,9 +67,4 @@ func checkStates(test *testing.T, states StateGroup) {
 	for _, messages := range states {
 		checkMessages(test, messages)
 	}
-}
-
-func (command *loggableCommand) Run() error {
-	*command.log = append(*command.log, command.id)
-	return command.MockCommand.Run()
 }
