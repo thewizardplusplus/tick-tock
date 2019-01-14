@@ -12,6 +12,39 @@ import (
 	"github.com/thewizardplusplus/tick-tock/tests/mocks"
 )
 
+func TestTranslateCommands(test *testing.T) {
+	type args struct {
+		commands []*parser.Command
+	}
+
+	for _, testData := range []struct {
+		name     string
+		args     args
+		makeWant func(writer io.Writer) runtime.CommandGroup
+	}{
+		{
+			name: "success with commands",
+			args: args{[]*parser.Command{{Send: tests.GetAddress("one")}, {Send: tests.GetAddress("two")}}},
+			makeWant: func(writer io.Writer) runtime.CommandGroup {
+				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSendCommand("two")}
+			},
+		},
+		{
+			name:     "success without commands",
+			makeWant: func(writer io.Writer) runtime.CommandGroup { return nil },
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			writer := new(mocks.Writer)
+			want := testData.makeWant(writer)
+			got := TranslateCommands(writer, testData.args.commands)
+
+			writer.AssertExpectations(test)
+			assert.Equal(test, want, got)
+		})
+	}
+}
+
 func TestTranslateCommand(test *testing.T) {
 	type args struct {
 		command *parser.Command
