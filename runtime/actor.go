@@ -6,6 +6,16 @@ type Actor struct {
 	states       StateGroup
 }
 
+// NewActor creates a new actor with a certain state map and sets which one is initial.
+// If the latter isn't contained in a certain state map, it'll cause an error.
+func NewActor(initialState string, states StateGroup) (*Actor, error) {
+	if _, ok := states[initialState]; !ok {
+		return nil, newUnknownStateError(initialState)
+	}
+
+	return &Actor{initialState, states}, nil
+}
+
 // SetState changes a current state of an actor.
 // If a new state isn't contained in a state map of the actor, it'll cause an error.
 func (actor *Actor) SetState(state string) error {
