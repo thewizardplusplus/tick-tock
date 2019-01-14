@@ -1,20 +1,24 @@
 package main
 
-import kingpin "gopkg.in/alecthomas/kingpin.v2"
+import (
+	"github.com/thewizardplusplus/tick-tock/interpreter"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
+)
 
-type options struct {
-	filename  string
-	inboxSize int
-}
-
-func parseOptions() options {
+func parseOptions() interpreter.Options {
 	kingpin.Version("v1.0")
 	kingpin.CommandLine.VersionFlag.Short('v')
 	kingpin.CommandLine.HelpFlag.Short('h')
 
-	inboxSize := kingpin.Flag("inbox", "Inbox buffer size.").Short('i').Default("10").Int()
-	filename := kingpin.Arg("filename", `Source file name. Empty or "-" means stdin.`).String()
+	var options interpreter.Options
+	kingpin.Flag("inbox", "Inbox buffer size.").Short('i').Default("10").IntVar(&options.InboxSize)
+	kingpin.Flag("message", "Initial message.").
+		Short('m').
+		Default("__initialize__").
+		StringVar(&options.InitialMessage)
+	kingpin.Arg("filename", `Source file name. Empty or "-" means stdin.`).
+		StringVar(&options.Filename)
 	kingpin.Parse()
 
-	return options{*filename, *inboxSize}
+	return options
 }

@@ -25,12 +25,7 @@ func main() {
 			FileSystem:    afero.NewOsFs(),
 		},
 	}
-	if err := interpreter.Interpret(
-		new(context.DefaultContext),
-		options.filename,
-		options.inboxSize,
-		dependencies,
-	); err != nil {
+	if err := interpreter.Interpret(new(context.DefaultContext), options, dependencies); err != nil {
 		errorHandler.HandleError(err)
 	}
 
