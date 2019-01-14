@@ -45,7 +45,7 @@ func (config loggableCommandConfig) moddedErrIndex() int {
 
 type loggableCommandOption func(*loggableCommandConfig)
 
-func withIdFrom(offset int) loggableCommandOption {
+func withIDFrom(offset int) loggableCommandOption {
 	return func(config *loggableCommandConfig) { config.idOffset = offset }
 }
 

@@ -46,11 +46,11 @@ func TestConcurrentActor(test *testing.T) {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIdFrom(5)),
+							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIdFrom(10), withCalls()),
-							"message_four":  newLoggableCommands(log, 5, withIdFrom(15), withCalls()),
+							"message_three": newLoggableCommands(log, 5, withIDFrom(10), withCalls()),
+							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
 						},
 					}
 				},
@@ -67,11 +67,11 @@ func TestConcurrentActor(test *testing.T) {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIdFrom(5)),
+							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIdFrom(10), withCalls()),
-							"message_four":  newLoggableCommands(log, 5, withIdFrom(15), withCalls()),
+							"message_three": newLoggableCommands(log, 5, withIDFrom(10), withCalls()),
+							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
 						},
 					}
 				},
@@ -87,11 +87,11 @@ func TestConcurrentActor(test *testing.T) {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIdFrom(5)),
+							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIdFrom(10)),
-							"message_four":  newLoggableCommands(log, 5, withIdFrom(15)),
+							"message_three": newLoggableCommands(log, 5, withIDFrom(10)),
+							"message_four":  newLoggableCommands(log, 5, withIDFrom(15)),
 						},
 					}
 				},
@@ -105,11 +105,11 @@ func TestConcurrentActor(test *testing.T) {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIdFrom(5)),
+							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIdFrom(10), withErrOn(2)),
-							"message_four":  newLoggableCommands(log, 5, withIdFrom(15), withErrOn(2)),
+							"message_three": newLoggableCommands(log, 5, withIDFrom(10), withErrOn(2)),
+							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withErrOn(2)),
 						},
 					}
 				},
@@ -176,11 +176,11 @@ func TestConcurrentActorGroup(test *testing.T) {
 						return StateGroup{
 							"state_one": MessageGroup{
 								"message_one": newLoggableCommands(log, 5),
-								"message_two": newLoggableCommands(log, 5, withIdFrom(5)),
+								"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
 							},
 							"state_two": MessageGroup{
-								"message_three": newLoggableCommands(log, 5, withIdFrom(10), withCalls()),
-								"message_four":  newLoggableCommands(log, 5, withIdFrom(15), withCalls()),
+								"message_three": newLoggableCommands(log, 5, withIDFrom(10), withCalls()),
+								"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
 							},
 						}
 					},
@@ -190,12 +190,12 @@ func TestConcurrentActorGroup(test *testing.T) {
 					makeStates: func(log *[]int) StateGroup {
 						return StateGroup{
 							"state_one": MessageGroup{
-								"message_one": newLoggableCommands(log, 5, withIdFrom(20)),
-								"message_two": newLoggableCommands(log, 5, withIdFrom(25)),
+								"message_one": newLoggableCommands(log, 5, withIDFrom(20)),
+								"message_two": newLoggableCommands(log, 5, withIDFrom(25)),
 							},
 							"state_two": MessageGroup{
-								"message_three": newLoggableCommands(log, 5, withIdFrom(30), withCalls()),
-								"message_four":  newLoggableCommands(log, 5, withIdFrom(35), withCalls()),
+								"message_three": newLoggableCommands(log, 5, withIDFrom(30), withCalls()),
+								"message_four":  newLoggableCommands(log, 5, withIDFrom(35), withCalls()),
 							},
 						}
 					},

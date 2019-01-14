@@ -113,11 +113,11 @@ func TestActor_ProcessMessage(test *testing.T) {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIdFrom(5)),
+							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIdFrom(10)),
-							"message_four":  newLoggableCommands(log, 5, withIdFrom(15), withCalls()),
+							"message_three": newLoggableCommands(log, 5, withIDFrom(10)),
+							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withCalls()),
 						},
 					}
 				},
@@ -134,11 +134,11 @@ func TestActor_ProcessMessage(test *testing.T) {
 					return StateGroup{
 						"state_one": MessageGroup{
 							"message_one": newLoggableCommands(log, 5),
-							"message_two": newLoggableCommands(log, 5, withIdFrom(5)),
+							"message_two": newLoggableCommands(log, 5, withIDFrom(5)),
 						},
 						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(log, 5, withIdFrom(10)),
-							"message_four":  newLoggableCommands(log, 5, withIdFrom(15), withErrOn(2)),
+							"message_three": newLoggableCommands(log, 5, withIDFrom(10)),
+							"message_four":  newLoggableCommands(log, 5, withIDFrom(15), withErrOn(2)),
 						},
 					}
 				},

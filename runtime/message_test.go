@@ -29,7 +29,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 			makeMessages: func(log *[]int) MessageGroup {
 				return MessageGroup{
 					"one": newLoggableCommands(log, 5),
-					"two": newLoggableCommands(log, 5, withIdFrom(5)),
+					"two": newLoggableCommands(log, 5, withIDFrom(5)),
 				}
 			},
 			args:    args{"unknown"},
@@ -40,7 +40,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 			makeMessages: func(log *[]int) MessageGroup {
 				return MessageGroup{
 					"one": newLoggableCommands(log, 5),
-					"two": newLoggableCommands(log, 5, withIdFrom(5), withCalls()),
+					"two": newLoggableCommands(log, 5, withIDFrom(5), withCalls()),
 				}
 			},
 			args:    args{"two"},
@@ -52,7 +52,7 @@ func TestMessageGroup_ProcessMessage(test *testing.T) {
 			makeMessages: func(log *[]int) MessageGroup {
 				return MessageGroup{
 					"one": newLoggableCommands(log, 5),
-					"two": newLoggableCommands(log, 5, withIdFrom(5), withErrOn(2)),
+					"two": newLoggableCommands(log, 5, withIDFrom(5), withErrOn(2)),
 				}
 			},
 			args:    args{"two"},
