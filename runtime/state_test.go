@@ -8,7 +8,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
-func TestStateGroup_ProcessMessage(test *testing.T) {
+func TestStateGroup(test *testing.T) {
 	type args struct {
 		state   string
 		message string

@@ -8,7 +8,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
-func TestCommandGroup_Run(test *testing.T) {
+func TestCommandGroup(test *testing.T) {
 	for _, testData := range []struct {
 		name         string
 		makeCommands func(context context.Context, log *commandLog) CommandGroup

@@ -12,7 +12,7 @@ func TestNewUnknownStateError(test *testing.T) {
 	assert.Equal(test, "unknown state test", got.Error())
 }
 
-func TestDefaultErrorHandler_HandleError(test *testing.T) {
+func TestDefaultErrorHandler(test *testing.T) {
 	type args struct {
 		err error
 	}
