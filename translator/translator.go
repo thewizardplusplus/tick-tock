@@ -22,12 +22,12 @@ func Translate(actors []*parser.Actor, inboxSize int, dependencies Dependencies)
 	err error,
 ) {
 	for index, actor := range actors {
-		translatedStates, initialState, err := translateStates(actor.States, dependencies.OutWriter)
+		translatedStates, err := translateStates(actor.States, dependencies.OutWriter)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the actor #%d", index)
 		}
 
-		translatedActor, _ := runtime.NewActor(translatedStates, initialState) // nolint: gosec
+		translatedActor, _ := runtime.NewActor(translatedStates, "__initialization__") // nolint: gosec
 		translatedActors = append(translatedActors, runtime.NewConcurrentActor(
 			translatedActor,
 			inboxSize,
@@ -40,32 +40,22 @@ func Translate(actors []*parser.Actor, inboxSize int, dependencies Dependencies)
 
 func translateStates(states []*parser.State, outWriter io.Writer) (
 	translatedStates runtime.StateGroup,
-	initialState string,
 	err error,
 ) {
 	if len(states) == 0 {
-		return nil, "", errors.New("no states")
+		return nil, errors.New("no states")
 	}
 
 	translatedStates = make(runtime.StateGroup)
 	messagesWithSettings := make(map[string][]string)
 	for _, state := range states {
 		if _, ok := translatedStates[state.Name]; ok {
-			return nil, "", errors.Errorf("duplicate state %s", state.Name)
-		}
-
-		if state.Initial {
-			if len(initialState) != 0 {
-				err := errors.Errorf("second initial state %s (first was %s)", state.Name, initialState)
-				return nil, "", err
-			}
-
-			initialState = state.Name
+			return nil, errors.Errorf("duplicate state %s", state.Name)
 		}
 
 		translatedMessages, settedStates, err := translateMessages(state.Messages, outWriter)
 		if err != nil {
-			return nil, "", errors.Wrapf(err, "unable to translate the state %s", state.Name)
+			return nil, errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}
 
 		translatedStates[state.Name] = translatedMessages
@@ -76,15 +66,11 @@ func translateStates(states []*parser.State, outWriter io.Writer) (
 
 	for state, messages := range messagesWithSettings {
 		if _, ok := translatedStates[state]; !ok {
-			return nil, "", errors.Errorf("unknown state %s in messages %v", state, messages)
+			return nil, errors.Errorf("unknown state %s in messages %v", state, messages)
 		}
 	}
 
-	if len(initialState) == 0 {
-		initialState = states[0].Name
-	}
-
-	return translatedStates, initialState, nil
+	return translatedStates, nil
 }
 
 type settedStateGroup map[string]string
