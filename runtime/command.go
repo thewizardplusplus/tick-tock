@@ -6,7 +6,7 @@ import (
 )
 
 // Command ...
-//go:generate mockery -name=Command -inpkg -case=underscore -testonly
+//go:generate mockery -name=Command -case=underscore
 type Command interface {
 	Run(context context.Context) error
 }

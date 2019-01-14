@@ -7,7 +7,7 @@ import (
 )
 
 // Writer ...
-//go:generate mockery -name=Writer -inpkg -case=underscore -testonly
+//go:generate mockery -name=Writer -case=underscore
 type Writer interface {
 	io.Writer
 }

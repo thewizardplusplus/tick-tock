@@ -7,21 +7,22 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 )
 
 type synchronousWaiter struct {
-	*MockWaiter
+	*runtimemocks.Waiter
 	*sync.WaitGroup
 }
 
 func (waiter synchronousWaiter) Add(delta int) {
-	waiter.MockWaiter.Add(delta)
+	waiter.Waiter.Add(delta)
 	waiter.WaitGroup.Add(delta)
 }
 
 func (waiter synchronousWaiter) Done() {
-	waiter.MockWaiter.Done()
+	waiter.Waiter.Done()
 	waiter.WaitGroup.Done()
 }
 
@@ -95,7 +96,7 @@ func TestConcurrentActor(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			actor := &Actor{testData.args.initialState, nil}
-			context := new(mocks.Context)
+			context := new(contextmocks.Context)
 			if len(testData.args.messages) != 0 {
 				context.On("SetStateHolder", actor).Return()
 			}
@@ -103,13 +104,13 @@ func TestConcurrentActor(test *testing.T) {
 			var log commandLog
 			actor.states = testData.args.makeStates(context, &log)
 
-			waiter := synchronousWaiter{new(MockWaiter), new(sync.WaitGroup)}
+			waiter := synchronousWaiter{new(runtimemocks.Waiter), new(sync.WaitGroup)}
 			if messageCount := len(testData.args.messages); messageCount != 0 {
 				waiter.On("Add", 1).Times(messageCount)
 				waiter.On("Done").Times(messageCount)
 			}
 
-			errorHandler := new(MockErrorHandler)
+			errorHandler := new(runtimemocks.ErrorHandler)
 			if testData.errCount != 0 {
 				errorHandler.
 					On("HandleError", mock.MatchedBy(func(error) bool { return true })).
@@ -177,16 +178,16 @@ func TestConcurrentActorGroup(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			waiter := synchronousWaiter{new(MockWaiter), new(sync.WaitGroup)}
+			waiter := synchronousWaiter{new(runtimemocks.Waiter), new(sync.WaitGroup)}
 			if messageCount := len(testData.args) * len(testData.messages); messageCount != 0 {
 				waiter.On("Add", 1).Times(messageCount)
 				waiter.On("Done").Times(messageCount)
 			}
 
-			context := new(mocks.Context)
+			context := new(contextmocks.Context)
 			var log commandLog
 			var concurrentActors ConcurrentActorGroup
-			errorHandler := new(MockErrorHandler)
+			errorHandler := new(runtimemocks.ErrorHandler)
 			for _, args := range testData.args {
 				states := args.makeStates(context, &log)
 				defer checkStates(test, states)

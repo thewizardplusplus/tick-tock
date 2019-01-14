@@ -7,6 +7,7 @@ import (
 	"testing/iotest"
 
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
+	"github.com/thewizardplusplus/tick-tock/runtime/mocks"
 )
 
 type commandLog struct {
@@ -23,19 +24,19 @@ func (log *commandLog) registerCommand(command int) {
 }
 
 type loggableCommand struct {
-	MockCommand
+	mocks.Command
 
 	log *commandLog
 	id  int
 }
 
 func newLoggableCommand(log *commandLog, id int) *loggableCommand {
-	return &loggableCommand{MockCommand{}, log, id}
+	return &loggableCommand{mocks.Command{}, log, id}
 }
 
 func (command *loggableCommand) Run(context context.Context) error {
 	command.log.registerCommand(command.id)
-	return command.MockCommand.Run(context)
+	return command.Command.Run(context)
 }
 
 type groupConfig struct {

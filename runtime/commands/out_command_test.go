@@ -5,7 +5,8 @@ import (
 	"testing/iotest"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	commandsmocks "github.com/thewizardplusplus/tick-tock/runtime/commands/mocks"
+	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestOutCommand(test *testing.T) {
@@ -36,7 +37,7 @@ func TestOutCommand(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			writer := new(MockWriter)
+			writer := new(commandsmocks.Writer)
 			writeCall := writer.On("Write", []byte(testData.fields.message))
 			if testData.writingErr == nil {
 				writeCall.Return(len(testData.fields.message), nil)
@@ -44,7 +45,7 @@ func TestOutCommand(test *testing.T) {
 				writeCall.Return(0, testData.writingErr)
 			}
 
-			context := new(mocks.Context)
+			context := new(contextmocks.Context)
 			err := NewOutCommand(writer, testData.fields.message).Run(context)
 
 			writer.AssertExpectations(test)

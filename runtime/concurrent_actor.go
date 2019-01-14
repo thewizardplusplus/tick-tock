@@ -6,7 +6,7 @@ import (
 )
 
 // Waiter ...
-//go:generate mockery -name=Waiter -inpkg -case=underscore -testonly
+//go:generate mockery -name=Waiter -case=underscore
 type Waiter interface {
 	Add(delta int)
 	Done()
