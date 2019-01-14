@@ -47,6 +47,7 @@ type ConcurrentActorGroup []ConcurrentActor
 
 // Start ...
 func (actors ConcurrentActorGroup) Start(context context.Context) {
+	context = context.Copy()
 	context.SetMessageSender(actors)
 
 	for _, actor := range actors {

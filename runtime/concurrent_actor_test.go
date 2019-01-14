@@ -171,10 +171,12 @@ func TestConcurrentActorGroup(test *testing.T) {
 				waiter.On("Done").Times(messageCount)
 			}
 
-			contextCopy := new(contextmocks.Context)
+			contextFirstCopy := new(contextmocks.Context)
+			contextSecondCopy := new(contextmocks.Context)
 			contextOriginal := new(contextmocks.Context)
+			contextOriginal.On("Copy").Return(contextFirstCopy)
 			if len(testData.args) != 0 {
-				contextOriginal.On("Copy").Return(contextCopy)
+				contextFirstCopy.On("Copy").Return(contextSecondCopy)
 			}
 
 			var log commandLog
@@ -183,24 +185,31 @@ func TestConcurrentActorGroup(test *testing.T) {
 			errorHandler := new(runtimemocks.ErrorHandler)
 			dependencies := Dependencies{synchronousWaiter, errorHandler}
 			for _, args := range testData.args {
-				states := args.makeStates(contextCopy, &log)
+				states := args.makeStates(contextSecondCopy, &log)
 				defer checkStates(test, states)
 
 				actor := &Actor{states, args.initialState}
-				contextCopy.On("SetStateHolder", actor).Return()
+				contextSecondCopy.On("SetStateHolder", actor).Return()
 
 				concurrentActor := NewConcurrentActor(actor, tests.UnbufferedInbox, dependencies)
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 
-			contextOriginal.On("SetMessageSender", concurrentActors).Return()
+			contextFirstCopy.On("SetMessageSender", concurrentActors).Return()
 			concurrentActors.Start(contextOriginal)
 			for _, message := range testData.messages {
 				concurrentActors.SendMessage(message)
 			}
 			synchronousWaiter.Wait()
 
-			mock.AssertExpectationsForObjects(test, contextCopy, contextOriginal, waiter, errorHandler)
+			mock.AssertExpectationsForObjects(
+				test,
+				contextFirstCopy,
+				contextSecondCopy,
+				contextOriginal,
+				waiter,
+				errorHandler,
+			)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
 		})
 	}
