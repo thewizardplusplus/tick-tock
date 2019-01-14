@@ -16,3 +16,8 @@ func (actor *Actor) SetState(state string) error {
 	actor.currentState = state
 	return nil
 }
+
+// ProcessMessage executes a message map corresponding to a current state of an actor.
+func (actor Actor) ProcessMessage(message string) error {
+	return actor.states.ProcessMessage(actor.currentState, message)
+}
