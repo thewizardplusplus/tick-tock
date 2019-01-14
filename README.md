@@ -1,4 +1,4 @@
-# Tick-tock
+# ![](docs/logo/logo.png) Tick-tock
 
 Interpreter of the Tick-tock programming language.
 
