@@ -7,6 +7,7 @@ import "github.com/pkg/errors"
 type Context interface {
 	SendMessage(message string)
 	SetState(state string) error
+	SetActor(actor *Actor)
 }
 
 // Command ...

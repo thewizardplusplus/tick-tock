@@ -14,6 +14,11 @@ func (_m *MockContext) SendMessage(message string) {
 	_m.Called(message)
 }
 
+// SetActor provides a mock function with given fields: actor
+func (_m *MockContext) SetActor(actor *Actor) {
+	_m.Called(actor)
+}
+
 // SetState provides a mock function with given fields: state
 func (_m *MockContext) SetState(state string) error {
 	ret := _m.Called(state)
