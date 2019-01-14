@@ -22,16 +22,9 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "success",
 			makeStates: func(context Context, log *commandLog) StateGroup {
-				return StateGroup{
-					"state_one": MessageGroup{
-						"message_one": newLoggableCommands(context, log, 5),
-						"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
-					},
-					"state_two": MessageGroup{
-						"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
-						"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withCalls()),
-					},
-				}
+				return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+					"message_four": {withCalls()},
+				})
 			},
 			args:    args{"state_two", "message_four"},
 			wantLog: []int{15, 16, 17, 18, 19},
@@ -46,16 +39,7 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "error with an unknown state",
 			makeStates: func(context Context, log *commandLog) StateGroup {
-				return StateGroup{
-					"state_one": MessageGroup{
-						"message_one": newLoggableCommands(context, log, 5),
-						"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
-					},
-					"state_two": MessageGroup{
-						"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
-						"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15)),
-					},
-				}
+				return newLoggableStates(context, log, 5, 0, nil)
 			},
 			args:    args{"state_unknown", "message_unknown"},
 			wantErr: assert.Error,
@@ -63,16 +47,9 @@ func TestStateGroup_ProcessMessage(test *testing.T) {
 		{
 			name: "error on command execution",
 			makeStates: func(context Context, log *commandLog) StateGroup {
-				return StateGroup{
-					"state_one": MessageGroup{
-						"message_one": newLoggableCommands(context, log, 5),
-						"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
-					},
-					"state_two": MessageGroup{
-						"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
-						"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withErrOn(2)),
-					},
-				}
+				return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+					"message_four": {withErrOn(2)},
+				})
 			},
 			args:    args{"state_two", "message_four"},
 			wantLog: []int{15, 16, 17},

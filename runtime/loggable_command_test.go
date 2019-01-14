@@ -103,6 +103,34 @@ func newLoggableCommands(
 	return commands
 }
 
+type loggableCommandOptions map[string][]loggableCommandOption
+
+func newLoggableStates(
+	context Context,
+	log *commandLog,
+	groupSize int,
+	idOffset int,
+	options loggableCommandOptions,
+) StateGroup {
+	messages := make(MessageGroup)
+	for index, name := range []string{"one", "two", "three", "four"} {
+		completedName := "message_" + name
+		comletedOptions := append(options[completedName], withIDFrom(index*groupSize+idOffset))
+		messages[completedName] = newLoggableCommands(context, log, groupSize, comletedOptions...)
+	}
+
+	return StateGroup{
+		"state_one": MessageGroup{
+			"message_one": messages["message_one"],
+			"message_two": messages["message_two"],
+		},
+		"state_two": MessageGroup{
+			"message_three": messages["message_three"],
+			"message_four":  messages["message_four"],
+		},
+	}
+}
+
 func checkCommands(test *testing.T, commands CommandGroup) {
 	for _, command := range commands {
 		command.(*loggableCommand).AssertExpectations(test)

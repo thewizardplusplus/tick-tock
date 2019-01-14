@@ -110,16 +110,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 			fields: fields{
 				currentState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return StateGroup{
-						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(context, log, 5),
-							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
-						},
-						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
-							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withCalls()),
-						},
-					}
+					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+						"message_four": {withCalls()},
+					})
 				},
 			},
 			args:    args{"message_four"},
@@ -131,16 +124,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 			fields: fields{
 				currentState: "state_two",
 				makeStates: func(context Context, log *commandLog) StateGroup {
-					return StateGroup{
-						"state_one": MessageGroup{
-							"message_one": newLoggableCommands(context, log, 5),
-							"message_two": newLoggableCommands(context, log, 5, withIDFrom(5)),
-						},
-						"state_two": MessageGroup{
-							"message_three": newLoggableCommands(context, log, 5, withIDFrom(10)),
-							"message_four":  newLoggableCommands(context, log, 5, withIDFrom(15), withErrOn(2)),
-						},
-					}
+					return newLoggableStates(context, log, 5, 0, loggableCommandOptions{
+						"message_four": {withErrOn(2)},
+					})
 				},
 			},
 			args:    args{"message_four"},
