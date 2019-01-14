@@ -12,6 +12,10 @@ func parseOptions() interpreter.Options {
 
 	var options interpreter.Options
 	kingpin.Flag("inbox", "Inbox buffer size.").Short('i').Default("10").IntVar(&options.InboxSize)
+	kingpin.Flag("state", "Initial state.").
+		Short('s').
+		Default("__initialization__").
+		StringVar(&options.InitialState)
 	kingpin.Flag("message", "Initial message.").
 		Short('m').
 		Default("__initialize__").
