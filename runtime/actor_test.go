@@ -6,6 +6,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewActor(test *testing.T) {
+	type args struct {
+		initialState string
+		states       StateGroup
+	}
+
+	for _, testData := range []struct {
+		name    string
+		args    args
+		want    *Actor
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name:    "success",
+			args:    args{"state_one", StateGroup{"state_one": nil, "state_two": nil}},
+			want:    &Actor{"state_one", StateGroup{"state_one": nil, "state_two": nil}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "error",
+			args:    args{"state_unknown", StateGroup{"state_one": nil, "state_two": nil}},
+			wantErr: assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			got, err := NewActor(testData.args.initialState, testData.args.states)
+			assert.Equal(test, testData.want, got)
+			testData.wantErr(test, err)
+		})
+	}
+}
+
 func TestActor_SetState(test *testing.T) {
 	type (
 		fields struct {
