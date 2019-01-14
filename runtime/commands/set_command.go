@@ -13,7 +13,6 @@ func NewSetCommand(state string) SetCommand {
 }
 
 // Run ...
-// TODO: wrap the SetState() error with the method name.
 func (command SetCommand) Run(context context.Context) error {
 	return context.SetState(command.state)
 }
