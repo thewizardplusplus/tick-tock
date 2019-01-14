@@ -131,3 +131,91 @@ func TestConcurrentActor(test *testing.T) {
 		})
 	}
 }
+
+func TestConcurrentActorGroup(test *testing.T) {
+	type args struct {
+		initialState string
+		makeStates   func(log *[]int) StateGroup
+	}
+
+	for _, testData := range []struct {
+		name     string
+		args     []args
+		messages []string
+		wantLog  []int
+	}{
+		{
+			name: "success with actors",
+			args: []args{
+				{
+					initialState: "state_two",
+					makeStates: func(log *[]int) StateGroup {
+						return StateGroup{
+							"state_one": MessageGroup{
+								"message_one": newLoggableCommands(log, 5, 0),
+								"message_two": newLoggableCommands(log, 5, 5),
+							},
+							"state_two": MessageGroup{
+								"message_three": newCalledLoggableCommands(log, 5, 10, -1),
+								"message_four":  newCalledLoggableCommands(log, 5, 15, -1),
+							},
+						}
+					},
+				},
+				{
+					initialState: "state_two",
+					makeStates: func(log *[]int) StateGroup {
+						return StateGroup{
+							"state_one": MessageGroup{
+								"message_one": newLoggableCommands(log, 5, 20),
+								"message_two": newLoggableCommands(log, 5, 25),
+							},
+							"state_two": MessageGroup{
+								"message_three": newCalledLoggableCommands(log, 5, 30, -1),
+								"message_four":  newCalledLoggableCommands(log, 5, 35, -1),
+							},
+						}
+					},
+				},
+			},
+			messages: []string{"message_three", "message_four"},
+			wantLog:  []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39},
+		},
+		{
+			name:     "success without actors",
+			messages: []string{"message_three", "message_four"},
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			waiter := synchronousWaiter{new(MockWaiter), new(sync.WaitGroup)}
+			if messageCount := len(testData.args) * len(testData.messages); messageCount != 0 {
+				waiter.On("Add", 1).Times(messageCount)
+				waiter.On("Done").Times(messageCount)
+			}
+
+			var log []int
+			var concurrentActors ConcurrentActorGroup
+			errorHandler := new(MockErrorHandler)
+			for _, args := range testData.args {
+				states := args.makeStates(&log)
+				defer checkStates(test, states)
+
+				actor, err := NewActor(args.initialState, states)
+				require.NoError(test, err)
+
+				concurrentActor := NewConcurrentActor(actor, waiter, errorHandler)
+				concurrentActors = append(concurrentActors, concurrentActor)
+			}
+
+			concurrentActors.Start()
+			for _, message := range testData.messages {
+				concurrentActors.SendMessage(message)
+			}
+			waiter.Wait()
+
+			assert.ElementsMatch(test, testData.wantLog, log)
+			waiter.AssertExpectations(test)
+			errorHandler.AssertExpectations(test)
+		})
+	}
+}
