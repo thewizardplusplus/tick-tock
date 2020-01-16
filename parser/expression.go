@@ -23,6 +23,13 @@
 
 package parser
 
+// Multiplication ...
+type Multiplication struct {
+	Unary          *Unary          `parser:"@@"`
+	Operation      string          `parser:"[ @( \"*\" | \"/\" | \"%\" )"`
+	Multiplication *Multiplication `parser:"@@ ]"`
+}
+
 // Unary ...
 type Unary struct {
 	Operation string `parser:"( @( \"-\" )"`
