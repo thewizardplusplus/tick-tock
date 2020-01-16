@@ -70,9 +70,15 @@
     'name': 'variable.other.ticktock'
   }
 
+  # operators
+  {
+    'match': '[+\\-*/%]'
+    'name': 'keyword.operator.arithmetic.ticktock'
+  }
+
   # delimiters
   {
-    'match': '[,;]'
+    'match': '[,;()]'
     'name': 'punctuation.other.ticktock'
   }
 ]
