@@ -40,6 +40,24 @@
   revision = "f65c72e2690dc4b403c8bd637baf4611cd4c069b"
 
 [[projects]]
+  digest = "1:7bd8b69b834619ba2748ae570f4b08acdc5b0f735d99f8b2fd52443908bc436a"
+  name = "github.com/cweill/gotests"
+  packages = [
+    ".",
+    "gotests",
+    "gotests/process",
+    "internal/goparser",
+    "internal/input",
+    "internal/models",
+    "internal/output",
+    "internal/render",
+    "internal/render/bindata",
+  ]
+  pruneopts = "UT"
+  revision = "893b5761d2ad1af5776fcb09e7faff817becb1d8"
+  version = "v1.5.3"
+
+[[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -199,6 +217,7 @@
   input-imports = [
     "github.com/alecthomas/gometalinter",
     "github.com/alecthomas/participle",
+    "github.com/cweill/gotests/gotests",
     "github.com/pkg/errors",
     "github.com/spf13/afero",
     "github.com/stretchr/testify/assert",
