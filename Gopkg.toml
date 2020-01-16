@@ -6,19 +6,19 @@ required = ["github.com/alecthomas/gometalinter", "github.com/vektra/mockery/cmd
 
 [[constraint]]
   name = "github.com/alecthomas/participle"
-  version = "0.1.0"
+  version = "0.4.1"
 
 [[constraint]]
   name = "github.com/pkg/errors"
-  version = "0.8.0"
+  version = "0.9.1"
 
 [[constraint]]
   name = "github.com/stretchr/testify"
-  version = "1.2.2"
+  version = "1.4.0"
 
 [[constraint]]
   name = "github.com/spf13/afero"
-  version = "1.2.0"
+  version = "1.2.2"
 
 [[constraint]]
   name = "gopkg.in/alecthomas/kingpin.v2"
