@@ -23,6 +23,13 @@
 
 package parser
 
+// Unary ...
+type Unary struct {
+	Operation string `parser:"( @( \"-\" )"`
+	Unary     *Unary `parser:"@@ )"`
+	Atom      *Atom  `parser:"| @@"`
+}
+
 // Atom ...
 type Atom struct {
 	Number     *float64 `parser:"@Int | @Float"`
