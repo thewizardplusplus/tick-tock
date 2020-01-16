@@ -1,5 +1,12 @@
 '.source.ticktock':
   'editor':
     'commentStart': '// '
-    'increaseIndentPattern': '^\\s*(actor|state|message)\\b[^;]*$'
-    'decreaseIndentPattern': '^\\s*;'
+    'increaseIndentPattern': '(?x)
+      \\b(actor|state|message)\\b[^(]*\\([^)]*\\)[^;]*$
+      | \\(\\s*$
+      | ^\\s*\\)
+    '
+    'decreaseIndentPattern': '(?x)
+      ^\\s*;
+      | ^\\s*\\)
+    '
