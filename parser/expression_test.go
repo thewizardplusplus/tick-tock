@@ -79,6 +79,38 @@ func TestParseToAST_withExpression(test *testing.T) {
 			},
 			wantErr: assert.NoError,
 		},
+		{
+			name: "Addition/nonempty",
+			args: args{"12 + 23 - 42", new(Addition)},
+			wantAST: &Addition{
+				Multiplication: &Multiplication{
+					Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(12)}},
+				},
+				Operation: "+",
+				Addition: &Addition{
+					Multiplication: &Multiplication{
+						Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
+					},
+					Operation: "-",
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(42)}},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Addition/empty",
+			args: args{"23", new(Addition)},
+			wantAST: &Addition{
+				Multiplication: &Multiplication{
+					Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			err := parseToAST(testData.args.code, testData.args.ast)
