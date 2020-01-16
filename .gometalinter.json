@@ -3,5 +3,6 @@
   "Test": true,
   "Skip": ["mocks"],
   "EnableAll": true,
+  "Disable": ["dupl", "unparam"],
   "LineLength": 100
 }
