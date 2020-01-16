@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thewizardplusplus/tick-tock/internal/tests"
 )
 
 func TestParse(test *testing.T) {
@@ -72,112 +71,6 @@ func TestParseToAST(test *testing.T) {
 			args:    args{"incorrect", new(testAST)},
 			wantAST: new(testAST),
 			wantErr: assert.Error,
-		},
-		{
-			name:    "Command/send",
-			args:    args{"send test", new(Command)},
-			wantAST: &Command{Send: tests.GetStringAddress("test")},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/set",
-			args:    args{"set test", new(Command)},
-			wantAST: &Command{Set: tests.GetStringAddress("test")},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/out/nonempty/interpreted",
-			args:    args{`out "test"`, new(Command)},
-			wantAST: &Command{Out: tests.GetStringAddress("test")},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/out/nonempty/raw",
-			args:    args{"out `test`", new(Command)},
-			wantAST: &Command{Out: tests.GetStringAddress("test")},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/out/empty",
-			args:    args{`out ""`, new(Command)},
-			wantAST: &Command{Out: tests.GetStringAddress("")},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/sleep/integer",
-			args: args{`sleep 1, 2`, new(Command)},
-			wantAST: &Command{
-				Sleep: &SleepCommand{tests.GetNumberAddress(1), tests.GetNumberAddress(2)},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/sleep/floating-point",
-			args: args{`sleep 1.2, 3.4`, new(Command)},
-			wantAST: &Command{
-				Sleep: &SleepCommand{tests.GetNumberAddress(1.2), tests.GetNumberAddress(3.4)},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/exit",
-			args:    args{"exit", new(Command)},
-			wantAST: &Command{Exit: true},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Message/nonempty",
-			args: args{"message test send one send two;", new(Message)},
-			wantAST: &Message{
-				Name: "test",
-				Commands: []*Command{
-					{Send: tests.GetStringAddress("one")},
-					{Send: tests.GetStringAddress("two")},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Message/empty",
-			args:    args{"message test;", new(Message)},
-			wantAST: &Message{"test", nil},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "State/nonempty",
-			args:    args{"state test message one; message two;;", new(State)},
-			wantAST: &State{"test", []*Message{{"one", nil}, {"two", nil}}},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "State/empty",
-			args:    args{"state test;", new(State)},
-			wantAST: &State{"test", nil},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Actor/nonempty",
-			args:    args{"actor state one; state two;;", new(Actor)},
-			wantAST: &Actor{[]*State{{"one", nil}, {"two", nil}}},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Actor/empty",
-			args:    args{"actor;", new(Actor)},
-			wantAST: new(Actor),
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Program/nonempty",
-			args:    args{"actor state one;; actor state two;;", new(Program)},
-			wantAST: &Program{[]*Actor{{[]*State{{"one", nil}}}, {[]*State{{"two", nil}}}}},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Program/empty",
-			args:    args{"", new(Program)},
-			wantAST: new(Program),
-			wantErr: assert.NoError,
 		},
 		{
 			name:    "comment/line",
