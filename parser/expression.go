@@ -51,7 +51,14 @@ type Unary struct {
 
 // Atom ...
 type Atom struct {
-	Number     *float64    `parser:"@Int | @Float"`
-	Identifier *string     `parser:"| @Ident"`
-	Expression *Expression `parser:"| \"(\" @@ \")\""`
+	Number       *float64      `parser:"@Int | @Float"`
+	FunctionCall *FunctionCall `parser:"| @@"`
+	Identifier   *string       `parser:"| @Ident"`
+	Expression   *Expression   `parser:"| \"(\" @@ \")\""`
+}
+
+// FunctionCall ...
+type FunctionCall struct {
+	Name      string        `parser:"@Ident"`
+	Arguments []*Expression `parser:"\"(\" [ @@ { \",\" @@ } ] \")\""`
 }
