@@ -55,6 +55,30 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
 			wantErr: assert.NoError,
 		},
+		{
+			name: "Multiplication/nonempty",
+			args: args{"12 * 23 / 42", new(Multiplication)},
+			wantAST: &Multiplication{
+				Unary:     &Unary{Atom: &Atom{Number: tests.GetNumberAddress(12)}},
+				Operation: "*",
+				Multiplication: &Multiplication{
+					Unary:     &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
+					Operation: "/",
+					Multiplication: &Multiplication{
+						Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(42)}},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Multiplication/empty",
+			args: args{"23", new(Multiplication)},
+			wantAST: &Multiplication{
+				Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
+			},
+			wantErr: assert.NoError,
+		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			err := parseToAST(testData.args.code, testData.args.ast)
