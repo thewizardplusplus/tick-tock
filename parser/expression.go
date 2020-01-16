@@ -23,6 +23,11 @@
 
 package parser
 
+// Expression ...
+type Expression struct {
+	Addition *Addition `parser:"@@"`
+}
+
 // Addition ...
 type Addition struct {
 	Multiplication *Multiplication `parser:"@@"`
@@ -46,6 +51,7 @@ type Unary struct {
 
 // Atom ...
 type Atom struct {
-	Number     *float64 `parser:"@Int | @Float"`
-	Identifier *string  `parser:"| @Ident"`
+	Number     *float64    `parser:"@Int | @Float"`
+	Identifier *string     `parser:"| @Ident"`
+	Expression *Expression `parser:"| \"(\" @@ \")\""`
 }
