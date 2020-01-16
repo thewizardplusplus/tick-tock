@@ -37,6 +37,24 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Atom{Identifier: tests.GetStringAddress("test")},
 			wantErr: assert.NoError,
 		},
+		{
+			name: "Unary/nonempty",
+			args: args{"--23", new(Unary)},
+			wantAST: &Unary{
+				Operation: "-",
+				Unary: &Unary{
+					Operation: "-",
+					Unary:     &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Unary/empty",
+			args:    args{"23", new(Unary)},
+			wantAST: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
+			wantErr: assert.NoError,
+		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			err := parseToAST(testData.args.code, testData.args.ast)
