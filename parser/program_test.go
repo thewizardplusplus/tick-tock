@@ -90,6 +90,30 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "Message/with parameters",
+			args: args{"message test(a, b);", new(Message)},
+			wantAST: &Message{
+				Name: "test",
+				Parameters: []*Expression{
+					{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Atom: &Atom{Identifier: tests.GetStringAddress("a")}},
+							},
+						},
+					},
+					{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Atom: &Atom{Identifier: tests.GetStringAddress("b")}},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "State/nonempty",
 			args:    args{"state test message one(); message two();;", new(State)},
 			wantAST: &State{"test", []*Message{{"one", nil, nil}, {"two", nil, nil}}},
