@@ -53,7 +53,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor state %s message %s out "%s";;;`,
+							`actor state %s message %s() out "%s";;;`,
 							options.Translator.InitialState,
 							options.InitialMessage,
 							message,

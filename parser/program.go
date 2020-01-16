@@ -18,8 +18,9 @@ type State struct {
 
 // Message ...
 type Message struct {
-	Name     string     `parser:"\"message\" @Ident"`
-	Commands []*Command `parser:"{ @@ } \";\""`
+	Name       string        `parser:"\"message\" @Ident"`
+	Parameters []*Expression `parser:"\"(\" [ @@ { \",\" @@ } ] \")\""`
+	Commands   []*Command    `parser:"{ @@ } \";\""`
 }
 
 // Command ...
