@@ -38,7 +38,51 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "Atom/function call/nonempty",
+			name:    "Atom/function call/no arguments",
+			args:    args{"test()", new(Atom)},
+			wantAST: &Atom{FunctionCall: &FunctionCall{Name: "test"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/function call/single argument",
+			args: args{"test(12)", new(Atom)},
+			wantAST: &Atom{
+				FunctionCall: &FunctionCall{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(12)}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/function call/single argument/trailing comma",
+			args: args{"test(12,)", new(Atom)},
+			wantAST: &Atom{
+				FunctionCall: &FunctionCall{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(12)}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/function call/few arguments",
 			args: args{"test(12, 23, 42)", new(Atom)},
 			wantAST: &Atom{
 				FunctionCall: &FunctionCall{
@@ -71,9 +115,36 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Atom/function call/empty",
-			args:    args{"test()", new(Atom)},
-			wantAST: &Atom{FunctionCall: &FunctionCall{Name: "test"}},
+			name: "Atom/function call/few arguments/trailing comma",
+			args: args{"test(12, 23, 42,)", new(Atom)},
+			wantAST: &Atom{
+				FunctionCall: &FunctionCall{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(12)}},
+								},
+							},
+						},
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(23)}},
+								},
+							},
+						},
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Atom: &Atom{Number: tests.GetNumberAddress(42)}},
+								},
+							},
+						},
+					},
+				},
+			},
 			wantErr: assert.NoError,
 		},
 		{

@@ -60,5 +60,5 @@ type Atom struct {
 // FunctionCall ...
 type FunctionCall struct {
 	Name      string        `parser:"@Ident"`
-	Arguments []*Expression `parser:"\"(\" [ @@ { \",\" @@ } ] \")\""`
+	Arguments []*Expression `parser:"\"(\" [ @@ { \",\" @@ } [ \",\" ] ] \")\""`
 }
