@@ -50,6 +50,112 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name:    "Atom/list definition/no items",
+			args:    args{"[]", new(Atom)},
+			wantAST: &Atom{ListDefinition: &ListDefinition{Items: nil}},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/list definition/single item",
+			args: args{"[12]", new(Atom)},
+			wantAST: &Atom{
+				ListDefinition: &ListDefinition{
+					Items: []*Expression{
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/list definition/single item/trailing comma",
+			args: args{"[12,]", new(Atom)},
+			wantAST: &Atom{
+				ListDefinition: &ListDefinition{
+					Items: []*Expression{
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/list definition/few items",
+			args: args{"[12, 23, 42]", new(Atom)},
+			wantAST: &Atom{
+				ListDefinition: &ListDefinition{
+					Items: []*Expression{
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+								},
+							},
+						},
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+								},
+							},
+						},
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/list definition/few items/trailing comma",
+			args: args{"[12, 23, 42,]", new(Atom)},
+			wantAST: &Atom{
+				ListDefinition: &ListDefinition{
+					Items: []*Expression{
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+								},
+							},
+						},
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+								},
+							},
+						},
+						{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Atom/function call/no arguments",
 			args:    args{"test()", new(Atom)},
 			wantAST: &Atom{FunctionCall: &FunctionCall{Name: "test"}},

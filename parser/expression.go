@@ -57,11 +57,17 @@ type Accessor struct {
 
 // Atom ...
 type Atom struct {
-	Number       *float64      `parser:"@Int | @Float"`
-	String       *string       `parser:"| @String | @RawString"`
-	FunctionCall *FunctionCall `parser:"| @@"`
-	Identifier   *string       `parser:"| @Ident"`
-	Expression   *Expression   `parser:"| \"(\" @@ \")\""`
+	Number         *float64        `parser:"@Int | @Float"`
+	String         *string         `parser:"| @String | @RawString"`
+	ListDefinition *ListDefinition `parser:"| @@"`
+	FunctionCall   *FunctionCall   `parser:"| @@"`
+	Identifier     *string         `parser:"| @Ident"`
+	Expression     *Expression     `parser:"| \"(\" @@ \")\""`
+}
+
+// ListDefinition ...
+type ListDefinition struct {
+	Items []*Expression `parser:"\"[\" [ @@ { \",\" @@ } [ \",\" ] ] \"]\""`
 }
 
 // FunctionCall ...
