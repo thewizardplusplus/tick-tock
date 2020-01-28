@@ -44,9 +44,15 @@ type Multiplication struct {
 
 // Unary ...
 type Unary struct {
-	Operation string `parser:"( @( \"-\" )"`
-	Unary     *Unary `parser:"@@ )"`
-	Atom      *Atom  `parser:"| @@"`
+	Operation string    `parser:"( @( \"-\" )"`
+	Unary     *Unary    `parser:"@@ )"`
+	Accessor  *Accessor `parser:"| @@"`
+}
+
+// Accessor ...
+type Accessor struct {
+	Atom *Atom         `parser:"@@"`
+	Key  []*Expression `parser:"{ \"[\" @@ \"]\" }"`
 }
 
 // Atom ...
