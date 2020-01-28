@@ -62,9 +62,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 				ListDefinition: &ListDefinition{
 					Items: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
@@ -80,9 +82,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 				ListDefinition: &ListDefinition{
 					Items: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
@@ -98,23 +102,29 @@ func TestParseToAST_withExpression(test *testing.T) {
 				ListDefinition: &ListDefinition{
 					Items: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+									},
 								},
 							},
 						},
@@ -130,23 +140,29 @@ func TestParseToAST_withExpression(test *testing.T) {
 				ListDefinition: &ListDefinition{
 					Items: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+									},
 								},
 							},
 						},
@@ -169,9 +185,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Name: "test",
 					Arguments: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
@@ -188,9 +206,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Name: "test",
 					Arguments: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
@@ -207,23 +227,29 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Name: "test",
 					Arguments: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+									},
 								},
 							},
 						},
@@ -240,23 +266,29 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Name: "test",
 					Arguments: []*Expression{
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+									},
 								},
 							},
 						},
 						{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+							ListConstruction: &ListConstruction{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+									},
 								},
 							},
 						},
@@ -270,9 +302,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 			args: args{"(23)", new(Atom)},
 			wantAST: &Atom{
 				Expression: &Expression{
-					Addition: &Addition{
-						Multiplication: &Multiplication{
-							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+					ListConstruction: &ListConstruction{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+							},
 						},
 					},
 				},
@@ -286,16 +320,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 				Atom: &Atom{Identifier: tests.GetStringAddress("test")},
 				Key: []*Expression{
 					{
-						Addition: &Addition{
-							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+						ListConstruction: &ListConstruction{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+								},
 							},
 						},
 					},
 					{
-						Addition: &Addition{
-							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+						ListConstruction: &ListConstruction{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+								},
 							},
 						},
 					},
@@ -384,12 +422,72 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "Expression",
-			args: args{"23", new(Expression)},
-			wantAST: &Expression{
+			name: "ListConstruction/nonempty",
+			args: args{"12 : [23, 42]", new(ListConstruction)},
+			wantAST: &ListConstruction{
+				Addition: &Addition{
+					Multiplication: &Multiplication{
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
+					},
+				},
+				ListConstruction: &ListConstruction{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{
+								Accessor: &Accessor{
+									Atom: &Atom{
+										ListDefinition: &ListDefinition{
+											Items: []*Expression{
+												{
+													ListConstruction: &ListConstruction{
+														Addition: &Addition{
+															Multiplication: &Multiplication{
+																Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+															},
+														},
+													},
+												},
+												{
+													ListConstruction: &ListConstruction{
+														Addition: &Addition{
+															Multiplication: &Multiplication{
+																Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ListConstruction/empty",
+			args: args{"23", new(ListConstruction)},
+			wantAST: &ListConstruction{
 				Addition: &Addition{
 					Multiplication: &Multiplication{
 						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Expression",
+			args: args{"23", new(Expression)},
+			wantAST: &Expression{
+				ListConstruction: &ListConstruction{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+						},
 					},
 				},
 			},

@@ -96,16 +96,20 @@ func TestParseToAST_withProgram(test *testing.T) {
 				Name: "test",
 				Parameters: []*Expression{
 					{
-						Addition: &Addition{
-							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Identifier: tests.GetStringAddress("a")}}},
+						ListConstruction: &ListConstruction{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Identifier: tests.GetStringAddress("a")}}},
+								},
 							},
 						},
 					},
 					{
-						Addition: &Addition{
-							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Identifier: tests.GetStringAddress("b")}}},
+						ListConstruction: &ListConstruction{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Identifier: tests.GetStringAddress("b")}}},
+								},
 							},
 						},
 					},

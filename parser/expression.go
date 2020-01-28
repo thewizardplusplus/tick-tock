@@ -25,7 +25,13 @@ package parser
 
 // Expression ...
 type Expression struct {
-	Addition *Addition `parser:"@@"`
+	ListConstruction *ListConstruction `parser:"@@"`
+}
+
+// ListConstruction ...
+type ListConstruction struct {
+	Addition         *Addition         `parser:"@@"`
+	ListConstruction *ListConstruction `parser:"[ \":\" @@ ]"`
 }
 
 // Addition ...
