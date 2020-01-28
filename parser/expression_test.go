@@ -32,6 +32,18 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name:    "Atom/string/interpreted",
+			args:    args{`"test"`, new(Atom)},
+			wantAST: &Atom{String: tests.GetStringAddress("test")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Atom/string/raw",
+			args:    args{"`test`", new(Atom)},
+			wantAST: &Atom{String: tests.GetStringAddress("test")},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Atom/identifier",
 			args:    args{"test", new(Atom)},
 			wantAST: &Atom{Identifier: tests.GetStringAddress("test")},
