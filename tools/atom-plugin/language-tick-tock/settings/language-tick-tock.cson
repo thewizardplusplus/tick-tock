@@ -3,10 +3,10 @@
     'commentStart': '// '
     'increaseIndentPattern': '(?x)
       \\b(actor|state|message)\\b[^(]*\\([^)]*\\)[^;]*$
-      | \\(\\s*$
-      | ^\\s*\\)
+      | [\\(\\[]\\s*$
+      | ^\\s*[\\)\\]]
     '
     'decreaseIndentPattern': '(?x)
       ^\\s*;
-      | ^\\s*\\)
+      | ^\\s*[\\)\\]]
     '
