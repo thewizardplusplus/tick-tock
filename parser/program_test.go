@@ -90,31 +90,27 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "Message/with parameters",
-			args: args{"message test(a, b);", new(Message)},
-			wantAST: &Message{
-				Name: "test",
-				Parameters: []*Expression{
-					{
-						ListConstruction: &ListConstruction{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Identifier: tests.GetStringAddress("a")}}},
-								},
-							},
-						},
-					},
-					{
-						ListConstruction: &ListConstruction{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Identifier: tests.GetStringAddress("b")}}},
-								},
-							},
-						},
-					},
-				},
-			},
+			name:    "Message/single parameter",
+			args:    args{"message test(a);", new(Message)},
+			wantAST: &Message{Name: "test", Parameters: []string{"a"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Message/single parameter/trailing comma",
+			args:    args{"message test(a,);", new(Message)},
+			wantAST: &Message{Name: "test", Parameters: []string{"a"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Message/few parameter",
+			args:    args{"message test(a, b, c);", new(Message)},
+			wantAST: &Message{Name: "test", Parameters: []string{"a", "b", "c"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Message/few parameter/trailing comma",
+			args:    args{"message test(a, b, c,);", new(Message)},
+			wantAST: &Message{Name: "test", Parameters: []string{"a", "b", "c"}},
 			wantErr: assert.NoError,
 		},
 		{
