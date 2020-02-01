@@ -60,7 +60,7 @@
 
   # built-in functions
   {
-    'match': '\\b(send|set|out|sleep|exit)\\b'
+    'match': '\\b(let|send|set|out|sleep|exit)\\b'
     'name': 'support.function.builtin.ticktock'
   }
 

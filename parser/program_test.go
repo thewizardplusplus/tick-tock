@@ -20,6 +20,25 @@ func TestParseToAST_withProgram(test *testing.T) {
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
+			name: "Command/let",
+			args: args{"let number = 23", new(Command)},
+			wantAST: &Command{
+				Let: &LetCommand{
+					Identifier: "number",
+					Expression: &Expression{
+						ListConstruction: &ListConstruction{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Command/send",
 			args:    args{"send test", new(Command)},
 			wantAST: &Command{Send: tests.GetStringAddress("test")},
