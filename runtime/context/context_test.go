@@ -28,13 +28,29 @@ func TestDefaultContext_SetStateHolder(test *testing.T) {
 	assert.Equal(test, context.DefaultContext{StateHolder: holder}, defaultContext)
 }
 
+func TestDefaultContext_SetValueStore(test *testing.T) {
+	store := new(mocks.CopyableValueStore)
+	defaultContext := context.DefaultContext{}
+	defaultContext.SetValueStore(store)
+
+	mock.AssertExpectationsForObjects(test, store)
+	assert.Equal(test, context.DefaultContext{CopyableValueStore: store}, defaultContext)
+}
+
 func TestDefaultContext_Copy(test *testing.T) {
+	store := new(mocks.CopyableValueStore)
+	store.On("Copy").Return(store)
+
 	sender := new(mocks.MessageSender)
 	holder := new(mocks.StateHolder)
-	defaultContext := &context.DefaultContext{MessageSender: sender, StateHolder: holder}
+	defaultContext := &context.DefaultContext{
+		MessageSender:      sender,
+		StateHolder:        holder,
+		CopyableValueStore: store,
+	}
 	defaultContextCopy := defaultContext.Copy()
 
-	mock.AssertExpectationsForObjects(test, sender, holder)
+	mock.AssertExpectationsForObjects(test, sender, holder, store)
 	assert.Equal(test, defaultContext, defaultContextCopy)
 	if assert.IsType(test, &context.DefaultContext{}, defaultContextCopy) {
 		assert.NotEqual(

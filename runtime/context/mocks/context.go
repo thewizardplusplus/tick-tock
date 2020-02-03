@@ -54,3 +54,36 @@ func (_m *Context) SetState(state string) error {
 func (_m *Context) SetStateHolder(holder context.StateHolder) {
 	_m.Called(holder)
 }
+
+// SetValue provides a mock function with given fields: name, value
+func (_m *Context) SetValue(name string, value interface{}) {
+	_m.Called(name, value)
+}
+
+// SetValueStore provides a mock function with given fields: store
+func (_m *Context) SetValueStore(store context.CopyableValueStore) {
+	_m.Called(store)
+}
+
+// Value provides a mock function with given fields: name
+func (_m *Context) Value(name string) (interface{}, bool) {
+	ret := _m.Called(name)
+
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(string) interface{}); ok {
+		r0 = rf(name)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
+	}
+
+	var r1 bool
+	if rf, ok := ret.Get(1).(func(string) bool); ok {
+		r1 = rf(name)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	return r0, r1
+}

@@ -17,9 +17,11 @@ type StateHolder interface {
 type Context interface {
 	MessageSender
 	StateHolder
+	ValueStore
 
 	SetMessageSender(sender MessageSender)
 	SetStateHolder(holder StateHolder)
+	SetValueStore(store CopyableValueStore)
 	Copy() Context
 }
 
@@ -27,6 +29,7 @@ type Context interface {
 type DefaultContext struct {
 	MessageSender
 	StateHolder
+	CopyableValueStore
 }
 
 // SetMessageSender ...
@@ -39,7 +42,13 @@ func (context *DefaultContext) SetStateHolder(holder StateHolder) {
 	context.StateHolder = holder
 }
 
+// SetValueStore ...
+func (context *DefaultContext) SetValueStore(store CopyableValueStore) {
+	context.CopyableValueStore = store
+}
+
 // Copy ...
 func (context DefaultContext) Copy() Context {
-	return &DefaultContext{context.MessageSender, context.StateHolder}
+	valueStoreCopy := context.CopyableValueStore.Copy()
+	return &DefaultContext{context.MessageSender, context.StateHolder, valueStoreCopy}
 }
