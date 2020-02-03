@@ -10,6 +10,14 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
+func TestNewDefaultContext(test *testing.T) {
+	got := context.NewDefaultContext()
+
+	assert.Nil(test, got.MessageSender)
+	assert.Nil(test, got.StateHolder)
+	assert.Equal(test, context.DefaultValueStore{}, got.CopyableValueStore)
+}
+
 func TestDefaultContext_SetMessageSender(test *testing.T) {
 	sender := new(mocks.MessageSender)
 	defaultContext := context.DefaultContext{}

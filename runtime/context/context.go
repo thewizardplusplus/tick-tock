@@ -32,6 +32,12 @@ type DefaultContext struct {
 	CopyableValueStore
 }
 
+// NewDefaultContext ...
+func NewDefaultContext() *DefaultContext {
+	valueStore := make(DefaultValueStore)
+	return &DefaultContext{CopyableValueStore: valueStore}
+}
+
 // SetMessageSender ...
 func (context *DefaultContext) SetMessageSender(sender MessageSender) {
 	context.MessageSender = sender
