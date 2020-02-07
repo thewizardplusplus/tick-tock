@@ -5,9 +5,6 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
-// FunctionHandler ...
-type FunctionHandler func([]interface{}) (interface{}, error)
-
 // FunctionApplying ...
 type FunctionApplying struct {
 	arguments []Expression
