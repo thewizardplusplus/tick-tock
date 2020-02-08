@@ -5,98 +5,119 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
-func TestNewArithmeticNegation(test *testing.T) {
-	operand := NewSignedExpression("left")
-	operand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
+func TestArithmeticFunctions(test *testing.T) {
+	type args struct {
+		context context.Context
+	}
 
-	context := new(contextmocks.Context)
-	expression := NewArithmeticNegation(operand)
-	gotResult, gotErr := expression.Evaluate(context)
+	for _, data := range []struct {
+		name       string
+		expression FunctionApplying
+		args       args
+		wantResult interface{}
+		wantErr    assert.ErrorAssertionFunc
+	}{
+		{
+			name: "arithmetic negation",
+			expression: func() FunctionApplying {
+				operand := NewSignedExpression("left")
+				operand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
 
-	mock.AssertExpectationsForObjects(test, operand, context)
-	assert.Equal(test, -2.0, gotResult)
-	assert.NoError(test, gotErr)
-}
+				return NewArithmeticNegation(operand)
+			}(),
+			args:       args{new(contextmocks.Context)},
+			wantResult: -2.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "multiplication",
+			expression: func() FunctionApplying {
+				leftOperand := NewSignedExpression("left")
+				leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
 
-func TestNewMultiplication(test *testing.T) {
-	leftOperand := NewSignedExpression("left")
-	leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
+				rightOperand := NewSignedExpression("right")
+				rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(3.0, nil)
 
-	rightOperand := NewSignedExpression("right")
-	rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(3.0, nil)
+				return NewMultiplication(leftOperand, rightOperand)
+			}(),
+			args:       args{new(contextmocks.Context)},
+			wantResult: 6.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "division",
+			expression: func() FunctionApplying {
+				leftOperand := NewSignedExpression("left")
+				leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(10.0, nil)
 
-	context := new(contextmocks.Context)
-	expression := NewMultiplication(leftOperand, rightOperand)
-	gotResult, gotErr := expression.Evaluate(context)
+				rightOperand := NewSignedExpression("right")
+				rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
 
-	mock.AssertExpectationsForObjects(test, leftOperand, rightOperand, context)
-	assert.Equal(test, 6.0, gotResult)
-	assert.NoError(test, gotErr)
-}
+				return NewDivision(leftOperand, rightOperand)
+			}(),
+			args:       args{new(contextmocks.Context)},
+			wantResult: 5.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "modulo",
+			expression: func() FunctionApplying {
+				leftOperand := NewSignedExpression("left")
+				leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(5.0, nil)
 
-func TestNewDivision(test *testing.T) {
-	leftOperand := NewSignedExpression("left")
-	leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(10.0, nil)
+				rightOperand := NewSignedExpression("right")
+				rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
 
-	rightOperand := NewSignedExpression("right")
-	rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
+				return NewModulo(leftOperand, rightOperand)
+			}(),
+			args:       args{new(contextmocks.Context)},
+			wantResult: 1.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "addition",
+			expression: func() FunctionApplying {
+				leftOperand := NewSignedExpression("left")
+				leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
 
-	context := new(contextmocks.Context)
-	expression := NewDivision(leftOperand, rightOperand)
-	gotResult, gotErr := expression.Evaluate(context)
+				rightOperand := NewSignedExpression("right")
+				rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(3.0, nil)
 
-	mock.AssertExpectationsForObjects(test, leftOperand, rightOperand, context)
-	assert.Equal(test, 5.0, gotResult)
-	assert.NoError(test, gotErr)
-}
+				return NewAddition(leftOperand, rightOperand)
+			}(),
+			args:       args{new(contextmocks.Context)},
+			wantResult: 5.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "subtraction",
+			expression: func() FunctionApplying {
+				leftOperand := NewSignedExpression("left")
+				leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(5.0, nil)
 
-func TestNewModulo(test *testing.T) {
-	leftOperand := NewSignedExpression("left")
-	leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(5.0, nil)
+				rightOperand := NewSignedExpression("right")
+				rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
 
-	rightOperand := NewSignedExpression("right")
-	rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
+				return NewSubtraction(leftOperand, rightOperand)
+			}(),
+			args:       args{new(contextmocks.Context)},
+			wantResult: 3.0,
+			wantErr:    assert.NoError,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotResult, gotErr := data.expression.Evaluate(data.args.context)
 
-	context := new(contextmocks.Context)
-	expression := NewModulo(leftOperand, rightOperand)
-	gotResult, gotErr := expression.Evaluate(context)
-
-	mock.AssertExpectationsForObjects(test, leftOperand, rightOperand, context)
-	assert.Equal(test, 1.0, gotResult)
-	assert.NoError(test, gotErr)
-}
-
-func TestNewAddition(test *testing.T) {
-	leftOperand := NewSignedExpression("left")
-	leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
-
-	rightOperand := NewSignedExpression("right")
-	rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(3.0, nil)
-
-	context := new(contextmocks.Context)
-	expression := NewAddition(leftOperand, rightOperand)
-	gotResult, gotErr := expression.Evaluate(context)
-
-	mock.AssertExpectationsForObjects(test, leftOperand, rightOperand, context)
-	assert.Equal(test, 5.0, gotResult)
-	assert.NoError(test, gotErr)
-}
-
-func TestNewSubtraction(test *testing.T) {
-	leftOperand := NewSignedExpression("left")
-	leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(5.0, nil)
-
-	rightOperand := NewSignedExpression("right")
-	rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
-
-	context := new(contextmocks.Context)
-	expression := NewSubtraction(leftOperand, rightOperand)
-	gotResult, gotErr := expression.Evaluate(context)
-
-	mock.AssertExpectationsForObjects(test, leftOperand, rightOperand, context)
-	assert.Equal(test, 3.0, gotResult)
-	assert.NoError(test, gotErr)
+			for _, argument := range data.expression.arguments {
+				mock.AssertExpectationsForObjects(test, argument)
+			}
+			mock.AssertExpectationsForObjects(test, data.args.context)
+			assert.Equal(test, data.wantResult, gotResult)
+			data.wantErr(test, gotErr)
+		})
+	}
 }
