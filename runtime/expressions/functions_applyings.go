@@ -4,6 +4,16 @@ import (
 	"math"
 )
 
+// NewArithmeticNegation ...
+func NewArithmeticNegation(operand Expression) FunctionApplying {
+	return NewFunctionApplying(
+		[]Expression{operand},
+		NewArithmeticFunctionHandler(func(arguments []float64) (float64, error) {
+			return -arguments[0], nil
+		}),
+	)
+}
+
 // NewMultiplication ...
 func NewMultiplication(leftOperand Expression, rightOperand Expression) FunctionApplying {
 	return NewFunctionApplying(
