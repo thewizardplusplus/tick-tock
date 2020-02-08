@@ -9,7 +9,18 @@ import (
 	"github.com/thewizardplusplus/tick-tock/internal/tests"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 )
+
+type SignedExpression struct {
+	*mocks.Expression
+
+	Sign string
+}
+
+func NewSignedExpression(sign string) SignedExpression {
+	return SignedExpression{new(mocks.Expression), sign}
+}
 
 func TestNewFunctionApplying(test *testing.T) {
 	arguments := []Expression{NewSignedExpression("one"), NewSignedExpression("two")}
