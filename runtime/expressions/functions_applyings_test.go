@@ -55,3 +55,19 @@ func TestNewModulo(test *testing.T) {
 	assert.Equal(test, 1.0, gotResult)
 	assert.NoError(test, gotErr)
 }
+
+func TestNewAddition(test *testing.T) {
+	leftOperand := NewSignedExpression("left")
+	leftOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.0, nil)
+
+	rightOperand := NewSignedExpression("right")
+	rightOperand.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(3.0, nil)
+
+	context := new(contextmocks.Context)
+	expression := NewAddition(leftOperand, rightOperand)
+	gotResult, gotErr := expression.Evaluate(context)
+
+	mock.AssertExpectationsForObjects(test, leftOperand, rightOperand, context)
+	assert.Equal(test, 5.0, gotResult)
+	assert.NoError(test, gotErr)
+}
