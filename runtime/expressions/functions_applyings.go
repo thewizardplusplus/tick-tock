@@ -2,13 +2,15 @@ package expressions
 
 import (
 	"math"
+
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
 // NewArithmeticNegation ...
 func NewArithmeticNegation(operand Expression) FunctionApplying {
 	return NewFunctionApplying(
 		[]Expression{operand},
-		NewArithmeticFunctionHandler(func(arguments []float64) (float64, error) {
+		NewArithmeticFunctionHandler(func(context context.Context, arguments []float64) (float64, error) {
 			return -arguments[0], nil
 		}),
 	)
@@ -18,7 +20,7 @@ func NewArithmeticNegation(operand Expression) FunctionApplying {
 func NewMultiplication(leftOperand Expression, rightOperand Expression) FunctionApplying {
 	return NewFunctionApplying(
 		[]Expression{leftOperand, rightOperand},
-		NewArithmeticFunctionHandler(func(arguments []float64) (float64, error) {
+		NewArithmeticFunctionHandler(func(context context.Context, arguments []float64) (float64, error) {
 			return arguments[0] * arguments[1], nil
 		}),
 	)
@@ -28,7 +30,7 @@ func NewMultiplication(leftOperand Expression, rightOperand Expression) Function
 func NewDivision(leftOperand Expression, rightOperand Expression) FunctionApplying {
 	return NewFunctionApplying(
 		[]Expression{leftOperand, rightOperand},
-		NewArithmeticFunctionHandler(func(arguments []float64) (float64, error) {
+		NewArithmeticFunctionHandler(func(context context.Context, arguments []float64) (float64, error) {
 			return arguments[0] / arguments[1], nil
 		}),
 	)
@@ -38,7 +40,7 @@ func NewDivision(leftOperand Expression, rightOperand Expression) FunctionApplyi
 func NewModulo(leftOperand Expression, rightOperand Expression) FunctionApplying {
 	return NewFunctionApplying(
 		[]Expression{leftOperand, rightOperand},
-		NewArithmeticFunctionHandler(func(arguments []float64) (float64, error) {
+		NewArithmeticFunctionHandler(func(context context.Context, arguments []float64) (float64, error) {
 			return math.Mod(arguments[0], arguments[1]), nil
 		}),
 	)
@@ -48,7 +50,7 @@ func NewModulo(leftOperand Expression, rightOperand Expression) FunctionApplying
 func NewAddition(leftOperand Expression, rightOperand Expression) FunctionApplying {
 	return NewFunctionApplying(
 		[]Expression{leftOperand, rightOperand},
-		NewArithmeticFunctionHandler(func(arguments []float64) (float64, error) {
+		NewArithmeticFunctionHandler(func(context context.Context, arguments []float64) (float64, error) {
 			return arguments[0] + arguments[1], nil
 		}),
 	)
@@ -58,7 +60,7 @@ func NewAddition(leftOperand Expression, rightOperand Expression) FunctionApplyi
 func NewSubtraction(leftOperand Expression, rightOperand Expression) FunctionApplying {
 	return NewFunctionApplying(
 		[]Expression{leftOperand, rightOperand},
-		NewArithmeticFunctionHandler(func(arguments []float64) (float64, error) {
+		NewArithmeticFunctionHandler(func(context context.Context, arguments []float64) (float64, error) {
 			return arguments[0] - arguments[1], nil
 		}),
 	)

@@ -30,7 +30,7 @@ func (expression FunctionApplying) Evaluate(
 		arguments = append(arguments, result)
 	}
 
-	result, err = expression.handler(arguments)
+	result, err = expression.handler(context, arguments)
 	if err != nil {
 		return nil, errors.Wrapf(err, "unable to call the function handler")
 	}

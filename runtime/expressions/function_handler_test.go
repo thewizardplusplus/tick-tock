@@ -4,6 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestNewArithmeticFunctionHandler(test *testing.T) {
@@ -11,6 +14,7 @@ func TestNewArithmeticFunctionHandler(test *testing.T) {
 		handler ArithmeticFunctionHandler
 	}
 	type args struct {
+		context   context.Context
 		arguments []interface{}
 	}
 
@@ -24,7 +28,7 @@ func TestNewArithmeticFunctionHandler(test *testing.T) {
 		{
 			name: "success with arguments",
 			fields: fields{
-				handler: func(arguments []float64) (float64, error) {
+				handler: func(context context.Context, arguments []float64) (float64, error) {
 					var result float64
 					for _, argument := range arguments {
 						result += argument
@@ -33,33 +37,43 @@ func TestNewArithmeticFunctionHandler(test *testing.T) {
 					return result, nil
 				},
 			},
-			args:       args{[]interface{}{2.3, 4.2}},
+			args: args{
+				context:   new(contextmocks.Context),
+				arguments: []interface{}{2.3, 4.2},
+			},
 			wantResult: 6.5,
 			wantErr:    assert.NoError,
 		},
 		{
 			name: "success without arguments",
 			fields: fields{
-				handler: func([]float64) (float64, error) { return 2.3, nil },
+				handler: func(context.Context, []float64) (float64, error) { return 2.3, nil },
 			},
-			args:       args{nil},
+			args: args{
+				context:   new(contextmocks.Context),
+				arguments: nil,
+			},
 			wantResult: 2.3,
 			wantErr:    assert.NoError,
 		},
 		{
 			name: "error",
 			fields: fields{
-				handler: func([]float64) (float64, error) { panic("not implemented") },
+				handler: func(context.Context, []float64) (float64, error) { panic("not implemented") },
 			},
-			args:       args{[]interface{}{2, 3}},
+			args: args{
+				context:   new(contextmocks.Context),
+				arguments: []interface{}{2, 3},
+			},
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			handler := NewArithmeticFunctionHandler(data.fields.handler)
-			gotResult, gotErr := handler(data.args.arguments)
+			gotResult, gotErr := handler(data.args.context, data.args.arguments)
 
+			mock.AssertExpectationsForObjects(test, data.args.context)
 			assert.Equal(test, data.wantResult, gotResult)
 			data.wantErr(test, gotErr)
 		})

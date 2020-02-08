@@ -2,17 +2,18 @@ package expressions
 
 import (
 	"github.com/pkg/errors"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
 // FunctionHandler ...
-type FunctionHandler func([]interface{}) (interface{}, error)
+type FunctionHandler func(context context.Context, arguments []interface{}) (interface{}, error)
 
 // ArithmeticFunctionHandler ...
-type ArithmeticFunctionHandler func([]float64) (float64, error)
+type ArithmeticFunctionHandler func(context context.Context, arguments []float64) (float64, error)
 
 // NewArithmeticFunctionHandler ...
 func NewArithmeticFunctionHandler(handler ArithmeticFunctionHandler) FunctionHandler {
-	return func(arguments []interface{}) (interface{}, error) {
+	return func(context context.Context, arguments []interface{}) (interface{}, error) {
 		var values []float64
 		for index, argument := range arguments {
 			value, ok := argument.(float64)
@@ -27,6 +28,6 @@ func NewArithmeticFunctionHandler(handler ArithmeticFunctionHandler) FunctionHan
 			values = append(values, value)
 		}
 
-		return handler(values)
+		return handler(context, values)
 	}
 }

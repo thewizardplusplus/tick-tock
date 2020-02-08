@@ -13,7 +13,7 @@ import (
 
 func TestNewFunctionApplying(test *testing.T) {
 	arguments := []Expression{NewSignedExpression("one"), NewSignedExpression("two")}
-	handler := func([]interface{}) (interface{}, error) { panic("not implemented") }
+	handler := func(context.Context, []interface{}) (interface{}, error) { panic("not implemented") }
 	got := NewFunctionApplying(arguments, handler)
 
 	for _, argument := range arguments {
@@ -56,7 +56,7 @@ func TestFunctionApplying_Evaluate(test *testing.T) {
 						return expression
 					}(),
 				},
-				handler: func(arguments []interface{}) (interface{}, error) {
+				handler: func(context context.Context, arguments []interface{}) (interface{}, error) {
 					var result float64
 					for _, argument := range arguments {
 						result += argument.(float64)
@@ -73,7 +73,7 @@ func TestFunctionApplying_Evaluate(test *testing.T) {
 			name: "success without arguments",
 			fields: fields{
 				arguments: nil,
-				handler:   func([]interface{}) (interface{}, error) { return 2.3, nil },
+				handler:   func(context.Context, []interface{}) (interface{}, error) { return 2.3, nil },
 			},
 			args:       args{new(contextmocks.Context)},
 			wantResult: 2.3,
@@ -93,7 +93,7 @@ func TestFunctionApplying_Evaluate(test *testing.T) {
 					}(),
 					NewSignedExpression("two"),
 				},
-				handler: func([]interface{}) (interface{}, error) { panic("not implemented") },
+				handler: func(context.Context, []interface{}) (interface{}, error) { panic("not implemented") },
 			},
 			args:       args{new(contextmocks.Context)},
 			wantResult: nil,
@@ -116,7 +116,9 @@ func TestFunctionApplying_Evaluate(test *testing.T) {
 						return expression
 					}(),
 				},
-				handler: func([]interface{}) (interface{}, error) { return nil, iotest.ErrTimeout },
+				handler: func(context.Context, []interface{}) (interface{}, error) {
+					return nil, iotest.ErrTimeout
+				},
 			},
 			args:       args{new(contextmocks.Context)},
 			wantResult: nil,
