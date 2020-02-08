@@ -28,6 +28,11 @@ func NewArithmeticFunctionHandler(handler ArithmeticFunctionHandler) FunctionHan
 			values = append(values, value)
 		}
 
-		return handler(context, values)
+		result, err := handler(context, values)
+		if err != nil {
+			return nil, errors.Wrapf(err, "unable to call the arithmetic function handler")
+		}
+
+		return result, nil
 	}
 }

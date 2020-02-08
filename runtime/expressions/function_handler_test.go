@@ -2,6 +2,7 @@ package expressions
 
 import (
 	"testing"
+	"testing/iotest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -57,13 +58,25 @@ func TestNewArithmeticFunctionHandler(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "error",
+			name: "error on argument typecasting",
 			fields: fields{
 				handler: func(context.Context, []float64) (float64, error) { panic("not implemented") },
 			},
 			args: args{
 				context:   new(contextmocks.Context),
-				arguments: []interface{}{2, 3},
+				arguments: []interface{}{2, 4.2},
+			},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error on handler calling",
+			fields: fields{
+				handler: func(context.Context, []float64) (float64, error) { return 0, iotest.ErrTimeout },
+			},
+			args: args{
+				context:   new(contextmocks.Context),
+				arguments: []interface{}{2.3, 4.2},
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
