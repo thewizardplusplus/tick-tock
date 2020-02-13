@@ -1,11 +1,11 @@
 // pinger
 actor
   state __initialization__
-    message __initialize__()
+    message __initialize__
       out "\x1b[32mpinger\x1b[m sent \x1b[32mping\x1b[m\n"
       send ping
     ;
-    message pong()
+    message pong
       out "\x1b[32mpinger\x1b[m received \x1b[34mpong\x1b[m\n"
       out "\x1b[32mpinger\x1b[m finished\n"
     ;
@@ -15,7 +15,7 @@ actor
 // ponger
 actor
   state __initialization__
-    message ping()
+    message ping
       out "\x1b[34mponger\x1b[m received \x1b[32mping\x1b[m\n"
       out "\x1b[34mponger\x1b[m sent \x1b[34mpong\x1b[m\n"
       send pong

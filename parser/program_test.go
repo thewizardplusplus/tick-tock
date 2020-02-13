@@ -108,7 +108,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 		},
 		{
 			name: "Message/nonempty",
-			args: args{"message test() send one send two;", new(Message)},
+			args: args{"message test send one send two;", new(Message)},
 			wantAST: &Message{
 				Name: "test",
 				Commands: []*Command{
@@ -120,38 +120,14 @@ func TestParseToAST_withProgram(test *testing.T) {
 		},
 		{
 			name:    "Message/empty",
-			args:    args{"message test();", new(Message)},
-			wantAST: &Message{"test", nil, nil},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Message/single parameter",
-			args:    args{"message test(a);", new(Message)},
-			wantAST: &Message{Name: "test", Parameters: []string{"a"}},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Message/single parameter/trailing comma",
-			args:    args{"message test(a,);", new(Message)},
-			wantAST: &Message{Name: "test", Parameters: []string{"a"}},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Message/few parameter",
-			args:    args{"message test(a, b, c);", new(Message)},
-			wantAST: &Message{Name: "test", Parameters: []string{"a", "b", "c"}},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Message/few parameter/trailing comma",
-			args:    args{"message test(a, b, c,);", new(Message)},
-			wantAST: &Message{Name: "test", Parameters: []string{"a", "b", "c"}},
+			args:    args{"message test;", new(Message)},
+			wantAST: &Message{"test", nil},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "State/nonempty",
-			args:    args{"state test message one(); message two();;", new(State)},
-			wantAST: &State{"test", []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			args:    args{"state test message one; message two;;", new(State)},
+			wantAST: &State{"test", []*Message{{"one", nil}, {"two", nil}}},
 			wantErr: assert.NoError,
 		},
 		{
