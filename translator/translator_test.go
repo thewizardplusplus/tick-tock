@@ -180,14 +180,14 @@ func TestTranslateStates(test *testing.T) {
 							{
 								Name: "message_0",
 								Commands: []*parser.Command{
-									{Send: &parser.SendCommand{Name: "command_0"}},
+									{Send: tests.GetStringAddress("command_0")},
 									{Set: tests.GetStringAddress("state_unknown")},
 								},
 							},
 							{
 								Name: "message_1",
 								Commands: []*parser.Command{
-									{Send: &parser.SendCommand{Name: "command_2"}},
+									{Send: tests.GetStringAddress("command_2")},
 									{Set: tests.GetStringAddress("state_unknown")},
 								},
 							},
@@ -238,15 +238,15 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: &parser.SendCommand{Name: "command_0"}},
-							{Send: &parser.SendCommand{Name: "command_1"}},
+							{Send: tests.GetStringAddress("command_0")},
+							{Send: tests.GetStringAddress("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: &parser.SendCommand{Name: "command_2"}},
-							{Send: &parser.SendCommand{Name: "command_3"}},
+							{Send: tests.GetStringAddress("command_2")},
+							{Send: tests.GetStringAddress("command_3")},
 						},
 					},
 				},
@@ -273,14 +273,14 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: &parser.SendCommand{Name: "command_0"}},
+							{Send: tests.GetStringAddress("command_0")},
 							{Set: tests.GetStringAddress("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: &parser.SendCommand{Name: "command_2"}},
+							{Send: tests.GetStringAddress("command_2")},
 							{Set: tests.GetStringAddress("command_3")},
 						},
 					},
@@ -331,16 +331,16 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: &parser.SendCommand{Name: "command_0"}},
-							{Send: &parser.SendCommand{Name: "command_1"}},
+							{Send: tests.GetStringAddress("command_0")},
+							{Send: tests.GetStringAddress("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: &parser.SendCommand{Name: "command_2"}},
+							{Send: tests.GetStringAddress("command_2")},
 							{Set: tests.GetStringAddress("command_3")},
-							{Send: &parser.SendCommand{Name: "command_4"}},
+							{Send: tests.GetStringAddress("command_4")},
 							{Set: tests.GetStringAddress("command_5")},
 						},
 					},
@@ -387,8 +387,8 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success with commands (without a set command)",
 			args: args{
 				commands: []*parser.Command{
-					{Send: &parser.SendCommand{Name: "one"}},
-					{Send: &parser.SendCommand{Name: "two"}},
+					{Send: tests.GetStringAddress("one")},
+					{Send: tests.GetStringAddress("two")},
 				},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
@@ -400,7 +400,7 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success with commands (with a set command)",
 			args: args{
 				commands: []*parser.Command{
-					{Send: &parser.SendCommand{Name: "one"}},
+					{Send: tests.GetStringAddress("one")},
 					{Set: tests.GetStringAddress("two")},
 				},
 			},
@@ -434,9 +434,9 @@ func TestTranslateCommands(test *testing.T) {
 			name: "error with a second set command",
 			args: args{
 				commands: []*parser.Command{
-					{Send: &parser.SendCommand{Name: "one"}},
+					{Send: tests.GetStringAddress("one")},
 					{Set: tests.GetStringAddress("two")},
-					{Send: &parser.SendCommand{Name: "three"}},
+					{Send: tests.GetStringAddress("three")},
 					{Set: tests.GetStringAddress("four")},
 				},
 			},
@@ -479,7 +479,7 @@ func TestTranslateCommand(test *testing.T) {
 	}{
 		{
 			name: "Command/send",
-			args: args{&parser.Command{Send: &parser.SendCommand{Name: "test"}}},
+			args: args{&parser.Command{Send: tests.GetStringAddress("test")}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSendCommand("test")
 			},

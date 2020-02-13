@@ -39,129 +39,9 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Command/send/no arguments",
-			args:    args{"send test()", new(Command)},
-			wantAST: &Command{Send: &SendCommand{Name: "test"}},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/send/single argument",
-			args: args{"send test(12)", new(Command)},
-			wantAST: &Command{
-				Send: &SendCommand{
-					Name: "test",
-					Arguments: []*Expression{
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/send/single argument/trailing comma",
-			args: args{"send test(12,)", new(Command)},
-			wantAST: &Command{
-				Send: &SendCommand{
-					Name: "test",
-					Arguments: []*Expression{
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/send/few arguments",
-			args: args{"send test(12, 23, 42)", new(Command)},
-			wantAST: &Command{
-				Send: &SendCommand{
-					Name: "test",
-					Arguments: []*Expression{
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/send/few arguments/trailing comma",
-			args: args{"send test(12, 23, 42,)", new(Command)},
-			wantAST: &Command{
-				Send: &SendCommand{
-					Name: "test",
-					Arguments: []*Expression{
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(12)}}},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(42)}}},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			name:    "Command/send",
+			args:    args{"send test", new(Command)},
+			wantAST: &Command{Send: tests.GetStringAddress("test")},
 			wantErr: assert.NoError,
 		},
 		{
@@ -228,10 +108,13 @@ func TestParseToAST_withProgram(test *testing.T) {
 		},
 		{
 			name: "Message/nonempty",
-			args: args{"message test() send one() send two();", new(Message)},
+			args: args{"message test() send one send two;", new(Message)},
 			wantAST: &Message{
-				Name:     "test",
-				Commands: []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
+				Name: "test",
+				Commands: []*Command{
+					{Send: tests.GetStringAddress("one")},
+					{Send: tests.GetStringAddress("two")},
+				},
 			},
 			wantErr: assert.NoError,
 		},

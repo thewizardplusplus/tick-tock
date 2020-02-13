@@ -140,7 +140,7 @@ func translateCommand(command *parser.Command, dependencies commands.Dependencie
 	err error,
 ) {
 	if command.Send != nil {
-		translatedCommand = commands.NewSendCommand(command.Send.Name)
+		translatedCommand = commands.NewSendCommand(*command.Send)
 	}
 	if command.Set != nil {
 		translatedCommand = commands.NewSetCommand(*command.Set)
