@@ -69,7 +69,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					add := func(a float64, b float64) float64 { return a + b }
+					add := func(a float64, b float64) (float64, error) { return a + b, nil }
 
 					context := new(contextmocks.Context)
 					context.On("Value", "add").Return(add, true)
@@ -98,7 +98,81 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
-			name: "error on argument evaluation",
+			name: "error with an incorrect function type",
+			fields: fields{
+				name:      "add",
+				arguments: []Expression{NewSignedExpression("one"), NewSignedExpression("two")},
+			},
+			args: args{
+				context: func() context.Context {
+					context := new(contextmocks.Context)
+					context.On("Value", "add").Return("incorrect", true)
+
+					return context
+				}(),
+			},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error with incorrect argument count",
+			fields: fields{
+				name:      "add",
+				arguments: []Expression{NewSignedExpression("one"), NewSignedExpression("two")},
+			},
+			args: args{
+				context: func() context.Context {
+					add := func(a float64, b float64, c float64) (float64, error) { return a + b + c, nil }
+
+					context := new(contextmocks.Context)
+					context.On("Value", "add").Return(add, true)
+
+					return context
+				}(),
+			},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error with incorrect result count",
+			fields: fields{
+				name:      "add",
+				arguments: []Expression{NewSignedExpression("one"), NewSignedExpression("two")},
+			},
+			args: args{
+				context: func() context.Context {
+					add := func(a float64, b float64) float64 { return a + b }
+
+					context := new(contextmocks.Context)
+					context.On("Value", "add").Return(add, true)
+
+					return context
+				}(),
+			},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error with an incorrect result type",
+			fields: fields{
+				name:      "add",
+				arguments: []Expression{NewSignedExpression("one"), NewSignedExpression("two")},
+			},
+			args: args{
+				context: func() context.Context {
+					add := func(a float64, b float64) (float64, bool) { return a + b, true }
+
+					context := new(contextmocks.Context)
+					context.On("Value", "add").Return(add, true)
+
+					return context
+				}(),
+			},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error with argument evaluation",
 			fields: fields{
 				name: "add",
 				arguments: []Expression{
@@ -115,7 +189,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					add := func(a float64, b float64) float64 { return a + b }
+					add := func(a float64, b float64) (float64, error) { return a + b, nil }
 
 					context := new(contextmocks.Context)
 					context.On("Value", "add").Return(add, true)
@@ -127,37 +201,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
-			name: "error on function calling (incorrect function type)",
-			fields: fields{
-				name: "add",
-				arguments: []Expression{
-					func() Expression {
-						expression := NewSignedExpression("one")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
-
-						return expression
-					}(),
-					func() Expression {
-						expression := NewSignedExpression("two")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
-
-						return expression
-					}(),
-				},
-			},
-			args: args{
-				context: func() context.Context {
-					context := new(contextmocks.Context)
-					context.On("Value", "add").Return("incorrect", true)
-
-					return context
-				}(),
-			},
-			wantResult: nil,
-			wantErr:    assert.Error,
-		},
-		{
-			name: "error on function calling (incorrect arguments types)",
+			name: "error with an incorrect argument type",
 			fields: fields{
 				name: "add",
 				arguments: []Expression{
@@ -167,17 +211,12 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 
 						return expression
 					}(),
-					func() Expression {
-						expression := NewSignedExpression("two")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(3, nil)
-
-						return expression
-					}(),
+					NewSignedExpression("two"),
 				},
 			},
 			args: args{
 				context: func() context.Context {
-					add := func(a float64, b float64) float64 { return a + b }
+					add := func(a float64, b float64) (float64, error) { return a + b, nil }
 
 					context := new(contextmocks.Context)
 					context.On("Value", "add").Return(add, true)
@@ -189,7 +228,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
-			name: "error on function calling (incorrect arguments count)",
+			name: "error with function calling",
 			fields: fields{
 				name: "add",
 				arguments: []Expression{
@@ -209,39 +248,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					add := func(a float64, b float64, c float64) float64 { return a + b + c }
-
-					context := new(contextmocks.Context)
-					context.On("Value", "add").Return(add, true)
-
-					return context
-				}(),
-			},
-			wantResult: nil,
-			wantErr:    assert.Error,
-		},
-		{
-			name: "error on function calling (incorrect results count)",
-			fields: fields{
-				name: "add",
-				arguments: []Expression{
-					func() Expression {
-						expression := NewSignedExpression("one")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
-
-						return expression
-					}(),
-					func() Expression {
-						expression := NewSignedExpression("two")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
-
-						return expression
-					}(),
-				},
-			},
-			args: args{
-				context: func() context.Context {
-					add := func(a float64, b float64) (float64, bool) { return a + b, true }
+					add := func(a float64, b float64) (float64, error) { return 0, iotest.ErrTimeout }
 
 					context := new(contextmocks.Context)
 					context.On("Value", "add").Return(add, true)
