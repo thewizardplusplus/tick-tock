@@ -52,16 +52,6 @@ func (pair *Pair) Item(index int) (item interface{}, ok bool) {
 	return pair.Tail.Item(index - 1)
 }
 
-// Copy ...
-func (pair *Pair) Copy() *Pair {
-	if pair == nil {
-		return nil
-	}
-
-	head, tail := pair.Head, pair.Tail.Copy()
-	return &Pair{head, tail}
-}
-
 // Append ...
 func (pair *Pair) Append(anotherPair *Pair) *Pair {
 	if pair == nil {

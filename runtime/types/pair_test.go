@@ -149,47 +149,6 @@ func TestPair_Item(test *testing.T) {
 	}
 }
 
-func TestPair_Copy(test *testing.T) {
-	for _, data := range []struct {
-		name         string
-		pair         *Pair
-		action       func(pair *Pair)
-		wantOriginal *Pair
-		wantCopy     *Pair
-	}{
-		{
-			name: "nonempty pair",
-			pair: &Pair{1, &Pair{2, nil}},
-			action: func(pair *Pair) {
-				for ; pair != nil; pair = pair.Tail {
-					pair.Head = pair.Head.(int) * 2
-				}
-			},
-			wantOriginal: &Pair{2, &Pair{4, nil}},
-			wantCopy:     &Pair{1, &Pair{2, nil}},
-		},
-		{
-			name: "empty pair",
-			pair: nil,
-			action: func(pair *Pair) {
-				for ; pair != nil; pair = pair.Tail {
-					pair.Head = pair.Head.(int) * 2
-				}
-			},
-			wantOriginal: nil,
-			wantCopy:     nil,
-		},
-	} {
-		test.Run(data.name, func(test *testing.T) {
-			pairCopy := data.pair.Copy()
-			data.action(data.pair)
-
-			assert.Equal(test, data.wantOriginal, data.pair)
-			assert.Equal(test, data.wantCopy, pairCopy)
-		})
-	}
-}
-
 func TestPair_Append(test *testing.T) {
 	type args struct {
 		anotherPair *Pair
