@@ -139,17 +139,15 @@ func translateCommand(command *parser.Command, dependencies commands.Dependencie
 	settedState string,
 	err error,
 ) {
-	if command.Send != nil {
+	switch {
+	case command.Send != nil:
 		translatedCommand = commands.NewSendCommand(*command.Send)
-	}
-	if command.Set != nil {
+	case command.Set != nil:
 		translatedCommand = commands.NewSetCommand(*command.Set)
 		settedState = *command.Set
-	}
-	if command.Out != nil {
+	case command.Out != nil:
 		translatedCommand = commands.NewOutCommand(*command.Out, dependencies.OutWriter)
-	}
-	if command.Sleep != nil {
+	case command.Sleep != nil:
 		if translatedCommand, err = commands.NewSleepCommand(
 			*command.Sleep.Minimum,
 			*command.Sleep.Maximum,
@@ -157,8 +155,7 @@ func translateCommand(command *parser.Command, dependencies commands.Dependencie
 		); err != nil {
 			return nil, "", err
 		}
-	}
-	if command.Exit {
+	case command.Exit:
 		translatedCommand = commands.ExitCommand{}
 	}
 
