@@ -9,6 +9,175 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
+func TestTranslateMultiplication(test *testing.T) {
+	type args struct {
+		multiplication      *parser.Multiplication
+		declaredIdentifiers declaredIdentifierGroup
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Multiplication/nonempty/success/multiplication",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+					},
+					Operation: "*",
+					Multiplication: &parser.Multiplication{
+						Unary: &parser.Unary{
+							Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+						},
+						Operation: "*",
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(42)}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall(MultiplicationFunctionName, []expressions.Expression{
+				expressions.NewNumber(12),
+				expressions.NewFunctionCall(MultiplicationFunctionName, []expressions.Expression{
+					expressions.NewNumber(23),
+					expressions.NewNumber(42),
+				}),
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Multiplication/nonempty/success/division",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+					},
+					Operation: "/",
+					Multiplication: &parser.Multiplication{
+						Unary: &parser.Unary{
+							Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+						},
+						Operation: "/",
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(42)}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall(DivisionFunctionName, []expressions.Expression{
+				expressions.NewNumber(12),
+				expressions.NewFunctionCall(DivisionFunctionName, []expressions.Expression{
+					expressions.NewNumber(23),
+					expressions.NewNumber(42),
+				}),
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Multiplication/nonempty/success/modulo",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+					},
+					Operation: "%",
+					Multiplication: &parser.Multiplication{
+						Unary: &parser.Unary{
+							Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+						},
+						Operation: "%",
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(42)}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall(ModuloFunctionName, []expressions.Expression{
+				expressions.NewNumber(12),
+				expressions.NewFunctionCall(ModuloFunctionName, []expressions.Expression{
+					expressions.NewNumber(23),
+					expressions.NewNumber(42),
+				}),
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Multiplication/nonempty/error",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+					},
+					Operation: "*",
+					Multiplication: &parser.Multiplication{
+						Unary: &parser.Unary{
+							Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+						},
+						Operation: "*",
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{
+									Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "Multiplication/empty/success",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Multiplication/empty/error",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")}},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr :=
+				translateMultiplication(data.args.multiplication, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateUnary(test *testing.T) {
 	type args struct {
 		unary               *parser.Unary
@@ -35,20 +204,11 @@ func TestTranslateUnary(test *testing.T) {
 				},
 				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
-			wantExpression: func() expressions.Expression {
-				var expression expressions.Expression
-				expression = expressions.NewNumber(23)
-				expression = expressions.NewFunctionCall(
-					NegationFunctionName,
-					[]expressions.Expression{expression},
-				)
-				expression = expressions.NewFunctionCall(
-					NegationFunctionName,
-					[]expressions.Expression{expression},
-				)
-
-				return expression
-			}(),
+			wantExpression: expressions.NewFunctionCall(NegationFunctionName, []expressions.Expression{
+				expressions.NewFunctionCall(NegationFunctionName, []expressions.Expression{
+					expressions.NewNumber(23),
+				}),
+			}),
 			wantErr: assert.NoError,
 		},
 		{

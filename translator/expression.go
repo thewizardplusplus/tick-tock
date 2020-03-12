@@ -10,8 +10,43 @@ type declaredIdentifierGroup map[string]struct{}
 
 // ...
 const (
-	NegationFunctionName = "__neg__"
+	MultiplicationFunctionName = "__mul__"
+	DivisionFunctionName       = "__div__"
+	ModuloFunctionName         = "__mod__"
+	NegationFunctionName       = "__neg__"
 )
+
+func translateMultiplication(
+	multiplication *parser.Multiplication,
+	declaredIdentifiers declaredIdentifierGroup,
+) (expressions.Expression, error) {
+	argumentOne, err := translateUnary(multiplication.Unary, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the unary")
+	}
+	if multiplication.Multiplication == nil {
+		return argumentOne, nil
+	}
+
+	argumentTwo, err := translateMultiplication(multiplication.Multiplication, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the multiplication")
+	}
+
+	var functionName string
+	switch multiplication.Operation {
+	case "*":
+		functionName = MultiplicationFunctionName
+	case "/":
+		functionName = DivisionFunctionName
+	case "%":
+		functionName = ModuloFunctionName
+	}
+
+	expression :=
+		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
+	return expression, nil
+}
 
 func translateUnary(
 	unary *parser.Unary,
