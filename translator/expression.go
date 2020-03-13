@@ -10,11 +10,43 @@ type declaredIdentifierGroup map[string]struct{}
 
 // ...
 const (
+	AdditionFunctionName       = "__add__"
+	SubtractionFunctionName    = "__sub__"
 	MultiplicationFunctionName = "__mul__"
 	DivisionFunctionName       = "__div__"
 	ModuloFunctionName         = "__mod__"
 	NegationFunctionName       = "__neg__"
 )
+
+func translateAddition(
+	addition *parser.Addition,
+	declaredIdentifiers declaredIdentifierGroup,
+) (expressions.Expression, error) {
+	argumentOne, err := translateMultiplication(addition.Multiplication, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the multiplication")
+	}
+	if addition.Addition == nil {
+		return argumentOne, nil
+	}
+
+	argumentTwo, err := translateAddition(addition.Addition, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the addition")
+	}
+
+	var functionName string
+	switch addition.Operation {
+	case "+":
+		functionName = AdditionFunctionName
+	case "-":
+		functionName = SubtractionFunctionName
+	}
+
+	expression :=
+		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
+	return expression, nil
+}
 
 func translateMultiplication(
 	multiplication *parser.Multiplication,
