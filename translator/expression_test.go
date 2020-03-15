@@ -9,6 +9,122 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
+func TestTranslateListConstruction(test *testing.T) {
+	type args struct {
+		listConstruction    *parser.ListConstruction
+		declaredIdentifiers declaredIdentifierGroup
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "ListConstruction/nonempty/success",
+			args: args{
+				listConstruction: &parser.ListConstruction{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+							},
+						},
+					},
+					ListConstruction: &parser.ListConstruction{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")}},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall(
+				ListConstructionFunctionName,
+				[]expressions.Expression{expressions.NewNumber(12), expressions.NewIdentifier("test")},
+			),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ListConstruction/nonempty/error",
+			args: args{
+				listConstruction: &parser.ListConstruction{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+							},
+						},
+					},
+					ListConstruction: &parser.ListConstruction{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{
+										Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "ListConstruction/empty/success",
+			args: args{
+				listConstruction: &parser.ListConstruction{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "ListConstruction/empty/error",
+			args: args{
+				listConstruction: &parser.ListConstruction{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{
+									Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr :=
+				translateListConstruction(data.args.listConstruction, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateAddition(test *testing.T) {
 	type args struct {
 		addition            *parser.Addition

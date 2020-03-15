@@ -10,13 +10,39 @@ type declaredIdentifierGroup map[string]struct{}
 
 // ...
 const (
-	AdditionFunctionName       = "__add__"
-	SubtractionFunctionName    = "__sub__"
-	MultiplicationFunctionName = "__mul__"
-	DivisionFunctionName       = "__div__"
-	ModuloFunctionName         = "__mod__"
-	NegationFunctionName       = "__neg__"
+	ListConstructionFunctionName = "__cons__"
+	AdditionFunctionName         = "__add__"
+	SubtractionFunctionName      = "__sub__"
+	MultiplicationFunctionName   = "__mul__"
+	DivisionFunctionName         = "__div__"
+	ModuloFunctionName           = "__mod__"
+	NegationFunctionName         = "__neg__"
 )
+
+func translateListConstruction(
+	listConstruction *parser.ListConstruction,
+	declaredIdentifiers declaredIdentifierGroup,
+) (expressions.Expression, error) {
+	argumentOne, err := translateAddition(listConstruction.Addition, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the addition")
+	}
+	if listConstruction.ListConstruction == nil {
+		return argumentOne, nil
+	}
+
+	argumentTwo, err :=
+		translateListConstruction(listConstruction.ListConstruction, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the list construction")
+	}
+
+	expression := expressions.NewFunctionCall(
+		ListConstructionFunctionName,
+		[]expressions.Expression{argumentOne, argumentTwo},
+	)
+	return expression, nil
+}
 
 func translateAddition(
 	addition *parser.Addition,
