@@ -170,6 +170,13 @@ func translateAtom(
 		}
 
 		expression = expressions.NewIdentifier(identifier)
+	case atom.Expression != nil:
+		result, err := translateExpression(atom.Expression, declaredIdentifiers)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to translate the expression")
+		}
+
+		expression = result
 	}
 
 	return expression, nil

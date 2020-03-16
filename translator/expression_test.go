@@ -649,6 +649,50 @@ func TestTranslateAtom(test *testing.T) {
 			wantExpression: nil,
 			wantErr:        assert.Error,
 		},
+		{
+			name: "Atom/expression/success",
+			args: args{
+				atom: &parser.Atom{
+					Expression: &parser.Expression{
+						ListConstruction: &parser.ListConstruction{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Atom/expression/error",
+			args: args{
+				atom: &parser.Atom{
+					Expression: &parser.Expression{
+						ListConstruction: &parser.ListConstruction{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{
+											Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			gotExpression, gotErr := translateAtom(data.args.atom, data.args.declaredIdentifiers)
