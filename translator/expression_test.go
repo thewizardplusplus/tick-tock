@@ -9,6 +9,68 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
+func TestTranslateExpression(test *testing.T) {
+	type args struct {
+		expression          *parser.Expression
+		declaredIdentifiers declaredIdentifierGroup
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Expression/success",
+			args: args{
+				expression: &parser.Expression{
+					ListConstruction: &parser.ListConstruction{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Expression/error",
+			args: args{
+				expression: &parser.Expression{
+					ListConstruction: &parser.ListConstruction{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{
+										Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr := translateExpression(data.args.expression, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateListConstruction(test *testing.T) {
 	type args struct {
 		listConstruction    *parser.ListConstruction

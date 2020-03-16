@@ -19,6 +19,18 @@ const (
 	NegationFunctionName         = "__neg__"
 )
 
+func translateExpression(
+	expression *parser.Expression,
+	declaredIdentifiers declaredIdentifierGroup,
+) (expressions.Expression, error) {
+	result, err := translateListConstruction(expression.ListConstruction, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the list construction")
+	}
+
+	return result, nil
+}
+
 func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers declaredIdentifierGroup,
