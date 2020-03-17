@@ -171,6 +171,13 @@ func translateAtom(
 		}
 
 		expression = expressions.NewIdentifier(identifier)
+	case atom.ListDefinition != nil:
+		result, err := translateListDefinition(atom.ListDefinition, declaredIdentifiers)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to translate the list definition")
+		}
+
+		expression = result
 	case atom.FunctionCall != nil:
 		result, err := translateFunctionCall(atom.FunctionCall, declaredIdentifiers)
 		if err != nil {
