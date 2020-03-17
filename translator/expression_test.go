@@ -632,6 +632,108 @@ func TestTranslateAtom(test *testing.T) {
 			wantErr:        assert.NoError,
 		},
 		{
+			name: "Atom/function call/success",
+			args: args{
+				atom: &parser.Atom{
+					FunctionCall: &parser.FunctionCall{
+						Name: "test",
+						Arguments: []*parser.Expression{
+							{
+								ListConstruction: &parser.ListConstruction{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+											},
+										},
+									},
+								},
+							},
+							{
+								ListConstruction: &parser.ListConstruction{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+											},
+										},
+									},
+								},
+							},
+							{
+								ListConstruction: &parser.ListConstruction{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(42)}},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall("test", []expressions.Expression{
+				expressions.NewNumber(12),
+				expressions.NewNumber(23),
+				expressions.NewNumber(42),
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/function call/error",
+			args: args{
+				atom: &parser.Atom{
+					FunctionCall: &parser.FunctionCall{
+						Name: "test",
+						Arguments: []*parser.Expression{
+							{
+								ListConstruction: &parser.ListConstruction{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+											},
+										},
+									},
+								},
+							},
+							{
+								ListConstruction: &parser.ListConstruction{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+											},
+										},
+									},
+								},
+							},
+							{
+								ListConstruction: &parser.ListConstruction{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{
+													Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
 			name: "Atom/identifier/success",
 			args: args{
 				atom:                &parser.Atom{Identifier: tests.GetStringAddress("test")},
