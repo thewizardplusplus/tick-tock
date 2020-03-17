@@ -17,6 +17,7 @@ const (
 	DivisionFunctionName         = "__div__"
 	ModuloFunctionName           = "__mod__"
 	NegationFunctionName         = "__neg__"
+	ListDefinitionFunctionName   = "__list__"
 )
 
 func translateExpression(
@@ -186,6 +187,24 @@ func translateAtom(
 		expression = result
 	}
 
+	return expression, nil
+}
+
+func translateListDefinition(
+	listDefinition *parser.ListDefinition,
+	declaredIdentifiers declaredIdentifierGroup,
+) (expressions.Expression, error) {
+	var arguments []expressions.Expression
+	for index, item := range listDefinition.Items {
+		result, err := translateExpression(item, declaredIdentifiers)
+		if err != nil {
+			return nil, errors.Wrapf(err, "unable to translate the item #%d of the list definition", index)
+		}
+
+		arguments = append(arguments, result)
+	}
+
+	expression := expressions.NewFunctionCall(ListDefinitionFunctionName, arguments)
 	return expression, nil
 }
 

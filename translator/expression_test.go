@@ -805,6 +805,136 @@ func TestTranslateAtom(test *testing.T) {
 	}
 }
 
+func TestTranslateListDefinition(test *testing.T) {
+	type args struct {
+		listDefinition      *parser.ListDefinition
+		declaredIdentifiers declaredIdentifierGroup
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "ListDefinition/success/few items",
+			args: args{
+				listDefinition: &parser.ListDefinition{
+					Items: []*parser.Expression{
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(42)}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, []expressions.Expression{
+				expressions.NewNumber(12),
+				expressions.NewNumber(23),
+				expressions.NewNumber(42),
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ListDefinition/success/no items",
+			args: args{
+				listDefinition: &parser.ListDefinition{
+					Items: nil,
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, nil),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "ListDefinition/error",
+			args: args{
+				listDefinition: &parser.ListDefinition{
+					Items: []*parser.Expression{
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{
+												Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr :=
+				translateListDefinition(data.args.listDefinition, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateFunctionCall(test *testing.T) {
 	type args struct {
 		functionCall        *parser.FunctionCall
