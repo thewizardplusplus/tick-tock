@@ -60,7 +60,7 @@ func (expression FunctionCall) Evaluate(context context.Context) (result interfa
 	}
 	if !functionType.Out(errorResultIndex).Implements(errorType) {
 		return nil, errors.Errorf(
-			"incorrect type of the result %d of the function %s (%s instead %s)",
+			"incorrect type of the result #%d of the function %s (%s instead %s)",
 			errorResultIndex,
 			expression.name,
 			functionType.Out(errorResultIndex),
@@ -74,14 +74,14 @@ func (expression FunctionCall) Evaluate(context context.Context) (result interfa
 		if err2 != nil {
 			return nil, errors.Wrapf(
 				err2,
-				"unable to evaluate the argument %d for the function %s",
+				"unable to evaluate the argument #%d for the function %s",
 				index,
 				expression.name,
 			)
 		}
 		if reflect.TypeOf(result) != functionType.In(index) {
 			return nil, errors.Errorf(
-				"incorrect type of the argument %d for the function %s (%T instead %s)",
+				"incorrect type of the argument #%d for the function %s (%T instead %s)",
 				index,
 				expression.name,
 				result,
