@@ -181,3 +181,30 @@ func translateAtom(
 
 	return expression, nil
 }
+
+func translateFunctionCall(
+	functionCall *parser.FunctionCall,
+	declaredIdentifiers declaredIdentifierGroup,
+) (expressions.Expression, error) {
+	if _, ok := declaredIdentifiers[functionCall.Name]; !ok {
+		return nil, errors.Errorf("unknown function %s", functionCall.Name)
+	}
+
+	var arguments []expressions.Expression
+	for index, argument := range functionCall.Arguments {
+		result, err := translateExpression(argument, declaredIdentifiers)
+		if err != nil {
+			return nil, errors.Wrapf(
+				err,
+				"unable to translate the argument #%d for the function %s",
+				index,
+				functionCall.Name,
+			)
+		}
+
+		arguments = append(arguments, result)
+	}
+
+	expression := expressions.NewFunctionCall(functionCall.Name, arguments)
+	return expression, nil
+}
