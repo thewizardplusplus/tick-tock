@@ -157,8 +157,7 @@ func translateAccessor(
 func translateAtom(
 	atom *parser.Atom,
 	declaredIdentifiers declaredIdentifierGroup,
-) (expressions.Expression, error) {
-	var expression expressions.Expression
+) (expression expressions.Expression, err error) {
 	switch {
 	case atom.Number != nil:
 		expression = expressions.NewNumber(*atom.Number)
@@ -172,26 +171,20 @@ func translateAtom(
 
 		expression = expressions.NewIdentifier(identifier)
 	case atom.ListDefinition != nil:
-		result, err := translateListDefinition(atom.ListDefinition, declaredIdentifiers)
+		expression, err = translateListDefinition(atom.ListDefinition, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to translate the list definition")
 		}
-
-		expression = result
 	case atom.FunctionCall != nil:
-		result, err := translateFunctionCall(atom.FunctionCall, declaredIdentifiers)
+		expression, err = translateFunctionCall(atom.FunctionCall, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to translate the function call")
 		}
-
-		expression = result
 	case atom.Expression != nil:
-		result, err := translateExpression(atom.Expression, declaredIdentifiers)
+		expression, err = translateExpression(atom.Expression, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to translate the expression")
 		}
-
-		expression = result
 	}
 
 	return expression, nil
