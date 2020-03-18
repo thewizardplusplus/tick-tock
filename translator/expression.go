@@ -17,6 +17,7 @@ const (
 	DivisionFunctionName         = "__div__"
 	ModuloFunctionName           = "__mod__"
 	NegationFunctionName         = "__neg__"
+	KeyAccessorFunctionName      = "__item__"
 	ListDefinitionFunctionName   = "__list__"
 )
 
@@ -151,7 +152,24 @@ func translateAccessor(
 	accessor *parser.Accessor,
 	declaredIdentifiers declaredIdentifierGroup,
 ) (expressions.Expression, error) {
-	return translateAtom(accessor.Atom, declaredIdentifiers)
+	argumentOne, err := translateAtom(accessor.Atom, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the atom")
+	}
+
+	for index, key := range accessor.Keys {
+		argumentTwo, err := translateExpression(key, declaredIdentifiers)
+		if err != nil {
+			return nil, errors.Wrapf(err, "unable to translate the key #%d of the accessor", index)
+		}
+
+		argumentOne = expressions.NewFunctionCall(
+			KeyAccessorFunctionName,
+			[]expressions.Expression{argumentOne, argumentTwo},
+		)
+	}
+
+	return argumentOne, nil
 }
 
 func translateAtom(

@@ -601,6 +601,161 @@ func TestTranslateUnary(test *testing.T) {
 	}
 }
 
+func TestTranslateAccessor(test *testing.T) {
+	type args struct {
+		accessor            *parser.Accessor
+		declaredIdentifiers declaredIdentifierGroup
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Accessor/nonempty/success",
+			args: args{
+				accessor: &parser.Accessor{
+					Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+					Keys: []*parser.Expression{
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
+				expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
+					expressions.NewIdentifier("test"),
+					expressions.NewNumber(12),
+				}),
+				expressions.NewNumber(23),
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Accessor/nonempty/error/atom translating",
+			args: args{
+				accessor: &parser.Accessor{
+					Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+					Keys: []*parser.Expression{
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "Accessor/nonempty/error/key translating",
+			args: args{
+				accessor: &parser.Accessor{
+					Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+					Keys: []*parser.Expression{
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(12)}},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{
+												Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "Accessor/empty/success",
+			args: args{
+				accessor:            &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Accessor/empty/error",
+			args: args{
+				accessor: &parser.Accessor{
+					Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr := translateAccessor(data.args.accessor, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateAtom(test *testing.T) {
 	type args struct {
 		atom                *parser.Atom
