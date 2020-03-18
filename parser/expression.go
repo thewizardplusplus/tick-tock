@@ -58,7 +58,7 @@ type Unary struct {
 // Accessor ...
 type Accessor struct {
 	Atom *Atom         `parser:"@@"`
-	Key  []*Expression `parser:"{ \"[\" @@ \"]\" }"`
+	Keys []*Expression `parser:"{ \"[\" @@ \"]\" }"`
 }
 
 // Atom ...

@@ -318,7 +318,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			args: args{"test[12][23]", new(Accessor)},
 			wantAST: &Accessor{
 				Atom: &Atom{Identifier: tests.GetStringAddress("test")},
-				Key: []*Expression{
+				Keys: []*Expression{
 					{
 						ListConstruction: &ListConstruction{
 							Addition: &Addition{
