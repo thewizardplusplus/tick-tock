@@ -6,8 +6,6 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
-type declaredIdentifierGroup map[string]struct{}
-
 // ...
 const (
 	ListConstructionFunctionName = "__cons__"

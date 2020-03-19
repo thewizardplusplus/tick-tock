@@ -13,6 +13,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
@@ -467,7 +468,8 @@ func TestTranslateCommands(test *testing.T) {
 
 func TestTranslateCommand(test *testing.T) {
 	type args struct {
-		command *parser.Command
+		command             *parser.Command
+		declaredIdentifiers declaredIdentifierGroup
 	}
 
 	for _, testData := range []struct {
@@ -479,15 +481,22 @@ func TestTranslateCommand(test *testing.T) {
 	}{
 		{
 			name: "Command/send",
-			args: args{&parser.Command{Send: tests.GetStringAddress("test")}},
+			args: args{
+				command:             &parser.Command{Send: tests.GetStringAddress("test")},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSendCommand("test")
 			},
-			wantErr: assert.NoError,
+			wantState: "",
+			wantErr:   assert.NoError,
 		},
 		{
 			name: "Command/set",
-			args: args{&parser.Command{Set: tests.GetStringAddress("test")}},
+			args: args{
+				command:             &parser.Command{Set: tests.GetStringAddress("test")},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSetCommand("test")
 			},
@@ -496,19 +505,27 @@ func TestTranslateCommand(test *testing.T) {
 		},
 		{
 			name: "Command/out/nonempty",
-			args: args{&parser.Command{Out: tests.GetStringAddress("test")}},
+			args: args{
+				command:             &parser.Command{Out: tests.GetStringAddress("test")},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("test", outWriter)
 			},
-			wantErr: assert.NoError,
+			wantState: "",
+			wantErr:   assert.NoError,
 		},
 		{
 			name: "Command/out/empty",
-			args: args{&parser.Command{Out: tests.GetStringAddress("")}},
+			args: args{
+				command:             &parser.Command{Out: tests.GetStringAddress("")},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("", outWriter)
 			},
-			wantErr: assert.NoError,
+			wantState: "",
+			wantErr:   assert.NoError,
 		},
 		{
 			name: "Command/sleep/success",
@@ -519,12 +536,14 @@ func TestTranslateCommand(test *testing.T) {
 						Maximum: tests.GetNumberAddress(3.4),
 					},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				command, _ := commands.NewSleepCommand(1.2, 3.4, commands.SleepDependencies{})
 				return command
 			},
-			wantErr: assert.NoError,
+			wantState: "",
+			wantErr:   assert.NoError,
 		},
 		{
 			name: "Command/sleep/error",
@@ -535,15 +554,69 @@ func TestTranslateCommand(test *testing.T) {
 						Maximum: tests.GetNumberAddress(1.2),
 					},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command { return nil },
+			wantState:       "",
 			wantErr:         assert.Error,
 		},
 		{
-			name:            "Command/exit",
-			args:            args{&parser.Command{Exit: true}},
+			name: "Command/exit",
+			args: args{
+				command:             &parser.Command{Exit: true},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command { return commands.ExitCommand{} },
+			wantState:       "",
 			wantErr:         assert.NoError,
+		},
+		{
+			name: "Command/expression/success",
+			args: args{
+				command: &parser.Command{
+					Expression: &parser.Expression{
+						ListConstruction: &parser.ListConstruction{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantCommand: func(outWriter io.Writer) runtime.Command {
+				return commands.NewExpressionCommand(expressions.NewNumber(23))
+			},
+			wantState: "",
+			wantErr:   assert.NoError,
+		},
+		{
+			name: "Command/expression/error",
+			args: args{
+				command: &parser.Command{
+					Expression: &parser.Expression{
+						ListConstruction: &parser.ListConstruction{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{
+											Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantCommand: func(outWriter io.Writer) runtime.Command { return nil },
+			wantState:       "",
+			wantErr:         assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
@@ -557,7 +630,8 @@ func TestTranslateCommand(test *testing.T) {
 					Sleeper:    sleeper.Sleep,
 				},
 			}
-			gotCommand, gotState, err := translateCommand(testData.args.command, dependencies)
+			gotCommand, gotState, err :=
+				translateCommand(testData.args.command, testData.args.declaredIdentifiers, dependencies)
 			if sleepCommand, ok := gotCommand.(commands.SleepCommand); ok {
 				cleanSleepDependencies(&sleepCommand)
 				gotCommand = sleepCommand

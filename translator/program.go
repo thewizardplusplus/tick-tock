@@ -114,7 +114,7 @@ func translateCommands(commands []*parser.Command, dependencies commands.Depende
 	err error,
 ) {
 	for index, command := range commands {
-		translatedCommand, newSettedState, err := translateCommand(command, dependencies)
+		translatedCommand, newSettedState, err := translateCommand(command, nil, dependencies)
 		if err != nil {
 			return nil, "", errors.Wrapf(err, "unable to translate the command #%d", index)
 		}
@@ -134,7 +134,13 @@ func translateCommands(commands []*parser.Command, dependencies commands.Depende
 	return translatedCommands, settedState, nil
 }
 
-func translateCommand(command *parser.Command, dependencies commands.Dependencies) (
+type declaredIdentifierGroup map[string]struct{}
+
+func translateCommand(
+	command *parser.Command,
+	declaredIdentifiers declaredIdentifierGroup,
+	dependencies commands.Dependencies,
+) (
 	translatedCommand runtime.Command,
 	settedState string,
 	err error,
@@ -157,6 +163,13 @@ func translateCommand(command *parser.Command, dependencies commands.Dependencie
 		}
 	case command.Exit:
 		translatedCommand = commands.ExitCommand{}
+	case command.Expression != nil:
+		expression, err := translateExpression(command.Expression, declaredIdentifiers)
+		if err != nil {
+			return nil, "", errors.Wrap(err, "unable to translate the expression")
+		}
+
+		translatedCommand = commands.NewExpressionCommand(expression)
 	}
 
 	return translatedCommand, settedState, nil
