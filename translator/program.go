@@ -146,6 +146,14 @@ func translateCommand(
 	err error,
 ) {
 	switch {
+	case command.Let != nil:
+		expression, err2 := translateExpression(command.Let.Expression, declaredIdentifiers)
+		if err2 != nil {
+			return nil, "", errors.Wrap(err2, "unable to translate the let command")
+		}
+
+		declaredIdentifiers[command.Let.Identifier] = struct{}{}
+		translatedCommand = commands.NewLetCommand(command.Let.Identifier, expression)
 	case command.Send != nil:
 		translatedCommand = commands.NewSendCommand(*command.Send)
 	case command.Set != nil:
@@ -164,9 +172,9 @@ func translateCommand(
 	case command.Exit:
 		translatedCommand = commands.ExitCommand{}
 	case command.Expression != nil:
-		expression, err := translateExpression(command.Expression, declaredIdentifiers)
-		if err != nil {
-			return nil, "", errors.Wrap(err, "unable to translate the expression")
+		expression, err2 := translateExpression(command.Expression, declaredIdentifiers)
+		if err2 != nil {
+			return nil, "", errors.Wrap(err2, "unable to translate the expression command")
 		}
 
 		translatedCommand = commands.NewExpressionCommand(expression)
