@@ -94,7 +94,7 @@ func translateMessages(messages []*parser.Message, dependencies commands.Depende
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, settedState, err := translateCommands(message.Commands, dependencies)
+		translatedCommands, settedState, err := translateCommands(message.Commands, nil, dependencies)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
@@ -108,13 +108,25 @@ func translateMessages(messages []*parser.Message, dependencies commands.Depende
 	return translatedMessages, settedStates, nil
 }
 
-func translateCommands(commands []*parser.Command, dependencies commands.Dependencies) (
+type declaredIdentifierGroup map[string]struct{}
+
+func translateCommands(
+	commands []*parser.Command,
+	declaredIdentifiers declaredIdentifierGroup,
+	dependencies commands.Dependencies,
+) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
 ) {
+	localDeclaredIdentifiers := make(declaredIdentifierGroup)
+	for identifier := range declaredIdentifiers {
+		localDeclaredIdentifiers[identifier] = struct{}{}
+	}
+
 	for index, command := range commands {
-		translatedCommand, newSettedState, err := translateCommand(command, nil, dependencies)
+		translatedCommand, newSettedState, err :=
+			translateCommand(command, localDeclaredIdentifiers, dependencies)
 		if err != nil {
 			return nil, "", errors.Wrapf(err, "unable to translate the command #%d", index)
 		}
@@ -133,8 +145,6 @@ func translateCommands(commands []*parser.Command, dependencies commands.Depende
 
 	return translatedCommands, settedState, nil
 }
-
-type declaredIdentifierGroup map[string]struct{}
 
 func translateCommand(
 	command *parser.Command,

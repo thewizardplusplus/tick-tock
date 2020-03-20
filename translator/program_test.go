@@ -374,7 +374,8 @@ func TestTranslateMessages(test *testing.T) {
 
 func TestTranslateCommands(test *testing.T) {
 	type args struct {
-		commands []*parser.Command
+		commands            []*parser.Command
+		declaredIdentifiers declaredIdentifierGroup
 	}
 
 	for _, testData := range []struct {
@@ -391,6 +392,7 @@ func TestTranslateCommands(test *testing.T) {
 					{Send: tests.GetStringAddress("one")},
 					{Send: tests.GetStringAddress("two")},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSendCommand("two")}
@@ -404,6 +406,7 @@ func TestTranslateCommands(test *testing.T) {
 					{Send: tests.GetStringAddress("one")},
 					{Set: tests.GetStringAddress("two")},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSetCommand("two")}
@@ -412,7 +415,86 @@ func TestTranslateCommands(test *testing.T) {
 			wantErr:   assert.NoError,
 		},
 		{
-			name:             "success without commands",
+			name: "success with commands (with using an existing identifier)",
+			args: args{
+				commands: []*parser.Command{
+					{
+						Expression: &parser.Expression{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{
+												Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
+				return runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewIdentifier("test"))}
+			},
+			wantState: "",
+			wantErr:   assert.NoError,
+		},
+		{
+			name: "success with commands (with using an nonexistent identifier)",
+			args: args{
+				commands: []*parser.Command{
+					{
+						Let: &parser.LetCommand{
+							Identifier: "test2",
+							Expression: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						Expression: &parser.Expression{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{
+												Atom: &parser.Atom{Identifier: tests.GetStringAddress("test2")},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
+				return runtime.CommandGroup{
+					commands.NewLetCommand("test2", expressions.NewNumber(23)),
+					commands.NewExpressionCommand(expressions.NewIdentifier("test2")),
+				}
+			},
+			wantState: "",
+			wantErr:   assert.NoError,
+		},
+		{
+			name: "success without commands",
+			args: args{
+				commands:            nil,
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.NoError,
 		},
@@ -421,12 +503,22 @@ func TestTranslateCommands(test *testing.T) {
 			args: args{
 				commands: []*parser.Command{
 					{
-						Sleep: &parser.SleepCommand{
-							Minimum: tests.GetNumberAddress(3.4),
-							Maximum: tests.GetNumberAddress(1.2),
+						Expression: &parser.Expression{
+							ListConstruction: &parser.ListConstruction{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{
+												Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+											},
+										},
+									},
+								},
+							},
 						},
 					},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.Error,
@@ -440,12 +532,18 @@ func TestTranslateCommands(test *testing.T) {
 					{Send: tests.GetStringAddress("three")},
 					{Set: tests.GetStringAddress("four")},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			originDeclaredIdentifiers := make(declaredIdentifierGroup)
+			for identifier := range testData.args.declaredIdentifiers {
+				originDeclaredIdentifiers[identifier] = struct{}{}
+			}
+
 			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
 			sleeper := new(testsmocks.Sleeper)
@@ -456,9 +554,11 @@ func TestTranslateCommands(test *testing.T) {
 					Sleeper:    sleeper.Sleep,
 				},
 			}
-			gotCommands, gotState, err := translateCommands(testData.args.commands, dependencies)
+			gotCommands, gotState, err :=
+				translateCommands(testData.args.commands, testData.args.declaredIdentifiers, dependencies)
 
 			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
+			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.makeWantCommands(outWriter), gotCommands)
 			assert.Equal(test, testData.wantState, gotState)
 			testData.wantErr(test, err)
