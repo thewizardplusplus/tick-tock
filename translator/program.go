@@ -7,6 +7,8 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 )
 
+type declaredIdentifierGroup map[string]struct{}
+
 // Options ...
 type Options struct {
 	InboxSize    int
@@ -20,12 +22,17 @@ type Dependencies struct {
 }
 
 // Translate ...
-func Translate(actors []*parser.Actor, options Options, dependencies Dependencies) (
+func Translate(
+	actors []*parser.Actor,
+	declaredIdentifiers declaredIdentifierGroup,
+	options Options,
+	dependencies Dependencies,
+) (
 	translatedActors runtime.ConcurrentActorGroup,
 	err error,
 ) {
 	for index, actor := range actors {
-		translatedStates, err := translateStates(actor.States, nil, dependencies.Commands)
+		translatedStates, err := translateStates(actor.States, declaredIdentifiers, dependencies.Commands)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the actor #%d", index)
 		}
@@ -44,8 +51,6 @@ func Translate(actors []*parser.Actor, options Options, dependencies Dependencie
 
 	return translatedActors, nil
 }
-
-type declaredIdentifierGroup map[string]struct{}
 
 func translateStates(
 	states []*parser.State,

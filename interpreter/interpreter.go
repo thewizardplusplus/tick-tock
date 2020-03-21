@@ -31,7 +31,8 @@ func Interpret(context context.Context, options Options, dependencies Dependenci
 		return err
 	}
 
-	actors, err := translator.Translate(program.Actors, options.Translator, dependencies.Translator)
+	actors, err :=
+		translator.Translate(program.Actors, nil, options.Translator, dependencies.Translator)
 	if err != nil {
 		return err
 	}

@@ -19,21 +19,29 @@ import (
 )
 
 func TestTranslate(test *testing.T) {
+	type args struct {
+		makeActors          func(options Options) []*parser.Actor
+		declaredIdentifiers declaredIdentifierGroup
+	}
+
 	for _, testData := range []struct {
-		name       string
-		makeActors func(options Options) []*parser.Actor
-		makeWant   func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup
-		wantErr    assert.ErrorAssertionFunc
+		name           string
+		args           args
+		makeWantActors func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup
+		wantErr        assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with actors",
-			makeActors: func(options Options) []*parser.Actor {
-				return []*parser.Actor{
-					{States: []*parser.State{{Name: options.InitialState}, {Name: "one"}}},
-					{States: []*parser.State{{Name: options.InitialState}, {Name: "two"}}},
-				}
+			args: args{
+				makeActors: func(options Options) []*parser.Actor {
+					return []*parser.Actor{
+						{States: []*parser.State{{Name: options.InitialState}, {Name: "one"}}},
+						{States: []*parser.State{{Name: options.InitialState}, {Name: "two"}}},
+					}
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
-			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
 					runtime.StateGroup{
 						options.InitialState: runtime.MessageGroup{},
@@ -56,38 +64,148 @@ func TestTranslate(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:       "success without actors",
-			makeActors: func(options Options) []*parser.Actor { return nil },
-			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			name: "success without actors",
+			args: args{
+				makeActors:          func(options Options) []*parser.Actor { return nil },
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.NoError,
 		},
 		{
-			name: "error with states translation",
-			makeActors: func(options Options) []*parser.Actor {
-				return []*parser.Actor{{States: []*parser.State{{Name: options.InitialState}}}, {}}
+			name: "success with the expression",
+			args: args{
+				makeActors: func(options Options) []*parser.Actor {
+					return []*parser.Actor{
+						{
+							States: []*parser.State{
+								{
+									Name: options.InitialState,
+									Messages: []*parser.Message{
+										{
+											Name: "message_0",
+											Commands: []*parser.Command{
+												{
+													Expression: &parser.Expression{
+														ListConstruction: &parser.ListConstruction{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{
+																			Atom: &parser.Atom{Number: tests.GetNumberAddress(23)},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					}
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
-			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+				actorOne, _ := runtime.NewActor(
+					runtime.StateGroup{
+						options.InitialState: runtime.MessageGroup{
+							"message_0": runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewNumber(23))},
+						},
+					},
+					options.InitialState,
+				)
+				return runtime.ConcurrentActorGroup{
+					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies.Runtime),
+				}
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error with states translation",
+			args: args{
+				makeActors: func(options Options) []*parser.Actor {
+					return []*parser.Actor{{States: []*parser.State{{Name: options.InitialState}}}, {}}
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.Error,
 		},
 		{
 			name: "error with actor construction",
-			makeActors: func(options Options) []*parser.Actor {
-				return []*parser.Actor{
-					{States: []*parser.State{{Name: "one"}}},
-					{States: []*parser.State{{Name: "two"}}},
-				}
+			args: args{
+				makeActors: func(options Options) []*parser.Actor {
+					return []*parser.Actor{
+						{States: []*parser.State{{Name: "one"}}},
+						{States: []*parser.State{{Name: "two"}}},
+					}
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
-			makeWant: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+				return nil
+			},
+			wantErr: assert.Error,
+		},
+		{
+			name: "error with the expression",
+			args: args{
+				makeActors: func(options Options) []*parser.Actor {
+					return []*parser.Actor{
+						{
+							States: []*parser.State{
+								{
+									Name: options.InitialState,
+									Messages: []*parser.Message{
+										{
+											Name: "message_0",
+											Commands: []*parser.Command{
+												{
+													Expression: &parser.Expression{
+														ListConstruction: &parser.ListConstruction{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{
+																			Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					}
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			originDeclaredIdentifiers := make(declaredIdentifierGroup)
+			for identifier := range testData.args.declaredIdentifiers {
+				originDeclaredIdentifiers[identifier] = struct{}{}
+			}
+
 			options := Options{tests.BufferedInbox, "__initialization__"}
 			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
@@ -104,11 +222,20 @@ func TestTranslate(test *testing.T) {
 				},
 				Runtime: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
 			}
-			want := testData.makeWant(options, dependencies)
-			got, err := Translate(testData.makeActors(options), options, dependencies)
+			gotActors, err := Translate(
+				testData.args.makeActors(options),
+				testData.args.declaredIdentifiers,
+				options,
+				dependencies,
+			)
 
 			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper, waiter, errorHandler)
-			assert.Equal(test, cleanInboxes(want), cleanInboxes(got))
+			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
+			assert.Equal(
+				test,
+				cleanInboxes(testData.makeWantActors(options, dependencies)),
+				cleanInboxes(gotActors),
+			)
 			testData.wantErr(test, err)
 		})
 	}
