@@ -21,7 +21,7 @@ const (
 
 func translateExpression(
 	expression *parser.Expression,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	result, err := translateListConstruction(expression.ListConstruction, declaredIdentifiers)
 	if err != nil {
@@ -33,7 +33,7 @@ func translateExpression(
 
 func translateListConstruction(
 	listConstruction *parser.ListConstruction,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateAddition(listConstruction.Addition, declaredIdentifiers)
 	if err != nil {
@@ -58,7 +58,7 @@ func translateListConstruction(
 
 func translateAddition(
 	addition *parser.Addition,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateMultiplication(addition.Multiplication, declaredIdentifiers)
 	if err != nil {
@@ -88,7 +88,7 @@ func translateAddition(
 
 func translateMultiplication(
 	multiplication *parser.Multiplication,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateUnary(multiplication.Unary, declaredIdentifiers)
 	if err != nil {
@@ -120,7 +120,7 @@ func translateMultiplication(
 
 func translateUnary(
 	unary *parser.Unary,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	if unary.Accessor != nil {
 		expression, err := translateAccessor(unary.Accessor, declaredIdentifiers)
@@ -148,7 +148,7 @@ func translateUnary(
 
 func translateAccessor(
 	accessor *parser.Accessor,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateAtom(accessor.Atom, declaredIdentifiers)
 	if err != nil {
@@ -172,7 +172,7 @@ func translateAccessor(
 
 func translateAtom(
 	atom *parser.Atom,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expression expressions.Expression, err error) {
 	switch {
 	case atom.Number != nil:
@@ -208,7 +208,7 @@ func translateAtom(
 
 func translateListDefinition(
 	listDefinition *parser.ListDefinition,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	var arguments []expressions.Expression
 	for index, item := range listDefinition.Items {
@@ -226,7 +226,7 @@ func translateListDefinition(
 
 func translateFunctionCall(
 	functionCall *parser.FunctionCall,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 ) (expressions.Expression, error) {
 	if _, ok := declaredIdentifiers[functionCall.Name]; !ok {
 		return nil, errors.Errorf("unknown function %s", functionCall.Name)

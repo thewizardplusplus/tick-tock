@@ -12,7 +12,7 @@ import (
 func TestTranslateExpression(test *testing.T) {
 	type args struct {
 		expression          *parser.Expression
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -35,7 +35,7 @@ func TestTranslateExpression(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -56,7 +56,7 @@ func TestTranslateExpression(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -74,7 +74,7 @@ func TestTranslateExpression(test *testing.T) {
 func TestTranslateListConstruction(test *testing.T) {
 	type args struct {
 		listConstruction    *parser.ListConstruction
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -104,7 +104,7 @@ func TestTranslateListConstruction(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(
 				ListConstructionFunctionName,
@@ -135,7 +135,7 @@ func TestTranslateListConstruction(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -152,7 +152,7 @@ func TestTranslateListConstruction(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -171,7 +171,7 @@ func TestTranslateListConstruction(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -190,7 +190,7 @@ func TestTranslateListConstruction(test *testing.T) {
 func TestTranslateAddition(test *testing.T) {
 	type args struct {
 		addition            *parser.Addition
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -225,7 +225,7 @@ func TestTranslateAddition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(AdditionFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
@@ -262,7 +262,7 @@ func TestTranslateAddition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(SubtractionFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
@@ -301,7 +301,7 @@ func TestTranslateAddition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -316,7 +316,7 @@ func TestTranslateAddition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -333,7 +333,7 @@ func TestTranslateAddition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -351,7 +351,7 @@ func TestTranslateAddition(test *testing.T) {
 func TestTranslateMultiplication(test *testing.T) {
 	type args struct {
 		multiplication      *parser.Multiplication
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -380,7 +380,7 @@ func TestTranslateMultiplication(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(MultiplicationFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
@@ -411,7 +411,7 @@ func TestTranslateMultiplication(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(DivisionFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
@@ -442,7 +442,7 @@ func TestTranslateMultiplication(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(ModuloFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
@@ -475,7 +475,7 @@ func TestTranslateMultiplication(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -488,7 +488,7 @@ func TestTranslateMultiplication(test *testing.T) {
 						Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -501,7 +501,7 @@ func TestTranslateMultiplication(test *testing.T) {
 						Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")}},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -520,7 +520,7 @@ func TestTranslateMultiplication(test *testing.T) {
 func TestTranslateUnary(test *testing.T) {
 	type args struct {
 		unary               *parser.Unary
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -541,7 +541,7 @@ func TestTranslateUnary(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(NegationFunctionName, []expressions.Expression{
 				expressions.NewFunctionCall(NegationFunctionName, []expressions.Expression{
@@ -564,7 +564,7 @@ func TestTranslateUnary(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -575,7 +575,7 @@ func TestTranslateUnary(test *testing.T) {
 				unary: &parser.Unary{
 					Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -586,7 +586,7 @@ func TestTranslateUnary(test *testing.T) {
 				unary: &parser.Unary{
 					Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")}},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -604,7 +604,7 @@ func TestTranslateUnary(test *testing.T) {
 func TestTranslateAccessor(test *testing.T) {
 	type args struct {
 		accessor            *parser.Accessor
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -643,7 +643,7 @@ func TestTranslateAccessor(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
 				expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
@@ -684,7 +684,7 @@ func TestTranslateAccessor(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -721,7 +721,7 @@ func TestTranslateAccessor(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -730,7 +730,7 @@ func TestTranslateAccessor(test *testing.T) {
 			name: "Accessor/empty/success",
 			args: args{
 				accessor:            &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -741,7 +741,7 @@ func TestTranslateAccessor(test *testing.T) {
 				accessor: &parser.Accessor{
 					Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -759,7 +759,7 @@ func TestTranslateAccessor(test *testing.T) {
 func TestTranslateAtom(test *testing.T) {
 	type args struct {
 		atom                *parser.Atom
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -772,7 +772,7 @@ func TestTranslateAtom(test *testing.T) {
 			name: "Atom/number",
 			args: args{
 				atom:                &parser.Atom{Number: tests.GetNumberAddress(23)},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -781,7 +781,7 @@ func TestTranslateAtom(test *testing.T) {
 			name: "Atom/string",
 			args: args{
 				atom:                &parser.Atom{String: tests.GetStringAddress("test")},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewString("test"),
 			wantErr:        assert.NoError,
@@ -828,7 +828,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
@@ -881,7 +881,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -929,7 +929,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall("test", []expressions.Expression{
 				expressions.NewNumber(12),
@@ -983,7 +983,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -992,7 +992,7 @@ func TestTranslateAtom(test *testing.T) {
 			name: "Atom/identifier/success",
 			args: args{
 				atom:                &parser.Atom{Identifier: tests.GetStringAddress("test")},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewIdentifier("test"),
 			wantErr:        assert.NoError,
@@ -1001,7 +1001,7 @@ func TestTranslateAtom(test *testing.T) {
 			name: "Atom/identifier/error",
 			args: args{
 				atom:                &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -1022,7 +1022,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewNumber(23),
 			wantErr:        assert.NoError,
@@ -1045,7 +1045,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -1063,7 +1063,7 @@ func TestTranslateAtom(test *testing.T) {
 func TestTranslateListDefinition(test *testing.T) {
 	type args struct {
 		listDefinition      *parser.ListDefinition
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -1112,7 +1112,7 @@ func TestTranslateListDefinition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
@@ -1127,7 +1127,7 @@ func TestTranslateListDefinition(test *testing.T) {
 				listDefinition: &parser.ListDefinition{
 					Items: nil,
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, nil),
 			wantErr:        assert.NoError,
@@ -1174,7 +1174,7 @@ func TestTranslateListDefinition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -1193,7 +1193,7 @@ func TestTranslateListDefinition(test *testing.T) {
 func TestTranslateFunctionCall(test *testing.T) {
 	type args struct {
 		functionCall        *parser.FunctionCall
-		declaredIdentifiers declaredIdentifierGroup
+		declaredIdentifiers DeclaredIdentifierGroup
 	}
 
 	for _, data := range []struct {
@@ -1243,7 +1243,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall("test", []expressions.Expression{
 				expressions.NewNumber(12),
@@ -1259,7 +1259,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 					Name:      "test",
 					Arguments: nil,
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: expressions.NewFunctionCall("test", nil),
 			wantErr:        assert.NoError,
@@ -1305,7 +1305,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,
@@ -1353,7 +1353,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
 			},
 			wantExpression: nil,
 			wantErr:        assert.Error,

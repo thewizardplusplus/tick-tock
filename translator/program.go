@@ -7,7 +7,8 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 )
 
-type declaredIdentifierGroup map[string]struct{}
+// DeclaredIdentifierGroup ...
+type DeclaredIdentifierGroup map[string]struct{}
 
 // Options ...
 type Options struct {
@@ -24,7 +25,7 @@ type Dependencies struct {
 // Translate ...
 func Translate(
 	actors []*parser.Actor,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 	options Options,
 	dependencies Dependencies,
 ) (
@@ -54,7 +55,7 @@ func Translate(
 
 func translateStates(
 	states []*parser.State,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedStates runtime.StateGroup,
@@ -96,7 +97,7 @@ type settedStateGroup map[string]string
 
 func translateMessages(
 	messages []*parser.Message,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedMessages runtime.MessageGroup,
@@ -127,14 +128,14 @@ func translateMessages(
 
 func translateCommands(
 	commands []*parser.Command,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
 ) {
-	localDeclaredIdentifiers := make(declaredIdentifierGroup)
+	localDeclaredIdentifiers := make(DeclaredIdentifierGroup)
 	for identifier := range declaredIdentifiers {
 		localDeclaredIdentifiers[identifier] = struct{}{}
 	}
@@ -163,7 +164,7 @@ func translateCommands(
 
 func translateCommand(
 	command *parser.Command,
-	declaredIdentifiers declaredIdentifierGroup,
+	declaredIdentifiers DeclaredIdentifierGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedCommand runtime.Command,
