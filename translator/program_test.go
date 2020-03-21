@@ -116,7 +116,8 @@ func TestTranslate(test *testing.T) {
 
 func TestTranslateStates(test *testing.T) {
 	type args struct {
-		states []*parser.State
+		states              []*parser.State
+		declaredIdentifiers declaredIdentifierGroup
 	}
 
 	for _, testData := range []struct {
@@ -132,6 +133,7 @@ func TestTranslateStates(test *testing.T) {
 					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
 					{Name: "state_1", Messages: []*parser.Message{{Name: "message_2"}, {Name: "message_3"}}},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{
@@ -143,20 +145,69 @@ func TestTranslateStates(test *testing.T) {
 		},
 		{
 			name: "success with empty states",
-			args: args{[]*parser.State{{Name: "state_0"}, {Name: "state_1"}}},
+			args: args{
+				states:              []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{"state_0": runtime.MessageGroup{}, "state_1": runtime.MessageGroup{}}
 			},
 			wantErr: assert.NoError,
 		},
 		{
-			name:           "error without states",
+			name: "success with the expression",
+			args: args{
+				states: []*parser.State{
+					{
+						Name: "state_0",
+						Messages: []*parser.Message{
+							{
+								Name: "message_0",
+								Commands: []*parser.Command{
+									{
+										Expression: &parser.Expression{
+											ListConstruction: &parser.ListConstruction{
+												Addition: &parser.Addition{
+													Multiplication: &parser.Multiplication{
+														Unary: &parser.Unary{
+															Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
+				return runtime.StateGroup{
+					"state_0": runtime.MessageGroup{
+						"message_0": runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewNumber(23))},
+					},
+				}
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error without states",
+			args: args{
+				states:              nil,
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 		{
-			name:           "error with duplicate states",
-			args:           args{[]*parser.State{{Name: "test"}, {Name: "test"}}},
+			name: "error with duplicate states",
+			args: args{
+				states:              []*parser.State{{Name: "test"}, {Name: "test"}},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
@@ -167,6 +218,7 @@ func TestTranslateStates(test *testing.T) {
 					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
 					{Name: "state_1", Messages: []*parser.Message{{Name: "test"}, {Name: "test"}}},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
@@ -195,12 +247,53 @@ func TestTranslateStates(test *testing.T) {
 						},
 					},
 				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
+			},
+			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
+			wantErr:        assert.Error,
+		},
+		{
+			name: "error with the expression",
+			args: args{
+				states: []*parser.State{
+					{
+						Name: "state_0",
+						Messages: []*parser.Message{
+							{
+								Name: "message_0",
+								Commands: []*parser.Command{
+									{
+										Expression: &parser.Expression{
+											ListConstruction: &parser.ListConstruction{
+												Addition: &parser.Addition{
+													Multiplication: &parser.Multiplication{
+														Unary: &parser.Unary{
+															Accessor: &parser.Accessor{
+																Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: declaredIdentifierGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			originDeclaredIdentifiers := make(declaredIdentifierGroup)
+			for identifier := range testData.args.declaredIdentifiers {
+				originDeclaredIdentifiers[identifier] = struct{}{}
+			}
+
 			outWriter := new(testsmocks.Writer)
 			randomizer := new(testsmocks.Randomizer)
 			sleeper := new(testsmocks.Sleeper)
@@ -211,9 +304,11 @@ func TestTranslateStates(test *testing.T) {
 					Sleeper:    sleeper.Sleep,
 				},
 			}
-			gotStates, err := translateStates(testData.args.states, dependencies)
+			gotStates, err :=
+				translateStates(testData.args.states, testData.args.declaredIdentifiers, dependencies)
 
 			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
+			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.makeWantStates(outWriter), gotStates)
 			testData.wantErr(test, err)
 		})

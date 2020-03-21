@@ -25,7 +25,7 @@ func Translate(actors []*parser.Actor, options Options, dependencies Dependencie
 	err error,
 ) {
 	for index, actor := range actors {
-		translatedStates, err := translateStates(actor.States, dependencies.Commands)
+		translatedStates, err := translateStates(actor.States, nil, dependencies.Commands)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the actor #%d", index)
 		}
@@ -45,7 +45,13 @@ func Translate(actors []*parser.Actor, options Options, dependencies Dependencie
 	return translatedActors, nil
 }
 
-func translateStates(states []*parser.State, dependencies commands.Dependencies) (
+type declaredIdentifierGroup map[string]struct{}
+
+func translateStates(
+	states []*parser.State,
+	declaredIdentifiers declaredIdentifierGroup,
+	dependencies commands.Dependencies,
+) (
 	translatedStates runtime.StateGroup,
 	err error,
 ) {
@@ -60,7 +66,8 @@ func translateStates(states []*parser.State, dependencies commands.Dependencies)
 			return nil, errors.Errorf("duplicate state %s", state.Name)
 		}
 
-		translatedMessages, settedStates, err := translateMessages(state.Messages, nil, dependencies)
+		translatedMessages, settedStates, err :=
+			translateMessages(state.Messages, declaredIdentifiers, dependencies)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}
@@ -79,8 +86,6 @@ func translateStates(states []*parser.State, dependencies commands.Dependencies)
 
 	return translatedStates, nil
 }
-
-type declaredIdentifierGroup map[string]struct{}
 
 type settedStateGroup map[string]string
 
