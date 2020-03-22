@@ -13,6 +13,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
@@ -21,7 +22,7 @@ import (
 func TestTranslate(test *testing.T) {
 	type args struct {
 		makeActors          func(options Options) []*parser.Actor
-		declaredIdentifiers DeclaredIdentifierGroup
+		declaredIdentifiers context.ValueNameGroup
 	}
 
 	for _, testData := range []struct {
@@ -39,7 +40,7 @@ func TestTranslate(test *testing.T) {
 						{States: []*parser.State{{Name: options.InitialState}, {Name: "two"}}},
 					}
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
@@ -67,7 +68,7 @@ func TestTranslate(test *testing.T) {
 			name: "success without actors",
 			args: args{
 				makeActors:          func(options Options) []*parser.Actor { return nil },
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
@@ -110,7 +111,7 @@ func TestTranslate(test *testing.T) {
 						},
 					}
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
@@ -133,7 +134,7 @@ func TestTranslate(test *testing.T) {
 				makeActors: func(options Options) []*parser.Actor {
 					return []*parser.Actor{{States: []*parser.State{{Name: options.InitialState}}}, {}}
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
@@ -149,7 +150,7 @@ func TestTranslate(test *testing.T) {
 						{States: []*parser.State{{Name: "two"}}},
 					}
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
@@ -192,7 +193,7 @@ func TestTranslate(test *testing.T) {
 						},
 					}
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
 				return nil
@@ -201,7 +202,7 @@ func TestTranslate(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			originDeclaredIdentifiers := make(DeclaredIdentifierGroup)
+			originDeclaredIdentifiers := make(context.ValueNameGroup)
 			for identifier := range testData.args.declaredIdentifiers {
 				originDeclaredIdentifiers[identifier] = struct{}{}
 			}
@@ -244,7 +245,7 @@ func TestTranslate(test *testing.T) {
 func TestTranslateStates(test *testing.T) {
 	type args struct {
 		states              []*parser.State
-		declaredIdentifiers DeclaredIdentifierGroup
+		declaredIdentifiers context.ValueNameGroup
 	}
 
 	for _, testData := range []struct {
@@ -260,7 +261,7 @@ func TestTranslateStates(test *testing.T) {
 					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
 					{Name: "state_1", Messages: []*parser.Message{{Name: "message_2"}, {Name: "message_3"}}},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{
@@ -274,7 +275,7 @@ func TestTranslateStates(test *testing.T) {
 			name: "success with empty states",
 			args: args{
 				states:              []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{"state_0": runtime.MessageGroup{}, "state_1": runtime.MessageGroup{}}
@@ -309,7 +310,7 @@ func TestTranslateStates(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{
@@ -324,7 +325,7 @@ func TestTranslateStates(test *testing.T) {
 			name: "error without states",
 			args: args{
 				states:              nil,
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
@@ -333,7 +334,7 @@ func TestTranslateStates(test *testing.T) {
 			name: "error with duplicate states",
 			args: args{
 				states:              []*parser.State{{Name: "test"}, {Name: "test"}},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
@@ -345,7 +346,7 @@ func TestTranslateStates(test *testing.T) {
 					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
 					{Name: "state_1", Messages: []*parser.Message{{Name: "test"}, {Name: "test"}}},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
@@ -374,7 +375,7 @@ func TestTranslateStates(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
@@ -409,14 +410,14 @@ func TestTranslateStates(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
 			wantErr:        assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			originDeclaredIdentifiers := make(DeclaredIdentifierGroup)
+			originDeclaredIdentifiers := make(context.ValueNameGroup)
 			for identifier := range testData.args.declaredIdentifiers {
 				originDeclaredIdentifiers[identifier] = struct{}{}
 			}
@@ -445,7 +446,7 @@ func TestTranslateStates(test *testing.T) {
 func TestTranslateMessages(test *testing.T) {
 	type args struct {
 		messages            []*parser.Message
-		declaredIdentifiers DeclaredIdentifierGroup
+		declaredIdentifiers context.ValueNameGroup
 	}
 
 	for _, testData := range []struct {
@@ -474,7 +475,7 @@ func TestTranslateMessages(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{
@@ -510,7 +511,7 @@ func TestTranslateMessages(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{
@@ -531,7 +532,7 @@ func TestTranslateMessages(test *testing.T) {
 			name: "success with empty messages",
 			args: args{
 				messages:            []*parser.Message{{Name: "message_0"}, {Name: "message_1"}},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{"message_0": nil, "message_1": nil}
@@ -543,7 +544,7 @@ func TestTranslateMessages(test *testing.T) {
 			name: "success without messages",
 			args: args{
 				messages:            nil,
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{}
@@ -574,7 +575,7 @@ func TestTranslateMessages(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{
@@ -588,7 +589,7 @@ func TestTranslateMessages(test *testing.T) {
 			name: "error with duplicate messages",
 			args: args{
 				messages:            []*parser.Message{{Name: "test"}, {Name: "test"}},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup { return nil },
 			wantStates:       nil,
@@ -615,7 +616,7 @@ func TestTranslateMessages(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup { return nil },
 			wantStates:       nil,
@@ -646,7 +647,7 @@ func TestTranslateMessages(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup { return nil },
 			wantStates:       nil,
@@ -654,7 +655,7 @@ func TestTranslateMessages(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			originDeclaredIdentifiers := make(DeclaredIdentifierGroup)
+			originDeclaredIdentifiers := make(context.ValueNameGroup)
 			for identifier := range testData.args.declaredIdentifiers {
 				originDeclaredIdentifiers[identifier] = struct{}{}
 			}
@@ -684,7 +685,7 @@ func TestTranslateMessages(test *testing.T) {
 func TestTranslateCommands(test *testing.T) {
 	type args struct {
 		commands            []*parser.Command
-		declaredIdentifiers DeclaredIdentifierGroup
+		declaredIdentifiers context.ValueNameGroup
 	}
 
 	for _, testData := range []struct {
@@ -701,7 +702,7 @@ func TestTranslateCommands(test *testing.T) {
 					{Send: tests.GetStringAddress("one")},
 					{Send: tests.GetStringAddress("two")},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSendCommand("two")}
@@ -715,7 +716,7 @@ func TestTranslateCommands(test *testing.T) {
 					{Send: tests.GetStringAddress("one")},
 					{Set: tests.GetStringAddress("two")},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSetCommand("two")}
@@ -743,7 +744,7 @@ func TestTranslateCommands(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewIdentifier("test"))}
@@ -787,7 +788,7 @@ func TestTranslateCommands(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
 				return runtime.CommandGroup{
@@ -802,7 +803,7 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success without commands",
 			args: args{
 				commands:            nil,
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.NoError,
@@ -827,7 +828,7 @@ func TestTranslateCommands(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.Error,
@@ -841,14 +842,14 @@ func TestTranslateCommands(test *testing.T) {
 					{Send: tests.GetStringAddress("three")},
 					{Set: tests.GetStringAddress("four")},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
 			wantErr:          assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			originDeclaredIdentifiers := make(DeclaredIdentifierGroup)
+			originDeclaredIdentifiers := make(context.ValueNameGroup)
 			for identifier := range testData.args.declaredIdentifiers {
 				originDeclaredIdentifiers[identifier] = struct{}{}
 			}
@@ -878,13 +879,13 @@ func TestTranslateCommands(test *testing.T) {
 func TestTranslateCommand(test *testing.T) {
 	type args struct {
 		command             *parser.Command
-		declaredIdentifiers DeclaredIdentifierGroup
+		declaredIdentifiers context.ValueNameGroup
 	}
 
 	for _, testData := range []struct {
 		name                    string
 		args                    args
-		wantDeclaredIdentifiers DeclaredIdentifierGroup
+		wantDeclaredIdentifiers context.ValueNameGroup
 		makeWantCommand         func(outWriter io.Writer) runtime.Command
 		wantState               string
 		wantErr                 assert.ErrorAssertionFunc
@@ -908,9 +909,9 @@ func TestTranslateCommand(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}, "test2": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}, "test2": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewLetCommand("test2", expressions.NewNumber(23))
 			},
@@ -936,9 +937,9 @@ func TestTranslateCommand(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewLetCommand("test", expressions.NewNumber(23))
 			},
@@ -966,9 +967,9 @@ func TestTranslateCommand(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand:         func(outWriter io.Writer) runtime.Command { return nil },
 			wantState:               "",
 			wantErr:                 assert.Error,
@@ -977,9 +978,9 @@ func TestTranslateCommand(test *testing.T) {
 			name: "Command/send",
 			args: args{
 				command:             &parser.Command{Send: tests.GetStringAddress("test")},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSendCommand("test")
 			},
@@ -990,9 +991,9 @@ func TestTranslateCommand(test *testing.T) {
 			name: "Command/set",
 			args: args{
 				command:             &parser.Command{Set: tests.GetStringAddress("test")},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewSetCommand("test")
 			},
@@ -1003,9 +1004,9 @@ func TestTranslateCommand(test *testing.T) {
 			name: "Command/out/nonempty",
 			args: args{
 				command:             &parser.Command{Out: tests.GetStringAddress("test")},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("test", outWriter)
 			},
@@ -1016,9 +1017,9 @@ func TestTranslateCommand(test *testing.T) {
 			name: "Command/out/empty",
 			args: args{
 				command:             &parser.Command{Out: tests.GetStringAddress("")},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewOutCommand("", outWriter)
 			},
@@ -1034,9 +1035,9 @@ func TestTranslateCommand(test *testing.T) {
 						Maximum: tests.GetNumberAddress(3.4),
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				command, _ := commands.NewSleepCommand(1.2, 3.4, commands.SleepDependencies{})
 				return command
@@ -1053,9 +1054,9 @@ func TestTranslateCommand(test *testing.T) {
 						Maximum: tests.GetNumberAddress(1.2),
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand:         func(outWriter io.Writer) runtime.Command { return nil },
 			wantState:               "",
 			wantErr:                 assert.Error,
@@ -1064,9 +1065,9 @@ func TestTranslateCommand(test *testing.T) {
 			name: "Command/exit",
 			args: args{
 				command:             &parser.Command{Exit: true},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.ExitCommand{}
 			},
@@ -1089,9 +1090,9 @@ func TestTranslateCommand(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
 				return commands.NewExpressionCommand(expressions.NewNumber(23))
 			},
@@ -1116,9 +1117,9 @@ func TestTranslateCommand(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantDeclaredIdentifiers: DeclaredIdentifierGroup{"test": {}},
+			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand:         func(outWriter io.Writer) runtime.Command { return nil },
 			wantState:               "",
 			wantErr:                 assert.Error,

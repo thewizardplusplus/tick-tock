@@ -5,10 +5,8 @@ import (
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
-
-// DeclaredIdentifierGroup ...
-type DeclaredIdentifierGroup map[string]struct{}
 
 // Options ...
 type Options struct {
@@ -25,7 +23,7 @@ type Dependencies struct {
 // Translate ...
 func Translate(
 	actors []*parser.Actor,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 	options Options,
 	dependencies Dependencies,
 ) (
@@ -55,7 +53,7 @@ func Translate(
 
 func translateStates(
 	states []*parser.State,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedStates runtime.StateGroup,
@@ -97,7 +95,7 @@ type settedStateGroup map[string]string
 
 func translateMessages(
 	messages []*parser.Message,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedMessages runtime.MessageGroup,
@@ -128,14 +126,14 @@ func translateMessages(
 
 func translateCommands(
 	commands []*parser.Command,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
 ) {
-	localDeclaredIdentifiers := make(DeclaredIdentifierGroup)
+	localDeclaredIdentifiers := make(context.ValueNameGroup)
 	for identifier := range declaredIdentifiers {
 		localDeclaredIdentifiers[identifier] = struct{}{}
 	}
@@ -164,7 +162,7 @@ func translateCommands(
 
 func translateCommand(
 	command *parser.Command,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 	dependencies commands.Dependencies,
 ) (
 	translatedCommand runtime.Command,

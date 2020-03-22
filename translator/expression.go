@@ -3,6 +3,7 @@ package translator
 import (
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/parser"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
@@ -21,7 +22,7 @@ const (
 
 func translateExpression(
 	expression *parser.Expression,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	result, err := translateListConstruction(expression.ListConstruction, declaredIdentifiers)
 	if err != nil {
@@ -33,7 +34,7 @@ func translateExpression(
 
 func translateListConstruction(
 	listConstruction *parser.ListConstruction,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateAddition(listConstruction.Addition, declaredIdentifiers)
 	if err != nil {
@@ -58,7 +59,7 @@ func translateListConstruction(
 
 func translateAddition(
 	addition *parser.Addition,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateMultiplication(addition.Multiplication, declaredIdentifiers)
 	if err != nil {
@@ -88,7 +89,7 @@ func translateAddition(
 
 func translateMultiplication(
 	multiplication *parser.Multiplication,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateUnary(multiplication.Unary, declaredIdentifiers)
 	if err != nil {
@@ -120,7 +121,7 @@ func translateMultiplication(
 
 func translateUnary(
 	unary *parser.Unary,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	if unary.Accessor != nil {
 		expression, err := translateAccessor(unary.Accessor, declaredIdentifiers)
@@ -148,7 +149,7 @@ func translateUnary(
 
 func translateAccessor(
 	accessor *parser.Accessor,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateAtom(accessor.Atom, declaredIdentifiers)
 	if err != nil {
@@ -172,7 +173,7 @@ func translateAccessor(
 
 func translateAtom(
 	atom *parser.Atom,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expression expressions.Expression, err error) {
 	switch {
 	case atom.Number != nil:
@@ -208,7 +209,7 @@ func translateAtom(
 
 func translateListDefinition(
 	listDefinition *parser.ListDefinition,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	var arguments []expressions.Expression
 	for index, item := range listDefinition.Items {
@@ -226,7 +227,7 @@ func translateListDefinition(
 
 func translateFunctionCall(
 	functionCall *parser.FunctionCall,
-	declaredIdentifiers DeclaredIdentifierGroup,
+	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
 	if _, ok := declaredIdentifiers[functionCall.Name]; !ok {
 		return nil, errors.Errorf("unknown function %s", functionCall.Name)
