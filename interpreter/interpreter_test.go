@@ -74,6 +74,7 @@ func TestInterpret(test *testing.T) {
 				outWriter *testsmocks.Writer,
 			) {
 				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+				context.On("Value", "test").Return(float64(23), true)
 				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
 				context.On("Copy").Return(context)
@@ -85,7 +86,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor state %s message %s 23;;;`,
+							`actor state %s message %s test;;;`,
 							options.Translator.InitialState,
 							options.InitialMessage,
 						))

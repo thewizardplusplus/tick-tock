@@ -95,7 +95,7 @@ func TestTranslate(test *testing.T) {
 																Multiplication: &parser.Multiplication{
 																	Unary: &parser.Unary{
 																		Accessor: &parser.Accessor{
-																			Atom: &parser.Atom{Number: tests.GetNumberAddress(23)},
+																			Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
 																		},
 																	},
 																},
@@ -117,7 +117,9 @@ func TestTranslate(test *testing.T) {
 				actorOne, _ := runtime.NewActor(
 					runtime.StateGroup{
 						options.InitialState: runtime.MessageGroup{
-							"message_0": runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewNumber(23))},
+							"message_0": runtime.CommandGroup{
+								commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+							},
 						},
 					},
 					options.InitialState,
@@ -298,7 +300,9 @@ func TestTranslateStates(test *testing.T) {
 												Addition: &parser.Addition{
 													Multiplication: &parser.Multiplication{
 														Unary: &parser.Unary{
-															Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+															Accessor: &parser.Accessor{
+																Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+															},
 														},
 													},
 												},
@@ -315,7 +319,9 @@ func TestTranslateStates(test *testing.T) {
 			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
 				return runtime.StateGroup{
 					"state_0": runtime.MessageGroup{
-						"message_0": runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewNumber(23))},
+						"message_0": runtime.CommandGroup{
+							commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+						},
 					},
 				}
 			},
@@ -565,7 +571,9 @@ func TestTranslateMessages(test *testing.T) {
 										Addition: &parser.Addition{
 											Multiplication: &parser.Multiplication{
 												Unary: &parser.Unary{
-													Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+													Accessor: &parser.Accessor{
+														Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+													},
 												},
 											},
 										},
@@ -579,7 +587,9 @@ func TestTranslateMessages(test *testing.T) {
 			},
 			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
 				return runtime.MessageGroup{
-					"message_0": runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewNumber(23))},
+					"message_0": runtime.CommandGroup{
+						commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+					},
 				}
 			},
 			wantStates: make(settedStateGroup),
@@ -725,7 +735,7 @@ func TestTranslateCommands(test *testing.T) {
 			wantErr:   assert.NoError,
 		},
 		{
-			name: "success with commands (with using an existing identifier)",
+			name: "success with commands (with an expression command and an existing identifier)",
 			args: args{
 				commands: []*parser.Command{
 					{
@@ -753,7 +763,7 @@ func TestTranslateCommands(test *testing.T) {
 			wantErr:   assert.NoError,
 		},
 		{
-			name: "success with commands (with using an nonexistent identifier)",
+			name: "success with commands (with an expression command and an nonexistent identifier)",
 			args: args{
 				commands: []*parser.Command{
 					{
@@ -809,7 +819,7 @@ func TestTranslateCommands(test *testing.T) {
 			wantErr:          assert.NoError,
 		},
 		{
-			name: "error with command translation",
+			name: "error with expression command translation",
 			args: args{
 				commands: []*parser.Command{
 					{
@@ -1083,7 +1093,9 @@ func TestTranslateCommand(test *testing.T) {
 							Addition: &parser.Addition{
 								Multiplication: &parser.Multiplication{
 									Unary: &parser.Unary{
-										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+										Accessor: &parser.Accessor{
+											Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+										},
 									},
 								},
 							},
@@ -1094,7 +1106,7 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
 			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewExpressionCommand(expressions.NewNumber(23))
+				return commands.NewExpressionCommand(expressions.NewIdentifier("test"))
 			},
 			wantState: "",
 			wantErr:   assert.NoError,
