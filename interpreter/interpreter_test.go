@@ -12,6 +12,7 @@ import (
 	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	runtimecontext "github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
@@ -39,6 +40,7 @@ func TestInterpret(test *testing.T) {
 				defaultReader *testsmocks.Reader,
 				outWriter *testsmocks.Writer,
 			) {
+				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
 				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
 				context.On("Copy").Return(context)
@@ -57,6 +59,35 @@ func TestInterpret(test *testing.T) {
 							options.Translator.InitialState,
 							options.InitialMessage,
 							message,
+						))
+					}, io.EOF)
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "success with the expression",
+			initializeDependencies: func(
+				options Options,
+				context *contextmocks.Context,
+				waiter *waitermocks.Waiter,
+				defaultReader *testsmocks.Reader,
+				outWriter *testsmocks.Writer,
+			) {
+				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
+				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
+				context.On("Copy").Return(context)
+
+				waiter.On("Add", 1).Return()
+				waiter.On("Done").Return()
+
+				defaultReader.
+					On("Read", mock.AnythingOfType("[]uint8")).
+					Return(func(buffer []byte) int {
+						return copy(buffer, fmt.Sprintf(
+							`actor state %s message %s 23;;;`,
+							options.Translator.InitialState,
+							options.InitialMessage,
 						))
 					}, io.EOF)
 			},
@@ -99,10 +130,35 @@ func TestInterpret(test *testing.T) {
 				defaultReader *testsmocks.Reader,
 				outWriter *testsmocks.Writer,
 			) {
+				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf("actor state %s;; actor;", options.Translator.InitialState))
+					}, io.EOF)
+			},
+			wantErr: assert.Error,
+		},
+		{
+			name: "error with the expression",
+			initializeDependencies: func(
+				options Options,
+				context *contextmocks.Context,
+				waiter *waitermocks.Waiter,
+				defaultReader *testsmocks.Reader,
+				outWriter *testsmocks.Writer,
+			) {
+				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+
+				defaultReader.
+					On("Read", mock.AnythingOfType("[]uint8")).
+					Return(func(buffer []byte) int {
+						return copy(buffer, fmt.Sprintf(
+							`actor state %s message %s unknown;;;`,
+							options.Translator.InitialState,
+							options.InitialMessage,
+						))
 					}, io.EOF)
 			},
 			wantErr: assert.Error,
