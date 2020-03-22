@@ -87,3 +87,19 @@ func (_m *Context) Value(name string) (interface{}, bool) {
 
 	return r0, r1
 }
+
+// ValuesNames provides a mock function with given fields:
+func (_m *Context) ValuesNames() context.ValueNameGroup {
+	ret := _m.Called()
+
+	var r0 context.ValueNameGroup
+	if rf, ok := ret.Get(0).(func() context.ValueNameGroup); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(context.ValueNameGroup)
+		}
+	}
+
+	return r0
+}

@@ -6,6 +6,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDefaultValueStore_ValuesNames(test *testing.T) {
+	for _, data := range []struct {
+		name  string
+		store DefaultValueStore
+		want  ValueNameGroup
+	}{
+		{
+			name:  "with values",
+			store: DefaultValueStore{"one": 1, "two": 2},
+			want:  ValueNameGroup{"one": {}, "two": {}},
+		},
+		{
+			name:  "without values",
+			store: DefaultValueStore{},
+			want:  ValueNameGroup{},
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := data.store.ValuesNames()
+
+			assert.Equal(test, data.want, got)
+		})
+	}
+}
+
 func TestDefaultValueStore_Value(test *testing.T) {
 	type args struct {
 		name string

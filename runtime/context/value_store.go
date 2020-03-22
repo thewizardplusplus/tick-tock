@@ -1,7 +1,11 @@
 package context
 
+// ValueNameGroup ...
+type ValueNameGroup map[string]struct{}
+
 // ValueStore ...
 type ValueStore interface {
+	ValuesNames() ValueNameGroup
 	Value(name string) (value interface{}, ok bool)
 	SetValue(name string, value interface{})
 }
@@ -16,6 +20,16 @@ type CopyableValueStore interface {
 
 // DefaultValueStore ...
 type DefaultValueStore map[string]interface{}
+
+// ValuesNames ...
+func (store DefaultValueStore) ValuesNames() ValueNameGroup {
+	valuesNames := make(ValueNameGroup)
+	for valueName := range store {
+		valuesNames[valueName] = struct{}{}
+	}
+
+	return valuesNames
+}
 
 // Value ...
 func (store DefaultValueStore) Value(name string) (value interface{}, ok bool) {
