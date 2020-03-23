@@ -5,9 +5,10 @@ type ValueNameGroup map[string]struct{}
 
 // ValueStore ...
 type ValueStore interface {
+	ValueHolder
+
 	ValuesNames() ValueNameGroup
 	Value(name string) (value interface{}, ok bool)
-	SetValue(name string, value interface{})
 }
 
 // CopyableValueStore ...
