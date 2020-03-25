@@ -9,6 +9,8 @@ import (
 
 // ...
 const (
+	EmptyListConstantName = "__empty_list__"
+
 	ListConstructionFunctionName = "__cons__"
 	AdditionFunctionName         = "__add__"
 	SubtractionFunctionName      = "__sub__"
@@ -17,7 +19,6 @@ const (
 	ModuloFunctionName           = "__mod__"
 	NegationFunctionName         = "__neg__"
 	KeyAccessorFunctionName      = "__item__"
-	ListDefinitionFunctionName   = "__list__"
 )
 
 func translateExpression(
@@ -211,18 +212,20 @@ func translateListDefinition(
 	listDefinition *parser.ListDefinition,
 	declaredIdentifiers context.ValueNameGroup,
 ) (expressions.Expression, error) {
-	var arguments []expressions.Expression
-	for index, item := range listDefinition.Items {
-		result, err := translateExpression(item, declaredIdentifiers)
+	argumentTwo := expressions.Expression(expressions.NewIdentifier(EmptyListConstantName))
+	for index := len(listDefinition.Items) - 1; index >= 0; index-- {
+		argumentOne, err := translateExpression(listDefinition.Items[index], declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the item #%d of the list definition", index)
 		}
 
-		arguments = append(arguments, result)
+		argumentTwo = expressions.NewFunctionCall(
+			ListConstructionFunctionName,
+			[]expressions.Expression{argumentOne, argumentTwo},
+		)
 	}
 
-	expression := expressions.NewFunctionCall(ListDefinitionFunctionName, arguments)
-	return expression, nil
+	return argumentTwo, nil
 }
 
 func translateFunctionCall(

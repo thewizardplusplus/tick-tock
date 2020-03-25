@@ -831,11 +831,19 @@ func TestTranslateAtom(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, []expressions.Expression{
-				expressions.NewNumber(12),
-				expressions.NewNumber(23),
-				expressions.NewNumber(42),
-			}),
+			wantExpression: expressions.NewFunctionCall(
+				ListConstructionFunctionName,
+				[]expressions.Expression{
+					expressions.NewNumber(12),
+					expressions.NewFunctionCall(ListConstructionFunctionName, []expressions.Expression{
+						expressions.NewNumber(23),
+						expressions.NewFunctionCall(ListConstructionFunctionName, []expressions.Expression{
+							expressions.NewNumber(42),
+							expressions.NewIdentifier(EmptyListConstantName),
+						}),
+					}),
+				},
+			),
 			wantErr: assert.NoError,
 		},
 		{
@@ -1115,11 +1123,19 @@ func TestTranslateListDefinition(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, []expressions.Expression{
-				expressions.NewNumber(12),
-				expressions.NewNumber(23),
-				expressions.NewNumber(42),
-			}),
+			wantExpression: expressions.NewFunctionCall(
+				ListConstructionFunctionName,
+				[]expressions.Expression{
+					expressions.NewNumber(12),
+					expressions.NewFunctionCall(ListConstructionFunctionName, []expressions.Expression{
+						expressions.NewNumber(23),
+						expressions.NewFunctionCall(ListConstructionFunctionName, []expressions.Expression{
+							expressions.NewNumber(42),
+							expressions.NewIdentifier(EmptyListConstantName),
+						}),
+					}),
+				},
+			),
 			wantErr: assert.NoError,
 		},
 		{
@@ -1130,7 +1146,7 @@ func TestTranslateListDefinition(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			wantExpression: expressions.NewFunctionCall(ListDefinitionFunctionName, nil),
+			wantExpression: expressions.NewIdentifier(EmptyListConstantName),
 			wantErr:        assert.NoError,
 		},
 		{
