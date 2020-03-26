@@ -79,7 +79,7 @@ func (expression FunctionCall) Evaluate(context context.Context) (result interfa
 				expression.name,
 			)
 		}
-		if reflect.TypeOf(result) != functionType.In(index) {
+		if !reflect.TypeOf(result).AssignableTo(functionType.In(index)) {
 			return nil, errors.Errorf(
 				"incorrect type of the argument #%d for the function %s (%T instead %s)",
 				index,

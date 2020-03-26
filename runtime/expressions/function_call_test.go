@@ -81,6 +81,40 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "success with the empty interface",
+			fields: fields{
+				name: "add",
+				arguments: []Expression{
+					func() Expression {
+						expression := NewSignedExpression("one")
+						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+
+						return expression
+					}(),
+					func() Expression {
+						expression := NewSignedExpression("two")
+						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
+
+						return expression
+					}(),
+				},
+			},
+			args: args{
+				context: func() context.Context {
+					add := func(a interface{}, b interface{}) (float64, error) {
+						return a.(float64) + b.(float64), nil
+					}
+
+					context := new(contextmocks.Context)
+					context.On("Value", "add").Return(add, true)
+
+					return context
+				}(),
+			},
+			wantResult: 6.5,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "error with an unknown function",
 			fields: fields{
 				name:      "add",
