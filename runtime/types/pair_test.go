@@ -133,6 +133,13 @@ func TestPair_Item(test *testing.T) {
 			wantOk:   assert.False,
 		},
 		{
+			name:     "nonempty pair (negative index)",
+			pair:     &Pair{"one", &Pair{"two", nil}},
+			args:     args{-5},
+			wantItem: nil,
+			wantOk:   assert.False,
+		},
+		{
 			name:     "empty pair",
 			pair:     nil,
 			args:     args{5},
