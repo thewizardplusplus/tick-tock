@@ -64,6 +64,18 @@ func (pair *Pair) Append(anotherPair *Pair) *Pair {
 	return &Pair{head, tail}
 }
 
+// Slice ...
+func (pair *Pair) Slice() []interface{} {
+	if pair == nil {
+		return nil
+	}
+
+	items := []interface{}{pair.Head}
+	items = append(items, pair.Tail.Slice()...)
+
+	return items
+}
+
 // Text ...
 func (pair *Pair) Text() (string, error) {
 	if pair == nil {

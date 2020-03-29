@@ -243,6 +243,31 @@ func TestPair_Append(test *testing.T) {
 	}
 }
 
+func TestPair_Slice(test *testing.T) {
+	for _, data := range []struct {
+		name string
+		pair *Pair
+		want []interface{}
+	}{
+		{
+			name: "nonempty pair",
+			pair: &Pair{"one", &Pair{"two", nil}},
+			want: []interface{}{"one", "two"},
+		},
+		{
+			name: "empty pair",
+			pair: nil,
+			want: nil,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := data.pair.Slice()
+
+			assert.Equal(test, data.want, got)
+		})
+	}
+}
+
 func TestPair_Text(test *testing.T) {
 	for _, data := range []struct {
 		name     string
