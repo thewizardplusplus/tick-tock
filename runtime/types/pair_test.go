@@ -242,3 +242,98 @@ func TestPair_Append(test *testing.T) {
 		})
 	}
 }
+
+func TestPair_Text(test *testing.T) {
+	for _, data := range []struct {
+		name     string
+		pair     *Pair
+		wantText string
+		wantErr  assert.ErrorAssertionFunc
+	}{
+		{
+			name: "success/nonempty pair/latin1",
+			pair: &Pair{
+				Head: float64('t'),
+				Tail: &Pair{
+					Head: float64('e'),
+					Tail: &Pair{
+						Head: float64('s'),
+						Tail: &Pair{
+							Head: float64('t'),
+							Tail: nil,
+						},
+					},
+				},
+			},
+			wantText: "test",
+			wantErr:  assert.NoError,
+		},
+		{
+			name: "success/nonempty pair/not latin1",
+			pair: &Pair{
+				Head: float64('т'),
+				Tail: &Pair{
+					Head: float64('е'),
+					Tail: &Pair{
+						Head: float64('с'),
+						Tail: &Pair{
+							Head: float64('т'),
+							Tail: nil,
+						},
+					},
+				},
+			},
+			wantText: "тест",
+			wantErr:  assert.NoError,
+		},
+		{
+			name:     "success/empty pair",
+			pair:     nil,
+			wantText: "",
+			wantErr:  assert.NoError,
+		},
+		{
+			name: "error/incorrect type",
+			pair: &Pair{
+				Head: float64('t'),
+				Tail: &Pair{
+					Head: &Pair{float64('h'), &Pair{float64('i'), nil}},
+					Tail: &Pair{
+						Head: float64('s'),
+						Tail: &Pair{
+							Head: float64('t'),
+							Tail: nil,
+						},
+					},
+				},
+			},
+			wantText: "",
+			wantErr:  assert.Error,
+		},
+		{
+			name: "error/incorrect rune",
+			pair: &Pair{
+				Head: float64('t'),
+				Tail: &Pair{
+					Head: -23.0,
+					Tail: &Pair{
+						Head: float64('s'),
+						Tail: &Pair{
+							Head: float64('t'),
+							Tail: nil,
+						},
+					},
+				},
+			},
+			wantText: "",
+			wantErr:  assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotText, gotErr := data.pair.Text()
+
+			assert.Equal(test, data.wantText, gotText)
+			data.wantErr(test, gotErr)
+		})
+	}
+}

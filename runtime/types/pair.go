@@ -2,6 +2,8 @@ package types
 
 import (
 	"unicode/utf8"
+
+	"github.com/pkg/errors"
 )
 
 // Pair ...
@@ -60,4 +62,31 @@ func (pair *Pair) Append(anotherPair *Pair) *Pair {
 
 	head, tail := pair.Head, pair.Tail.Append(anotherPair)
 	return &Pair{head, tail}
+}
+
+// Text ...
+func (pair *Pair) Text() (string, error) {
+	if pair == nil {
+		return "", nil
+	}
+
+	head, ok := pair.Head.(float64)
+	if !ok {
+		return "", errors.Errorf(
+			"incorrect type of some item for conversion to a string (%T instead float64)",
+			pair.Head,
+		)
+	}
+
+	runeHead := rune(head)
+	if !utf8.ValidRune(runeHead) {
+		return "", errors.New("incorrect rune in some item")
+	}
+
+	tail, err := pair.Tail.Text()
+	if err != nil {
+		return "", err
+	}
+
+	return string(runeHead) + tail, nil
 }
