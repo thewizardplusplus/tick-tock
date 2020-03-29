@@ -12,7 +12,7 @@ type String struct {
 
 // NewString ...
 func NewString(value string) String {
-	pair := types.NewPairFromString(value)
+	pair := types.NewPairFromText(value)
 	return String{pair}
 }
 

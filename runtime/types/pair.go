@@ -20,15 +20,15 @@ func NewPairFromSlice(items []interface{}) *Pair {
 	return &Pair{head, tail}
 }
 
-// NewPairFromString ...
-func NewPairFromString(text string) *Pair {
+// NewPairFromText ...
+func NewPairFromText(text string) *Pair {
 	if len(text) == 0 {
 		return nil
 	}
 
 	head, headSize := utf8.DecodeRuneInString(text)
-	tail := NewPairFromString(text[headSize:])
-	return &Pair{head, tail}
+	tail := NewPairFromText(text[headSize:])
+	return &Pair{float64(head), tail}
 }
 
 // Size ...

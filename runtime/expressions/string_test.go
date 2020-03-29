@@ -12,19 +12,19 @@ import (
 func TestNewString(test *testing.T) {
 	got := NewString("hi")
 
-	want := &types.Pair{Head: 'h', Tail: &types.Pair{Head: 'i', Tail: nil}}
+	want := &types.Pair{Head: float64('h'), Tail: &types.Pair{Head: float64('i'), Tail: nil}}
 	assert.Equal(test, want, got.value)
 }
 
 func TestString_Evaluate(test *testing.T) {
 	context := new(mocks.Context)
 	string := String{
-		value: &types.Pair{Head: 'h', Tail: &types.Pair{Head: 'i', Tail: nil}},
+		value: &types.Pair{Head: float64('h'), Tail: &types.Pair{Head: float64('i'), Tail: nil}},
 	}
 	gotResult, gotErr := string.Evaluate(context)
 
 	mock.AssertExpectationsForObjects(test, context)
-	wantResult := &types.Pair{Head: 'h', Tail: &types.Pair{Head: 'i', Tail: nil}}
+	wantResult := &types.Pair{Head: float64('h'), Tail: &types.Pair{Head: float64('i'), Tail: nil}}
 	assert.Equal(test, wantResult, gotResult)
 	assert.NoError(test, gotErr)
 }

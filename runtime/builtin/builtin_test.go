@@ -62,7 +62,7 @@ func TestValues(test *testing.T) {
 				translator.AdditionFunctionName,
 				[]expressions.Expression{expressions.NewString("te"), expressions.NewString("st")},
 			),
-			wantResult: types.NewPairFromString("test"),
+			wantResult: types.NewPairFromText("test"),
 			wantErr:    assert.NoError,
 		},
 		{

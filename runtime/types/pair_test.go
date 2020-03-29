@@ -40,7 +40,7 @@ func TestNewPairFromSlice(test *testing.T) {
 	}
 }
 
-func TestNewPairFromString(test *testing.T) {
+func TestNewPairFromText(test *testing.T) {
 	type args struct {
 		text string
 	}
@@ -51,14 +51,14 @@ func TestNewPairFromString(test *testing.T) {
 		want *Pair
 	}{
 		{
-			name: "nonempty text (latin1)",
+			name: "nonempty text/latin1",
 			args: args{"test"},
-			want: &Pair{'t', &Pair{'e', &Pair{'s', &Pair{'t', nil}}}},
+			want: &Pair{float64('t'), &Pair{float64('e'), &Pair{float64('s'), &Pair{float64('t'), nil}}}},
 		},
 		{
-			name: "nonempty text (not latin1)",
+			name: "nonempty text/not latin1",
 			args: args{"тест"},
-			want: &Pair{'т', &Pair{'е', &Pair{'с', &Pair{'т', nil}}}},
+			want: &Pair{float64('т'), &Pair{float64('е'), &Pair{float64('с'), &Pair{float64('т'), nil}}}},
 		},
 		{
 			name: "empty text",
@@ -67,7 +67,7 @@ func TestNewPairFromString(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			got := NewPairFromString(data.args.text)
+			got := NewPairFromText(data.args.text)
 
 			assert.Equal(test, data.want, got)
 		})
