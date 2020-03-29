@@ -101,7 +101,7 @@ func TestPair_Size(test *testing.T) {
 
 func TestPair_Item(test *testing.T) {
 	type args struct {
-		index int
+		index float64
 	}
 
 	for _, data := range []struct {
@@ -112,35 +112,35 @@ func TestPair_Item(test *testing.T) {
 		wantOk   assert.BoolAssertionFunc
 	}{
 		{
-			name:     "nonempty pair (first item)",
+			name:     "success/nonempty pair/first item",
 			pair:     &Pair{"one", &Pair{"two", nil}},
 			args:     args{0},
 			wantItem: "one",
 			wantOk:   assert.True,
 		},
 		{
-			name:     "nonempty pair (last item)",
+			name:     "success/nonempty pair/last item",
 			pair:     &Pair{"one", &Pair{"two", nil}},
 			args:     args{1},
 			wantItem: "two",
 			wantOk:   assert.True,
 		},
 		{
-			name:     "nonempty pair (too large index)",
+			name:     "error/nonempty pair/too large index",
 			pair:     &Pair{"one", &Pair{"two", nil}},
 			args:     args{5},
 			wantItem: nil,
 			wantOk:   assert.False,
 		},
 		{
-			name:     "nonempty pair (negative index)",
+			name:     "error/nonempty pair/negative index",
 			pair:     &Pair{"one", &Pair{"two", nil}},
 			args:     args{-5},
 			wantItem: nil,
 			wantOk:   assert.False,
 		},
 		{
-			name:     "empty pair",
+			name:     "error/empty pair",
 			pair:     nil,
 			args:     args{5},
 			wantItem: nil,

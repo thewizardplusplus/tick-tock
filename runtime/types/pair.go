@@ -41,7 +41,7 @@ func (pair *Pair) Size() int {
 }
 
 // Item ...
-func (pair *Pair) Item(index int) (item interface{}, ok bool) {
+func (pair *Pair) Item(index float64) (item interface{}, ok bool) {
 	if pair == nil {
 		return nil, false
 	}
