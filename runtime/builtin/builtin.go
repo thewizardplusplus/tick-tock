@@ -169,6 +169,28 @@ var (
 
 			return number, nil
 		},
+		"str": func(value interface{}) (*types.Pair, error) {
+			var text string
+			switch typedValue := value.(type) {
+			case float64:
+				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
+			case *types.Pair:
+				items := typedValue.DeepSlice()
+				textBytes, err := json.Marshal(items)
+				if err != nil {
+					return nil, errors.Wrap(err, "unable to marshal the list to JSON")
+				}
+
+				text = string(textBytes)
+			default:
+				return nil, errors.Errorf(
+					"unsupported type %T of the argument #0 for the function str",
+					typedValue,
+				)
+			}
+
+			return types.NewPairFromText(text), nil
+		},
 		"strs": func(pair *types.Pair) (*types.Pair, error) {
 			text, err := pair.Text()
 			if err != nil {

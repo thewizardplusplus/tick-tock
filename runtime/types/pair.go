@@ -76,6 +76,25 @@ func (pair *Pair) Slice() []interface{} {
 	return items
 }
 
+// DeepSlice ...
+func (pair *Pair) DeepSlice() []interface{} {
+	if pair == nil {
+		return nil
+	}
+
+	var head interface{}
+	if pairHead, ok := pair.Head.(*Pair); ok {
+		head = pairHead.DeepSlice()
+	} else {
+		head = pair.Head
+	}
+
+	items := []interface{}{head}
+	items = append(items, pair.Tail.DeepSlice()...)
+
+	return items
+}
+
 // Text ...
 func (pair *Pair) Text() (string, error) {
 	if pair == nil {

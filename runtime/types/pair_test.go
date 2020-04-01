@@ -268,6 +268,36 @@ func TestPair_Slice(test *testing.T) {
 	}
 }
 
+func TestPair_DeepSlice(test *testing.T) {
+	for _, data := range []struct {
+		name string
+		pair *Pair
+		want []interface{}
+	}{
+		{
+			name: "nonempty pair/tree in the head",
+			pair: &Pair{&Pair{"one", &Pair{"two", nil}}, &Pair{"three", nil}},
+			want: []interface{}{[]interface{}{"one", "two"}, "three"},
+		},
+		{
+			name: "nonempty pair/tree in the tail",
+			pair: &Pair{"one", &Pair{&Pair{"two", &Pair{"three", nil}}, nil}},
+			want: []interface{}{"one", []interface{}{"two", "three"}},
+		},
+		{
+			name: "empty pair",
+			pair: nil,
+			want: nil,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := data.pair.DeepSlice()
+
+			assert.Equal(test, data.want, got)
+		})
+	}
+}
+
 func TestPair_Text(test *testing.T) {
 	for _, data := range []struct {
 		name     string

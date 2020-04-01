@@ -488,6 +488,124 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
+			name: "str/success/float64",
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewNumber(23),
+			}),
+			wantResult: types.NewPairFromText("23"),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "str/success/*types.Pair/tree in the head",
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewNumber(float64('h')),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('i')),
+										expressions.NewIdentifier(translator.EmptyListConstantName),
+									},
+								),
+							},
+						),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewNumber(23),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(42),
+										expressions.NewIdentifier(translator.EmptyListConstantName),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: types.NewPairFromText("[[104,105],23,42]"),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "str/success/*types.Pair/tree in the tail",
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(12),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('h')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('i')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(42),
+										expressions.NewIdentifier(translator.EmptyListConstantName),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: types.NewPairFromText("[12,[104,105],42]"),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "str/error/JSON marshalling",
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(12),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewIdentifier("str"),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(42),
+										expressions.NewIdentifier(translator.EmptyListConstantName),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "str/error/unsupported type",
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewIdentifier("str"),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
 			name: "strs/success",
 			expression: expressions.NewFunctionCall("strs", []expressions.Expression{
 				expressions.NewString(`"test"`),
