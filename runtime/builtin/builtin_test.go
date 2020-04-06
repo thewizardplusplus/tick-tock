@@ -903,13 +903,15 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 	} {
-		ctx := context.NewDefaultContext()
-		context.SetValues(ctx, Values)
+		test.Run(data.name, func(test *testing.T) {
+			ctx := context.NewDefaultContext()
+			context.SetValues(ctx, Values)
 
-		gotResult, gotErr := data.expression.Evaluate(ctx)
+			gotResult, gotErr := data.expression.Evaluate(ctx)
 
-		assert.Equal(test, data.wantResult, gotResult)
-		data.wantErr(test, gotErr)
+			assert.Equal(test, data.wantResult, gotResult)
+			data.wantErr(test, gotErr)
+		})
 	}
 }
 
@@ -1004,15 +1006,17 @@ func TestValues_inDelta(test *testing.T) {
 			want: 1.361727,
 		},
 	} {
-		ctx := context.NewDefaultContext()
-		context.SetValues(ctx, Values)
+		test.Run(data.name, func(test *testing.T) {
+			ctx := context.NewDefaultContext()
+			context.SetValues(ctx, Values)
 
-		got, err := data.expression.Evaluate(ctx)
+			got, err := data.expression.Evaluate(ctx)
 
-		if assert.NoError(test, err) {
-			require.IsType(test, float64(0), got)
-			assert.InDelta(test, data.want, got.(float64), 1e-6)
-		}
+			if assert.NoError(test, err) {
+				require.IsType(test, float64(0), got)
+				assert.InDelta(test, data.want, got.(float64), 1e-6)
+			}
+		})
 	}
 }
 
