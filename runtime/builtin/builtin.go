@@ -16,6 +16,7 @@ import (
 var (
 	Values = context.ValueGroup{
 		translator.EmptyListConstantName: (*types.Pair)(nil),
+		"nil":                            types.Nil{},
 		"nan":                            math.NaN(),
 		"inf":                            math.Inf(+1),
 		"pi":                             math.Pi,
@@ -78,6 +79,8 @@ var (
 		"type": func(value interface{}) (*types.Pair, error) {
 			var name string
 			switch value.(type) {
+			case types.Nil:
+				name = "nil"
 			case float64:
 				name = "num"
 			case *types.Pair:
@@ -172,6 +175,8 @@ var (
 		"str": func(value interface{}) (*types.Pair, error) {
 			var text string
 			switch typedValue := value.(type) {
+			case types.Nil:
+				text = "nil"
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair:

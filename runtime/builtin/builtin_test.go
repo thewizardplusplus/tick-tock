@@ -26,6 +26,12 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name:       "nil",
+			expression: expressions.NewIdentifier("nil"),
+			wantResult: types.Nil{},
+			wantErr:    assert.NoError,
+		},
+		{
 			name:       "inf",
 			expression: expressions.NewIdentifier("inf"),
 			wantResult: math.Inf(+1),
@@ -213,6 +219,14 @@ func TestValues(test *testing.T) {
 			),
 			wantResult: nil,
 			wantErr:    assert.Error,
+		},
+		{
+			name: "type/success/nil",
+			expression: expressions.NewFunctionCall("type", []expressions.Expression{
+				expressions.NewIdentifier("nil"),
+			}),
+			wantResult: types.NewPairFromText("nil"),
+			wantErr:    assert.NoError,
 		},
 		{
 			name: "type/success/float64",
@@ -486,6 +500,14 @@ func TestValues(test *testing.T) {
 			}),
 			wantResult: nil,
 			wantErr:    assert.Error,
+		},
+		{
+			name: "str/success/nil",
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewIdentifier("nil"),
+			}),
+			wantResult: types.NewPairFromText("nil"),
+			wantErr:    assert.NoError,
 		},
 		{
 			name: "str/success/float64",
