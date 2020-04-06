@@ -3,6 +3,7 @@ package builtin
 import (
 	"encoding/json"
 	"math"
+	"math/rand"
 	"strconv"
 
 	"github.com/pkg/errors"
@@ -144,6 +145,13 @@ var (
 		},
 		"abs": func(a float64) (float64, error) {
 			return math.Abs(a), nil
+		},
+		"seed": func(a float64) (types.Nil, error) {
+			rand.Seed(int64(a))
+			return types.Nil{}, nil
+		},
+		"random": func() (float64, error) {
+			return rand.Float64(), nil
 		},
 		"head": func(pair *types.Pair) (interface{}, error) {
 			if pair == nil {

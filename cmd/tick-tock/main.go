@@ -16,6 +16,8 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	errorHandler := runtime.NewDefaultErrorHandler(os.Stderr, os.Exit)
 	options, err := options.Parse(os.Args, options.Dependencies{
 		UsageWriter: os.Stdout,

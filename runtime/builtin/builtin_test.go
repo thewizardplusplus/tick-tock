@@ -2,6 +2,7 @@ package builtin
 
 import (
 	"math"
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -1013,4 +1014,42 @@ func TestValues_inDelta(test *testing.T) {
 			assert.InDelta(test, data.want, got.(float64), 1e-6)
 		}
 	}
+}
+
+func TestValues_random(test *testing.T) {
+	const numberCount = 10
+
+	ctx := context.NewDefaultContext()
+	context.SetValues(ctx, Values)
+
+	expression := expressions.NewFunctionCall("seed", []expressions.Expression{
+		expressions.NewNumber(23),
+	})
+	got, err := expression.Evaluate(ctx)
+
+	assert.Equal(test, types.Nil{}, got)
+	assert.NoError(test, err)
+
+	var numbers []float64
+	for i := 0; i < numberCount; i++ {
+		expression := expressions.NewFunctionCall("random", nil)
+		result, err := expression.Evaluate(ctx)
+
+		assert.IsType(test, float64(0), result)
+		assert.NoError(test, err)
+
+		if number, ok := result.(float64); ok {
+			numbers = append(numbers, number)
+		}
+	}
+
+	rand.Seed(23)
+
+	var wantNumbers []float64
+	for i := 0; i < numberCount; i++ {
+		wantNumber := rand.Float64()
+		wantNumbers = append(wantNumbers, wantNumber)
+	}
+
+	assert.InDeltaSlice(test, wantNumbers, numbers, 1e-6)
 }
