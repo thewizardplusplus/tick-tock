@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"math"
 	"math/rand"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
@@ -235,6 +237,36 @@ var (
 
 			textBytes, _ := json.Marshal(items) // nolint: gosec
 			return types.NewPairFromText(string(textBytes)), nil
+		},
+		"args": func() (*types.Pair, error) {
+			var args []interface{}
+			for _, arg := range os.Args {
+				argPair := types.NewPairFromText(arg)
+				args = append(args, argPair)
+			}
+
+			return types.NewPairFromSlice(args), nil
+		},
+		"env": func(name *types.Pair) (interface{}, error) {
+			nameText, err := name.Text()
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to convert the list to a string")
+			}
+
+			value, ok := os.LookupEnv(nameText)
+			if !ok {
+				return types.Nil{}, nil
+			}
+
+			return types.NewPairFromText(value), nil
+		},
+		"time": func() (float64, error) {
+			timestamp := time.Now().UnixNano()
+			return float64(timestamp) / 1e9, nil
+		},
+		"sleep": func(duration float64) (types.Nil, error) {
+			time.Sleep(time.Duration(duration * 1e9))
+			return types.Nil{}, nil
 		},
 	}
 )

@@ -3,7 +3,9 @@ package builtin
 import (
 	"math"
 	"math/rand"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1056,4 +1058,173 @@ func TestValues_random(test *testing.T) {
 	}
 
 	assert.InDeltaSlice(test, wantNumbers, numbers, 1e-6)
+}
+
+func TestValues_args(test *testing.T) {
+	previousArgs := os.Args
+	defer func() { os.Args = previousArgs }()
+	os.Args = []string{"one", "two"}
+
+	ctx := context.NewDefaultContext()
+	context.SetValues(ctx, Values)
+
+	expression := expressions.NewFunctionCall("args", nil)
+	result, err := expression.Evaluate(ctx)
+
+	wantResult := types.NewPairFromSlice([]interface{}{
+		types.NewPairFromText("one"),
+		types.NewPairFromText("two"),
+	})
+	assert.Equal(test, wantResult, result)
+	assert.NoError(test, err)
+}
+
+func TestValues_env(test *testing.T) {
+	type args struct {
+		name expressions.Expression
+	}
+
+	const envName = "TEST"
+	for _, data := range []struct {
+		name       string
+		prepare    func(test *testing.T)
+		args       args
+		wantResult interface{}
+		wantErr    assert.ErrorAssertionFunc
+	}{
+		{
+			name: "success/existing variable/nonempty value",
+			prepare: func(test *testing.T) {
+				err := os.Setenv(envName, "test")
+				require.NoError(test, err)
+			},
+			args: args{
+				name: expressions.NewString(envName),
+			},
+			wantResult: types.NewPairFromText("test"),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/existing variable/empty value",
+			prepare: func(test *testing.T) {
+				err := os.Setenv(envName, "")
+				require.NoError(test, err)
+			},
+			args: args{
+				name: expressions.NewString(envName),
+			},
+			wantResult: (*types.Pair)(nil),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/nonexistent variable",
+			prepare: func(test *testing.T) {
+				err := os.Unsetenv(envName)
+				require.NoError(test, err)
+			},
+			args: args{
+				name: expressions.NewString(envName),
+			},
+			wantResult: types.Nil{},
+			wantErr:    assert.NoError,
+		},
+		{
+			name:    "error",
+			prepare: func(test *testing.T) {},
+			args: args{
+				name: expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(float64('t')),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('h')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('i')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('s')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('t')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+							},
+						),
+					},
+				),
+			},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			previousValue, wasSet := os.LookupEnv(envName)
+			defer func() {
+				if wasSet {
+					err := os.Setenv(envName, previousValue)
+					require.NoError(test, err)
+				}
+			}()
+			data.prepare(test)
+
+			ctx := context.NewDefaultContext()
+			context.SetValues(ctx, Values)
+
+			expression := expressions.NewFunctionCall("env", []expressions.Expression{data.args.name})
+			gotResult, gotErr := expression.Evaluate(ctx)
+
+			assert.Equal(test, data.wantResult, gotResult)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
+func TestValues_time(test *testing.T) {
+	ctx := context.NewDefaultContext()
+	context.SetValues(ctx, Values)
+
+	expression := expressions.NewFunctionCall("time", nil)
+	result, err := expression.Evaluate(ctx)
+
+	if assert.NoError(test, err) {
+		require.IsType(test, float64(0), result)
+
+		resultTime := time.Unix(0, int64(result.(float64)*1e9))
+		assert.WithinDuration(test, time.Now(), resultTime, time.Minute)
+	}
+}
+
+func TestValues_sleep(test *testing.T) {
+	startTime := time.Now()
+
+	ctx := context.NewDefaultContext()
+	context.SetValues(ctx, Values)
+
+	expression := expressions.NewFunctionCall("sleep", []expressions.Expression{
+		expressions.NewNumber(2.3),
+	})
+	result, err := expression.Evaluate(ctx)
+
+	elapsedTime := int64(time.Since(startTime))
+	assert.GreaterOrEqual(test, elapsedTime, int64(2300*time.Millisecond))
+	assert.Less(test, elapsedTime, int64(time.Minute))
+	assert.Equal(test, types.Nil{}, result)
+	assert.NoError(test, err)
 }
