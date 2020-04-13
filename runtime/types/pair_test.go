@@ -285,6 +285,11 @@ func TestPair_DeepSlice(test *testing.T) {
 			want: []interface{}{"one", []interface{}{"two", "three"}},
 		},
 		{
+			name: "nonempty pair/with the nil type",
+			pair: &Pair{"one", &Pair{Nil{}, &Pair{"three", nil}}},
+			want: []interface{}{"one", nil, "three"},
+		},
+		{
 			name: "empty pair",
 			pair: nil,
 			want: nil,

@@ -597,6 +597,32 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "str/success/*types.Pair/with the nil type",
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(12),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewIdentifier("nil"),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(42),
+										expressions.NewIdentifier(translator.EmptyListConstantName),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: types.NewPairFromText("[12,null,42]"),
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "str/error/JSON marshalling",
 			expression: expressions.NewFunctionCall("str", []expressions.Expression{
 				expressions.NewFunctionCall(

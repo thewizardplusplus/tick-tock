@@ -83,10 +83,12 @@ func (pair *Pair) DeepSlice() []interface{} {
 	}
 
 	var head interface{}
-	if pairHead, ok := pair.Head.(*Pair); ok {
-		head = pairHead.DeepSlice()
-	} else {
-		head = pair.Head
+	switch typedHead := pair.Head.(type) {
+	case Nil:
+	case *Pair:
+		head = typedHead.DeepSlice()
+	default:
+		head = typedHead
 	}
 
 	items := []interface{}{head}
