@@ -1,7 +1,10 @@
 package builtin
 
 import (
+	"bufio"
 	"encoding/json"
+	"io"
+	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
@@ -268,5 +271,38 @@ var (
 			time.Sleep(time.Duration(duration * 1e9))
 			return types.Nil{}, nil
 		},
+		"in": func(count float64) (interface{}, error) {
+			if count != -1 {
+				return readChunk(count)
+			}
+
+			textBytes, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				return types.Nil{}, nil
+			}
+
+			return types.NewPairFromText(string(textBytes)), nil
+		},
+		"inln": func(count float64) (interface{}, error) {
+			if count != -1 {
+				return readChunk(count)
+			}
+
+			textBytes, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
+			if err != nil {
+				return types.Nil{}, nil
+			}
+
+			return types.NewPairFromText(string(textBytes)), nil
+		},
 	}
 )
+
+func readChunk(size float64) (interface{}, error) {
+	chunkBytes := make([]byte, int(size))
+	if _, err := io.ReadFull(os.Stdin, chunkBytes); err != nil {
+		return types.Nil{}, nil
+	}
+
+	return types.NewPairFromText(string(chunkBytes)), nil
+}

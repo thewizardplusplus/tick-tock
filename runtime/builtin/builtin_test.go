@@ -1,6 +1,7 @@
 package builtin
 
 import (
+	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
@@ -1253,4 +1254,182 @@ func TestValues_sleep(test *testing.T) {
 	assert.Less(test, elapsedTime, int64(time.Minute))
 	assert.Equal(test, types.Nil{}, result)
 	assert.NoError(test, err)
+}
+
+func TestValues_input(test *testing.T) {
+	for _, data := range []struct {
+		name       string
+		prepare    func(test *testing.T, tempFile *os.File)
+		expression expressions.Expression
+		wantResult interface{}
+	}{
+		{
+			name: "in/part of symbols/success/part of symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("in", []expressions.Expression{
+				expressions.NewNumber(2),
+			}),
+			wantResult: types.NewPairFromText("te"),
+		},
+		{
+			name: "in/part of symbols/success/all symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("in", []expressions.Expression{
+				expressions.NewNumber(4),
+			}),
+			wantResult: types.NewPairFromText("test"),
+		},
+		{
+			name:    "in/part of symbols/error/without symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {},
+			expression: expressions.NewFunctionCall("in", []expressions.Expression{
+				expressions.NewNumber(2),
+			}),
+			wantResult: types.Nil{},
+		},
+		{
+			name: "in/part of symbols/error/with lack of symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("in", []expressions.Expression{
+				expressions.NewNumber(5),
+			}),
+			wantResult: types.Nil{},
+		},
+		{
+			name: "in/all symbols/with symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("in", []expressions.Expression{
+				expressions.NewNumber(-1),
+			}),
+			wantResult: types.NewPairFromText("test"),
+		},
+		{
+			name:    "in/all symbols/without symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {},
+			expression: expressions.NewFunctionCall("in", []expressions.Expression{
+				expressions.NewNumber(-1),
+			}),
+			wantResult: (*types.Pair)(nil),
+		},
+		{
+			name: "inln/part of symbols/success/part of symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(2),
+			}),
+			wantResult: types.NewPairFromText("te"),
+		},
+		{
+			name: "inln/part of symbols/success/all symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(4),
+			}),
+			wantResult: types.NewPairFromText("test"),
+		},
+		{
+			name:    "inln/part of symbols/error/without symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(2),
+			}),
+			wantResult: types.Nil{},
+		},
+		{
+			name: "inln/part of symbols/error/with lack of symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(5),
+			}),
+			wantResult: types.Nil{},
+		},
+		{
+			name: "inln/all symbols/success/with symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test #1\ntest #2\n")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(-1),
+			}),
+			wantResult: types.NewPairFromText("test #1\n"),
+		},
+		{
+			name: "inln/all symbols/success/without symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("\ntest #2\n")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(-1),
+			}),
+			wantResult: types.NewPairFromText("\n"),
+		},
+		{
+			name: "inln/all symbols/error/with symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(-1),
+			}),
+			wantResult: types.Nil{},
+		},
+		{
+			name:    "inln/all symbols/error/without symbols",
+			prepare: func(test *testing.T, tempFile *os.File) {},
+			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
+				expressions.NewNumber(-1),
+			}),
+			wantResult: types.Nil{},
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			previousStdin := os.Stdin
+			defer func() { os.Stdin = previousStdin }()
+
+			tempFile, err := ioutil.TempFile("", "test.*")
+			require.NoError(test, err)
+			defer os.Remove(tempFile.Name()) // nolint: errcheck
+			defer tempFile.Close()           // nolint: errcheck
+
+			data.prepare(test, tempFile)
+			err = tempFile.Close()
+			require.NoError(test, err)
+
+			tempFile, err = os.Open(tempFile.Name())
+			require.NoError(test, err)
+			os.Stdin = tempFile
+
+			ctx := context.NewDefaultContext()
+			context.SetValues(ctx, Values)
+
+			gotResult, gotErr := data.expression.Evaluate(ctx)
+
+			assert.Equal(test, data.wantResult, gotResult)
+			assert.NoError(test, gotErr)
+		})
+	}
 }
