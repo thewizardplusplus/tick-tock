@@ -445,7 +445,7 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
-			name: "num/success",
+			name: "num/success/correct number",
 			expression: expressions.NewFunctionCall("num", []expressions.Expression{
 				expressions.NewString("23"),
 			}),
@@ -453,7 +453,15 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "num/error/list conversion",
+			name: "num/success/incorrect number",
+			expression: expressions.NewFunctionCall("num", []expressions.Expression{
+				expressions.NewString("test"),
+			}),
+			wantResult: types.Nil{},
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "num/error",
 			expression: expressions.NewFunctionCall("num", []expressions.Expression{
 				expressions.NewFunctionCall(
 					translator.ListConstructionFunctionName,
@@ -492,14 +500,6 @@ func TestValues(test *testing.T) {
 						),
 					},
 				),
-			}),
-			wantResult: nil,
-			wantErr:    assert.Error,
-		},
-		{
-			name: "num/error/string conversion",
-			expression: expressions.NewFunctionCall("num", []expressions.Expression{
-				expressions.NewString("test"),
 			}),
 			wantResult: nil,
 			wantErr:    assert.Error,

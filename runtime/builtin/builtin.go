@@ -169,15 +169,15 @@ var (
 
 			return pair.Tail, nil
 		},
-		"num": func(pair *types.Pair) (float64, error) {
+		"num": func(pair *types.Pair) (interface{}, error) {
 			text, err := pair.Text()
 			if err != nil {
-				return 0, errors.Wrap(err, "unable to convert the list to a string")
+				return nil, errors.Wrap(err, "unable to convert the list to a string")
 			}
 
 			number, err := strconv.ParseFloat(text, 64)
 			if err != nil {
-				return 0, errors.Wrap(err, "unable to convert the string to a number")
+				return types.Nil{}, nil
 			}
 
 			return number, nil
