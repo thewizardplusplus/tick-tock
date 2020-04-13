@@ -3,6 +3,7 @@ package builtin
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"math"
@@ -295,6 +296,18 @@ var (
 
 			return types.NewPairFromText(string(textBytes)), nil
 		},
+		"out": func(text *types.Pair) (types.Nil, error) {
+			return print(os.Stdout, text, false)
+		},
+		"outln": func(text *types.Pair) (types.Nil, error) {
+			return print(os.Stdout, text, true)
+		},
+		"err": func(text *types.Pair) (types.Nil, error) {
+			return print(os.Stderr, text, false)
+		},
+		"errln": func(text *types.Pair) (types.Nil, error) {
+			return print(os.Stderr, text, true)
+		},
 	}
 )
 
@@ -305,4 +318,18 @@ func readChunk(size float64) (interface{}, error) {
 	}
 
 	return types.NewPairFromText(string(chunkBytes)), nil
+}
+
+func print(writer io.Writer, text *types.Pair, newLine bool) (types.Nil, error) {
+	textText, err := text.Text()
+	if err != nil {
+		return types.Nil{}, errors.Wrap(err, "unable to convert the list to a string")
+	}
+
+	fmt.Fprint(writer, textText) // nolint: errcheck
+	if newLine {
+		fmt.Fprintln(writer) // nolint: errcheck
+	}
+
+	return types.Nil{}, nil
 }

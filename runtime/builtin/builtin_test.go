@@ -1433,3 +1433,265 @@ func TestValues_input(test *testing.T) {
 		})
 	}
 }
+
+func TestValues_output(test *testing.T) {
+	for _, data := range []struct {
+		name       string
+		prepare    func(test *testing.T, tempFile *os.File)
+		expression expressions.Expression
+		wantResult interface{}
+		wantOutput string
+		wantErr    assert.ErrorAssertionFunc
+	}{
+		{
+			name:    "out/success",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stdout = tempFile },
+			expression: expressions.NewFunctionCall("out", []expressions.Expression{
+				expressions.NewString("test"),
+			}),
+			wantResult: types.Nil{},
+			wantOutput: "test",
+			wantErr:    assert.NoError,
+		},
+		{
+			name:    "out/error",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stdout = tempFile },
+			expression: expressions.NewFunctionCall("out", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(float64('t')),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('h')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('i')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('s')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('t')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: nil,
+			wantOutput: "",
+			wantErr:    assert.Error,
+		},
+		{
+			name:    "outln/success",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stdout = tempFile },
+			expression: expressions.NewFunctionCall("outln", []expressions.Expression{
+				expressions.NewString("test"),
+			}),
+			wantResult: types.Nil{},
+			wantOutput: "test\n",
+			wantErr:    assert.NoError,
+		},
+		{
+			name:    "outln/error",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stdout = tempFile },
+			expression: expressions.NewFunctionCall("outln", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(float64('t')),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('h')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('i')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('s')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('t')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: nil,
+			wantOutput: "",
+			wantErr:    assert.Error,
+		},
+		{
+			name:    "err/success",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stderr = tempFile },
+			expression: expressions.NewFunctionCall("err", []expressions.Expression{
+				expressions.NewString("test"),
+			}),
+			wantResult: types.Nil{},
+			wantOutput: "test",
+			wantErr:    assert.NoError,
+		},
+		{
+			name:    "err/error",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stderr = tempFile },
+			expression: expressions.NewFunctionCall("err", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(float64('t')),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('h')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('i')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('s')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('t')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: nil,
+			wantOutput: "",
+			wantErr:    assert.Error,
+		},
+		{
+			name:    "errln/success",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stderr = tempFile },
+			expression: expressions.NewFunctionCall("errln", []expressions.Expression{
+				expressions.NewString("test"),
+			}),
+			wantResult: types.Nil{},
+			wantOutput: "test\n",
+			wantErr:    assert.NoError,
+		},
+		{
+			name:    "errln/error",
+			prepare: func(test *testing.T, tempFile *os.File) { os.Stderr = tempFile },
+			expression: expressions.NewFunctionCall("errln", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(float64('t')),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('h')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('i')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(float64('s')),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('t')),
+												expressions.NewIdentifier(translator.EmptyListConstantName),
+											},
+										),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: nil,
+			wantOutput: "",
+			wantErr:    assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			previousStdout, previousStderr := os.Stdout, os.Stderr
+			defer func() { os.Stdout, os.Stderr = previousStdout, previousStderr }()
+
+			tempFile, err := ioutil.TempFile("", "test.*")
+			require.NoError(test, err)
+			defer os.Remove(tempFile.Name()) // nolint: errcheck
+			defer tempFile.Close()           // nolint: errcheck
+			data.prepare(test, tempFile)
+
+			ctx := context.NewDefaultContext()
+			context.SetValues(ctx, Values)
+
+			gotResult, gotErr := data.expression.Evaluate(ctx)
+
+			err = tempFile.Close()
+			require.NoError(test, err)
+
+			gotOutputBytes, err := ioutil.ReadFile(tempFile.Name())
+			require.NoError(test, err)
+
+			assert.Equal(test, data.wantResult, gotResult)
+			assert.Equal(test, data.wantOutput, string(gotOutputBytes))
+			data.wantErr(test, gotErr)
+		})
+	}
+}
