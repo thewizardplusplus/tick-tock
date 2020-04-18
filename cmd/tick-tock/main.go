@@ -11,9 +11,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/interpreter"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/builtin"
-	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/translator"
 )
 
 func main() {
@@ -34,14 +32,8 @@ func main() {
 
 	var waiter sync.WaitGroup
 	if err := interpreter.Interpret(ctx, options, interpreter.Dependencies{
-		Reader: interpreter.ReaderDependencies{DefaultReader: os.Stdin, FileSystem: afero.NewOsFs()},
-		Translator: translator.Dependencies{
-			Commands: commands.Dependencies{
-				OutWriter: os.Stdout,
-				Sleep:     commands.SleepDependencies{Randomizer: rand.Float64, Sleeper: time.Sleep},
-			},
-			Runtime: runtime.Dependencies{Waiter: &waiter, ErrorHandler: errorHandler},
-		},
+		Reader:  interpreter.ReaderDependencies{DefaultReader: os.Stdin, FileSystem: afero.NewOsFs()},
+		Runtime: runtime.Dependencies{Waiter: &waiter, ErrorHandler: errorHandler},
 	}); err != nil {
 		errorHandler.HandleError(err)
 	}
