@@ -1,7 +1,6 @@
 package translator
 
 import (
-	"io"
 	"reflect"
 	"testing"
 	"unsafe"
@@ -9,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/internal/tests"
-	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
@@ -28,8 +26,11 @@ func TestTranslate(test *testing.T) {
 	for _, testData := range []struct {
 		name           string
 		args           args
-		makeWantActors func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup
-		wantErr        assert.ErrorAssertionFunc
+		makeWantActors func(
+			options Options,
+			dependencies runtime.Dependencies,
+		) runtime.ConcurrentActorGroup
+		wantErr assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with actors",
@@ -42,7 +43,10 @@ func TestTranslate(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(
+				options Options,
+				dependencies runtime.Dependencies,
+			) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
 					runtime.StateGroup{
 						options.InitialState: runtime.MessageGroup{},
@@ -58,8 +62,8 @@ func TestTranslate(test *testing.T) {
 					options.InitialState,
 				)
 				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies.Runtime),
-					runtime.NewConcurrentActor(actorTwo, options.InboxSize, dependencies.Runtime),
+					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies),
+					runtime.NewConcurrentActor(actorTwo, options.InboxSize, dependencies),
 				}
 			},
 			wantErr: assert.NoError,
@@ -70,7 +74,10 @@ func TestTranslate(test *testing.T) {
 				makeActors:          func(options Options) []*parser.Actor { return nil },
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(
+				options Options,
+				dependencies runtime.Dependencies,
+			) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.NoError,
@@ -113,7 +120,10 @@ func TestTranslate(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(
+				options Options,
+				dependencies runtime.Dependencies,
+			) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
 					runtime.StateGroup{
 						options.InitialState: runtime.MessageGroup{
@@ -125,7 +135,7 @@ func TestTranslate(test *testing.T) {
 					options.InitialState,
 				)
 				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies.Runtime),
+					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies),
 				}
 			},
 			wantErr: assert.NoError,
@@ -138,7 +148,10 @@ func TestTranslate(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(
+				options Options,
+				dependencies runtime.Dependencies,
+			) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.Error,
@@ -154,7 +167,10 @@ func TestTranslate(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(
+				options Options,
+				dependencies runtime.Dependencies,
+			) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.Error,
@@ -197,7 +213,10 @@ func TestTranslate(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantActors: func(options Options, dependencies Dependencies) runtime.ConcurrentActorGroup {
+			makeWantActors: func(
+				options Options,
+				dependencies runtime.Dependencies,
+			) runtime.ConcurrentActorGroup {
 				return nil
 			},
 			wantErr: assert.Error,
@@ -210,21 +229,9 @@ func TestTranslate(test *testing.T) {
 			}
 
 			options := Options{tests.BufferedInbox, "__initialization__"}
-			outWriter := new(testsmocks.Writer)
-			randomizer := new(testsmocks.Randomizer)
-			sleeper := new(testsmocks.Sleeper)
 			waiter := new(waitermocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
-			dependencies := Dependencies{
-				Commands: commands.Dependencies{
-					OutWriter: outWriter,
-					Sleep: commands.SleepDependencies{
-						Randomizer: randomizer.Randomize,
-						Sleeper:    sleeper.Sleep,
-					},
-				},
-				Runtime: runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler},
-			}
+			dependencies := runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler}
 			gotActors, err := Translate(
 				testData.args.makeActors(options),
 				testData.args.declaredIdentifiers,
@@ -232,7 +239,7 @@ func TestTranslate(test *testing.T) {
 				dependencies,
 			)
 
-			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper, waiter, errorHandler)
+			mock.AssertExpectationsForObjects(test, waiter, errorHandler)
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(
 				test,
@@ -251,10 +258,10 @@ func TestTranslateStates(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name           string
-		args           args
-		makeWantStates func(outWriter io.Writer) runtime.StateGroup
-		wantErr        assert.ErrorAssertionFunc
+		name       string
+		args       args
+		wantStates runtime.StateGroup
+		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with nonempty states",
@@ -265,11 +272,9 @@ func TestTranslateStates(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
-				return runtime.StateGroup{
-					"state_0": runtime.MessageGroup{"message_0": nil, "message_1": nil},
-					"state_1": runtime.MessageGroup{"message_2": nil, "message_3": nil},
-				}
+			wantStates: runtime.StateGroup{
+				"state_0": runtime.MessageGroup{"message_0": nil, "message_1": nil},
+				"state_1": runtime.MessageGroup{"message_2": nil, "message_3": nil},
 			},
 			wantErr: assert.NoError,
 		},
@@ -279,8 +284,9 @@ func TestTranslateStates(test *testing.T) {
 				states:              []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
-				return runtime.StateGroup{"state_0": runtime.MessageGroup{}, "state_1": runtime.MessageGroup{}}
+			wantStates: runtime.StateGroup{
+				"state_0": runtime.MessageGroup{},
+				"state_1": runtime.MessageGroup{},
 			},
 			wantErr: assert.NoError,
 		},
@@ -316,14 +322,12 @@ func TestTranslateStates(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup {
-				return runtime.StateGroup{
-					"state_0": runtime.MessageGroup{
-						"message_0": runtime.CommandGroup{
-							commands.NewExpressionCommand(expressions.NewIdentifier("test")),
-						},
+			wantStates: runtime.StateGroup{
+				"state_0": runtime.MessageGroup{
+					"message_0": runtime.CommandGroup{
+						commands.NewExpressionCommand(expressions.NewIdentifier("test")),
 					},
-				}
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -333,8 +337,8 @@ func TestTranslateStates(test *testing.T) {
 				states:              nil,
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
-			wantErr:        assert.Error,
+			wantStates: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "error with duplicate states",
@@ -342,8 +346,8 @@ func TestTranslateStates(test *testing.T) {
 				states:              []*parser.State{{Name: "test"}, {Name: "test"}},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
-			wantErr:        assert.Error,
+			wantStates: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "error with messages translation",
@@ -354,8 +358,8 @@ func TestTranslateStates(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
-			wantErr:        assert.Error,
+			wantStates: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "error with an unknown state",
@@ -383,8 +387,8 @@ func TestTranslateStates(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
-			wantErr:        assert.Error,
+			wantStates: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "error with the expression",
@@ -418,8 +422,8 @@ func TestTranslateStates(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantStates: func(outWriter io.Writer) runtime.StateGroup { return nil },
-			wantErr:        assert.Error,
+			wantStates: nil,
+			wantErr:    assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
@@ -428,22 +432,10 @@ func TestTranslateStates(test *testing.T) {
 				originDeclaredIdentifiers[identifier] = struct{}{}
 			}
 
-			outWriter := new(testsmocks.Writer)
-			randomizer := new(testsmocks.Randomizer)
-			sleeper := new(testsmocks.Sleeper)
-			dependencies := commands.Dependencies{
-				OutWriter: outWriter,
-				Sleep: commands.SleepDependencies{
-					Randomizer: randomizer.Randomize,
-					Sleeper:    sleeper.Sleep,
-				},
-			}
-			gotStates, err :=
-				translateStates(testData.args.states, testData.args.declaredIdentifiers, dependencies)
+			gotStates, err := translateStates(testData.args.states, testData.args.declaredIdentifiers)
 
-			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
-			assert.Equal(test, testData.makeWantStates(outWriter), gotStates)
+			assert.Equal(test, testData.wantStates, gotStates)
 			testData.wantErr(test, err)
 		})
 	}
@@ -456,11 +448,11 @@ func TestTranslateMessages(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name             string
-		args             args
-		makeWantMessages func(outWriter io.Writer) runtime.MessageGroup
-		wantStates       settedStateGroup
-		wantErr          assert.ErrorAssertionFunc
+		name         string
+		args         args
+		wantMessages runtime.MessageGroup
+		wantStates   settedStateGroup
+		wantErr      assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with nonempty messages (without set commands)",
@@ -483,17 +475,15 @@ func TestTranslateMessages(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
-				return runtime.MessageGroup{
-					"message_0": runtime.CommandGroup{
-						commands.NewSendCommand("command_0"),
-						commands.NewSendCommand("command_1"),
-					},
-					"message_1": runtime.CommandGroup{
-						commands.NewSendCommand("command_2"),
-						commands.NewSendCommand("command_3"),
-					},
-				}
+			wantMessages: runtime.MessageGroup{
+				"message_0": runtime.CommandGroup{
+					commands.NewSendCommand("command_0"),
+					commands.NewSendCommand("command_1"),
+				},
+				"message_1": runtime.CommandGroup{
+					commands.NewSendCommand("command_2"),
+					commands.NewSendCommand("command_3"),
+				},
 			},
 			wantStates: make(settedStateGroup),
 			wantErr:    assert.NoError,
@@ -519,17 +509,15 @@ func TestTranslateMessages(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
-				return runtime.MessageGroup{
-					"message_0": runtime.CommandGroup{
-						commands.NewSendCommand("command_0"),
-						commands.NewSetCommand("command_1"),
-					},
-					"message_1": runtime.CommandGroup{
-						commands.NewSendCommand("command_2"),
-						commands.NewSetCommand("command_3"),
-					},
-				}
+			wantMessages: runtime.MessageGroup{
+				"message_0": runtime.CommandGroup{
+					commands.NewSendCommand("command_0"),
+					commands.NewSetCommand("command_1"),
+				},
+				"message_1": runtime.CommandGroup{
+					commands.NewSendCommand("command_2"),
+					commands.NewSetCommand("command_3"),
+				},
 			},
 			wantStates: settedStateGroup{"message_0": "command_1", "message_1": "command_3"},
 			wantErr:    assert.NoError,
@@ -540,11 +528,9 @@ func TestTranslateMessages(test *testing.T) {
 				messages:            []*parser.Message{{Name: "message_0"}, {Name: "message_1"}},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
-				return runtime.MessageGroup{"message_0": nil, "message_1": nil}
-			},
-			wantStates: make(settedStateGroup),
-			wantErr:    assert.NoError,
+			wantMessages: runtime.MessageGroup{"message_0": nil, "message_1": nil},
+			wantStates:   make(settedStateGroup),
+			wantErr:      assert.NoError,
 		},
 		{
 			name: "success without messages",
@@ -552,11 +538,9 @@ func TestTranslateMessages(test *testing.T) {
 				messages:            nil,
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
-				return runtime.MessageGroup{}
-			},
-			wantStates: make(settedStateGroup),
-			wantErr:    assert.NoError,
+			wantMessages: runtime.MessageGroup{},
+			wantStates:   make(settedStateGroup),
+			wantErr:      assert.NoError,
 		},
 		{
 			name: "success with the expression",
@@ -585,12 +569,10 @@ func TestTranslateMessages(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup {
-				return runtime.MessageGroup{
-					"message_0": runtime.CommandGroup{
-						commands.NewExpressionCommand(expressions.NewIdentifier("test")),
-					},
-				}
+			wantMessages: runtime.MessageGroup{
+				"message_0": runtime.CommandGroup{
+					commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+				},
 			},
 			wantStates: make(settedStateGroup),
 			wantErr:    assert.NoError,
@@ -601,9 +583,9 @@ func TestTranslateMessages(test *testing.T) {
 				messages:            []*parser.Message{{Name: "test"}, {Name: "test"}},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup { return nil },
-			wantStates:       nil,
-			wantErr:          assert.Error,
+			wantMessages: nil,
+			wantStates:   nil,
+			wantErr:      assert.Error,
 		},
 		{
 			name: "error with commands translation",
@@ -628,9 +610,9 @@ func TestTranslateMessages(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup { return nil },
-			wantStates:       nil,
-			wantErr:          assert.Error,
+			wantMessages: nil,
+			wantStates:   nil,
+			wantErr:      assert.Error,
 		},
 		{
 			name: "error with the expression",
@@ -659,9 +641,9 @@ func TestTranslateMessages(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantMessages: func(outWriter io.Writer) runtime.MessageGroup { return nil },
-			wantStates:       nil,
-			wantErr:          assert.Error,
+			wantMessages: nil,
+			wantStates:   nil,
+			wantErr:      assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
@@ -670,22 +652,11 @@ func TestTranslateMessages(test *testing.T) {
 				originDeclaredIdentifiers[identifier] = struct{}{}
 			}
 
-			outWriter := new(testsmocks.Writer)
-			randomizer := new(testsmocks.Randomizer)
-			sleeper := new(testsmocks.Sleeper)
-			dependencies := commands.Dependencies{
-				OutWriter: outWriter,
-				Sleep: commands.SleepDependencies{
-					Randomizer: randomizer.Randomize,
-					Sleeper:    sleeper.Sleep,
-				},
-			}
 			gotMessages, gotStates, err :=
-				translateMessages(testData.args.messages, testData.args.declaredIdentifiers, dependencies)
+				translateMessages(testData.args.messages, testData.args.declaredIdentifiers)
 
-			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
-			assert.Equal(test, testData.makeWantMessages(outWriter), gotMessages)
+			assert.Equal(test, testData.wantMessages, gotMessages)
 			assert.Equal(test, testData.wantStates, gotStates)
 			testData.wantErr(test, err)
 		})
@@ -699,11 +670,11 @@ func TestTranslateCommands(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name             string
-		args             args
-		makeWantCommands func(outWriter io.Writer) runtime.CommandGroup
-		wantState        string
-		wantErr          assert.ErrorAssertionFunc
+		name         string
+		args         args
+		wantCommands runtime.CommandGroup
+		wantState    string
+		wantErr      assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with commands (without a set command)",
@@ -714,8 +685,9 @@ func TestTranslateCommands(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
-				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSendCommand("two")}
+			wantCommands: runtime.CommandGroup{
+				commands.NewSendCommand("one"),
+				commands.NewSendCommand("two"),
 			},
 			wantErr: assert.NoError,
 		},
@@ -728,8 +700,9 @@ func TestTranslateCommands(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
-				return runtime.CommandGroup{commands.NewSendCommand("one"), commands.NewSetCommand("two")}
+			wantCommands: runtime.CommandGroup{
+				commands.NewSendCommand("one"),
+				commands.NewSetCommand("two"),
 			},
 			wantState: "two",
 			wantErr:   assert.NoError,
@@ -756,8 +729,8 @@ func TestTranslateCommands(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
-				return runtime.CommandGroup{commands.NewExpressionCommand(expressions.NewIdentifier("test"))}
+			wantCommands: runtime.CommandGroup{
+				commands.NewExpressionCommand(expressions.NewIdentifier("test")),
 			},
 			wantState: "",
 			wantErr:   assert.NoError,
@@ -800,11 +773,9 @@ func TestTranslateCommands(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup {
-				return runtime.CommandGroup{
-					commands.NewLetCommand("test2", expressions.NewNumber(23)),
-					commands.NewExpressionCommand(expressions.NewIdentifier("test2")),
-				}
+			wantCommands: runtime.CommandGroup{
+				commands.NewLetCommand("test2", expressions.NewNumber(23)),
+				commands.NewExpressionCommand(expressions.NewIdentifier("test2")),
 			},
 			wantState: "",
 			wantErr:   assert.NoError,
@@ -815,8 +786,8 @@ func TestTranslateCommands(test *testing.T) {
 				commands:            nil,
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
-			wantErr:          assert.NoError,
+			wantCommands: nil,
+			wantErr:      assert.NoError,
 		},
 		{
 			name: "error with expression command translation",
@@ -840,8 +811,8 @@ func TestTranslateCommands(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
-			wantErr:          assert.Error,
+			wantCommands: nil,
+			wantErr:      assert.Error,
 		},
 		{
 			name: "error with a second set command",
@@ -854,8 +825,8 @@ func TestTranslateCommands(test *testing.T) {
 				},
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
-			makeWantCommands: func(outWriter io.Writer) runtime.CommandGroup { return nil },
-			wantErr:          assert.Error,
+			wantCommands: nil,
+			wantErr:      assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
@@ -864,22 +835,11 @@ func TestTranslateCommands(test *testing.T) {
 				originDeclaredIdentifiers[identifier] = struct{}{}
 			}
 
-			outWriter := new(testsmocks.Writer)
-			randomizer := new(testsmocks.Randomizer)
-			sleeper := new(testsmocks.Sleeper)
-			dependencies := commands.Dependencies{
-				OutWriter: outWriter,
-				Sleep: commands.SleepDependencies{
-					Randomizer: randomizer.Randomize,
-					Sleeper:    sleeper.Sleep,
-				},
-			}
 			gotCommands, gotState, err :=
-				translateCommands(testData.args.commands, testData.args.declaredIdentifiers, dependencies)
+				translateCommands(testData.args.commands, testData.args.declaredIdentifiers)
 
-			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
-			assert.Equal(test, testData.makeWantCommands(outWriter), gotCommands)
+			assert.Equal(test, testData.wantCommands, gotCommands)
 			assert.Equal(test, testData.wantState, gotState)
 			testData.wantErr(test, err)
 		})
@@ -896,7 +856,7 @@ func TestTranslateCommand(test *testing.T) {
 		name                    string
 		args                    args
 		wantDeclaredIdentifiers context.ValueNameGroup
-		makeWantCommand         func(outWriter io.Writer) runtime.Command
+		wantCommand             runtime.Command
 		wantState               string
 		wantErr                 assert.ErrorAssertionFunc
 	}{
@@ -922,11 +882,9 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}, "test2": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewLetCommand("test2", expressions.NewNumber(23))
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
+			wantCommand:             commands.NewLetCommand("test2", expressions.NewNumber(23)),
+			wantState:               "",
+			wantErr:                 assert.NoError,
 		},
 		{
 			name: "Command/let/success/existing identifier",
@@ -950,11 +908,9 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewLetCommand("test", expressions.NewNumber(23))
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
+			wantCommand:             commands.NewLetCommand("test", expressions.NewNumber(23)),
+			wantState:               "",
+			wantErr:                 assert.NoError,
 		},
 		{
 			name: "Command/let/error",
@@ -980,7 +936,7 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand:         func(outWriter io.Writer) runtime.Command { return nil },
+			wantCommand:             nil,
 			wantState:               "",
 			wantErr:                 assert.Error,
 		},
@@ -991,11 +947,9 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewSendCommand("test")
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
+			wantCommand:             commands.NewSendCommand("test"),
+			wantState:               "",
+			wantErr:                 assert.NoError,
 		},
 		{
 			name: "Command/set",
@@ -1004,85 +958,9 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewSetCommand("test")
-			},
-			wantState: "test",
-			wantErr:   assert.NoError,
-		},
-		{
-			name: "Command/out/nonempty",
-			args: args{
-				command:             &parser.Command{Out: tests.GetStringAddress("test")},
-				declaredIdentifiers: context.ValueNameGroup{"test": {}},
-			},
-			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewOutCommand("test", outWriter)
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
-		},
-		{
-			name: "Command/out/empty",
-			args: args{
-				command:             &parser.Command{Out: tests.GetStringAddress("")},
-				declaredIdentifiers: context.ValueNameGroup{"test": {}},
-			},
-			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewOutCommand("", outWriter)
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
-		},
-		{
-			name: "Command/sleep/success",
-			args: args{
-				command: &parser.Command{
-					Sleep: &parser.SleepCommand{
-						Minimum: tests.GetNumberAddress(1.2),
-						Maximum: tests.GetNumberAddress(3.4),
-					},
-				},
-				declaredIdentifiers: context.ValueNameGroup{"test": {}},
-			},
-			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				command, _ := commands.NewSleepCommand(1.2, 3.4, commands.SleepDependencies{})
-				return command
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
-		},
-		{
-			name: "Command/sleep/error",
-			args: args{
-				command: &parser.Command{
-					Sleep: &parser.SleepCommand{
-						Minimum: tests.GetNumberAddress(3.4),
-						Maximum: tests.GetNumberAddress(1.2),
-					},
-				},
-				declaredIdentifiers: context.ValueNameGroup{"test": {}},
-			},
-			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand:         func(outWriter io.Writer) runtime.Command { return nil },
-			wantState:               "",
-			wantErr:                 assert.Error,
-		},
-		{
-			name: "Command/exit",
-			args: args{
-				command:             &parser.Command{Exit: true},
-				declaredIdentifiers: context.ValueNameGroup{"test": {}},
-			},
-			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.ExitCommand{}
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
+			wantCommand:             commands.NewSetCommand("test"),
+			wantState:               "test",
+			wantErr:                 assert.NoError,
 		},
 		{
 			name: "Command/expression/success",
@@ -1105,11 +983,9 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand: func(outWriter io.Writer) runtime.Command {
-				return commands.NewExpressionCommand(expressions.NewIdentifier("test"))
-			},
-			wantState: "",
-			wantErr:   assert.NoError,
+			wantCommand:             commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+			wantState:               "",
+			wantErr:                 assert.NoError,
 		},
 		{
 			name: "Command/expression/error",
@@ -1132,32 +1008,17 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: context.ValueNameGroup{"test": {}},
 			},
 			wantDeclaredIdentifiers: context.ValueNameGroup{"test": {}},
-			makeWantCommand:         func(outWriter io.Writer) runtime.Command { return nil },
+			wantCommand:             nil,
 			wantState:               "",
 			wantErr:                 assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			outWriter := new(testsmocks.Writer)
-			randomizer := new(testsmocks.Randomizer)
-			sleeper := new(testsmocks.Sleeper)
-			dependencies := commands.Dependencies{
-				OutWriter: outWriter,
-				Sleep: commands.SleepDependencies{
-					Randomizer: randomizer.Randomize,
-					Sleeper:    sleeper.Sleep,
-				},
-			}
 			gotCommand, gotState, err :=
-				translateCommand(testData.args.command, testData.args.declaredIdentifiers, dependencies)
-			if sleepCommand, ok := gotCommand.(commands.SleepCommand); ok {
-				cleanSleepDependencies(&sleepCommand)
-				gotCommand = sleepCommand
-			}
+				translateCommand(testData.args.command, testData.args.declaredIdentifiers)
 
-			mock.AssertExpectationsForObjects(test, outWriter, randomizer, sleeper)
 			assert.Equal(test, testData.wantDeclaredIdentifiers, testData.args.declaredIdentifiers)
-			assert.Equal(test, testData.makeWantCommand(outWriter), gotCommand)
+			assert.Equal(test, testData.wantCommand, gotCommand)
 			assert.Equal(test, testData.wantState, gotState)
 			testData.wantErr(test, err)
 		})
@@ -1172,11 +1033,6 @@ func cleanInboxes(actors runtime.ConcurrentActorGroup) runtime.ConcurrentActorGr
 	}
 
 	return actors
-}
-
-func cleanSleepDependencies(command *commands.SleepCommand) {
-	fieldAddress := getFieldAddress(reflect.ValueOf(command).Elem(), "dependencies")
-	*(*commands.SleepDependencies)(fieldAddress) = commands.SleepDependencies{}
 }
 
 func getFieldAddress(value reflect.Value, name string) unsafe.Pointer {

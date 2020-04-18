@@ -14,24 +14,18 @@ type Options struct {
 	InitialState string
 }
 
-// Dependencies ...
-type Dependencies struct {
-	Commands commands.Dependencies
-	Runtime  runtime.Dependencies
-}
-
 // Translate ...
 func Translate(
 	actors []*parser.Actor,
 	declaredIdentifiers context.ValueNameGroup,
 	options Options,
-	dependencies Dependencies,
+	dependencies runtime.Dependencies,
 ) (
 	translatedActors runtime.ConcurrentActorGroup,
 	err error,
 ) {
 	for index, actor := range actors {
-		translatedStates, err := translateStates(actor.States, declaredIdentifiers, dependencies.Commands)
+		translatedStates, err := translateStates(actor.States, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the actor #%d", index)
 		}
@@ -44,18 +38,14 @@ func Translate(
 		translatedActors = append(translatedActors, runtime.NewConcurrentActor(
 			translatedActor,
 			options.InboxSize,
-			dependencies.Runtime,
+			dependencies,
 		))
 	}
 
 	return translatedActors, nil
 }
 
-func translateStates(
-	states []*parser.State,
-	declaredIdentifiers context.ValueNameGroup,
-	dependencies commands.Dependencies,
-) (
+func translateStates(states []*parser.State, declaredIdentifiers context.ValueNameGroup) (
 	translatedStates runtime.StateGroup,
 	err error,
 ) {
@@ -70,8 +60,7 @@ func translateStates(
 			return nil, errors.Errorf("duplicate state %s", state.Name)
 		}
 
-		translatedMessages, settedStates, err :=
-			translateMessages(state.Messages, declaredIdentifiers, dependencies)
+		translatedMessages, settedStates, err := translateMessages(state.Messages, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}
@@ -93,11 +82,7 @@ func translateStates(
 
 type settedStateGroup map[string]string
 
-func translateMessages(
-	messages []*parser.Message,
-	declaredIdentifiers context.ValueNameGroup,
-	dependencies commands.Dependencies,
-) (
+func translateMessages(messages []*parser.Message, declaredIdentifiers context.ValueNameGroup) (
 	translatedMessages runtime.MessageGroup,
 	settedStates settedStateGroup,
 	err error,
@@ -109,8 +94,7 @@ func translateMessages(
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, settedState, err :=
-			translateCommands(message.Commands, declaredIdentifiers, dependencies)
+		translatedCommands, settedState, err := translateCommands(message.Commands, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
@@ -124,11 +108,7 @@ func translateMessages(
 	return translatedMessages, settedStates, nil
 }
 
-func translateCommands(
-	commands []*parser.Command,
-	declaredIdentifiers context.ValueNameGroup,
-	dependencies commands.Dependencies,
-) (
+func translateCommands(commands []*parser.Command, declaredIdentifiers context.ValueNameGroup) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
@@ -139,8 +119,7 @@ func translateCommands(
 	}
 
 	for index, command := range commands {
-		translatedCommand, newSettedState, err :=
-			translateCommand(command, localDeclaredIdentifiers, dependencies)
+		translatedCommand, newSettedState, err := translateCommand(command, localDeclaredIdentifiers)
 		if err != nil {
 			return nil, "", errors.Wrapf(err, "unable to translate the command #%d", index)
 		}
@@ -160,11 +139,7 @@ func translateCommands(
 	return translatedCommands, settedState, nil
 }
 
-func translateCommand(
-	command *parser.Command,
-	declaredIdentifiers context.ValueNameGroup,
-	dependencies commands.Dependencies,
-) (
+func translateCommand(command *parser.Command, declaredIdentifiers context.ValueNameGroup) (
 	translatedCommand runtime.Command,
 	settedState string,
 	err error,
@@ -183,18 +158,6 @@ func translateCommand(
 	case command.Set != nil:
 		translatedCommand = commands.NewSetCommand(*command.Set)
 		settedState = *command.Set
-	case command.Out != nil:
-		translatedCommand = commands.NewOutCommand(*command.Out, dependencies.OutWriter)
-	case command.Sleep != nil:
-		if translatedCommand, err = commands.NewSleepCommand(
-			*command.Sleep.Minimum,
-			*command.Sleep.Maximum,
-			dependencies.Sleep,
-		); err != nil {
-			return nil, "", err
-		}
-	case command.Exit:
-		translatedCommand = commands.ExitCommand{}
 	case command.Expression != nil:
 		expression, err2 := translateExpression(command.Expression, declaredIdentifiers)
 		if err2 != nil {
