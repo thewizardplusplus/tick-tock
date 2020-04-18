@@ -24,23 +24,14 @@ type Message struct {
 
 // Command ...
 type Command struct {
-	Let        *LetCommand   `parser:"@@"`
-	Send       *string       `parser:"| \"send\" @Ident"`
-	Set        *string       `parser:"| \"set\" @Ident"`
-	Out        *string       `parser:"| \"out\" ( @String | @RawString )"`
-	Sleep      *SleepCommand `parser:"| @@"`
-	Exit       bool          `parser:"| @\"exit\""`
-	Expression *Expression   `parser:"| @@"`
+	Let        *LetCommand `parser:"@@"`
+	Send       *string     `parser:"| \"send\" @Ident"`
+	Set        *string     `parser:"| \"set\" @Ident"`
+	Expression *Expression `parser:"| @@"`
 }
 
 // LetCommand ...
 type LetCommand struct {
 	Identifier string      `parser:"\"let\" @Ident \"=\""`
 	Expression *Expression `parser:"@@"`
-}
-
-// SleepCommand ...
-type SleepCommand struct {
-	Minimum *float64 `parser:"\"sleep\" ( @Int | @Float )"`
-	Maximum *float64 `parser:"\",\" ( @Int | @Float )"`
 }

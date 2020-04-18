@@ -51,46 +51,6 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Command/out/nonempty/interpreted",
-			args:    args{`out "test"`, new(Command)},
-			wantAST: &Command{Out: tests.GetStringAddress("test")},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/out/nonempty/raw",
-			args:    args{"out `test`", new(Command)},
-			wantAST: &Command{Out: tests.GetStringAddress("test")},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/out/empty",
-			args:    args{`out ""`, new(Command)},
-			wantAST: &Command{Out: tests.GetStringAddress("")},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/sleep/integer",
-			args: args{`sleep 1, 2`, new(Command)},
-			wantAST: &Command{
-				Sleep: &SleepCommand{tests.GetNumberAddress(1), tests.GetNumberAddress(2)},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Command/sleep/floating-point",
-			args: args{`sleep 1.2, 3.4`, new(Command)},
-			wantAST: &Command{
-				Sleep: &SleepCommand{tests.GetNumberAddress(1.2), tests.GetNumberAddress(3.4)},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name:    "Command/exit",
-			args:    args{"exit", new(Command)},
-			wantAST: &Command{Exit: true},
-			wantErr: assert.NoError,
-		},
-		{
 			name: "Command/expression",
 			args: args{"test()", new(Command)},
 			wantAST: &Command{
