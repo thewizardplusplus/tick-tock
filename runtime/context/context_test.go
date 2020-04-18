@@ -63,7 +63,8 @@ func TestDefaultContext_Copy(test *testing.T) {
 	if assert.IsType(test, &context.DefaultContext{}, defaultContextCopy) {
 		assert.NotEqual(
 			test,
-			unsafe.Pointer(defaultContext), unsafe.Pointer(defaultContextCopy.(*context.DefaultContext)),
+			unsafe.Pointer(defaultContext),
+			unsafe.Pointer(defaultContextCopy.(*context.DefaultContext)),
 		)
 	}
 }

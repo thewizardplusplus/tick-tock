@@ -236,14 +236,14 @@ func TestTranslate(test *testing.T) {
 				options,
 				dependencies,
 			)
+			cleanInboxes(gotActors)
+
+			wantActors := testData.makeWantActors(options, dependencies)
+			cleanInboxes(wantActors)
 
 			mock.AssertExpectationsForObjects(test, waiter, errorHandler)
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
-			assert.Equal(
-				test,
-				cleanInboxes(testData.makeWantActors(options, dependencies)),
-				cleanInboxes(gotActors),
-			)
+			assert.Equal(test, wantActors, gotActors)
 			testData.wantErr(test, err)
 		})
 	}
@@ -1014,16 +1014,10 @@ func TestTranslateCommand(test *testing.T) {
 	}
 }
 
-func cleanInboxes(actors runtime.ConcurrentActorGroup) runtime.ConcurrentActorGroup {
-	actorsReflection := reflect.ValueOf(actors)
+func cleanInboxes(actors runtime.ConcurrentActorGroup) {
 	for index := range actors {
-		fieldAddress := getFieldAddress(actorsReflection.Index(index), "inbox")
-		*(*chan string)(fieldAddress) = nil
+		actorPointer := &actors[index]
+		inboxField := reflect.ValueOf(actorPointer).Elem().FieldByName("inbox")
+		*(*chan string)(unsafe.Pointer(inboxField.UnsafeAddr())) = nil
 	}
-
-	return actors
-}
-
-func getFieldAddress(value reflect.Value, name string) unsafe.Pointer {
-	return unsafe.Pointer(value.FieldByName(name).UnsafeAddr())
 }
