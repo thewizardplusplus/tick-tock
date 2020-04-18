@@ -2,7 +2,6 @@ package tests
 
 import (
 	"io"
-	"time"
 
 	"github.com/spf13/afero"
 )
@@ -29,18 +28,6 @@ type FileSystem interface {
 //go:generate mockery -name=File -case=underscore
 type File interface {
 	afero.File
-}
-
-// Randomizer ...
-//go:generate mockery -name=Randomizer -case=underscore
-type Randomizer interface {
-	Randomize() float64
-}
-
-// Sleeper ...
-//go:generate mockery -name=Sleeper -case=underscore
-type Sleeper interface {
-	Sleep(duration time.Duration)
 }
 
 // Exiter ...
