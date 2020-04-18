@@ -10,6 +10,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/internal/options"
 	"github.com/thewizardplusplus/tick-tock/interpreter"
 	"github.com/thewizardplusplus/tick-tock/runtime"
+	"github.com/thewizardplusplus/tick-tock/runtime/builtin"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/translator"
@@ -28,8 +29,11 @@ func main() {
 		errorHandler.HandleError(err)
 	}
 
+	ctx := context.NewDefaultContext()
+	context.SetValues(ctx, builtin.Values)
+
 	var waiter sync.WaitGroup
-	if err := interpreter.Interpret(context.NewDefaultContext(), options, interpreter.Dependencies{
+	if err := interpreter.Interpret(ctx, options, interpreter.Dependencies{
 		Reader: interpreter.ReaderDependencies{DefaultReader: os.Stdin, FileSystem: afero.NewOsFs()},
 		Translator: translator.Dependencies{
 			Commands: commands.Dependencies{
