@@ -5,6 +5,7 @@ import (
 	"testing"
 	"unsafe"
 
+	"github.com/AlekSi/pointer"
 	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -102,7 +103,7 @@ func TestTranslate(test *testing.T) {
 																Multiplication: &parser.Multiplication{
 																	Unary: &parser.Unary{
 																		Accessor: &parser.Accessor{
-																			Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+																			Atom: &parser.Atom{Identifier: pointer.ToString("test")},
 																		},
 																	},
 																},
@@ -195,7 +196,7 @@ func TestTranslate(test *testing.T) {
 																Multiplication: &parser.Multiplication{
 																	Unary: &parser.Unary{
 																		Accessor: &parser.Accessor{
-																			Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+																			Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
 																		},
 																	},
 																},
@@ -304,7 +305,7 @@ func TestTranslateStates(test *testing.T) {
 													Multiplication: &parser.Multiplication{
 														Unary: &parser.Unary{
 															Accessor: &parser.Accessor{
-																Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+																Atom: &parser.Atom{Identifier: pointer.ToString("test")},
 															},
 														},
 													},
@@ -368,15 +369,15 @@ func TestTranslateStates(test *testing.T) {
 							{
 								Name: "message_0",
 								Commands: []*parser.Command{
-									{Send: tests.GetStringAddress("command_0")},
-									{Set: tests.GetStringAddress("state_unknown")},
+									{Send: pointer.ToString("command_0")},
+									{Set: pointer.ToString("state_unknown")},
 								},
 							},
 							{
 								Name: "message_1",
 								Commands: []*parser.Command{
-									{Send: tests.GetStringAddress("command_2")},
-									{Set: tests.GetStringAddress("state_unknown")},
+									{Send: pointer.ToString("command_2")},
+									{Set: pointer.ToString("state_unknown")},
 								},
 							},
 						},
@@ -404,7 +405,7 @@ func TestTranslateStates(test *testing.T) {
 													Multiplication: &parser.Multiplication{
 														Unary: &parser.Unary{
 															Accessor: &parser.Accessor{
-																Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+																Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
 															},
 														},
 													},
@@ -455,15 +456,15 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: tests.GetStringAddress("command_0")},
-							{Send: tests.GetStringAddress("command_1")},
+							{Send: pointer.ToString("command_0")},
+							{Send: pointer.ToString("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: tests.GetStringAddress("command_2")},
-							{Send: tests.GetStringAddress("command_3")},
+							{Send: pointer.ToString("command_2")},
+							{Send: pointer.ToString("command_3")},
 						},
 					},
 				},
@@ -489,15 +490,15 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: tests.GetStringAddress("command_0")},
-							{Set: tests.GetStringAddress("command_1")},
+							{Send: pointer.ToString("command_0")},
+							{Set: pointer.ToString("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: tests.GetStringAddress("command_2")},
-							{Set: tests.GetStringAddress("command_3")},
+							{Send: pointer.ToString("command_2")},
+							{Set: pointer.ToString("command_3")},
 						},
 					},
 				},
@@ -550,7 +551,7 @@ func TestTranslateMessages(test *testing.T) {
 											Multiplication: &parser.Multiplication{
 												Unary: &parser.Unary{
 													Accessor: &parser.Accessor{
-														Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+														Atom: &parser.Atom{Identifier: pointer.ToString("test")},
 													},
 												},
 											},
@@ -588,17 +589,17 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: tests.GetStringAddress("command_0")},
-							{Send: tests.GetStringAddress("command_1")},
+							{Send: pointer.ToString("command_0")},
+							{Send: pointer.ToString("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: tests.GetStringAddress("command_2")},
-							{Set: tests.GetStringAddress("command_3")},
-							{Send: tests.GetStringAddress("command_4")},
-							{Set: tests.GetStringAddress("command_5")},
+							{Send: pointer.ToString("command_2")},
+							{Set: pointer.ToString("command_3")},
+							{Send: pointer.ToString("command_4")},
+							{Set: pointer.ToString("command_5")},
 						},
 					},
 				},
@@ -622,7 +623,7 @@ func TestTranslateMessages(test *testing.T) {
 											Multiplication: &parser.Multiplication{
 												Unary: &parser.Unary{
 													Accessor: &parser.Accessor{
-														Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+														Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
 													},
 												},
 											},
@@ -671,8 +672,8 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success with commands (without a set command)",
 			args: args{
 				commands: []*parser.Command{
-					{Send: tests.GetStringAddress("one")},
-					{Send: tests.GetStringAddress("two")},
+					{Send: pointer.ToString("one")},
+					{Send: pointer.ToString("two")},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
@@ -686,8 +687,8 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success with commands (with a set command)",
 			args: args{
 				commands: []*parser.Command{
-					{Send: tests.GetStringAddress("one")},
-					{Set: tests.GetStringAddress("two")},
+					{Send: pointer.ToString("one")},
+					{Set: pointer.ToString("two")},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
@@ -709,7 +710,7 @@ func TestTranslateCommands(test *testing.T) {
 									Multiplication: &parser.Multiplication{
 										Unary: &parser.Unary{
 											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+												Atom: &parser.Atom{Identifier: pointer.ToString("test")},
 											},
 										},
 									},
@@ -738,7 +739,7 @@ func TestTranslateCommands(test *testing.T) {
 									Addition: &parser.Addition{
 										Multiplication: &parser.Multiplication{
 											Unary: &parser.Unary{
-												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
 											},
 										},
 									},
@@ -753,7 +754,7 @@ func TestTranslateCommands(test *testing.T) {
 									Multiplication: &parser.Multiplication{
 										Unary: &parser.Unary{
 											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: tests.GetStringAddress("test2")},
+												Atom: &parser.Atom{Identifier: pointer.ToString("test2")},
 											},
 										},
 									},
@@ -791,7 +792,7 @@ func TestTranslateCommands(test *testing.T) {
 									Multiplication: &parser.Multiplication{
 										Unary: &parser.Unary{
 											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+												Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
 											},
 										},
 									},
@@ -809,10 +810,10 @@ func TestTranslateCommands(test *testing.T) {
 			name: "error with a second set command",
 			args: args{
 				commands: []*parser.Command{
-					{Send: tests.GetStringAddress("one")},
-					{Set: tests.GetStringAddress("two")},
-					{Send: tests.GetStringAddress("three")},
-					{Set: tests.GetStringAddress("four")},
+					{Send: pointer.ToString("one")},
+					{Set: pointer.ToString("two")},
+					{Send: pointer.ToString("three")},
+					{Set: pointer.ToString("four")},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
@@ -859,7 +860,7 @@ func TestTranslateCommand(test *testing.T) {
 								Addition: &parser.Addition{
 									Multiplication: &parser.Multiplication{
 										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
 										},
 									},
 								},
@@ -885,7 +886,7 @@ func TestTranslateCommand(test *testing.T) {
 								Addition: &parser.Addition{
 									Multiplication: &parser.Multiplication{
 										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: tests.GetNumberAddress(23)}},
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
 										},
 									},
 								},
@@ -912,7 +913,7 @@ func TestTranslateCommand(test *testing.T) {
 									Multiplication: &parser.Multiplication{
 										Unary: &parser.Unary{
 											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+												Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
 											},
 										},
 									},
@@ -931,7 +932,7 @@ func TestTranslateCommand(test *testing.T) {
 		{
 			name: "Command/send",
 			args: args{
-				command:             &parser.Command{Send: tests.GetStringAddress("test")},
+				command:             &parser.Command{Send: pointer.ToString("test")},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
@@ -942,7 +943,7 @@ func TestTranslateCommand(test *testing.T) {
 		{
 			name: "Command/set",
 			args: args{
-				command:             &parser.Command{Set: tests.GetStringAddress("test")},
+				command:             &parser.Command{Set: pointer.ToString("test")},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
@@ -960,7 +961,7 @@ func TestTranslateCommand(test *testing.T) {
 								Multiplication: &parser.Multiplication{
 									Unary: &parser.Unary{
 										Accessor: &parser.Accessor{
-											Atom: &parser.Atom{Identifier: tests.GetStringAddress("test")},
+											Atom: &parser.Atom{Identifier: pointer.ToString("test")},
 										},
 									},
 								},
@@ -985,7 +986,7 @@ func TestTranslateCommand(test *testing.T) {
 								Multiplication: &parser.Multiplication{
 									Unary: &parser.Unary{
 										Accessor: &parser.Accessor{
-											Atom: &parser.Atom{Identifier: tests.GetStringAddress("unknown")},
+											Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
 										},
 									},
 								},

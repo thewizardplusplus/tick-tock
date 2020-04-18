@@ -3,8 +3,8 @@ package parser
 import (
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/stretchr/testify/assert"
-	"github.com/thewizardplusplus/tick-tock/internal/tests"
 )
 
 func TestParseToAST_withProgram(test *testing.T) {
@@ -29,7 +29,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 						ListConstruction: &ListConstruction{
 							Addition: &Addition{
 								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: tests.GetNumberAddress(23)}}},
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
 								},
 							},
 						},
@@ -41,13 +41,13 @@ func TestParseToAST_withProgram(test *testing.T) {
 		{
 			name:    "Command/send",
 			args:    args{"send test", new(Command)},
-			wantAST: &Command{Send: tests.GetStringAddress("test")},
+			wantAST: &Command{Send: pointer.ToString("test")},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Command/set",
 			args:    args{"set test", new(Command)},
-			wantAST: &Command{Set: tests.GetStringAddress("test")},
+			wantAST: &Command{Set: pointer.ToString("test")},
 			wantErr: assert.NoError,
 		},
 		{
@@ -70,11 +70,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 			name: "Message/nonempty",
 			args: args{"message test send one send two;", new(Message)},
 			wantAST: &Message{
-				Name: "test",
-				Commands: []*Command{
-					{Send: tests.GetStringAddress("one")},
-					{Send: tests.GetStringAddress("two")},
-				},
+				Name:     "test",
+				Commands: []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
 			},
 			wantErr: assert.NoError,
 		},
