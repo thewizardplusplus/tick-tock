@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"github.com/thewizardplusplus/tick-tock/parser"
+	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/translator"
 )
@@ -15,8 +16,8 @@ type Options struct {
 
 // Dependencies ...
 type Dependencies struct {
-	Reader     ReaderDependencies
-	Translator translator.Dependencies
+	Reader  ReaderDependencies
+	Runtime runtime.Dependencies
 }
 
 // Interpret ...
@@ -35,7 +36,7 @@ func Interpret(context context.Context, options Options, dependencies Dependenci
 		program.Actors,
 		context.ValuesNames(),
 		options.Translator,
-		dependencies.Translator,
+		dependencies.Runtime,
 	)
 	if err != nil {
 		return err

@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"fmt"
+	"go/types"
 	"io"
 	"testing"
 	"testing/iotest"
@@ -11,7 +12,6 @@ import (
 	"github.com/thewizardplusplus/tick-tock/internal/tests"
 	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
-	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 	runtimecontext "github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
@@ -27,7 +27,6 @@ func TestInterpret(test *testing.T) {
 			context *contextmocks.Context,
 			waiter *waitermocks.Waiter,
 			defaultReader *testsmocks.Reader,
-			outWriter *testsmocks.Writer,
 		)
 		wantErr assert.ErrorAssertionFunc
 	}{
@@ -38,9 +37,9 @@ func TestInterpret(test *testing.T) {
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
-				outWriter *testsmocks.Writer,
 			) {
 				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+				context.On("Value", "test").Return(types.Nil{}, true)
 				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
 				context.On("Copy").Return(context)
@@ -48,17 +47,13 @@ func TestInterpret(test *testing.T) {
 				waiter.On("Add", 1).Return()
 				waiter.On("Done").Return()
 
-				const message = "Hello, world!"
-				outWriter.On("Write", []byte(message)).Return(len(message), nil)
-
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor state %s message %s out "%s";;;`,
+							`actor state %s message %s test;;;`,
 							options.Translator.InitialState,
 							options.InitialMessage,
-							message,
 						))
 					}, io.EOF)
 			},
@@ -71,7 +66,6 @@ func TestInterpret(test *testing.T) {
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
-				outWriter *testsmocks.Writer,
 			) {
 				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
 				context.On("Value", "test").Return(float64(23), true)
@@ -101,7 +95,6 @@ func TestInterpret(test *testing.T) {
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
-				outWriter *testsmocks.Writer,
 			) {
 				defaultReader.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
 			},
@@ -114,7 +107,6 @@ func TestInterpret(test *testing.T) {
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
-				outWriter *testsmocks.Writer,
 			) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
@@ -129,7 +121,6 @@ func TestInterpret(test *testing.T) {
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
-				outWriter *testsmocks.Writer,
 			) {
 				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
 
@@ -148,7 +139,6 @@ func TestInterpret(test *testing.T) {
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
-				outWriter *testsmocks.Writer,
 			) {
 				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
 
@@ -177,25 +167,13 @@ func TestInterpret(test *testing.T) {
 			waiter := new(waitermocks.Waiter)
 			defaultReader := new(testsmocks.Reader)
 			fileSystem := new(testsmocks.FileSystem)
-			outWriter := new(testsmocks.Writer)
-			randomizer := new(testsmocks.Randomizer)
-			sleeper := new(testsmocks.Sleeper)
 			errorHandler := new(runtimemocks.ErrorHandler)
-			testData.initializeDependencies(options, context, waiter, defaultReader, outWriter)
+			testData.initializeDependencies(options, context, waiter, defaultReader)
 
 			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{
-				Reader: ReaderDependencies{defaultReader, fileSystem},
-				Translator: translator.Dependencies{
-					Commands: commands.Dependencies{
-						OutWriter: outWriter,
-						Sleep: commands.SleepDependencies{
-							Randomizer: randomizer.Randomize,
-							Sleeper:    sleeper.Sleep,
-						},
-					},
-					Runtime: runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},
-				},
+				Reader:  ReaderDependencies{defaultReader, fileSystem},
+				Runtime: runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},
 			}
 			err := Interpret(context, options, dependencies)
 			synchronousWaiter.Wait()
@@ -206,9 +184,6 @@ func TestInterpret(test *testing.T) {
 				waiter,
 				defaultReader,
 				fileSystem,
-				outWriter,
-				randomizer,
-				sleeper,
 				errorHandler,
 			)
 			testData.wantErr(test, err)
