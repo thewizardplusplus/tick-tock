@@ -5,6 +5,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"os/exec"
 	"testing"
 	"time"
 
@@ -1254,6 +1255,29 @@ func TestValues_sleep(test *testing.T) {
 	assert.Less(test, elapsedTime, int64(time.Minute))
 	assert.Equal(test, types.Nil{}, result)
 	assert.NoError(test, err)
+}
+
+// based on https://talks.golang.org/2014/testing.slide#23 by Andrew Gerrand
+func TestValues_exit(test *testing.T) {
+	if os.Getenv("EXIT_TEST") == "TRUE" {
+		ctx := context.NewDefaultContext()
+		context.SetValues(ctx, Values)
+
+		expression := expressions.NewFunctionCall("exit", []expressions.Expression{
+			expressions.NewNumber(23),
+		})
+		expression.Evaluate(ctx) // nolint: errcheck
+
+		return
+	}
+
+	command := exec.Command(os.Args[0], "-test.run=TestValues_exit")
+	command.Env = append(os.Environ(), "EXIT_TEST=TRUE")
+
+	err := command.Run()
+
+	assert.IsType(test, (*exec.ExitError)(nil), err)
+	assert.EqualError(test, err, "exit status 23")
 }
 
 func TestValues_input(test *testing.T) {

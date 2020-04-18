@@ -272,6 +272,10 @@ var (
 			time.Sleep(time.Duration(duration * 1e9))
 			return types.Nil{}, nil
 		},
+		"exit": func(exitCode float64) (types.Nil, error) {
+			os.Exit(int(exitCode))
+			return types.Nil{}, nil
+		},
 		"in": func(count float64) (interface{}, error) {
 			if count != -1 {
 				return readChunk(count)
