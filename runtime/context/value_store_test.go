@@ -3,6 +3,7 @@ package context
 import (
 	"testing"
 
+	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -10,17 +11,17 @@ func TestDefaultValueStore_ValuesNames(test *testing.T) {
 	for _, data := range []struct {
 		name  string
 		store DefaultValueStore
-		want  ValueNameGroup
+		want  mapset.Set
 	}{
 		{
 			name:  "with values",
 			store: DefaultValueStore{"one": 1, "two": 2},
-			want:  ValueNameGroup{"one": {}, "two": {}},
+			want:  mapset.NewSet("one", "two"),
 		},
 		{
 			name:  "without values",
 			store: DefaultValueStore{},
-			want:  ValueNameGroup{},
+			want:  mapset.NewSet(),
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {

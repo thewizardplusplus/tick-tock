@@ -1,13 +1,14 @@
 package context
 
-// ValueNameGroup ...
-type ValueNameGroup map[string]struct{}
+import (
+	mapset "github.com/deckarep/golang-set"
+)
 
 // ValueStore ...
 type ValueStore interface {
 	ValueHolder
 
-	ValuesNames() ValueNameGroup
+	ValuesNames() mapset.Set
 	Value(name string) (value interface{}, ok bool)
 }
 
@@ -23,10 +24,10 @@ type CopyableValueStore interface {
 type DefaultValueStore map[string]interface{}
 
 // ValuesNames ...
-func (store DefaultValueStore) ValuesNames() ValueNameGroup {
-	valuesNames := make(ValueNameGroup)
+func (store DefaultValueStore) ValuesNames() mapset.Set {
+	valuesNames := mapset.NewSet()
 	for valueName := range store {
-		valuesNames[valueName] = struct{}{}
+		valuesNames.Add(valueName)
 	}
 
 	return valuesNames

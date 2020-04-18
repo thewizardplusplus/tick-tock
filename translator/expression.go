@@ -1,9 +1,9 @@
 package translator
 
 import (
+	mapset "github.com/deckarep/golang-set"
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/parser"
-	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
@@ -23,7 +23,7 @@ const (
 
 func translateExpression(
 	expression *parser.Expression,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	result, err := translateListConstruction(expression.ListConstruction, declaredIdentifiers)
 	if err != nil {
@@ -35,7 +35,7 @@ func translateExpression(
 
 func translateListConstruction(
 	listConstruction *parser.ListConstruction,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateAddition(listConstruction.Addition, declaredIdentifiers)
 	if err != nil {
@@ -60,7 +60,7 @@ func translateListConstruction(
 
 func translateAddition(
 	addition *parser.Addition,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateMultiplication(addition.Multiplication, declaredIdentifiers)
 	if err != nil {
@@ -90,7 +90,7 @@ func translateAddition(
 
 func translateMultiplication(
 	multiplication *parser.Multiplication,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateUnary(multiplication.Unary, declaredIdentifiers)
 	if err != nil {
@@ -122,7 +122,7 @@ func translateMultiplication(
 
 func translateUnary(
 	unary *parser.Unary,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	if unary.Accessor != nil {
 		expression, err := translateAccessor(unary.Accessor, declaredIdentifiers)
@@ -150,7 +150,7 @@ func translateUnary(
 
 func translateAccessor(
 	accessor *parser.Accessor,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	argumentOne, err := translateAtom(accessor.Atom, declaredIdentifiers)
 	if err != nil {
@@ -174,7 +174,7 @@ func translateAccessor(
 
 func translateAtom(
 	atom *parser.Atom,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expression expressions.Expression, err error) {
 	switch {
 	case atom.Number != nil:
@@ -183,7 +183,7 @@ func translateAtom(
 		expression = expressions.NewString(*atom.String)
 	case atom.Identifier != nil:
 		identifier := *atom.Identifier
-		if _, ok := declaredIdentifiers[identifier]; !ok {
+		if !declaredIdentifiers.Contains(identifier) {
 			return nil, errors.Errorf("unknown identifier %s", identifier)
 		}
 
@@ -210,7 +210,7 @@ func translateAtom(
 
 func translateListDefinition(
 	listDefinition *parser.ListDefinition,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	argumentTwo := expressions.Expression(expressions.NewIdentifier(EmptyListConstantName))
 	for index := len(listDefinition.Items) - 1; index >= 0; index-- {
@@ -230,9 +230,9 @@ func translateListDefinition(
 
 func translateFunctionCall(
 	functionCall *parser.FunctionCall,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	if _, ok := declaredIdentifiers[functionCall.Name]; !ok {
+	if !declaredIdentifiers.Contains(functionCall.Name) {
 		return nil, errors.Errorf("unknown function %s", functionCall.Name)
 	}
 

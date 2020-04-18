@@ -7,12 +7,12 @@ import (
 	"testing"
 	"testing/iotest"
 
+	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/internal/tests"
 	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
-	runtimecontext "github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
@@ -38,7 +38,7 @@ func TestInterpret(test *testing.T) {
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
 			) {
-				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(types.Nil{}, true)
 				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
@@ -67,7 +67,7 @@ func TestInterpret(test *testing.T) {
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
 			) {
-				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(float64(23), true)
 				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
@@ -122,7 +122,7 @@ func TestInterpret(test *testing.T) {
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
 			) {
-				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+				context.On("ValuesNames").Return(mapset.NewSet("test"))
 
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
@@ -140,7 +140,7 @@ func TestInterpret(test *testing.T) {
 				waiter *waitermocks.Waiter,
 				defaultReader *testsmocks.Reader,
 			) {
-				context.On("ValuesNames").Return(runtimecontext.ValueNameGroup{"test": {}})
+				context.On("ValuesNames").Return(mapset.NewSet("test"))
 
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).

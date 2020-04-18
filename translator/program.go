@@ -1,11 +1,11 @@
 package translator
 
 import (
+	mapset "github.com/deckarep/golang-set"
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
-	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
 // Options ...
@@ -17,7 +17,7 @@ type Options struct {
 // Translate ...
 func Translate(
 	actors []*parser.Actor,
-	declaredIdentifiers context.ValueNameGroup,
+	declaredIdentifiers mapset.Set,
 	options Options,
 	dependencies runtime.Dependencies,
 ) (
@@ -45,7 +45,7 @@ func Translate(
 	return translatedActors, nil
 }
 
-func translateStates(states []*parser.State, declaredIdentifiers context.ValueNameGroup) (
+func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 	translatedStates runtime.StateGroup,
 	err error,
 ) {
@@ -82,7 +82,7 @@ func translateStates(states []*parser.State, declaredIdentifiers context.ValueNa
 
 type settedStateGroup map[string]string
 
-func translateMessages(messages []*parser.Message, declaredIdentifiers context.ValueNameGroup) (
+func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Set) (
 	translatedMessages runtime.MessageGroup,
 	settedStates settedStateGroup,
 	err error,
@@ -108,16 +108,12 @@ func translateMessages(messages []*parser.Message, declaredIdentifiers context.V
 	return translatedMessages, settedStates, nil
 }
 
-func translateCommands(commands []*parser.Command, declaredIdentifiers context.ValueNameGroup) (
+func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Set) (
 	translatedCommands runtime.CommandGroup,
 	settedState string,
 	err error,
 ) {
-	localDeclaredIdentifiers := make(context.ValueNameGroup)
-	for identifier := range declaredIdentifiers {
-		localDeclaredIdentifiers[identifier] = struct{}{}
-	}
-
+	localDeclaredIdentifiers := declaredIdentifiers.Clone()
 	for index, command := range commands {
 		translatedCommand, newSettedState, err := translateCommand(command, localDeclaredIdentifiers)
 		if err != nil {
@@ -139,7 +135,7 @@ func translateCommands(commands []*parser.Command, declaredIdentifiers context.V
 	return translatedCommands, settedState, nil
 }
 
-func translateCommand(command *parser.Command, declaredIdentifiers context.ValueNameGroup) (
+func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 	translatedCommand runtime.Command,
 	settedState string,
 	err error,
@@ -151,8 +147,8 @@ func translateCommand(command *parser.Command, declaredIdentifiers context.Value
 			return nil, "", errors.Wrap(err2, "unable to translate the let command")
 		}
 
-		declaredIdentifiers[command.Let.Identifier] = struct{}{}
 		translatedCommand = commands.NewLetCommand(command.Let.Identifier, expression)
+		declaredIdentifiers.Add(command.Let.Identifier)
 	case command.Send != nil:
 		translatedCommand = commands.NewSendCommand(*command.Send)
 	case command.Set != nil:

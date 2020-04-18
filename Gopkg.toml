@@ -27,3 +27,7 @@ required = [
 [[constraint]]
   name = "gopkg.in/alecthomas/kingpin.v2"
   version = "2.2.6"
+
+[[constraint]]
+  name = "github.com/deckarep/golang-set"
+  version = "1.7.1"
