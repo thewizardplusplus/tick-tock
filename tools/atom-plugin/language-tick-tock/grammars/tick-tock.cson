@@ -60,7 +60,7 @@
 
   # built-in functions
   {
-    'match': '\\b(out|sleep|exit)\\b'
+    'match': '\\b(__cons__|__add__|__sub__|__mul__|__div__|__mod__|__neg__|__item__|type|size|floor|ceil|trunc|round|sin|cos|tn|arcsin|arccos|arctn|angle|pow|sqrt|exp|ln|lg|abs|seed|random|head|tail|num|str|strs|strl|args|env|time|sleep|exit|in|inln|out|outln|err|errln)\\b'
     'name': 'support.function.builtin.ticktock'
   }
 
