@@ -52,9 +52,9 @@
     'name': 'keyword.ticktock'
   }
 
-  # language constants
+  # built-in constants
   {
-    'match': '\\b(__initialization__|__initialize__)\\b'
+    'match': '\\b(__initialization__|__initialize__|__empty_list__|nil|nan|inf|pi|e)\\b'
     'name': 'constant.language.ticktock'
   }
 
