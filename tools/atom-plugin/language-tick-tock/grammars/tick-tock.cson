@@ -48,7 +48,7 @@
 
   # keywords
   {
-    'match': '\\b(actor|state|message)\\b'
+    'match': '\\b(actor|state|message|let|send|set)\\b'
     'name': 'keyword.ticktock'
   }
 
@@ -60,7 +60,7 @@
 
   # built-in functions
   {
-    'match': '\\b(let|send|set|out|sleep|exit)\\b'
+    'match': '\\b(out|sleep|exit)\\b'
     'name': 'support.function.builtin.ticktock'
   }
 
