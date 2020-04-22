@@ -18,6 +18,13 @@ import (
 	"github.com/thewizardplusplus/tick-tock/translator"
 )
 
+type lineBreakMode int
+
+const (
+	withoutLineBreak lineBreakMode = iota
+	withLineBreak
+)
+
 // ...
 // nolint: gochecknoglobals
 var (
@@ -301,16 +308,16 @@ var (
 			return types.NewPairFromText(string(textBytes)), nil
 		},
 		"out": func(text *types.Pair) (types.Nil, error) {
-			return print(os.Stdout, text, false)
+			return print(os.Stdout, text, withoutLineBreak)
 		},
 		"outln": func(text *types.Pair) (types.Nil, error) {
-			return print(os.Stdout, text, true)
+			return print(os.Stdout, text, withLineBreak)
 		},
 		"err": func(text *types.Pair) (types.Nil, error) {
-			return print(os.Stderr, text, false)
+			return print(os.Stderr, text, withoutLineBreak)
 		},
 		"errln": func(text *types.Pair) (types.Nil, error) {
-			return print(os.Stderr, text, true)
+			return print(os.Stderr, text, withLineBreak)
 		},
 	}
 )
@@ -324,14 +331,14 @@ func readChunk(size float64) (interface{}, error) {
 	return types.NewPairFromText(string(chunkBytes)), nil
 }
 
-func print(writer io.Writer, text *types.Pair, newLine bool) (types.Nil, error) {
+func print(writer io.Writer, text *types.Pair, mode lineBreakMode) (types.Nil, error) {
 	textAsString, err := text.Text()
 	if err != nil {
 		return types.Nil{}, errors.Wrap(err, "unable to convert the list to a string")
 	}
 
 	fmt.Fprint(writer, textAsString) // nolint: errcheck
-	if newLine {
+	if mode == withLineBreak {
 		fmt.Fprintln(writer) // nolint: errcheck
 	}
 
