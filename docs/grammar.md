@@ -13,17 +13,33 @@ message list = message, {message};
 message = "message", identifier, command list, ";";
 
 command list = command, {command};
-command = send command | set command | out command | exit command;
+command = let command | send command | set command | expression;
+let command = "let", identifier, "=", expression;
 send command = "send", identifier;
 set command = "set", identifier;
-out command = "out", string;
-sleep command = "sleep", number, ",", number;
-exit command = "exit";
 
+expression = list construction;
+list construction = addition, [":", list construction];
+addition = multiplication, [("+" | "-"), addition];
+multiplication = unary, [("*" | "/" | "%"), multiplication];
+unary = ("-", unary) | accessor;
+
+accessor = atom, {list item access};
+list item access = "[", expression, "]";
+
+atom =
+  number
+  | string
+  | list definition
+  | function call
+  | identifier
+  | ("(", expression, ")");
 number = INTEGER NUMBER | FLOATING-POINT NUMBER;
 string = INTERPRETED STRING | RAW STRING;
+list definition = "[", [expression, {",", expression}, [","]], "]";
+function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 identifier = IDENTIFIER - key words;
-key words = "actor" | "state" | "message" | "send" | "set" | "out" | "exit";
+key words = "actor" | "state" | "message" | "let" | "send" | "set";
 
 LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;
