@@ -152,8 +152,8 @@ var (
 		"abs": func(a float64) (float64, error) {
 			return math.Abs(a), nil
 		},
-		"seed": func(a float64) (types.Nil, error) {
-			rand.Seed(int64(a))
+		"seed": func(seed float64) (types.Nil, error) {
+			rand.Seed(int64(seed))
 			return types.Nil{}, nil
 		},
 		"random": func() (float64, error) {
@@ -173,13 +173,13 @@ var (
 
 			return pair.Tail, nil
 		},
-		"num": func(pair *types.Pair) (interface{}, error) {
-			text, err := pair.Text()
+		"num": func(text *types.Pair) (interface{}, error) {
+			textAsString, err := text.Text()
 			if err != nil {
 				return nil, errors.Wrap(err, "unable to convert the list to a string")
 			}
 
-			number, err := strconv.ParseFloat(text, 64)
+			number, err := strconv.ParseFloat(textAsString, 64)
 			if err != nil {
 				return types.Nil{}, nil
 			}
@@ -210,14 +210,14 @@ var (
 
 			return types.NewPairFromText(text), nil
 		},
-		"strs": func(pair *types.Pair) (*types.Pair, error) {
-			text, err := pair.Text()
+		"strs": func(text *types.Pair) (*types.Pair, error) {
+			textAsString, err := text.Text()
 			if err != nil {
 				return nil, errors.Wrap(err, "unable to convert the list to a string")
 			}
 
-			text = strconv.Quote(text)
-			return types.NewPairFromText(text), nil
+			textAsString = strconv.Quote(textAsString)
+			return types.NewPairFromText(textAsString), nil
 		},
 		"strl": func(pair *types.Pair) (*types.Pair, error) {
 			var items []string
@@ -325,12 +325,12 @@ func readChunk(size float64) (interface{}, error) {
 }
 
 func print(writer io.Writer, text *types.Pair, newLine bool) (types.Nil, error) {
-	textText, err := text.Text()
+	textAsString, err := text.Text()
 	if err != nil {
 		return types.Nil{}, errors.Wrap(err, "unable to convert the list to a string")
 	}
 
-	fmt.Fprint(writer, textText) // nolint: errcheck
+	fmt.Fprint(writer, textAsString) // nolint: errcheck
 	if newLine {
 		fmt.Fprintln(writer) // nolint: errcheck
 	}
