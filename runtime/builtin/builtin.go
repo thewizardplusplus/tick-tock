@@ -275,7 +275,7 @@ var (
 			return types.Nil{}, nil
 		},
 		"in": func(count float64) (interface{}, error) {
-			if count != -1 {
+			if count >= 0 {
 				return readChunk(count)
 			}
 
@@ -287,7 +287,7 @@ var (
 			return types.NewPairFromText(string(textBytes)), nil
 		},
 		"inln": func(count float64) (interface{}, error) {
-			if count != -1 {
+			if count >= 0 {
 				return readChunk(count)
 			}
 
