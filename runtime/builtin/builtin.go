@@ -249,15 +249,6 @@ var (
 			textBytes, _ := json.Marshal(items) // nolint: gosec
 			return types.NewPairFromText(string(textBytes)), nil
 		},
-		"args": func() (*types.Pair, error) {
-			var args []interface{}
-			for _, arg := range os.Args {
-				argPair := types.NewPairFromText(arg)
-				args = append(args, argPair)
-			}
-
-			return types.NewPairFromSlice(args), nil
-		},
 		"env": func(name *types.Pair) (interface{}, error) {
 			nameText, err := name.Text()
 			if err != nil {

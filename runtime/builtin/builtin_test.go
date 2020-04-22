@@ -1088,25 +1088,6 @@ func TestValues_random(test *testing.T) {
 	assert.InDeltaSlice(test, wantNumbers, numbers, 1e-6)
 }
 
-func TestValues_args(test *testing.T) {
-	previousArgs := os.Args
-	defer func() { os.Args = previousArgs }()
-	os.Args = []string{"one", "two"}
-
-	ctx := context.NewDefaultContext()
-	context.SetValues(ctx, Values)
-
-	expression := expressions.NewFunctionCall("args", nil)
-	result, err := expression.Evaluate(ctx)
-
-	wantResult := types.NewPairFromSlice([]interface{}{
-		types.NewPairFromText("one"),
-		types.NewPairFromText("two"),
-	})
-	assert.Equal(test, wantResult, result)
-	assert.NoError(test, err)
-}
-
 func TestValues_env(test *testing.T) {
 	type args struct {
 		name expressions.Expression
