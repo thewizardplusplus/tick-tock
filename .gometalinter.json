@@ -3,6 +3,6 @@
   "Test": true,
   "Skip": ["mocks"],
   "EnableAll": true,
-  "Disable": ["dupl", "gocyclo", "unparam"],
+  "Disable": ["dupl", "gocyclo", "unparam", "interfacer"],
   "LineLength": 100
 }
