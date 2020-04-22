@@ -166,7 +166,7 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "key accessor/success",
+			name: "key accessor/index in range",
 			expression: expressions.NewFunctionCall(
 				translator.KeyAccessorFunctionName,
 				[]expressions.Expression{
@@ -196,7 +196,7 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "key accessor/error",
+			name: "key accessor/index out of range",
 			expression: expressions.NewFunctionCall(
 				translator.KeyAccessorFunctionName,
 				[]expressions.Expression{
@@ -222,8 +222,8 @@ func TestValues(test *testing.T) {
 					expressions.NewNumber(23),
 				},
 			),
-			wantResult: nil,
-			wantErr:    assert.Error,
+			wantResult: types.Nil{},
+			wantErr:    assert.NoError,
 		},
 		{
 			name: "type/success/nil",

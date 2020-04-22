@@ -85,7 +85,7 @@ var (
 		translator.KeyAccessorFunctionName: func(pair *types.Pair, index float64) (interface{}, error) {
 			item, ok := pair.Item(index)
 			if !ok {
-				return nil, errors.Errorf("index %g is out of the range", index)
+				return types.Nil{}, nil
 			}
 
 			return item, nil
