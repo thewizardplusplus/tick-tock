@@ -9,8 +9,30 @@ Interpreter of the Tick-tock programming language.
 
 ## Installation
 
+Prepare the directory:
+
 ```
-$ go get github.com/thewizardplusplus/tick-tock/...
+$ mkdir --parents "$(go env GOPATH)/src/github.com/thewizardplusplus/"
+$ cd "$(go env GOPATH)/src/github.com/thewizardplusplus/"
+```
+
+Clone this repository:
+
+```
+$ git clone https://github.com/thewizardplusplus/tick-tock.git
+$ cd tick-tock
+```
+
+Install dependencies with the [dep](https://golang.github.io/dep/) tool:
+
+```
+$ dep ensure -vendor-only
+```
+
+Build the project:
+
+```
+$ go install ./...
 ```
 
 ## Usage
@@ -18,7 +40,7 @@ $ go get github.com/thewizardplusplus/tick-tock/...
 ```
 $ tick-tock -v | --version
 $ tick-tock -h | --help
-$ tick-tock [-i SIZE | --inbox SIZE] [<filename>]
+$ tick-tock [options] [<filename>]
 ```
 
 Options:
