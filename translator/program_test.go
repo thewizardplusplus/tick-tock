@@ -99,11 +99,13 @@ func TestTranslate(test *testing.T) {
 												{
 													Expression: &parser.Expression{
 														ListConstruction: &parser.ListConstruction{
-															Addition: &parser.Addition{
-																Multiplication: &parser.Multiplication{
-																	Unary: &parser.Unary{
-																		Accessor: &parser.Accessor{
-																			Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+															Comparison: &parser.Comparison{
+																Addition: &parser.Addition{
+																	Multiplication: &parser.Multiplication{
+																		Unary: &parser.Unary{
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+																			},
 																		},
 																	},
 																},
@@ -192,11 +194,13 @@ func TestTranslate(test *testing.T) {
 												{
 													Expression: &parser.Expression{
 														ListConstruction: &parser.ListConstruction{
-															Addition: &parser.Addition{
-																Multiplication: &parser.Multiplication{
-																	Unary: &parser.Unary{
-																		Accessor: &parser.Accessor{
-																			Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+															Comparison: &parser.Comparison{
+																Addition: &parser.Addition{
+																	Multiplication: &parser.Multiplication{
+																		Unary: &parser.Unary{
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+																			},
 																		},
 																	},
 																},
@@ -301,11 +305,13 @@ func TestTranslateStates(test *testing.T) {
 									{
 										Expression: &parser.Expression{
 											ListConstruction: &parser.ListConstruction{
-												Addition: &parser.Addition{
-													Multiplication: &parser.Multiplication{
-														Unary: &parser.Unary{
-															Accessor: &parser.Accessor{
-																Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{
+																	Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+																},
 															},
 														},
 													},
@@ -401,11 +407,13 @@ func TestTranslateStates(test *testing.T) {
 									{
 										Expression: &parser.Expression{
 											ListConstruction: &parser.ListConstruction{
-												Addition: &parser.Addition{
-													Multiplication: &parser.Multiplication{
-														Unary: &parser.Unary{
-															Accessor: &parser.Accessor{
-																Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{
+																	Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+																},
 															},
 														},
 													},
@@ -547,11 +555,13 @@ func TestTranslateMessages(test *testing.T) {
 							{
 								Expression: &parser.Expression{
 									ListConstruction: &parser.ListConstruction{
-										Addition: &parser.Addition{
-											Multiplication: &parser.Multiplication{
-												Unary: &parser.Unary{
-													Accessor: &parser.Accessor{
-														Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+										Comparison: &parser.Comparison{
+											Addition: &parser.Addition{
+												Multiplication: &parser.Multiplication{
+													Unary: &parser.Unary{
+														Accessor: &parser.Accessor{
+															Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+														},
 													},
 												},
 											},
@@ -619,11 +629,13 @@ func TestTranslateMessages(test *testing.T) {
 							{
 								Expression: &parser.Expression{
 									ListConstruction: &parser.ListConstruction{
-										Addition: &parser.Addition{
-											Multiplication: &parser.Multiplication{
-												Unary: &parser.Unary{
-													Accessor: &parser.Accessor{
-														Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+										Comparison: &parser.Comparison{
+											Addition: &parser.Addition{
+												Multiplication: &parser.Multiplication{
+													Unary: &parser.Unary{
+														Accessor: &parser.Accessor{
+															Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+														},
 													},
 												},
 											},
@@ -706,11 +718,13 @@ func TestTranslateCommands(test *testing.T) {
 					{
 						Expression: &parser.Expression{
 							ListConstruction: &parser.ListConstruction{
-								Addition: &parser.Addition{
-									Multiplication: &parser.Multiplication{
-										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{
+													Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+												},
 											},
 										},
 									},
@@ -736,10 +750,12 @@ func TestTranslateCommands(test *testing.T) {
 							Identifier: "test2",
 							Expression: &parser.Expression{
 								ListConstruction: &parser.ListConstruction{
-									Addition: &parser.Addition{
-										Multiplication: &parser.Multiplication{
-											Unary: &parser.Unary{
-												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+									Comparison: &parser.Comparison{
+										Addition: &parser.Addition{
+											Multiplication: &parser.Multiplication{
+												Unary: &parser.Unary{
+													Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+												},
 											},
 										},
 									},
@@ -750,11 +766,13 @@ func TestTranslateCommands(test *testing.T) {
 					{
 						Expression: &parser.Expression{
 							ListConstruction: &parser.ListConstruction{
-								Addition: &parser.Addition{
-									Multiplication: &parser.Multiplication{
-										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: pointer.ToString("test2")},
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{
+													Atom: &parser.Atom{Identifier: pointer.ToString("test2")},
+												},
 											},
 										},
 									},
@@ -788,11 +806,13 @@ func TestTranslateCommands(test *testing.T) {
 					{
 						Expression: &parser.Expression{
 							ListConstruction: &parser.ListConstruction{
-								Addition: &parser.Addition{
-									Multiplication: &parser.Multiplication{
-										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{
+													Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+												},
 											},
 										},
 									},
@@ -857,10 +877,12 @@ func TestTranslateCommand(test *testing.T) {
 						Identifier: "test2",
 						Expression: &parser.Expression{
 							ListConstruction: &parser.ListConstruction{
-								Addition: &parser.Addition{
-									Multiplication: &parser.Multiplication{
-										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+											},
 										},
 									},
 								},
@@ -883,10 +905,12 @@ func TestTranslateCommand(test *testing.T) {
 						Identifier: "test",
 						Expression: &parser.Expression{
 							ListConstruction: &parser.ListConstruction{
-								Addition: &parser.Addition{
-									Multiplication: &parser.Multiplication{
-										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+											},
 										},
 									},
 								},
@@ -909,11 +933,13 @@ func TestTranslateCommand(test *testing.T) {
 						Identifier: "test2",
 						Expression: &parser.Expression{
 							ListConstruction: &parser.ListConstruction{
-								Addition: &parser.Addition{
-									Multiplication: &parser.Multiplication{
-										Unary: &parser.Unary{
-											Accessor: &parser.Accessor{
-												Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{
+													Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+												},
 											},
 										},
 									},
@@ -957,11 +983,13 @@ func TestTranslateCommand(test *testing.T) {
 				command: &parser.Command{
 					Expression: &parser.Expression{
 						ListConstruction: &parser.ListConstruction{
-							Addition: &parser.Addition{
-								Multiplication: &parser.Multiplication{
-									Unary: &parser.Unary{
-										Accessor: &parser.Accessor{
-											Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{
+												Atom: &parser.Atom{Identifier: pointer.ToString("test")},
+											},
 										},
 									},
 								},
@@ -982,11 +1010,13 @@ func TestTranslateCommand(test *testing.T) {
 				command: &parser.Command{
 					Expression: &parser.Expression{
 						ListConstruction: &parser.ListConstruction{
-							Addition: &parser.Addition{
-								Multiplication: &parser.Multiplication{
-									Unary: &parser.Unary{
-										Accessor: &parser.Accessor{
-											Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{
+												Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+											},
 										},
 									},
 								},

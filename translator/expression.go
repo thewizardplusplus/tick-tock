@@ -12,6 +12,10 @@ const (
 	EmptyListConstantName = "__empty_list__"
 
 	ListConstructionFunctionName = "__cons__"
+	LessFunctionName             = "__lt__"
+	LessOrEqualFunctionName      = "__le__"
+	GreatFunctionName            = "__gt__"
+	GreatOrEqualFunctionName     = "__ge__"
 	AdditionFunctionName         = "__add__"
 	SubtractionFunctionName      = "__sub__"
 	MultiplicationFunctionName   = "__mul__"
@@ -37,9 +41,9 @@ func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateAddition(listConstruction.Addition, declaredIdentifiers)
+	argumentOne, err := translateComparison(listConstruction.Comparison, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the addition")
+		return nil, errors.Wrap(err, "unable to translate the comparison")
 	}
 	if listConstruction.ListConstruction == nil {
 		return argumentOne, nil
@@ -55,6 +59,40 @@ func translateListConstruction(
 		ListConstructionFunctionName,
 		[]expressions.Expression{argumentOne, argumentTwo},
 	)
+	return expression, nil
+}
+
+func translateComparison(
+	comparison *parser.Comparison,
+	declaredIdentifiers mapset.Set,
+) (expressions.Expression, error) {
+	argumentOne, err := translateAddition(comparison.Addition, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the addition")
+	}
+	if comparison.Comparison == nil {
+		return argumentOne, nil
+	}
+
+	argumentTwo, err := translateComparison(comparison.Comparison, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the comparison")
+	}
+
+	var functionName string
+	switch comparison.Operation {
+	case "<":
+		functionName = LessFunctionName
+	case "<=":
+		functionName = LessOrEqualFunctionName
+	case ">":
+		functionName = GreatFunctionName
+	case ">=":
+		functionName = GreatOrEqualFunctionName
+	}
+
+	expression :=
+		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
 	return expression, nil
 }
 
