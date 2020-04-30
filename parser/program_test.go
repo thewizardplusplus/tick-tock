@@ -27,9 +27,11 @@ func TestParseToAST_withProgram(test *testing.T) {
 					Identifier: "number",
 					Expression: &Expression{
 						ListConstruction: &ListConstruction{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							Comparison: &Comparison{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+									},
 								},
 							},
 						},
@@ -56,9 +58,11 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Command{
 				Expression: &Expression{
 					ListConstruction: &ListConstruction{
-						Addition: &Addition{
-							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}}},
+						Comparison: &Comparison{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}}},
+								},
 							},
 						},
 					},

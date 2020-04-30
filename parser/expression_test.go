@@ -63,9 +63,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
@@ -83,9 +85,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
@@ -103,27 +107,33 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+										},
 									},
 								},
 							},
@@ -141,27 +151,33 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+										},
 									},
 								},
 							},
@@ -186,9 +202,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Arguments: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
@@ -207,9 +225,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Arguments: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
@@ -228,27 +248,33 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Arguments: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+										},
 									},
 								},
 							},
@@ -267,27 +293,33 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Arguments: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+										},
 									},
 								},
 							},
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Addition: &Addition{
-									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+								Comparison: &Comparison{
+									Addition: &Addition{
+										Multiplication: &Multiplication{
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+										},
 									},
 								},
 							},
@@ -303,9 +335,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Atom{
 				Expression: &Expression{
 					ListConstruction: &ListConstruction{
-						Addition: &Addition{
-							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						Comparison: &Comparison{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								},
 							},
 						},
 					},
@@ -321,18 +355,22 @@ func TestParseToAST_withExpression(test *testing.T) {
 				Keys: []*Expression{
 					{
 						ListConstruction: &ListConstruction{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+							Comparison: &Comparison{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+									},
 								},
 							},
 						},
 					},
 					{
 						ListConstruction: &ListConstruction{
-							Addition: &Addition{
-								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							Comparison: &Comparison{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+									},
 								},
 							},
 						},
@@ -422,36 +460,112 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "ListConstruction/nonempty",
-			args: args{"12 : [23, 42]", new(ListConstruction)},
-			wantAST: &ListConstruction{
+			name: "Comparison/nonempty/less",
+			args: args{"12 < 23 <= 42", new(Comparison)},
+			wantAST: &Comparison{
 				Addition: &Addition{
 					Multiplication: &Multiplication{
 						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
 					},
 				},
-				ListConstruction: &ListConstruction{
+				Operation: "<",
+				Comparison: &Comparison{
 					Addition: &Addition{
 						Multiplication: &Multiplication{
-							Unary: &Unary{
-								Accessor: &Accessor{
-									Atom: &Atom{
-										ListDefinition: &ListDefinition{
-											Items: []*Expression{
-												{
-													ListConstruction: &ListConstruction{
-														Addition: &Addition{
-															Multiplication: &Multiplication{
-																Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						},
+					},
+					Operation: "<=",
+					Comparison: &Comparison{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Comparison/nonempty/great",
+			args: args{"12 > 23 >= 42", new(Comparison)},
+			wantAST: &Comparison{
+				Addition: &Addition{
+					Multiplication: &Multiplication{
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+					},
+				},
+				Operation: ">",
+				Comparison: &Comparison{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						},
+					},
+					Operation: ">=",
+					Comparison: &Comparison{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Comparison/empty",
+			args: args{"23", new(Comparison)},
+			wantAST: &Comparison{
+				Addition: &Addition{
+					Multiplication: &Multiplication{
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ListConstruction/nonempty",
+			args: args{"12 : [23, 42]", new(ListConstruction)},
+			wantAST: &ListConstruction{
+				Comparison: &Comparison{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+						},
+					},
+				},
+				ListConstruction: &ListConstruction{
+					Comparison: &Comparison{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{
+									Accessor: &Accessor{
+										Atom: &Atom{
+											ListDefinition: &ListDefinition{
+												Items: []*Expression{
+													{
+														ListConstruction: &ListConstruction{
+															Comparison: &Comparison{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	},
+																},
 															},
 														},
 													},
-												},
-												{
-													ListConstruction: &ListConstruction{
-														Addition: &Addition{
-															Multiplication: &Multiplication{
-																Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													{
+														ListConstruction: &ListConstruction{
+															Comparison: &Comparison{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																	},
+																},
 															},
 														},
 													},
@@ -471,9 +585,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "ListConstruction/empty",
 			args: args{"23", new(ListConstruction)},
 			wantAST: &ListConstruction{
-				Addition: &Addition{
-					Multiplication: &Multiplication{
-						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+				Comparison: &Comparison{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						},
 					},
 				},
 			},
@@ -484,9 +600,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 			args: args{"23", new(Expression)},
 			wantAST: &Expression{
 				ListConstruction: &ListConstruction{
-					Addition: &Addition{
-						Multiplication: &Multiplication{
-							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+					Comparison: &Comparison{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							},
 						},
 					},
 				},

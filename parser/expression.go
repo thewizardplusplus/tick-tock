@@ -30,8 +30,15 @@ type Expression struct {
 
 // ListConstruction ...
 type ListConstruction struct {
-	Addition         *Addition         `parser:"@@"`
+	Comparison       *Comparison       `parser:"@@"`
 	ListConstruction *ListConstruction `parser:"[ \":\" @@ ]"`
+}
+
+// Comparison ...
+type Comparison struct {
+	Addition   *Addition   `parser:"@@"`
+	Operation  string      `parser:"[ @( \"<\" \"=\" | \"<\" | \">\" \"=\" | \">\" )"`
+	Comparison *Comparison `parser:"@@ ]"`
 }
 
 // Addition ...
