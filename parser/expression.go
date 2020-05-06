@@ -30,8 +30,27 @@ type Expression struct {
 
 // ListConstruction ...
 type ListConstruction struct {
-	Comparison       *Comparison       `parser:"@@"`
+	Disjunction      *Disjunction      `parser:"@@"`
 	ListConstruction *ListConstruction `parser:"[ \":\" @@ ]"`
+}
+
+// Disjunction ...
+type Disjunction struct {
+	Conjunction *Conjunction `parser:"@@"`
+	Disjunction *Disjunction `parser:"[ \"|\" \"|\" @@ ]"`
+}
+
+// Conjunction ...
+type Conjunction struct {
+	Equality    *Equality    `parser:"@@"`
+	Conjunction *Conjunction `parser:"[ \"&\" \"&\" @@ ]"`
+}
+
+// Equality ...
+type Equality struct {
+	Comparison *Comparison `parser:"@@"`
+	Operation  string      `parser:"[ @( \"=\" \"=\" | \"!\" \"=\" )"`
+	Equality   *Equality   `parser:"@@ ]"`
 }
 
 // Comparison ...
@@ -57,7 +76,7 @@ type Multiplication struct {
 
 // Unary ...
 type Unary struct {
-	Operation string    `parser:"( @( \"-\" )"`
+	Operation string    `parser:"( @( \"-\" | \"!\" )"`
 	Unary     *Unary    `parser:"@@ )"`
 	Accessor  *Accessor `parser:"| @@"`
 }
