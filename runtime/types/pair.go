@@ -42,6 +42,19 @@ func (pair *Pair) Size() int {
 	return 1 + pair.Tail.Size()
 }
 
+// Equals ...
+func (pair *Pair) Equals(sample *Pair) bool {
+	if pair == nil || sample == nil {
+		return pair == sample
+	}
+
+	if pair.Head != sample.Head {
+		return false
+	}
+
+	return pair.Tail.Equals(sample.Tail)
+}
+
 // Item ...
 func (pair *Pair) Item(index float64) (item interface{}, ok bool) {
 	if pair == nil {

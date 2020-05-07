@@ -99,6 +99,66 @@ func TestPair_Size(test *testing.T) {
 	}
 }
 
+func TestPair_Equals(test *testing.T) {
+	type args struct {
+		sample *Pair
+	}
+
+	for _, data := range []struct {
+		name string
+		pair *Pair
+		args args
+		want assert.BoolAssertionFunc
+	}{
+		{
+			name: "equal/nonempty",
+			pair: &Pair{"one", &Pair{"two", nil}},
+			args: args{
+				sample: &Pair{"one", &Pair{"two", nil}},
+			},
+			want: assert.True,
+		},
+		{
+			name: "equal/empty",
+			pair: nil,
+			args: args{
+				sample: nil,
+			},
+			want: assert.True,
+		},
+		{
+			name: "not equal/first pair is shorter",
+			pair: &Pair{"one", &Pair{"two", nil}},
+			args: args{
+				sample: &Pair{"one", &Pair{"two", &Pair{"three", nil}}},
+			},
+			want: assert.False,
+		},
+		{
+			name: "not equal/second pair is shorter",
+			pair: &Pair{"one", &Pair{"two", &Pair{"three", nil}}},
+			args: args{
+				sample: &Pair{"one", &Pair{"two", nil}},
+			},
+			want: assert.False,
+		},
+		{
+			name: "not equal/some item isn't equal",
+			pair: &Pair{"one", &Pair{"two.one", nil}},
+			args: args{
+				sample: &Pair{"one", &Pair{"two.two", nil}},
+			},
+			want: assert.False,
+		},
+	} {
+		test.Run(data.name, func(t *testing.T) {
+			got := data.pair.Equals(data.args.sample)
+
+			data.want(test, got)
+		})
+	}
+}
+
 func TestPair_Item(test *testing.T) {
 	type args struct {
 		index float64
