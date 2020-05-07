@@ -79,7 +79,7 @@ var (
 		translator.ModuloFunctionName: func(a float64, b float64) (float64, error) {
 			return math.Mod(a, b), nil
 		},
-		translator.NegationFunctionName: func(a float64) (float64, error) {
+		translator.ArithmeticNegationFunctionName: func(a float64) (float64, error) {
 			return -a, nil
 		},
 		translator.KeyAccessorFunctionName: func(pair *types.Pair, index float64) (interface{}, error) {

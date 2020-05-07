@@ -12,20 +12,21 @@ import (
 const (
 	EmptyListConstantName = "__empty_list__"
 
-	ListConstructionFunctionName = "__cons__"
-	EqualFunctionName            = "__eq__"
-	NotEqualFunctionName         = "__ne__"
-	LessFunctionName             = "__lt__"
-	LessOrEqualFunctionName      = "__le__"
-	GreatFunctionName            = "__gt__"
-	GreatOrEqualFunctionName     = "__ge__"
-	AdditionFunctionName         = "__add__"
-	SubtractionFunctionName      = "__sub__"
-	MultiplicationFunctionName   = "__mul__"
-	DivisionFunctionName         = "__div__"
-	ModuloFunctionName           = "__mod__"
-	NegationFunctionName         = "__neg__"
-	KeyAccessorFunctionName      = "__item__"
+	ListConstructionFunctionName   = "__cons__"
+	EqualFunctionName              = "__eq__"
+	NotEqualFunctionName           = "__ne__"
+	LessFunctionName               = "__lt__"
+	LessOrEqualFunctionName        = "__le__"
+	GreatFunctionName              = "__gt__"
+	GreatOrEqualFunctionName       = "__ge__"
+	AdditionFunctionName           = "__add__"
+	SubtractionFunctionName        = "__sub__"
+	MultiplicationFunctionName     = "__mul__"
+	DivisionFunctionName           = "__div__"
+	ModuloFunctionName             = "__mod__"
+	ArithmeticNegationFunctionName = "__neg__"
+	LogicalNegationFunctionName    = "__not__"
+	KeyAccessorFunctionName        = "__item__"
 )
 
 func translateExpression(
@@ -254,7 +255,9 @@ func translateUnary(
 	var functionName string
 	switch unary.Operation {
 	case "-":
-		functionName = NegationFunctionName
+		functionName = ArithmeticNegationFunctionName
+	case "!":
+		functionName = LogicalNegationFunctionName
 	}
 
 	expression := expressions.NewFunctionCall(functionName, []expressions.Expression{argument})

@@ -1362,7 +1362,7 @@ func TestTranslateUnary(test *testing.T) {
 				unary: &parser.Unary{
 					Operation: "-",
 					Unary: &parser.Unary{
-						Operation: "-",
+						Operation: "!",
 						Unary: &parser.Unary{
 							Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
 						},
@@ -1370,11 +1370,14 @@ func TestTranslateUnary(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewFunctionCall(NegationFunctionName, []expressions.Expression{
-				expressions.NewFunctionCall(NegationFunctionName, []expressions.Expression{
-					expressions.NewNumber(23),
-				}),
-			}),
+			wantExpression: expressions.NewFunctionCall(
+				ArithmeticNegationFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(LogicalNegationFunctionName, []expressions.Expression{
+						expressions.NewNumber(23),
+					}),
+				},
+			),
 			wantErr: assert.NoError,
 		},
 		{
@@ -1383,7 +1386,7 @@ func TestTranslateUnary(test *testing.T) {
 				unary: &parser.Unary{
 					Operation: "-",
 					Unary: &parser.Unary{
-						Operation: "-",
+						Operation: "!",
 						Unary: &parser.Unary{
 							Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
 						},

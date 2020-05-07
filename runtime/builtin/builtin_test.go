@@ -159,7 +159,7 @@ func TestValues(test *testing.T) {
 		{
 			name: "negation",
 			expression: expressions.NewFunctionCall(
-				translator.NegationFunctionName,
+				translator.ArithmeticNegationFunctionName,
 				[]expressions.Expression{expressions.NewNumber(23)},
 			),
 			wantResult: -23.0,
