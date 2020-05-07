@@ -250,6 +250,158 @@ func TestTranslateListConstruction(test *testing.T) {
 	}
 }
 
+func TestTranslateEquality(test *testing.T) {
+	type args struct {
+		equality            *parser.Equality
+		declaredIdentifiers mapset.Set
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Equality/nonempty/success",
+			args: args{
+				equality: &parser.Equality{
+					Comparison: &parser.Comparison{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+								},
+							},
+						},
+					},
+					Operation: "==",
+					Equality: &parser.Equality{
+						Comparison: &parser.Comparison{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+									},
+								},
+							},
+						},
+						Operation: "!=",
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewFunctionCall(EqualFunctionName, []expressions.Expression{
+				expressions.NewNumber(12),
+				expressions.NewFunctionCall(NotEqualFunctionName, []expressions.Expression{
+					expressions.NewNumber(23),
+					expressions.NewNumber(42),
+				}),
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Equality/nonempty/error",
+			args: args{
+				equality: &parser.Equality{
+					Comparison: &parser.Comparison{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+								},
+							},
+						},
+					},
+					Operation: "==",
+					Equality: &parser.Equality{
+						Comparison: &parser.Comparison{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+									},
+								},
+							},
+						},
+						Operation: "!=",
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "Equality/empty/success",
+			args: args{
+				equality: &parser.Equality{
+					Comparison: &parser.Comparison{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Equality/empty/error",
+			args: args{
+				equality: &parser.Equality{
+					Comparison: &parser.Comparison{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr := translateEquality(data.args.equality, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateComparison(test *testing.T) {
 	type args struct {
 		comparison          *parser.Comparison

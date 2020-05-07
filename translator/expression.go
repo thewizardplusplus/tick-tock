@@ -12,6 +12,8 @@ const (
 	EmptyListConstantName = "__empty_list__"
 
 	ListConstructionFunctionName = "__cons__"
+	EqualFunctionName            = "__eq__"
+	NotEqualFunctionName         = "__ne__"
 	LessFunctionName             = "__lt__"
 	LessOrEqualFunctionName      = "__le__"
 	GreatFunctionName            = "__gt__"
@@ -41,10 +43,10 @@ func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	comparison := listConstruction.Disjunction.Conjunction.Equality.Comparison
-	argumentOne, err := translateComparison(comparison, declaredIdentifiers)
+	equality := listConstruction.Disjunction.Conjunction.Equality
+	argumentOne, err := translateEquality(equality, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the comparison")
+		return nil, errors.Wrap(err, "unable to translate the equality")
 	}
 	if listConstruction.ListConstruction == nil {
 		return argumentOne, nil
@@ -60,6 +62,36 @@ func translateListConstruction(
 		ListConstructionFunctionName,
 		[]expressions.Expression{argumentOne, argumentTwo},
 	)
+	return expression, nil
+}
+
+func translateEquality(
+	equality *parser.Equality,
+	declaredIdentifiers mapset.Set,
+) (expressions.Expression, error) {
+	argumentOne, err := translateComparison(equality.Comparison, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the comparison")
+	}
+	if equality.Equality == nil {
+		return argumentOne, nil
+	}
+
+	argumentTwo, err := translateEquality(equality.Equality, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the equality")
+	}
+
+	var functionName string
+	switch equality.Operation {
+	case "==":
+		functionName = EqualFunctionName
+	case "!=":
+		functionName = NotEqualFunctionName
+	}
+
+	expression :=
+		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
 	return expression, nil
 }
 
