@@ -41,7 +41,8 @@ func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateComparison(listConstruction.Comparison, declaredIdentifiers)
+	comparison := listConstruction.Disjunction.Conjunction.Equality.Comparison
+	argumentOne, err := translateComparison(comparison, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the comparison")
 	}
