@@ -17,8 +17,8 @@ const (
 	NotEqualFunctionName           = "__ne__"
 	LessFunctionName               = "__lt__"
 	LessOrEqualFunctionName        = "__le__"
-	GreatFunctionName              = "__gt__"
-	GreatOrEqualFunctionName       = "__ge__"
+	GreaterFunctionName            = "__gt__"
+	GreaterOrEqualFunctionName     = "__ge__"
 	AdditionFunctionName           = "__add__"
 	SubtractionFunctionName        = "__sub__"
 	MultiplicationFunctionName     = "__mul__"
@@ -162,9 +162,9 @@ func translateComparison(
 	case "<=":
 		functionName = LessOrEqualFunctionName
 	case ">":
-		functionName = GreatFunctionName
+		functionName = GreaterFunctionName
 	case ">=":
-		functionName = GreatOrEqualFunctionName
+		functionName = GreaterOrEqualFunctionName
 	}
 
 	expression :=

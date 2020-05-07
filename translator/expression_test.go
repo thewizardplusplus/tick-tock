@@ -887,9 +887,9 @@ func TestTranslateComparison(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewFunctionCall(GreatFunctionName, []expressions.Expression{
+			wantExpression: expressions.NewFunctionCall(GreaterFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
-				expressions.NewFunctionCall(GreatFunctionName, []expressions.Expression{
+				expressions.NewFunctionCall(GreaterFunctionName, []expressions.Expression{
 					expressions.NewNumber(23),
 					expressions.NewNumber(42),
 				}),
@@ -930,9 +930,9 @@ func TestTranslateComparison(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewFunctionCall(GreatOrEqualFunctionName, []expressions.Expression{
+			wantExpression: expressions.NewFunctionCall(GreaterOrEqualFunctionName, []expressions.Expression{
 				expressions.NewNumber(12),
-				expressions.NewFunctionCall(GreatOrEqualFunctionName, []expressions.Expression{
+				expressions.NewFunctionCall(GreaterOrEqualFunctionName, []expressions.Expression{
 					expressions.NewNumber(23),
 					expressions.NewNumber(42),
 				}),
