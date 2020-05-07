@@ -44,10 +44,9 @@ func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	conjunction := listConstruction.Disjunction.Conjunction
-	argumentOne, err := translateConjunction(conjunction, declaredIdentifiers)
+	argumentOne, err := translateDisjunction(listConstruction.Disjunction, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the conjunction")
+		return nil, errors.Wrap(err, "unable to translate the disjunction")
 	}
 	if listConstruction.ListConstruction == nil {
 		return argumentOne, nil
@@ -63,6 +62,27 @@ func translateListConstruction(
 		ListConstructionFunctionName,
 		[]expressions.Expression{argumentOne, argumentTwo},
 	)
+	return expression, nil
+}
+
+func translateDisjunction(
+	disjunction *parser.Disjunction,
+	declaredIdentifiers mapset.Set,
+) (expressions.Expression, error) {
+	argumentOne, err := translateConjunction(disjunction.Conjunction, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the conjunction")
+	}
+	if disjunction.Disjunction == nil {
+		return argumentOne, nil
+	}
+
+	argumentTwo, err := translateDisjunction(disjunction.Disjunction, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the disjunction")
+	}
+
+	expression := expressions.NewBooleanOperator(argumentOne, argumentTwo, types.True)
 	return expression, nil
 }
 

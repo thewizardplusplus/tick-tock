@@ -251,6 +251,191 @@ func TestTranslateListConstruction(test *testing.T) {
 	}
 }
 
+func TestTranslateDisjunction(test *testing.T) {
+	type args struct {
+		disjunction         *parser.Disjunction
+		declaredIdentifiers mapset.Set
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Disjunction/nonempty/success",
+			args: args{
+				disjunction: &parser.Disjunction{
+					Conjunction: &parser.Conjunction{
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+										},
+									},
+								},
+							},
+						},
+					},
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+											},
+										},
+									},
+								},
+							},
+						},
+						Disjunction: &parser.Disjunction{
+							Conjunction: &parser.Conjunction{
+								Equality: &parser.Equality{
+									Comparison: &parser.Comparison{
+										Addition: &parser.Addition{
+											Multiplication: &parser.Multiplication{
+												Unary: &parser.Unary{
+													Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewBooleanOperator(
+				expressions.NewNumber(12),
+				expressions.NewBooleanOperator(
+					expressions.NewNumber(23),
+					expressions.NewNumber(42),
+					types.True,
+				),
+				types.True,
+			),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Disjunction/nonempty/error",
+			args: args{
+				disjunction: &parser.Disjunction{
+					Conjunction: &parser.Conjunction{
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+										},
+									},
+								},
+							},
+						},
+					},
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+											},
+										},
+									},
+								},
+							},
+						},
+						Disjunction: &parser.Disjunction{
+							Conjunction: &parser.Conjunction{
+								Equality: &parser.Equality{
+									Comparison: &parser.Comparison{
+										Addition: &parser.Addition{
+											Multiplication: &parser.Multiplication{
+												Unary: &parser.Unary{
+													Accessor: &parser.Accessor{
+														Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "Disjunction/empty/success",
+			args: args{
+				disjunction: &parser.Disjunction{
+					Conjunction: &parser.Conjunction{
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Disjunction/empty/error",
+			args: args{
+				disjunction: &parser.Disjunction{
+					Conjunction: &parser.Conjunction{
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr :=
+				translateDisjunction(data.args.disjunction, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateConjunction(test *testing.T) {
 	type args struct {
 		conjunction         *parser.Conjunction
