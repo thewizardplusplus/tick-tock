@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 func TestTranslateExpression(test *testing.T) {
@@ -243,6 +244,173 @@ func TestTranslateListConstruction(test *testing.T) {
 		test.Run(data.name, func(test *testing.T) {
 			gotExpression, gotErr :=
 				translateListConstruction(data.args.listConstruction, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
+func TestTranslateConjunction(test *testing.T) {
+	type args struct {
+		conjunction         *parser.Conjunction
+		declaredIdentifiers mapset.Set
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Conjunction/nonempty/success",
+			args: args{
+				conjunction: &parser.Conjunction{
+					Equality: &parser.Equality{
+						Comparison: &parser.Comparison{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+									},
+								},
+							},
+						},
+					},
+					Conjunction: &parser.Conjunction{
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+										},
+									},
+								},
+							},
+						},
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewBooleanOperator(
+				expressions.NewNumber(12),
+				expressions.NewBooleanOperator(
+					expressions.NewNumber(23),
+					expressions.NewNumber(42),
+					types.False,
+				),
+				types.False,
+			),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Conjunction/nonempty/error",
+			args: args{
+				conjunction: &parser.Conjunction{
+					Equality: &parser.Equality{
+						Comparison: &parser.Comparison{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+									},
+								},
+							},
+						},
+					},
+					Conjunction: &parser.Conjunction{
+						Equality: &parser.Equality{
+							Comparison: &parser.Comparison{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+										},
+									},
+								},
+							},
+						},
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									Addition: &parser.Addition{
+										Multiplication: &parser.Multiplication{
+											Unary: &parser.Unary{
+												Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "Conjunction/empty/success",
+			args: args{
+				conjunction: &parser.Conjunction{
+					Equality: &parser.Equality{
+						Comparison: &parser.Comparison{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewNumber(23),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Conjunction/empty/error",
+			args: args{
+				conjunction: &parser.Conjunction{
+					Equality: &parser.Equality{
+						Comparison: &parser.Comparison{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr :=
+				translateConjunction(data.args.conjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			data.wantErr(test, gotErr)

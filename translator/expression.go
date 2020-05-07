@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 // ...
@@ -43,10 +44,10 @@ func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	equality := listConstruction.Disjunction.Conjunction.Equality
-	argumentOne, err := translateEquality(equality, declaredIdentifiers)
+	conjunction := listConstruction.Disjunction.Conjunction
+	argumentOne, err := translateConjunction(conjunction, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the equality")
+		return nil, errors.Wrap(err, "unable to translate the conjunction")
 	}
 	if listConstruction.ListConstruction == nil {
 		return argumentOne, nil
@@ -62,6 +63,27 @@ func translateListConstruction(
 		ListConstructionFunctionName,
 		[]expressions.Expression{argumentOne, argumentTwo},
 	)
+	return expression, nil
+}
+
+func translateConjunction(
+	conjunction *parser.Conjunction,
+	declaredIdentifiers mapset.Set,
+) (expressions.Expression, error) {
+	argumentOne, err := translateEquality(conjunction.Equality, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the equality")
+	}
+	if conjunction.Conjunction == nil {
+		return argumentOne, nil
+	}
+
+	argumentTwo, err := translateConjunction(conjunction.Conjunction, declaredIdentifiers)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to translate the conjunction")
+	}
+
+	expression := expressions.NewBooleanOperator(argumentOne, argumentTwo, types.False)
 	return expression, nil
 }
 
