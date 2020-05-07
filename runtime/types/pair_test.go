@@ -159,6 +159,220 @@ func TestPair_Equals(test *testing.T) {
 	}
 }
 
+func TestPair_Compare(test *testing.T) {
+	type args struct {
+		sample *Pair
+	}
+
+	for _, data := range []struct {
+		name       string
+		pair       *Pair
+		args       args
+		wantResult ComparisonResult
+		wantErr    assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Nil/success",
+			pair: &Pair{Nil{}, &Pair{Nil{}, nil}},
+			args: args{
+				sample: &Pair{Nil{}, &Pair{Nil{}, nil}},
+			},
+			wantResult: Equal,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "Nil/error",
+			pair: &Pair{Nil{}, &Pair{Nil{}, nil}},
+			args: args{
+				sample: &Pair{Nil{}, &Pair{23.0, nil}},
+			},
+			wantResult: 0,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "float64/success/less",
+			pair: &Pair{12.0, &Pair{23.0, nil}},
+			args: args{
+				sample: &Pair{12.0, &Pair{42.0, nil}},
+			},
+			wantResult: Less,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "float64/success/shorter",
+			pair: &Pair{12.0, &Pair{23.0, nil}},
+			args: args{
+				sample: &Pair{12.0, &Pair{23.0, &Pair{42.0, nil}}},
+			},
+			wantResult: Less,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "float64/success/equal",
+			pair: &Pair{12.0, &Pair{23.0, nil}},
+			args: args{
+				sample: &Pair{12.0, &Pair{23.0, nil}},
+			},
+			wantResult: Equal,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "float64/success/greater",
+			pair: &Pair{12.0, &Pair{42.0, nil}},
+			args: args{
+				sample: &Pair{12.0, &Pair{23.0, nil}},
+			},
+			wantResult: Greater,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "float64/success/longer",
+			pair: &Pair{12.0, &Pair{23.0, &Pair{42.0, nil}}},
+			args: args{
+				sample: &Pair{12.0, &Pair{23.0, nil}},
+			},
+			wantResult: Greater,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "float64/error/left item",
+			pair: &Pair{12.0, &Pair{func() {}, nil}},
+			args: args{
+				sample: &Pair{12.0, &Pair{23.0, nil}},
+			},
+			wantResult: 0,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "float64/error/right item",
+			pair: &Pair{12.0, &Pair{23.0, nil}},
+			args: args{
+				sample: &Pair{
+					Head: 12.0,
+					Tail: &Pair{
+						Head: &Pair{12.0, &Pair{23.0, nil}},
+						Tail: nil,
+					},
+				},
+			},
+			wantResult: 0,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "*Pair/success/less",
+			pair: &Pair{
+				Head: &Pair{12.0, &Pair{23.0, nil}},
+				Tail: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: nil,
+				},
+			},
+			args: args{
+				sample: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: &Pair{
+						Head: &Pair{12.0, &Pair{42.0, nil}},
+						Tail: nil,
+					},
+				},
+			},
+			wantResult: Less,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "*Pair/success/equal",
+			pair: &Pair{
+				Head: &Pair{12.0, &Pair{23.0, nil}},
+				Tail: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: nil,
+				},
+			},
+			args: args{
+				sample: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: &Pair{
+						Head: &Pair{12.0, &Pair{23.0, nil}},
+						Tail: nil,
+					},
+				},
+			},
+			wantResult: Equal,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "*Pair/success/greater",
+			pair: &Pair{
+				Head: &Pair{12.0, &Pair{23.0, nil}},
+				Tail: &Pair{
+					Head: &Pair{12.0, &Pair{42.0, nil}},
+					Tail: nil,
+				},
+			},
+			args: args{
+				sample: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: &Pair{
+						Head: &Pair{12.0, &Pair{23.0, nil}},
+						Tail: nil,
+					},
+				},
+			},
+			wantResult: Greater,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "*Pair/error/top level",
+			pair: &Pair{
+				Head: &Pair{12.0, &Pair{23.0, nil}},
+				Tail: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: nil,
+				},
+			},
+			args: args{
+				sample: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: &Pair{
+						Head: Nil{},
+						Tail: nil,
+					},
+				},
+			},
+			wantResult: 0,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "*Pair/error/inner level",
+			pair: &Pair{
+				Head: &Pair{12.0, &Pair{23.0, nil}},
+				Tail: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: nil,
+				},
+			},
+			args: args{
+				sample: &Pair{
+					Head: &Pair{12.0, &Pair{23.0, nil}},
+					Tail: &Pair{
+						Head: &Pair{12.0, &Pair{Nil{}, nil}},
+						Tail: nil,
+					},
+				},
+			},
+			wantResult: 0,
+			wantErr:    assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotResult, gotErr := data.pair.Compare(data.args.sample)
+
+			assert.Equal(test, data.wantResult, gotResult)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestPair_Item(test *testing.T) {
 	type args struct {
 		index float64
