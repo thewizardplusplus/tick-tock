@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -54,7 +54,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(mocks.Context),
 			},
 			wantResult: &types.Pair{Head: "one", Tail: &types.Pair{Head: "two", Tail: nil}},
 			wantErr:    assert.NoError,
@@ -81,7 +81,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(mocks.Context),
 			},
 			wantResult: &types.Pair{Head: "three", Tail: &types.Pair{Head: "four", Tail: nil}},
 			wantErr:    assert.NoError,
@@ -108,7 +108,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.False,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(mocks.Context),
 			},
 			wantResult: &types.Pair{Head: "three", Tail: &types.Pair{Head: "four", Tail: nil}},
 			wantErr:    assert.NoError,
@@ -128,7 +128,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.False,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(mocks.Context),
 			},
 			wantResult: (*types.Pair)(nil),
 			wantErr:    assert.NoError,
@@ -146,7 +146,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(mocks.Context),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -164,7 +164,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(mocks.Context),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -189,7 +189,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(mocks.Context),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,

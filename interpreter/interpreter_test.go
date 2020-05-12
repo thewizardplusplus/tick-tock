@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
-	testsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
+	testutilsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
@@ -26,7 +26,7 @@ func TestInterpret(test *testing.T) {
 			options Options,
 			context *contextmocks.Context,
 			waiter *waitermocks.Waiter,
-			defaultReader *testsmocks.Reader,
+			defaultReader *testutilsmocks.Reader,
 		)
 		wantErr assert.ErrorAssertionFunc
 	}{
@@ -36,7 +36,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				defaultReader *testsmocks.Reader,
+				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(types.Nil{}, true)
@@ -65,7 +65,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				defaultReader *testsmocks.Reader,
+				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(float64(23), true)
@@ -94,7 +94,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				defaultReader *testsmocks.Reader,
+				defaultReader *testutilsmocks.Reader,
 			) {
 				defaultReader.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
 			},
@@ -106,7 +106,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				defaultReader *testsmocks.Reader,
+				defaultReader *testutilsmocks.Reader,
 			) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
@@ -120,7 +120,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				defaultReader *testsmocks.Reader,
+				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 
@@ -138,7 +138,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *contextmocks.Context,
 				waiter *waitermocks.Waiter,
-				defaultReader *testsmocks.Reader,
+				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 
@@ -165,8 +165,8 @@ func TestInterpret(test *testing.T) {
 			}
 			context := new(contextmocks.Context)
 			waiter := new(waitermocks.Waiter)
-			defaultReader := new(testsmocks.Reader)
-			fileSystem := new(testsmocks.FileSystem)
+			defaultReader := new(testutilsmocks.Reader)
+			fileSystem := new(testutilsmocks.FileSystem)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			testData.initializeDependencies(options, context, waiter, defaultReader)
 

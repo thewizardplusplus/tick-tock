@@ -8,17 +8,17 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
-	"github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
+	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 )
 
 type SignedExpression struct {
-	*mocks.Expression
+	*expressionsmocks.Expression
 
 	Sign string
 }
 
 func NewSignedExpression(sign string) SignedExpression {
-	return SignedExpression{new(mocks.Expression), sign}
+	return SignedExpression{new(expressionsmocks.Expression), sign}
 }
 
 func TestNewFunctionCall(test *testing.T) {
