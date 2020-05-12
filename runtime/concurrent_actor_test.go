@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/internal/tests"
+	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
@@ -50,7 +50,7 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				initialState: "state_1",
-				inboxSize:    tests.BufferedInbox,
+				inboxSize:    testutils.BufferedInbox,
 				messages:     []string{"message_2", "message_3"},
 			},
 			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
@@ -105,7 +105,7 @@ func TestConcurrentActor(test *testing.T) {
 					Times(testData.errCount)
 			}
 
-			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
+			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{synchronousWaiter, errorHandler}
 			concurrentActor := NewConcurrentActor(actor, testData.args.inboxSize, dependencies)
 			concurrentActor.Start(contextOriginal)
@@ -181,7 +181,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 
 			var log commandLog
 			var concurrentActors ConcurrentActorGroup
-			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
+			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			dependencies := Dependencies{synchronousWaiter, errorHandler}
 			for _, args := range testData.args {
@@ -191,7 +191,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				actor := &Actor{states, args.initialState}
 				contextSecondCopy.On("SetStateHolder", actor).Return()
 
-				concurrentActor := NewConcurrentActor(actor, tests.UnbufferedInbox, dependencies)
+				concurrentActor := NewConcurrentActor(actor, testutils.UnbufferedInbox, dependencies)
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 

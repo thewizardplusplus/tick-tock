@@ -10,8 +10,8 @@ import (
 	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/internal/tests"
-	testsmocks "github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
+	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
+	testsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
@@ -159,7 +159,7 @@ func TestInterpret(test *testing.T) {
 			options := Options{
 				InitialMessage: "__initialize__",
 				Translator: translator.Options{
-					InboxSize:    tests.BufferedInbox,
+					InboxSize:    testutils.BufferedInbox,
 					InitialState: "__initialization__",
 				},
 			}
@@ -170,7 +170,7 @@ func TestInterpret(test *testing.T) {
 			errorHandler := new(runtimemocks.ErrorHandler)
 			testData.initializeDependencies(options, context, waiter, defaultReader)
 
-			synchronousWaiter := tests.NewSynchronousWaiter(waiter)
+			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{
 				Reader:  ReaderDependencies{defaultReader, fileSystem},
 				Runtime: runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},

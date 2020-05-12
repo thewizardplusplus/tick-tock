@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/internal/tests/mocks"
+	"github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 )
 
 func TestDefaultErrorHandler(test *testing.T) {

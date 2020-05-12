@@ -9,7 +9,7 @@ import (
 	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/internal/tests"
+	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
@@ -242,7 +242,7 @@ func TestTranslate(test *testing.T) {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
-			options := Options{tests.BufferedInbox, "__initialization__"}
+			options := Options{testutils.BufferedInbox, "__initialization__"}
 			waiter := new(waitermocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			dependencies := runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler}
