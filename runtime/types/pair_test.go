@@ -105,56 +105,45 @@ func TestPair_Equals(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name string
-		pair *Pair
-		args args
-		want assert.BoolAssertionFunc
+		name       string
+		pair       *Pair
+		args       args
+		wantResult assert.BoolAssertionFunc
+		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
-			name: "equal/nonempty",
-			pair: &Pair{"one", &Pair{"two", nil}},
+			name: "success/equal",
+			pair: &Pair{12.0, &Pair{23.0, nil}},
 			args: args{
-				sample: &Pair{"one", &Pair{"two", nil}},
+				sample: &Pair{12.0, &Pair{23.0, nil}},
 			},
-			want: assert.True,
+			wantResult: assert.True,
+			wantErr:    assert.NoError,
 		},
 		{
-			name: "equal/empty",
-			pair: nil,
+			name: "success/not equal",
+			pair: &Pair{12.0, &Pair{23.0, nil}},
 			args: args{
-				sample: nil,
+				sample: &Pair{12.0, &Pair{42.0, nil}},
 			},
-			want: assert.True,
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
 		},
 		{
-			name: "not equal/first pair is shorter",
-			pair: &Pair{"one", &Pair{"two", nil}},
+			name: "error",
+			pair: &Pair{12.0, &Pair{23.0, nil}},
 			args: args{
-				sample: &Pair{"one", &Pair{"two", &Pair{"three", nil}}},
+				sample: &Pair{12.0, &Pair{Nil{}, nil}},
 			},
-			want: assert.False,
-		},
-		{
-			name: "not equal/second pair is shorter",
-			pair: &Pair{"one", &Pair{"two", &Pair{"three", nil}}},
-			args: args{
-				sample: &Pair{"one", &Pair{"two", nil}},
-			},
-			want: assert.False,
-		},
-		{
-			name: "not equal/some item isn't equal",
-			pair: &Pair{"one", &Pair{"two.one", nil}},
-			args: args{
-				sample: &Pair{"one", &Pair{"two.two", nil}},
-			},
-			want: assert.False,
+			wantResult: assert.False,
+			wantErr:    assert.Error,
 		},
 	} {
-		test.Run(data.name, func(t *testing.T) {
-			got := data.pair.Equals(data.args.sample)
+		test.Run(data.name, func(test *testing.T) {
+			gotResult, gotErr := data.pair.Equals(data.args.sample)
 
-			data.want(test, got)
+			data.wantResult(test, gotResult)
+			data.wantErr(test, gotErr)
 		})
 	}
 }
