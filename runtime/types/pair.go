@@ -6,16 +6,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ComparisonResult ...
-type ComparisonResult int
-
-// ...
-const (
-	Less ComparisonResult = iota
-	Equal
-	Greater
-)
-
 // Pair ...
 type Pair struct {
 	Head interface{}
@@ -74,57 +64,15 @@ func (pair *Pair) Compare(sample *Pair) (ComparisonResult, error) {
 		}
 	}
 
-	switch typedPairHead := pair.Head.(type) {
-	case Nil:
-		if _, ok := sample.Head.(Nil); !ok {
-			return 0, errors.Errorf(
-				"incorrect type of some right item for comparison (%T instead %T)",
-				sample.Head,
-				pair.Head,
-			)
-		}
-
-		// heads are equal, continue
-	case float64:
-		typedSampleHead, ok := sample.Head.(float64)
-		if !ok {
-			return 0, errors.Errorf(
-				"incorrect type of some right item for comparison (%T instead %T)",
-				sample.Head,
-				pair.Head,
-			)
-		}
-
-		if typedPairHead < typedSampleHead {
-			return Less, nil
-		} else if typedPairHead > typedSampleHead {
-			return Greater, nil
-		}
-
-		// heads are equal, continue
-	case *Pair:
-		typedSampleHead, ok := sample.Head.(*Pair)
-		if !ok {
-			return 0, errors.Errorf(
-				"incorrect type of some right item for comparison (%T instead %T)",
-				sample.Head,
-				pair.Head,
-			)
-		}
-
-		result, err := typedPairHead.Compare(typedSampleHead)
-		if err != nil {
-			return 0, errors.Wrapf(err, "unable to compare some items")
-		}
-		if result != Equal {
-			return result, nil
-		}
-
-		// heads are equal, continue
-	default:
-		return 0, errors.Errorf("unsupported type %T of some left item for comparison", pair.Head)
+	result, err := Compare(pair.Head, sample.Head)
+	if err != nil {
+		return 0, errors.Wrapf(err, "unable to compare some items")
+	}
+	if result != Equal {
+		return result, nil
 	}
 
+	// heads are equal, continue
 	return pair.Tail.Compare(sample.Tail)
 }
 
