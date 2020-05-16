@@ -31,6 +31,8 @@ var (
 	Values = context.ValueGroup{
 		translator.EmptyListConstantName: (*types.Pair)(nil),
 		"nil":                            types.Nil{},
+		"false":                          types.False,
+		"true":                           types.True,
 		"nan":                            math.NaN(),
 		"inf":                            math.Inf(+1),
 		"pi":                             math.Pi,
@@ -41,6 +43,58 @@ var (
 			tail *types.Pair,
 		) (*types.Pair, error) {
 			return &types.Pair{Head: head, Tail: tail}, nil
+		},
+		translator.EqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
+			isEqual, err := types.Equals(a, b)
+			if err != nil {
+				return 0, errors.Wrapf(err, "unable to compare values for equality")
+			}
+
+			return types.NewBooleanFromGoBool(isEqual), nil
+		},
+		translator.NotEqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
+			isEqual, err := types.Equals(a, b)
+			if err != nil {
+				return 0, errors.Wrapf(err, "unable to compare values for equality")
+			}
+
+			return types.NewBooleanFromGoBool(!isEqual), nil
+		},
+		translator.LessFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
+			compareResult, err := types.Compare(a, b)
+			if err != nil {
+				return 0, errors.Wrapf(err, "unable to compare values")
+			}
+
+			booleanResult := compareResult == types.Less
+			return types.NewBooleanFromGoBool(booleanResult), nil
+		},
+		translator.LessOrEqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
+			compareResult, err := types.Compare(a, b)
+			if err != nil {
+				return 0, errors.Wrapf(err, "unable to compare values")
+			}
+
+			booleanResult := compareResult == types.Less || compareResult == types.Equal
+			return types.NewBooleanFromGoBool(booleanResult), nil
+		},
+		translator.GreaterFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
+			compareResult, err := types.Compare(a, b)
+			if err != nil {
+				return 0, errors.Wrapf(err, "unable to compare values")
+			}
+
+			booleanResult := compareResult == types.Greater
+			return types.NewBooleanFromGoBool(booleanResult), nil
+		},
+		translator.GreaterOrEqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
+			compareResult, err := types.Compare(a, b)
+			if err != nil {
+				return 0, errors.Wrapf(err, "unable to compare values")
+			}
+
+			booleanResult := compareResult == types.Greater || compareResult == types.Equal
+			return types.NewBooleanFromGoBool(booleanResult), nil
 		},
 		translator.AdditionFunctionName: func(a interface{}, b interface{}) (interface{}, error) {
 			switch typedA := a.(type) {
@@ -82,6 +136,14 @@ var (
 		translator.ArithmeticNegationFunctionName: func(a float64) (float64, error) {
 			return -a, nil
 		},
+		translator.LogicalNegationFunctionName: func(value interface{}) (types.Boolean, error) {
+			boolean, err := types.NewBoolean(value)
+			if err != nil {
+				return 0, errors.Wrap(err, "unable to convert the value to a boolean")
+			}
+
+			return types.NegateBoolean(boolean), nil
+		},
 		translator.KeyAccessorFunctionName: func(pair *types.Pair, index float64) (interface{}, error) {
 			item, ok := pair.Item(index)
 			if !ok {
@@ -108,6 +170,7 @@ var (
 		"size": func(pair *types.Pair) (float64, error) {
 			return float64(pair.Size()), nil
 		},
+		"bool": types.NewBoolean,
 		"floor": func(a float64) (float64, error) {
 			return math.Floor(a), nil
 		},
@@ -158,6 +221,10 @@ var (
 		},
 		"abs": func(a float64) (float64, error) {
 			return math.Abs(a), nil
+		},
+		"is_nan": func(a float64) (float64, error) {
+			isNaN := math.IsNaN(a)
+			return types.NewBooleanFromGoBool(isNaN), nil
 		},
 		"seed": func(seed float64) (types.Nil, error) {
 			rand.Seed(int64(seed))
@@ -213,6 +280,22 @@ var (
 					"unsupported type %T of the argument #0 for the function str",
 					typedValue,
 				)
+			}
+
+			return types.NewPairFromText(text), nil
+		},
+		"strb": func(value interface{}) (*types.Pair, error) {
+			boolean, err := types.NewBoolean(value)
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to convert the value to a boolean")
+			}
+
+			var text string
+			switch boolean {
+			case types.False:
+				text = "false"
+			case types.True:
+				text = "true"
 			}
 
 			return types.NewPairFromText(text), nil

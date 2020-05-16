@@ -37,6 +37,18 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name:       "false",
+			expression: expressions.NewIdentifier("false"),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:       "true",
+			expression: expressions.NewIdentifier("true"),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
 			name:       "inf",
 			expression: expressions.NewIdentifier("inf"),
 			wantResult: math.Inf(+1),
@@ -77,6 +89,186 @@ func TestValues(test *testing.T) {
 			),
 			wantResult: types.NewPairFromSlice([]interface{}{12.0, 23.0, 42.0}),
 			wantErr:    assert.NoError,
+		},
+		{
+			name: "equal/success/false",
+			expression: expressions.NewFunctionCall(
+				translator.EqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "equal/success/true",
+			expression: expressions.NewFunctionCall(
+				translator.EqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "equal/error",
+			expression: expressions.NewFunctionCall(
+				translator.EqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "not equal/success/false",
+			expression: expressions.NewFunctionCall(
+				translator.NotEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "not equal/success/true",
+			expression: expressions.NewFunctionCall(
+				translator.NotEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "not equal/error",
+			expression: expressions.NewFunctionCall(
+				translator.NotEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "less/success/false",
+			expression: expressions.NewFunctionCall(
+				translator.LessFunctionName,
+				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "less/success/true",
+			expression: expressions.NewFunctionCall(
+				translator.LessFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "less/error",
+			expression: expressions.NewFunctionCall(
+				translator.LessFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "less or equal/success/false",
+			expression: expressions.NewFunctionCall(
+				translator.LessOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "less or equal/success/true/less",
+			expression: expressions.NewFunctionCall(
+				translator.LessOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "less or equal/success/true/equal",
+			expression: expressions.NewFunctionCall(
+				translator.LessOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "less or equal/error",
+			expression: expressions.NewFunctionCall(
+				translator.LessOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "greater/success/false",
+			expression: expressions.NewFunctionCall(
+				translator.GreaterFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "greater/success/true",
+			expression: expressions.NewFunctionCall(
+				translator.GreaterFunctionName,
+				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "greater/error",
+			expression: expressions.NewFunctionCall(
+				translator.GreaterFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "greater or equal/success/false",
+			expression: expressions.NewFunctionCall(
+				translator.GreaterOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "greater or equal/success/true/greater",
+			expression: expressions.NewFunctionCall(
+				translator.GreaterOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "greater or equal/success/true/equal",
+			expression: expressions.NewFunctionCall(
+				translator.GreaterOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "greater or equal/error",
+			expression: expressions.NewFunctionCall(
+				translator.GreaterOrEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "addition/success/float64",
@@ -157,13 +349,40 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "negation",
+			name: "arithmetic negation",
 			expression: expressions.NewFunctionCall(
 				translator.ArithmeticNegationFunctionName,
 				[]expressions.Expression{expressions.NewNumber(23)},
 			),
 			wantResult: -23.0,
 			wantErr:    assert.NoError,
+		},
+		{
+			name: "logical negation/success/false",
+			expression: expressions.NewFunctionCall(
+				translator.LogicalNegationFunctionName,
+				[]expressions.Expression{expressions.NewIdentifier("false")},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "logical negation/success/true",
+			expression: expressions.NewFunctionCall(
+				translator.LogicalNegationFunctionName,
+				[]expressions.Expression{expressions.NewIdentifier("true")},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "logical negation/error",
+			expression: expressions.NewFunctionCall(
+				translator.LogicalNegationFunctionName,
+				[]expressions.Expression{expressions.NewIdentifier(translator.LogicalNegationFunctionName)},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "key accessor/index in range",
@@ -302,6 +521,30 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "bool/success/false",
+			expression: expressions.NewFunctionCall("bool", []expressions.Expression{
+				expressions.NewString(""),
+			}),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "bool/success/true",
+			expression: expressions.NewFunctionCall("bool", []expressions.Expression{
+				expressions.NewString("test"),
+			}),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "bool/error",
+			expression: expressions.NewFunctionCall("bool", []expressions.Expression{
+				expressions.NewIdentifier("bool"),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
 			name: "floor",
 			expression: expressions.NewFunctionCall("floor", []expressions.Expression{
 				expressions.NewNumber(2.5),
@@ -356,6 +599,22 @@ func TestValues(test *testing.T) {
 				expressions.NewNumber(-23),
 			}),
 			wantResult: 23.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "is_nan/false",
+			expression: expressions.NewFunctionCall("is_nan", []expressions.Expression{
+				expressions.NewNumber(23),
+			}),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "is_nan/true",
+			expression: expressions.NewFunctionCall("is_nan", []expressions.Expression{
+				expressions.NewIdentifier("nan"),
+			}),
+			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
@@ -654,6 +913,30 @@ func TestValues(test *testing.T) {
 			name: "str/error/unsupported type",
 			expression: expressions.NewFunctionCall("str", []expressions.Expression{
 				expressions.NewIdentifier("str"),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "strb/success/false",
+			expression: expressions.NewFunctionCall("strb", []expressions.Expression{
+				expressions.NewString(""),
+			}),
+			wantResult: types.NewPairFromText("false"),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "strb/success/true",
+			expression: expressions.NewFunctionCall("strb", []expressions.Expression{
+				expressions.NewString("test"),
+			}),
+			wantResult: types.NewPairFromText("true"),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "strb/error",
+			expression: expressions.NewFunctionCall("strb", []expressions.Expression{
+				expressions.NewIdentifier("strb"),
 			}),
 			wantResult: nil,
 			wantErr:    assert.Error,
