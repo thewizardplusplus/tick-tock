@@ -118,3 +118,32 @@ func TestNewBooleanFromGoBool(test *testing.T) {
 		})
 	}
 }
+
+func TestNegateBoolean(test *testing.T) {
+	type args struct {
+		value Boolean
+	}
+
+	for _, data := range []struct {
+		name string
+		args args
+		want Boolean
+	}{
+		{
+			name: "true",
+			args: args{True},
+			want: False,
+		},
+		{
+			name: "false",
+			args: args{False},
+			want: True,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := NegateBoolean(data.args.value)
+
+			assert.Equal(test, data.want, got)
+		})
+	}
+}

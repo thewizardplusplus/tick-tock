@@ -40,3 +40,12 @@ func NewBooleanFromGoBool(value bool) Boolean {
 
 	return False
 }
+
+// NegateBoolean ...
+func NegateBoolean(value Boolean) Boolean {
+	if value == False {
+		return True
+	}
+
+	return False
+}
