@@ -14,6 +14,16 @@ const (
 	Greater
 )
 
+// Equals ...
+func Equals(leftValue interface{}, rightValue interface{}) (bool, error) {
+	result, err := Compare(leftValue, rightValue)
+	if err != nil {
+		return false, errors.Wrapf(err, "unable to compare values for equality")
+	}
+
+	return result == Equal, nil
+}
+
 // Compare ...
 func Compare(leftValue interface{}, rightValue interface{}) (ComparisonResult, error) {
 	var result ComparisonResult

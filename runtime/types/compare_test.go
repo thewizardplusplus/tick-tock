@@ -6,6 +6,55 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestEquals(test *testing.T) {
+	type args struct {
+		leftValue  interface{}
+		rightValue interface{}
+	}
+
+	for _, data := range []struct {
+		name       string
+		args       args
+		wantResult assert.BoolAssertionFunc
+		wantErr    assert.ErrorAssertionFunc
+	}{
+		{
+			name: "success/equal",
+			args: args{
+				leftValue:  23.0,
+				rightValue: 23.0,
+			},
+			wantResult: assert.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/not equal",
+			args: args{
+				leftValue:  23.0,
+				rightValue: 42.0,
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "error",
+			args: args{
+				leftValue:  23.0,
+				rightValue: Nil{},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotResult, gotErr := Equals(data.args.leftValue, data.args.rightValue)
+
+			data.wantResult(test, gotResult)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestCompare(test *testing.T) {
 	type args struct {
 		leftValue  interface{}

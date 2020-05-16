@@ -44,12 +44,12 @@ func (pair *Pair) Size() int {
 
 // Equals ...
 func (pair *Pair) Equals(sample *Pair) (bool, error) {
-	result, err := pair.Compare(sample)
+	result, err := Equals(pair, sample)
 	if err != nil {
-		return false, errors.Wrapf(err, "unable to compare pairs")
+		return false, errors.Wrapf(err, "unable to compare pairs for equality")
 	}
 
-	return result == Equal, nil
+	return result, nil
 }
 
 // Compare ...
