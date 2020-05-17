@@ -19,10 +19,14 @@ send command = "send", identifier;
 set command = "set", identifier;
 
 expression = list construction;
-list construction = addition, [":", list construction];
+list construction = disjunction, [":", list construction];
+disjunction = conjunction, ["||", disjunction];
+conjunction = equality, ["&&", conjunction];
+equality = comparison, [("==" | "!="), equality];
+comparison = addition, [("<=" | "<" | ">=" | ">"), comparison];
 addition = multiplication, [("+" | "-"), addition];
 multiplication = unary, [("*" | "/" | "%"), multiplication];
-unary = ("-", unary) | accessor;
+unary = (("-" | "!"), unary) | accessor;
 
 accessor = atom, {list item access};
 list item access = "[", expression, "]";
