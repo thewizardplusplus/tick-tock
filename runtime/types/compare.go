@@ -16,6 +16,27 @@ const (
 
 // Equals ...
 func Equals(leftValue interface{}, rightValue interface{}) (bool, error) {
+	// if operands have different types, they aren't equal
+	switch leftValue.(type) {
+	case Nil:
+		if _, ok := rightValue.(Nil); !ok {
+			return false, nil
+		}
+	case float64:
+		if _, ok := rightValue.(float64); !ok {
+			return false, nil
+		}
+	case *Pair:
+		if _, ok := rightValue.(*Pair); !ok {
+			return false, nil
+		}
+	default:
+		return false, errors.Errorf(
+			"unsupported type %T of the left value for comparison for equality",
+			leftValue,
+		)
+	}
+
 	result, err := Compare(leftValue, rightValue)
 	if err != nil {
 		return false, errors.Wrapf(err, "unable to compare values for equality")

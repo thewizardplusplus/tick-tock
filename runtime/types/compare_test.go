@@ -28,7 +28,7 @@ func TestEquals(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "success/not equal",
+			name: "success/not equal/same types",
 			args: args{
 				leftValue:  23.0,
 				rightValue: 42.0,
@@ -37,10 +37,46 @@ func TestEquals(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "error",
+			name: "success/not equal/different types/Nil",
+			args: args{
+				leftValue:  Nil{},
+				rightValue: 23.0,
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/not equal/different types/float64",
 			args: args{
 				leftValue:  23.0,
+				rightValue: &Pair{12.0, &Pair{23.0, nil}},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/not equal/different types/*Pair",
+			args: args{
+				leftValue:  &Pair{12.0, &Pair{23.0, nil}},
 				rightValue: Nil{},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "error/unsupported type",
+			args: args{
+				leftValue:  func() {},
+				rightValue: Nil{},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error/unable to compare",
+			args: args{
+				leftValue:  &Pair{12.0, &Pair{23.0, nil}},
+				rightValue: &Pair{12.0, &Pair{Nil{}, nil}},
 			},
 			wantResult: assert.False,
 			wantErr:    assert.Error,

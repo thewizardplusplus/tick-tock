@@ -91,10 +91,19 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "equal/success/false",
+			name: "equal/success/false/same types",
 			expression: expressions.NewFunctionCall(
 				translator.EqualFunctionName,
 				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "equal/success/false/different types",
+			expression: expressions.NewFunctionCall(
+				translator.EqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
 			),
 			wantResult: types.False,
 			wantErr:    assert.NoError,
@@ -112,16 +121,28 @@ func TestValues(test *testing.T) {
 			name: "equal/error",
 			expression: expressions.NewFunctionCall(
 				translator.EqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+				[]expressions.Expression{
+					expressions.NewIdentifier(translator.EqualFunctionName),
+					expressions.NewIdentifier("nil"),
+				},
 			),
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "not equal/success/false",
+			name: "not equal/success/false/same types",
 			expression: expressions.NewFunctionCall(
 				translator.NotEqualFunctionName,
 				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "not equal/success/false/different types",
+			expression: expressions.NewFunctionCall(
+				translator.NotEqualFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
 			),
 			wantResult: types.True,
 			wantErr:    assert.NoError,
@@ -139,7 +160,10 @@ func TestValues(test *testing.T) {
 			name: "not equal/error",
 			expression: expressions.NewFunctionCall(
 				translator.NotEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
+				[]expressions.Expression{
+					expressions.NewIdentifier(translator.NotEqualFunctionName),
+					expressions.NewIdentifier("nil"),
+				},
 			),
 			wantResult: nil,
 			wantErr:    assert.Error,
