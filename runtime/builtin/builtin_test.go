@@ -1685,7 +1685,7 @@ func TestValues_input(test *testing.T) {
 			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
 				expressions.NewNumber(-1),
 			}),
-			wantResult: types.NewPairFromText("test #1\n"),
+			wantResult: types.NewPairFromText("test #1"),
 		},
 		{
 			name: "inln/all symbols/success/without symbols",
@@ -1696,7 +1696,7 @@ func TestValues_input(test *testing.T) {
 			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
 				expressions.NewNumber(-1),
 			}),
-			wantResult: types.NewPairFromText("\n"),
+			wantResult: (*types.Pair)(nil),
 		},
 		{
 			name: "inln/all symbols/error/with symbols",

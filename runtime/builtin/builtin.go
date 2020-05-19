@@ -379,6 +379,7 @@ var (
 				return types.Nil{}, nil
 			}
 
+			textBytes = textBytes[:len(textBytes)-1] // remove the line break
 			return types.NewPairFromText(string(textBytes)), nil
 		},
 		"out": func(text *types.Pair) (types.Nil, error) {
