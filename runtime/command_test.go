@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 func TestCommandGroup(test *testing.T) {
@@ -14,11 +15,14 @@ func TestCommandGroup(test *testing.T) {
 		name         string
 		makeCommands func(context context.Context, log *commandLog) CommandGroup
 		wantLog      []int
+		wantResult   interface{}
 		wantErr      assert.ErrorAssertionFunc
 	}{
 		{
 			name:         "success without commands",
 			makeCommands: func(context context.Context, log *commandLog) CommandGroup { return nil },
+			wantLog:      nil,
+			wantResult:   types.Nil{},
 			wantErr:      assert.NoError,
 		},
 		{
@@ -26,28 +30,31 @@ func TestCommandGroup(test *testing.T) {
 			makeCommands: func(context context.Context, log *commandLog) CommandGroup {
 				return newLoggableCommands(context, log, group(5), withCalls())
 			},
-			wantLog: []int{0, 1, 2, 3, 4},
-			wantErr: assert.NoError,
+			wantLog:    []int{0, 1, 2, 3, 4},
+			wantResult: 4,
+			wantErr:    assert.NoError,
 		},
 		{
 			name: "error",
 			makeCommands: func(context context.Context, log *commandLog) CommandGroup {
 				return newLoggableCommands(context, log, group(5), withErrOn(2))
 			},
-			wantLog: []int{0, 1, 2},
-			wantErr: assert.Error,
+			wantLog:    []int{0, 1, 2},
+			wantResult: nil,
+			wantErr:    assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			context := new(mocks.Context)
 			var log commandLog
 			commands := testData.makeCommands(context, &log)
-			err := commands.Run(context)
+			gotResult, gotErr := commands.Run(context)
 
 			mock.AssertExpectationsForObjects(test, context)
-			assert.Equal(test, testData.wantLog, log.commands)
 			checkCommands(test, commands)
-			testData.wantErr(test, err)
+			assert.Equal(test, testData.wantLog, log.commands)
+			assert.Equal(test, testData.wantResult, gotResult)
+			testData.wantErr(test, gotErr)
 		})
 	}
 }

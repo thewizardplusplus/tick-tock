@@ -65,8 +65,8 @@ func TestMessageGroup(test *testing.T) {
 			err := messages.ProcessMessage(context, testData.args.message)
 
 			mock.AssertExpectationsForObjects(test, context)
-			assert.Equal(test, testData.wantLog, log.commands)
 			checkMessages(test, messages)
+			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)
 		})
 	}

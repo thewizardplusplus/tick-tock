@@ -151,8 +151,8 @@ func TestActor_ProcessMessage(test *testing.T) {
 			err := actor.ProcessMessage(contextOriginal, testData.args.message)
 
 			mock.AssertExpectationsForObjects(test, contextCopy, contextOriginal)
-			assert.Equal(test, testData.wantLog, log.commands)
 			checkStates(test, actor.states)
+			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)
 		})
 	}

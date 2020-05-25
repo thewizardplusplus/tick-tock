@@ -34,7 +34,7 @@ func newLoggableCommand(log *commandLog, id int) loggableCommand {
 	return loggableCommand{new(mocks.Command), log, id}
 }
 
-func (command loggableCommand) Run(context context.Context) error {
+func (command loggableCommand) Run(context context.Context) (result interface{}, err error) {
 	command.log.registerCommand(command.id)
 	return command.mock.Run(context)
 }
@@ -108,7 +108,7 @@ func newLoggableCommands(
 				err = iotest.ErrTimeout
 			}
 
-			command.mock.On("Run", context).Return(err)
+			command.mock.On("Run", context).Return(command.id, err)
 		}
 
 		commands = append(commands, command)

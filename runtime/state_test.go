@@ -66,8 +66,8 @@ func TestStateGroup(test *testing.T) {
 			err := states.ProcessMessage(context, testData.args.state, testData.args.message)
 
 			mock.AssertExpectationsForObjects(test, context)
-			assert.Equal(test, testData.wantLog, log.commands)
 			checkStates(test, states)
+			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)
 		})
 	}

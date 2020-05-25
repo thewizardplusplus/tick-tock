@@ -116,8 +116,8 @@ func TestConcurrentActor(test *testing.T) {
 			synchronousWaiter.Wait()
 
 			mock.AssertExpectationsForObjects(test, contextCopy, contextOriginal, waiter, errorHandler)
-			assert.ElementsMatch(test, testData.wantLog, log.commands)
 			checkStates(test, actor.states)
+			assert.ElementsMatch(test, testData.wantLog, log.commands)
 		})
 	}
 }
