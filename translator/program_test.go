@@ -748,6 +748,23 @@ func TestTranslateCommands(test *testing.T) {
 			wantErr:   assert.NoError,
 		},
 		{
+			name: "success with the return command",
+			args: args{
+				commands: []*parser.Command{
+					{Send: pointer.ToString("one")},
+					{Send: pointer.ToString("two")},
+					{Return: true},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantCommands: runtime.CommandGroup{
+				commands.NewSendCommand("one"),
+				commands.NewSendCommand("two"),
+				commands.ReturnCommand{},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "success with commands (with an expression command and an existing identifier)",
 			args: args{
 				commands: []*parser.Command{
@@ -887,6 +904,19 @@ func TestTranslateCommands(test *testing.T) {
 			wantErr:      assert.Error,
 		},
 		{
+			name: "error with the return command",
+			args: args{
+				commands: []*parser.Command{
+					{Send: pointer.ToString("one")},
+					{Return: true},
+					{Send: pointer.ToString("two")},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantCommands: nil,
+			wantErr:      assert.Error,
+		},
+		{
 			name: "error with a second set command",
 			args: args{
 				commands: []*parser.Command{
@@ -927,6 +957,7 @@ func TestTranslateCommand(test *testing.T) {
 		wantDeclaredIdentifiers mapset.Set
 		wantCommand             runtime.Command
 		wantState               string
+		wantReturn              assert.BoolAssertionFunc
 		wantErr                 assert.ErrorAssertionFunc
 	}{
 		{
@@ -961,6 +992,7 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test", "test2"),
 			wantCommand:             commands.NewLetCommand("test2", expressions.NewNumber(23)),
 			wantState:               "",
+			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
 		{
@@ -995,6 +1027,7 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewLetCommand("test", expressions.NewNumber(23)),
 			wantState:               "",
+			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
 		{
@@ -1031,6 +1064,7 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             nil,
 			wantState:               "",
+			wantReturn:              assert.False,
 			wantErr:                 assert.Error,
 		},
 		{
@@ -1042,6 +1076,7 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewSendCommand("test"),
 			wantState:               "",
+			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
 		{
@@ -1053,6 +1088,7 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewSetCommand("test"),
 			wantState:               "test",
+			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
 		{
@@ -1064,6 +1100,7 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.ReturnCommand{},
 			wantState:               "",
+			wantReturn:              assert.True,
 			wantErr:                 assert.NoError,
 		},
 		{
@@ -1097,6 +1134,7 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewExpressionCommand(expressions.NewIdentifier("test")),
 			wantState:               "",
+			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
 		{
@@ -1130,16 +1168,18 @@ func TestTranslateCommand(test *testing.T) {
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             nil,
 			wantState:               "",
+			wantReturn:              assert.False,
 			wantErr:                 assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			gotCommand, gotState, err :=
+			gotCommand, gotState, gotReturn, err :=
 				translateCommand(testData.args.command, testData.args.declaredIdentifiers)
 
 			assert.Equal(test, testData.wantDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.wantCommand, gotCommand)
 			assert.Equal(test, testData.wantState, gotState)
+			testData.wantReturn(test, gotReturn)
 			testData.wantErr(test, err)
 		})
 	}

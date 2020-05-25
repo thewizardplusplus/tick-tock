@@ -115,9 +115,13 @@ func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Se
 ) {
 	localDeclaredIdentifiers := declaredIdentifiers.Clone()
 	for index, command := range commands {
-		translatedCommand, newSettedState, err := translateCommand(command, localDeclaredIdentifiers)
+		translatedCommand, newSettedState, didReturn, err :=
+			translateCommand(command, localDeclaredIdentifiers)
 		if err != nil {
 			return nil, "", errors.Wrapf(err, "unable to translate the command #%d", index)
+		}
+		if didReturn && index != len(commands)-1 {
+			return nil, "", errors.Errorf("unreachable commands after the command #%d", index)
 		}
 
 		translatedCommands = append(translatedCommands, translatedCommand)
@@ -138,13 +142,14 @@ func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Se
 func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 	translatedCommand runtime.Command,
 	settedState string,
+	didReturn bool,
 	err error,
 ) {
 	switch {
 	case command.Let != nil:
 		expression, err2 := translateExpression(command.Let.Expression, declaredIdentifiers)
 		if err2 != nil {
-			return nil, "", errors.Wrap(err2, "unable to translate the let command")
+			return nil, "", false, errors.Wrap(err2, "unable to translate the let command")
 		}
 
 		translatedCommand = commands.NewLetCommand(command.Let.Identifier, expression)
@@ -156,14 +161,15 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 		settedState = *command.Set
 	case command.Return:
 		translatedCommand = commands.ReturnCommand{}
+		didReturn = true
 	case command.Expression != nil:
 		expression, err2 := translateExpression(command.Expression, declaredIdentifiers)
 		if err2 != nil {
-			return nil, "", errors.Wrap(err2, "unable to translate the expression command")
+			return nil, "", false, errors.Wrap(err2, "unable to translate the expression command")
 		}
 
 		translatedCommand = commands.NewExpressionCommand(expression)
 	}
 
-	return translatedCommand, settedState, nil
+	return translatedCommand, settedState, didReturn, nil
 }
