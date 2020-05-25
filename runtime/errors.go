@@ -7,9 +7,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ErrUserExit ...
-var ErrUserExit = errors.New("user exit")
-
 // ErrorHandler ...
 //go:generate mockery -name=ErrorHandler -case=underscore
 type ErrorHandler interface {
@@ -32,13 +29,8 @@ func NewDefaultErrorHandler(writer io.Writer, exiter Exiter) DefaultErrorHandler
 
 // HandleError ...
 func (handler DefaultErrorHandler) HandleError(err error) {
-	var code int
-	if errors.Cause(err) != ErrUserExit {
-		handler.writer.Write([]byte(fmt.Sprintf("error: %s\n", err))) // nolint: gosec, errcheck
-		code = 1
-	}
-
-	handler.exiter(code)
+	fmt.Fprintf(handler.writer, "error: %s\n", err) // nolint: errcheck, gosec
+	handler.exiter(1)
 }
 
 func newUnknownStateError(state string) error {
