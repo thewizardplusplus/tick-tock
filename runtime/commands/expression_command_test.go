@@ -17,9 +17,10 @@ func TestExpressionCommand(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name    string
-		fields  fields
-		wantErr assert.ErrorAssertionFunc
+		name       string
+		fields     fields
+		wantResult interface{}
+		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success",
@@ -31,7 +32,8 @@ func TestExpressionCommand(test *testing.T) {
 					return expression
 				}(),
 			},
-			wantErr: assert.NoError,
+			wantResult: 2.3,
+			wantErr:    assert.NoError,
 		},
 		{
 			name: "error",
@@ -43,15 +45,17 @@ func TestExpressionCommand(test *testing.T) {
 					return expression
 				}(),
 			},
-			wantErr: assert.Error,
+			wantResult: nil,
+			wantErr:    assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			context := new(contextmocks.Context)
-			err := NewExpressionCommand(testData.fields.expression).Run(context)
+			gotResult, gotErr := NewExpressionCommand(testData.fields.expression).Run(context)
 
 			mock.AssertExpectationsForObjects(test, testData.fields.expression, context)
-			testData.wantErr(test, err)
+			assert.Equal(test, testData.wantResult, gotResult)
+			testData.wantErr(test, gotErr)
 		})
 	}
 }

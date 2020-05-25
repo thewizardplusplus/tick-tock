@@ -16,7 +16,6 @@ func NewExpressionCommand(expression expressions.Expression) ExpressionCommand {
 }
 
 // Run ...
-func (command ExpressionCommand) Run(context context.Context) error {
-	_, err := command.expression.Evaluate(context)
-	return err
+func (command ExpressionCommand) Run(context context.Context) (result interface{}, err error) {
+	return command.expression.Evaluate(context)
 }
