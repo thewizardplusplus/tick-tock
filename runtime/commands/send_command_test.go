@@ -6,14 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 func TestSendCommand(test *testing.T) {
 	context := new(mocks.Context)
 	context.On("SendMessage", "test").Return()
 
-	err := NewSendCommand("test").Run(context)
+	gotResult, gotErr := NewSendCommand("test").Run(context)
 
 	mock.AssertExpectationsForObjects(test, context)
-	assert.NoError(test, err)
+	assert.Equal(test, types.Nil{}, gotResult)
+	assert.NoError(test, gotErr)
 }
