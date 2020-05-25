@@ -7,6 +7,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ErrReturn ...
+var ErrReturn = errors.New("return")
+
 // ErrorHandler ...
 //go:generate mockery -name=ErrorHandler -case=underscore
 type ErrorHandler interface {

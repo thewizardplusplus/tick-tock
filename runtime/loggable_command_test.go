@@ -64,6 +64,7 @@ type loggableCommandConfig struct {
 	groupConfig
 
 	mode     loggableCommandMode
+	err      error
 	errIndex int
 }
 
@@ -84,6 +85,15 @@ func withCalls() loggableCommandOption {
 func withErrOn(index int) loggableCommandOption {
 	return func(config *loggableCommandConfig) {
 		config.mode = loggableCommandErr
+		config.err = iotest.ErrTimeout
+		config.errIndex = index
+	}
+}
+
+func withCustomErrOn(err error, index int) loggableCommandOption {
+	return func(config *loggableCommandConfig) {
+		config.mode = loggableCommandErr
+		config.err = err
 		config.errIndex = index
 	}
 }
@@ -105,7 +115,7 @@ func newLoggableCommands(
 		if commandConfig.mode == loggableCommandCalls || i <= commandConfig.moddedErrIndex() {
 			var err error
 			if i == commandConfig.moddedErrIndex() {
-				err = iotest.ErrTimeout
+				err = commandConfig.err
 			}
 
 			command.mock.On("Run", context).Return(command.id, err)

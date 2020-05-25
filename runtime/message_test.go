@@ -3,6 +3,7 @@ package runtime
 import (
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
@@ -47,7 +48,7 @@ func TestMessageGroup(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "error",
+			name: "common error",
 			makeMessages: func(context context.Context, log *commandLog) MessageGroup {
 				return newLoggableMessages(context, log, group(2), group(5), loggableCommandOptions{
 					"message_1": {withErrOn(2)},
@@ -56,6 +57,28 @@ func TestMessageGroup(test *testing.T) {
 			args:    args{"message_1"},
 			wantLog: []int{5, 6, 7},
 			wantErr: assert.Error,
+		},
+		{
+			name: "direct return error",
+			makeMessages: func(context context.Context, log *commandLog) MessageGroup {
+				return newLoggableMessages(context, log, group(2), group(5), loggableCommandOptions{
+					"message_1": {withCustomErrOn(ErrReturn, 2)},
+				})
+			},
+			args:    args{"message_1"},
+			wantLog: []int{5, 6, 7},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "wrapped return error",
+			makeMessages: func(context context.Context, log *commandLog) MessageGroup {
+				return newLoggableMessages(context, log, group(2), group(5), loggableCommandOptions{
+					"message_1": {withCustomErrOn(errors.Wrap(errors.Wrap(ErrReturn, "level #1"), "level #2"), 2)},
+				})
+			},
+			args:    args{"message_1"},
+			wantLog: []int{5, 6, 7},
+			wantErr: assert.NoError,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
