@@ -27,6 +27,7 @@ type Command struct {
 	Let        *LetCommand `parser:"@@"`
 	Send       *string     `parser:"| \"send\" @Ident"`
 	Set        *string     `parser:"| \"set\" @Ident"`
+	Return     bool        `parser:"| @\"return\""`
 	Expression *Expression `parser:"| @@"`
 }
 

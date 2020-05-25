@@ -59,6 +59,12 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name:    "Command/return",
+			args:    args{"return", new(Command)},
+			wantAST: &Command{Return: true},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "Command/expression",
 			args: args{"test()", new(Command)},
 			wantAST: &Command{
