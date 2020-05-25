@@ -13,10 +13,16 @@ message list = message, {message};
 message = "message", identifier, command list, ";";
 
 command list = command, {command};
-command = let command | send command | set command | expression;
+command =
+  let command
+  | send command
+  | set command
+  | return command
+  | expression;
 let command = "let", identifier, "=", expression;
 send command = "send", identifier;
 set command = "set", identifier;
+return command = "return";
 
 expression = list construction;
 list construction = disjunction, [":", list construction];
@@ -43,7 +49,7 @@ string = INTERPRETED STRING | RAW STRING;
 list definition = "[", [expression, {",", expression}, [","]], "]";
 function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 identifier = IDENTIFIER - key words;
-key words = "actor" | "state" | "message" | "let" | "send" | "set";
+key words = "actor" | "state" | "message" | "let" | "send" | "set" | "return";
 
 LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;
