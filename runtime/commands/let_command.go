@@ -17,12 +17,12 @@ func NewLetCommand(identifier string, expression expressions.Expression) LetComm
 }
 
 // Run ...
-func (command LetCommand) Run(context context.Context) error {
-	result, err := command.expression.Evaluate(context)
+func (command LetCommand) Run(context context.Context) (result interface{}, err error) {
+	result, err = command.expression.Evaluate(context)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	context.SetValue(command.identifier, result)
-	return nil
+	return result, nil
 }

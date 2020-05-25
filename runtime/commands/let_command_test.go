@@ -22,10 +22,11 @@ func TestLetCommand(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr assert.ErrorAssertionFunc
+		name       string
+		fields     fields
+		args       args
+		wantResult interface{}
+		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success",
@@ -46,7 +47,8 @@ func TestLetCommand(test *testing.T) {
 					return context
 				}(),
 			},
-			wantErr: assert.NoError,
+			wantResult: 2.3,
+			wantErr:    assert.NoError,
 		},
 		{
 			name: "error",
@@ -62,15 +64,17 @@ func TestLetCommand(test *testing.T) {
 			args: args{
 				context: new(contextmocks.Context),
 			},
-			wantErr: assert.Error,
+			wantResult: nil,
+			wantErr:    assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			err := NewLetCommand(testData.fields.identifier, testData.fields.expression).
+			gotResult, gotErr := NewLetCommand(testData.fields.identifier, testData.fields.expression).
 				Run(testData.args.context)
 
 			mock.AssertExpectationsForObjects(test, testData.fields.expression, testData.args.context)
-			testData.wantErr(test, err)
+			assert.Equal(test, testData.wantResult, gotResult)
+			testData.wantErr(test, gotErr)
 		})
 	}
 }
