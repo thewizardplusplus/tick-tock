@@ -1056,6 +1056,17 @@ func TestTranslateCommand(test *testing.T) {
 			wantErr:                 assert.NoError,
 		},
 		{
+			name: "Command/return",
+			args: args{
+				command:             &parser.Command{Return: true},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantDeclaredIdentifiers: mapset.NewSet("test"),
+			wantCommand:             commands.ReturnCommand{},
+			wantState:               "",
+			wantErr:                 assert.NoError,
+		},
+		{
 			name: "Command/expression/success",
 			args: args{
 				command: &parser.Command{

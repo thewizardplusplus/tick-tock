@@ -154,6 +154,8 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 	case command.Set != nil:
 		translatedCommand = commands.NewSetCommand(*command.Set)
 		settedState = *command.Set
+	case command.Return:
+		translatedCommand = commands.ReturnCommand{}
 	case command.Expression != nil:
 		expression, err2 := translateExpression(command.Expression, declaredIdentifiers)
 		if err2 != nil {
