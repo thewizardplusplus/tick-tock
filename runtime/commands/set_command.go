@@ -1,6 +1,9 @@
 package commands
 
-import "github.com/thewizardplusplus/tick-tock/runtime/context"
+import (
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
+)
 
 // SetCommand ...
 type SetCommand struct {
@@ -13,6 +16,10 @@ func NewSetCommand(state string) SetCommand {
 }
 
 // Run ...
-func (command SetCommand) Run(context context.Context) error {
-	return context.SetState(command.state)
+func (command SetCommand) Run(context context.Context) (result interface{}, err error) {
+	if err := context.SetState(command.state); err != nil {
+		return nil, err
+	}
+
+	return types.Nil{}, nil
 }

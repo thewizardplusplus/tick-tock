@@ -7,21 +7,26 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 func TestSetCommand(test *testing.T) {
 	for _, testData := range []struct {
 		name       string
 		settingErr error
+		wantResult interface{}
 		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
-			name:    "success",
-			wantErr: assert.NoError,
+			name:       "success",
+			settingErr: nil,
+			wantResult: types.Nil{},
+			wantErr:    assert.NoError,
 		},
 		{
 			name:       "error",
 			settingErr: iotest.ErrTimeout,
+			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 	} {
@@ -29,10 +34,11 @@ func TestSetCommand(test *testing.T) {
 			context := new(mocks.Context)
 			context.On("SetState", "test").Return(testData.settingErr)
 
-			err := NewSetCommand("test").Run(context)
+			gotResult, gotErr := NewSetCommand("test").Run(context)
 
 			mock.AssertExpectationsForObjects(test, context)
-			testData.wantErr(test, err)
+			assert.Equal(test, testData.wantResult, gotResult)
+			testData.wantErr(test, gotErr)
 		})
 	}
 }
