@@ -32,6 +32,24 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name:    "Atom/symbol/latin1",
+			args:    args{"'t'", new(Atom)},
+			wantAST: &Atom{Symbol: pointer.ToString("t")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Atom/symbol/not latin1",
+			args:    args{"'т'", new(Atom)},
+			wantAST: &Atom{Symbol: pointer.ToString("т")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Atom/symbol/escape sequence",
+			args:    args{`'\n'`, new(Atom)},
+			wantAST: &Atom{Symbol: pointer.ToString("\n")},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Atom/string/interpreted/single-quoted",
 			args:    args{`'line #1\nline #2'`, new(Atom)},
 			wantAST: &Atom{String: pointer.ToString("line #1\nline #2")},

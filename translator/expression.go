@@ -1,6 +1,8 @@
 package translator
 
 import (
+	"unicode/utf8"
+
 	mapset "github.com/deckarep/golang-set"
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/parser"
@@ -295,6 +297,9 @@ func translateAtom(
 	switch {
 	case atom.Number != nil:
 		expression = expressions.NewNumber(*atom.Number)
+	case atom.Symbol != nil:
+		symbol, _ := utf8.DecodeRuneInString(*atom.Symbol)
+		expression = expressions.NewNumber(float64(symbol))
 	case atom.String != nil:
 		expression = expressions.NewString(*atom.String)
 	case atom.Identifier != nil:

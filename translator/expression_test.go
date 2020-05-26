@@ -1654,6 +1654,24 @@ func TestTranslateAtom(test *testing.T) {
 			wantErr:        assert.NoError,
 		},
 		{
+			name: "Atom/symbol/latin1",
+			args: args{
+				atom:                &parser.Atom{Symbol: pointer.ToString("t")},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewNumber(116),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "Atom/symbol/not latin1",
+			args: args{
+				atom:                &parser.Atom{Symbol: pointer.ToString("т")},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewNumber(1090),
+			wantErr:        assert.NoError,
+		},
+		{
 			name: "Atom/string",
 			args: args{
 				atom:                &parser.Atom{String: pointer.ToString("test")},

@@ -44,7 +44,7 @@ atom =
   | function call
   | identifier
   | ("(", expression, ")");
-number = INTEGER NUMBER | FLOATING-POINT NUMBER;
+number = INTEGER NUMBER | FLOATING-POINT NUMBER | SYMBOL;
 string =
   SINGLE-QUOTED INTERPRETED STRING
   | DOUBLE-QUOTED INTERPRETED STRING
@@ -58,6 +58,7 @@ LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;
 INTEGER NUMBER = ? /\b((0x[\da-f]+)|(0[0-7]+)|(\d+(e\d+)?)|(\d+e[\+\-]\d+))\b/i ?;
 FLOATING-POINT NUMBER = ? /(\.\d+(e[\+\-]\d+)?)\b|\b\d+\.\d*((e[\+\-]\d+)?\b)?/i ?;
+SYMBOL = ? /'(\\x[\da-f]{2}|\\.|[^'\n])'/i ?;
 SINGLE-QUOTED INTERPRETED STRING = ? /'(\\x[\da-f]{2}|\\.|[^'\n])*?'/i ?;
 DOUBLE-QUOTED INTERPRETED STRING = ? /"(\\x[\da-f]{2}|\\.|[^"\n])*?"/i ?;
 RAW STRING = ? /`[^`]*?`/ ?
