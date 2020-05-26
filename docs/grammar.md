@@ -45,7 +45,10 @@ atom =
   | identifier
   | ("(", expression, ")");
 number = INTEGER NUMBER | FLOATING-POINT NUMBER;
-string = INTERPRETED STRING | RAW STRING;
+string =
+  SINGLE-QUOTED INTERPRETED STRING
+  | DOUBLE-QUOTED INTERPRETED STRING
+  | RAW STRING;
 list definition = "[", [expression, {",", expression}, [","]], "]";
 function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 identifier = IDENTIFIER - key words;
@@ -55,7 +58,8 @@ LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;
 INTEGER NUMBER = ? /\b((0x[\da-f]+)|(0[0-7]+)|(\d+(e\d+)?)|(\d+e[\+\-]\d+))\b/i ?;
 FLOATING-POINT NUMBER = ? /(\.\d+(e[\+\-]\d+)?)\b|\b\d+\.\d*((e[\+\-]\d+)?\b)?/i ?;
-INTERPRETED STRING = ? /"(\\x[\da-f]{2}|\\.|[^"\n])*?"/i ?;
+SINGLE-QUOTED INTERPRETED STRING = ? /'(\\x[\da-f]{2}|\\.|[^'\n])*?'/i ?;
+DOUBLE-QUOTED INTERPRETED STRING = ? /"(\\x[\da-f]{2}|\\.|[^"\n])*?"/i ?;
 RAW STRING = ? /`[^`]*?`/ ?
 IDENTIFIER = ? /[a-z_]\w*/i ?;
 ```

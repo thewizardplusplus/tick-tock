@@ -28,7 +28,18 @@
     'name': 'constant.numeric.floating-point.ticktock'
   }
 
-  # interpreted string literals
+  # interpreted string literals/single-quoted
+  {
+    'begin': "'"
+    'end': "'"
+    'name': 'string.quoted.single.ticktock'
+    'patterns': [{
+      'match': '\\\\([0-7]{3}|[abfnrtv\\\\\'"]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})'
+      'name': 'constant.character.escape.ticktock'
+    }]
+  }
+
+  # interpreted string literals/double-quoted
   {
     'begin': '"'
     'end': '"'

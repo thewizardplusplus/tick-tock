@@ -32,15 +32,27 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Atom/string/interpreted",
-			args:    args{`"test"`, new(Atom)},
-			wantAST: &Atom{String: pointer.ToString("test")},
+			name:    "Atom/string/interpreted/single-quoted",
+			args:    args{`'line #1\nline #2'`, new(Atom)},
+			wantAST: &Atom{String: pointer.ToString("line #1\nline #2")},
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Atom/string/raw",
-			args:    args{"`test`", new(Atom)},
-			wantAST: &Atom{String: pointer.ToString("test")},
+			name:    "Atom/string/interpreted/double-quoted",
+			args:    args{`"line #1\nline #2"`, new(Atom)},
+			wantAST: &Atom{String: pointer.ToString("line #1\nline #2")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Atom/string/raw/single line",
+			args:    args{"`line #1\\nline #2`", new(Atom)},
+			wantAST: &Atom{String: pointer.ToString("line #1\\nline #2")},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Atom/string/raw/few lines",
+			args:    args{"`line #1\nline #2`", new(Atom)},
+			wantAST: &Atom{String: pointer.ToString("line #1\nline #2")},
 			wantErr: assert.NoError,
 		},
 		{
