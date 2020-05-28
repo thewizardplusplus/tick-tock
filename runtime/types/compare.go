@@ -39,7 +39,7 @@ func Equals(leftValue interface{}, rightValue interface{}) (bool, error) {
 
 	result, err := Compare(leftValue, rightValue)
 	if err != nil {
-		return false, errors.Wrapf(err, "unable to compare values for equality")
+		return false, errors.Wrap(err, "unable to compare values for equality")
 	}
 
 	return result == Equal, nil
@@ -89,7 +89,7 @@ func Compare(leftValue interface{}, rightValue interface{}) (ComparisonResult, e
 
 		var err error
 		if result, err = typedLeftValue.Compare(typedRightValue); err != nil {
-			return 0, errors.Wrapf(err, "unable to compare pairs")
+			return 0, errors.Wrap(err, "unable to compare pairs")
 		}
 	default:
 		return 0, errors.Errorf("unsupported type %T of the left value for comparison", leftValue)

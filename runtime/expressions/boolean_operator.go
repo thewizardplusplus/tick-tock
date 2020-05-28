@@ -28,13 +28,13 @@ func (expression BooleanOperator) Evaluate(
 ) (result interface{}, err error) {
 	leftResult, err := expression.leftOperand.Evaluate(context)
 	if err != nil {
-		return nil, errors.Wrapf(err, "unable to evaluate the left operand of the boolean operator")
+		return nil, errors.Wrap(err, "unable to evaluate the left operand of the boolean operator")
 	}
 
 	leftBooleanResult, err := types.NewBoolean(leftResult)
 	if err != nil {
 		return nil,
-			errors.Wrapf(err, "unable to convert the left operand of the boolean operator to boolean")
+			errors.Wrap(err, "unable to convert the left operand of the boolean operator to boolean")
 	}
 	if leftBooleanResult == expression.valueForEarlyExit {
 		return leftResult, nil
@@ -42,7 +42,7 @@ func (expression BooleanOperator) Evaluate(
 
 	rightResult, err := expression.rightOperand.Evaluate(context)
 	if err != nil {
-		return nil, errors.Wrapf(err, "unable to evaluate the right operand of the boolean operator")
+		return nil, errors.Wrap(err, "unable to evaluate the right operand of the boolean operator")
 	}
 
 	return rightResult, nil

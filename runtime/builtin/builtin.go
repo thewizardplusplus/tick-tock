@@ -47,7 +47,7 @@ var (
 		translator.EqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
 			isEqual, err := types.Equals(a, b)
 			if err != nil {
-				return 0, errors.Wrapf(err, "unable to compare values for equality")
+				return 0, errors.Wrap(err, "unable to compare values for equality")
 			}
 
 			return types.NewBooleanFromGoBool(isEqual), nil
@@ -55,7 +55,7 @@ var (
 		translator.NotEqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
 			isEqual, err := types.Equals(a, b)
 			if err != nil {
-				return 0, errors.Wrapf(err, "unable to compare values for equality")
+				return 0, errors.Wrap(err, "unable to compare values for equality")
 			}
 
 			return types.NewBooleanFromGoBool(!isEqual), nil
@@ -63,7 +63,7 @@ var (
 		translator.LessFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
 			compareResult, err := types.Compare(a, b)
 			if err != nil {
-				return 0, errors.Wrapf(err, "unable to compare values")
+				return 0, errors.Wrap(err, "unable to compare values")
 			}
 
 			booleanResult := compareResult == types.Less
@@ -72,7 +72,7 @@ var (
 		translator.LessOrEqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
 			compareResult, err := types.Compare(a, b)
 			if err != nil {
-				return 0, errors.Wrapf(err, "unable to compare values")
+				return 0, errors.Wrap(err, "unable to compare values")
 			}
 
 			booleanResult := compareResult == types.Less || compareResult == types.Equal
@@ -81,7 +81,7 @@ var (
 		translator.GreaterFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
 			compareResult, err := types.Compare(a, b)
 			if err != nil {
-				return 0, errors.Wrapf(err, "unable to compare values")
+				return 0, errors.Wrap(err, "unable to compare values")
 			}
 
 			booleanResult := compareResult == types.Greater
@@ -90,7 +90,7 @@ var (
 		translator.GreaterOrEqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
 			compareResult, err := types.Compare(a, b)
 			if err != nil {
-				return 0, errors.Wrapf(err, "unable to compare values")
+				return 0, errors.Wrap(err, "unable to compare values")
 			}
 
 			booleanResult := compareResult == types.Greater || compareResult == types.Equal
