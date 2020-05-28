@@ -89,13 +89,14 @@ type Accessor struct {
 
 // Atom ...
 type Atom struct {
-	Number         *float64        `parser:"@Int | @Float"`
-	Symbol         *string         `parser:"| @Char"`
-	String         *string         `parser:"| @String | @RawString"`
-	ListDefinition *ListDefinition `parser:"| @@"`
-	FunctionCall   *FunctionCall   `parser:"| @@"`
-	Identifier     *string         `parser:"| @Ident"`
-	Expression     *Expression     `parser:"| \"(\" @@ \")\""`
+	Number                *float64               `parser:"@Int | @Float"`
+	Symbol                *string                `parser:"| @Char"`
+	String                *string                `parser:"| @String | @RawString"`
+	ListDefinition        *ListDefinition        `parser:"| @@"`
+	FunctionCall          *FunctionCall          `parser:"| @@"`
+	ConditionalExpression *ConditionalExpression `parser:"| @@"`
+	Identifier            *string                `parser:"| @Ident"`
+	Expression            *Expression            `parser:"| \"(\" @@ \")\""`
 }
 
 // ListDefinition ...
@@ -107,4 +108,15 @@ type ListDefinition struct {
 type FunctionCall struct {
 	Name      string        `parser:"@Ident"`
 	Arguments []*Expression `parser:"\"(\" [ @@ { \",\" @@ } [ \",\" ] ] \")\""`
+}
+
+// ConditionalExpression ...
+type ConditionalExpression struct {
+	ConditionalCases []*ConditionalCase `parser:"\"when\" { @@ } \";\""`
+}
+
+// ConditionalCase ...
+type ConditionalCase struct {
+	Condition *Expression `parser:"\"=\" \">\" @@"`
+	Commands  []*Command  `parser:"{ @@ }"`
 }

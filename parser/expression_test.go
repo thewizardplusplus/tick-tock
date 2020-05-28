@@ -456,6 +456,368 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "Atom/conditional expression/single conditional case/nonempty",
+			args: args{"when => 12 23 42;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/conditional expression/single conditional case/empty",
+			args: args{"when => 12;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/conditional expression/few conditional cases/nonempty",
+			args: args{"when => 12 23 42 => 13 24 43 => 14 25 44;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(13)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(24)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(43)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(14)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(25)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											Disjunction: &Disjunction{
+												Conjunction: &Conjunction{
+													Equality: &Equality{
+														Comparison: &Comparison{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(44)}}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/conditional expression/few conditional cases/empty",
+			args: args{"when => 12 => 23 => 42;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Atom/conditional expression/without conditional cases",
+			args:    args{"when;", new(Atom)},
+			wantAST: &Atom{ConditionalExpression: &ConditionalExpression{}},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "Atom/expression",
 			args: args{"(23)", new(Atom)},
 			wantAST: &Atom{
