@@ -27,23 +27,21 @@ func NewConditionalExpression(conditionalCases []ConditionalCase) ConditionalExp
 func (expression ConditionalExpression) Evaluate(
 	context context.Context,
 ) (result interface{}, err error) {
-	for conditionalCaseIndex, conditionalCase := range expression.conditionalCases {
+	for index, conditionalCase := range expression.conditionalCases {
 		contextCopy := context.Copy()
 		conditionResult, err := conditionalCase.Condition.Evaluate(contextCopy)
 		if err != nil {
-			return nil, errors.Wrapf(err, "unable to evaluate the condition #%d", conditionalCaseIndex)
+			return nil, errors.Wrapf(err, "unable to evaluate the condition #%d", index)
 		}
 
 		conditionBooleanResult, err := types.NewBoolean(conditionResult)
 		if err != nil {
-			return nil,
-				errors.Wrapf(err, "unable to convert the condition #%d to boolean", conditionalCaseIndex)
+			return nil, errors.Wrapf(err, "unable to convert the condition #%d to boolean", index)
 		}
 		if conditionBooleanResult == types.True {
 			commandResult, err := conditionalCase.Command.Run(contextCopy)
 			if err != nil {
-				return nil,
-					errors.Wrapf(err, "unable to evaluate the command of the condition #%d", conditionalCaseIndex)
+				return nil, errors.Wrapf(err, "unable to evaluate the command of the condition #%d", index)
 			}
 
 			return commandResult, nil
