@@ -10,7 +10,7 @@ import (
 // ConditionalCase ...
 type ConditionalCase struct {
 	Condition Expression
-	Commands  runtime.CommandGroup
+	Command   runtime.Command
 }
 
 // ConditionalExpression ...
@@ -40,13 +40,13 @@ func (expression ConditionalExpression) Evaluate(
 				errors.Wrapf(err, "unable to convert the condition #%d to boolean", conditionalCaseIndex)
 		}
 		if conditionBooleanResult == types.True {
-			commandsResult, err := conditionalCase.Commands.Run(contextCopy)
+			commandResult, err := conditionalCase.Command.Run(contextCopy)
 			if err != nil {
 				return nil,
-					errors.Wrapf(err, "unable to evaluate commands of the condition #%d", conditionalCaseIndex)
+					errors.Wrapf(err, "unable to evaluate the command of the condition #%d", conditionalCaseIndex)
 			}
 
-			return commandsResult, nil
+			return commandResult, nil
 		}
 	}
 

@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/mocks"
 )
@@ -22,14 +21,8 @@ func NewSignedCommand(sign string) SignedCommand {
 
 func TestNewConditionalExpression(test *testing.T) {
 	conditionalCases := []ConditionalCase{
-		{
-			Condition: NewSignedExpression("one"),
-			Commands:  []runtime.Command{NewSignedCommand("one.one"), NewSignedCommand("one.two")},
-		},
-		{
-			Condition: NewSignedExpression("two"),
-			Commands:  []runtime.Command{NewSignedCommand("two.one"), NewSignedCommand("two.two")},
-		},
+		{NewSignedExpression("one-condition"), NewSignedCommand("one-command")},
+		{NewSignedExpression("two-condition"), NewSignedCommand("two-command")},
 	}
 	got := NewConditionalExpression(conditionalCases)
 
@@ -70,10 +63,6 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 
 func checkConditionalCases(test *testing.T, conditionalCases []ConditionalCase) {
 	for _, conditionalCase := range conditionalCases {
-		mock.AssertExpectationsForObjects(test, conditionalCase.Condition)
-
-		for _, command := range conditionalCase.Commands {
-			mock.AssertExpectationsForObjects(test, command)
-		}
+		mock.AssertExpectationsForObjects(test, conditionalCase.Condition, conditionalCase.Command)
 	}
 }
