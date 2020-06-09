@@ -1,18 +1,12 @@
 ### ![](logo/logo.png) Грамматика
 
 ```
-program = actor list;
+program = {actor};
 
-actor list = actor, {actor};
-actor = "actor", state list, ";";
+actor = "actor", state, {state}, ";";
+state = "state", identifier, {message}, ";";
+message = "message", identifier, {command}, ";";
 
-state list = state, {state};
-state = "state", identifier, message list, ";";
-
-message list = message, {message};
-message = "message", identifier, command list, ";";
-
-command list = command, {command};
 command =
   let command
   | send command
@@ -53,7 +47,7 @@ string =
 list definition = "[", [expression, {",", expression}, [","]], "]";
 function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 conditional expression = "when", {conditional case}, ";";
-conditional case = "=>", expression, command list;
+conditional case = "=>", expression, {command};
 identifier = IDENTIFIER - key words;
 key words = "actor" | "state" | "message" | "let" | "send" | "set" | "return";
 
