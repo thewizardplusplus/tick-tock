@@ -7,6 +7,8 @@ import (
 	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/thewizardplusplus/tick-tock/parser"
+	"github.com/thewizardplusplus/tick-tock/runtime"
+	"github.com/thewizardplusplus/tick-tock/runtime/commands"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
@@ -2504,6 +2506,896 @@ func TestTranslateFunctionCall(test *testing.T) {
 		test.Run(data.name, func(test *testing.T) {
 			gotExpression, gotErr :=
 				translateFunctionCall(data.args.functionCall, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
+func TestTranslateConditionalExpression(test *testing.T) {
+	type args struct {
+		conditionalExpression *parser.ConditionalExpression
+		declaredIdentifiers   mapset.Set
+	}
+
+	for _, data := range []struct {
+		name           string
+		args           args
+		wantExpression expressions.Expression
+		wantErr        assert.ErrorAssertionFunc
+	}{
+		{
+			name: "ConditionalExpression/success/single conditional case/nonempty",
+			args: args{
+				conditionalExpression: &parser.ConditionalExpression{
+					ConditionalCases: []*parser.ConditionalCase{
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(12),
+					Command: runtime.CommandGroup{
+						commands.NewExpressionCommand(expressions.NewNumber(23)),
+						commands.NewExpressionCommand(expressions.NewNumber(42)),
+					},
+				},
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ConditionalExpression/success/single conditional case/empty",
+			args: args{
+				conditionalExpression: &parser.ConditionalExpression{
+					ConditionalCases: []*parser.ConditionalCase{
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(12),
+					Command:   runtime.CommandGroup(nil),
+				},
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ConditionalExpression/success/few conditional cases/nonempty",
+			args: args{
+				conditionalExpression: &parser.ConditionalExpression{
+					ConditionalCases: []*parser.ConditionalCase{
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(13)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(24)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(43)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(14)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(25)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(44)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(12),
+					Command: runtime.CommandGroup{
+						commands.NewExpressionCommand(expressions.NewNumber(23)),
+						commands.NewExpressionCommand(expressions.NewNumber(42)),
+					},
+				},
+				{
+					Condition: expressions.NewNumber(13),
+					Command: runtime.CommandGroup{
+						commands.NewExpressionCommand(expressions.NewNumber(24)),
+						commands.NewExpressionCommand(expressions.NewNumber(43)),
+					},
+				},
+				{
+					Condition: expressions.NewNumber(14),
+					Command: runtime.CommandGroup{
+						commands.NewExpressionCommand(expressions.NewNumber(25)),
+						commands.NewExpressionCommand(expressions.NewNumber(44)),
+					},
+				},
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ConditionalExpression/success/few conditional cases/empty",
+			args: args{
+				conditionalExpression: &parser.ConditionalExpression{
+					ConditionalCases: []*parser.ConditionalCase{
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(13)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(14)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(12),
+					Command:   runtime.CommandGroup(nil),
+				},
+				{
+					Condition: expressions.NewNumber(13),
+					Command:   runtime.CommandGroup(nil),
+				},
+				{
+					Condition: expressions.NewNumber(14),
+					Command:   runtime.CommandGroup(nil),
+				},
+			}),
+			wantErr: assert.NoError,
+		},
+		{
+			name: "ConditionalExpression/success/without conditional cases",
+			args: args{
+				conditionalExpression: &parser.ConditionalExpression{},
+				declaredIdentifiers:   mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression(nil),
+			wantErr:        assert.NoError,
+		},
+		{
+			name: "ConditionalExpression/error/condition translating",
+			args: args{
+				conditionalExpression: &parser.ConditionalExpression{
+					ConditionalCases: []*parser.ConditionalCase{
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(13)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(24)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(43)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{
+																	Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(25)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(44)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "ConditionalExpression/error/command translating",
+			args: args{
+				conditionalExpression: &parser.ConditionalExpression{
+					ConditionalCases: []*parser.ConditionalCase{
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(13)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(24)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(43)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(14)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*parser.Command{
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(25)}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &parser.Expression{
+										ListConstruction: &parser.ListConstruction{
+											Disjunction: &parser.Disjunction{
+												Conjunction: &parser.Conjunction{
+													Equality: &parser.Equality{
+														Comparison: &parser.Comparison{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{
+																			Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotErr :=
+				translateConditionalExpression(data.args.conditionalExpression, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			data.wantErr(test, gotErr)
