@@ -42,6 +42,7 @@ atom =
   | string
   | list definition
   | function call
+  | conditional expression
   | identifier
   | ("(", expression, ")");
 number = INTEGER NUMBER | FLOATING-POINT NUMBER | SYMBOL;
@@ -51,6 +52,8 @@ string =
   | RAW STRING;
 list definition = "[", [expression, {",", expression}, [","]], "]";
 function call = identifier, "(", [expression, {",", expression}, [","]], ")";
+conditional expression = "when", {conditional case}, ";";
+conditional case = "=>", expression, command list;
 identifier = IDENTIFIER - key words;
 key words = "actor" | "state" | "message" | "let" | "send" | "set" | "return";
 
