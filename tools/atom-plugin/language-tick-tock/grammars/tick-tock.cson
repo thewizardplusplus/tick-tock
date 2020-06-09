@@ -59,7 +59,7 @@
 
   # keywords
   {
-    'match': '\\b(actor|state|message|let|send|set|return)\\b'
+    'match': '\\b(actor|state|message|let|send|set|return|when)\\b'
     'name': 'keyword.ticktock'
   }
 
@@ -84,7 +84,7 @@
   # operators
   {
     'match': '[:|&=<>+\\-*/%!]'
-    'name': 'keyword.operator.arithmetic.ticktock'
+    'name': 'keyword.operator.ticktock'
   }
 
   # delimiters
