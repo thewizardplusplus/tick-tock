@@ -1,0 +1,17 @@
+// https://10print.org/
+actor
+  state __initialization__
+    message __initialize__
+      let factor = random()
+      let symbol = when
+        => factor < 0.5
+          `/`
+        => true
+          `\`
+      ;
+      out(symbol)
+
+      send __initialize__
+    ;
+  ;
+;
