@@ -107,7 +107,7 @@ Tick-tock — интерпретируемый высокоуровневый я
 
 ```
 "message", identifier,
-  command, {command},
+  {command},
 ";"
 ```
 
@@ -121,7 +121,7 @@ Tick-tock — интерпретируемый высокоуровневый я
 
 ```
 "state", identifier,
-  message, {message},
+  {message},
 ";"
 ```
 
