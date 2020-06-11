@@ -144,7 +144,7 @@ func translateComparison(
 	comparison *parser.Comparison,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateAddition(comparison.Addition, declaredIdentifiers)
+	argumentOne, _, err := translateAddition(comparison.Addition, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the addition")
 	}
@@ -177,18 +177,23 @@ func translateComparison(
 func translateAddition(
 	addition *parser.Addition,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	argumentOne, _, err := translateMultiplication(addition.Multiplication, declaredIdentifiers)
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err :=
+		translateMultiplication(addition.Multiplication, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the multiplication")
+		return nil, nil, errors.Wrap(err, "unable to translate the multiplication")
 	}
 	if addition.Addition == nil {
-		return argumentOne, nil
+		return argumentOne, settedStates, nil
 	}
 
-	argumentTwo, err := translateAddition(addition.Addition, declaredIdentifiers)
+	argumentTwo, settedStates2, err := translateAddition(addition.Addition, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the addition")
+		return nil, nil, errors.Wrap(err, "unable to translate the addition")
 	}
 
 	var functionName string
@@ -199,9 +204,11 @@ func translateAddition(
 		functionName = SubtractionFunctionName
 	}
 
-	expression :=
+	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	return expression, nil
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
 }
 
 func translateMultiplication(
