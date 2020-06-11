@@ -612,10 +612,11 @@ func TestTranslateEquality(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name           string
-		args           args
-		wantExpression expressions.Expression
-		wantErr        assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "Equality/nonempty/success",
@@ -664,7 +665,8 @@ func TestTranslateEquality(test *testing.T) {
 					expressions.NewNumber(42),
 				}),
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Equality/nonempty/error",
@@ -725,8 +727,9 @@ func TestTranslateEquality(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewNumber(23),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewNumber(23),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Equality/empty/error",
@@ -749,9 +752,11 @@ func TestTranslateEquality(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotExpression, gotErr := translateEquality(data.args.equality, data.args.declaredIdentifiers)
+			gotExpression, gotSettedStates, gotErr :=
+				translateEquality(data.args.equality, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
 			data.wantErr(test, gotErr)
 		})
 	}

@@ -93,7 +93,7 @@ func translateConjunction(
 	conjunction *parser.Conjunction,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateEquality(conjunction.Equality, declaredIdentifiers)
+	argumentOne, _, err := translateEquality(conjunction.Equality, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the equality")
 	}
@@ -113,18 +113,22 @@ func translateConjunction(
 func translateEquality(
 	equality *parser.Equality,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	argumentOne, _, err := translateComparison(equality.Comparison, declaredIdentifiers)
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err := translateComparison(equality.Comparison, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the comparison")
+		return nil, nil, errors.Wrap(err, "unable to translate the comparison")
 	}
 	if equality.Equality == nil {
-		return argumentOne, nil
+		return argumentOne, settedStates, nil
 	}
 
-	argumentTwo, err := translateEquality(equality.Equality, declaredIdentifiers)
+	argumentTwo, settedStates2, err := translateEquality(equality.Equality, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the equality")
+		return nil, nil, errors.Wrap(err, "unable to translate the equality")
 	}
 
 	var functionName string
@@ -135,9 +139,11 @@ func translateEquality(
 		functionName = NotEqualFunctionName
 	}
 
-	expression :=
+	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	return expression, nil
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
 }
 
 func translateComparison(
