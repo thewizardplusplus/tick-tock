@@ -178,7 +178,7 @@ func translateAddition(
 	addition *parser.Addition,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateMultiplication(addition.Multiplication, declaredIdentifiers)
+	argumentOne, _, err := translateMultiplication(addition.Multiplication, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the multiplication")
 	}
@@ -207,18 +207,23 @@ func translateAddition(
 func translateMultiplication(
 	multiplication *parser.Multiplication,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	argumentOne, _, err := translateUnary(multiplication.Unary, declaredIdentifiers)
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err := translateUnary(multiplication.Unary, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the unary")
+		return nil, nil, errors.Wrap(err, "unable to translate the unary")
 	}
 	if multiplication.Multiplication == nil {
-		return argumentOne, nil
+		return argumentOne, settedStates, nil
 	}
 
-	argumentTwo, err := translateMultiplication(multiplication.Multiplication, declaredIdentifiers)
+	argumentTwo, settedStates2, err :=
+		translateMultiplication(multiplication.Multiplication, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the multiplication")
+		return nil, nil, errors.Wrap(err, "unable to translate the multiplication")
 	}
 
 	var functionName string
@@ -231,9 +236,11 @@ func translateMultiplication(
 		functionName = ModuloFunctionName
 	}
 
-	expression :=
+	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	return expression, nil
+	settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
 }
 
 func translateUnary(
