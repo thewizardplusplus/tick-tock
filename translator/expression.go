@@ -381,7 +381,7 @@ func translateAtom(
 			return nil, nil, errors.Wrap(err, "unable to translate the list definition")
 		}
 	case atom.FunctionCall != nil:
-		expression, err = translateFunctionCall(atom.FunctionCall, declaredIdentifiers)
+		expression, settedStates, err = translateFunctionCall(atom.FunctionCall, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to translate the function call")
 		}
@@ -438,16 +438,21 @@ func translateListDefinition(
 func translateFunctionCall(
 	functionCall *parser.FunctionCall,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
 	if !declaredIdentifiers.Contains(functionCall.Name) {
-		return nil, errors.Errorf("unknown function %s", functionCall.Name)
+		return nil, nil, errors.Errorf("unknown function %s", functionCall.Name)
 	}
 
 	var arguments []expressions.Expression
+	settedStates = mapset.NewSet()
 	for index, argument := range functionCall.Arguments {
-		result, _, err := translateExpression(argument, declaredIdentifiers)
+		result, settedStates2, err := translateExpression(argument, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrapf(
+			return nil, nil, errors.Wrapf(
 				err,
 				"unable to translate the argument #%d for the function %s",
 				index,
@@ -456,10 +461,11 @@ func translateFunctionCall(
 		}
 
 		arguments = append(arguments, result)
+		settedStates = settedStates.Union(settedStates2)
 	}
 
-	expression := expressions.NewFunctionCall(functionCall.Name, arguments)
-	return expression, nil
+	expression = expressions.NewFunctionCall(functionCall.Name, arguments)
+	return expression, settedStates, nil
 }
 
 func translateConditionalExpression(

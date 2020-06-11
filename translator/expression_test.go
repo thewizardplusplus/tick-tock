@@ -2778,10 +2778,11 @@ func TestTranslateFunctionCall(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name           string
-		args           args
-		wantExpression expressions.Expression
-		wantErr        assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "FunctionCall/success/few arguments",
@@ -2855,7 +2856,8 @@ func TestTranslateFunctionCall(test *testing.T) {
 				expressions.NewNumber(23),
 				expressions.NewNumber(42),
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "FunctionCall/success/no arguments",
@@ -2866,8 +2868,9 @@ func TestTranslateFunctionCall(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewFunctionCall("test", nil),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewFunctionCall("test", nil),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "FunctionCall/error/unknown function",
@@ -3013,10 +3016,11 @@ func TestTranslateFunctionCall(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotExpression, gotErr :=
+			gotExpression, gotSettedStates, gotErr :=
 				translateFunctionCall(data.args.functionCall, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
 			data.wantErr(test, gotErr)
 		})
 	}
