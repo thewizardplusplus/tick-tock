@@ -2962,10 +2962,11 @@ func TestTranslateConditionalExpression(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name           string
-		args           args
-		wantExpression expressions.Expression
-		wantErr        assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "ConditionalExpression/success/single conditional case/nonempty",
@@ -3050,7 +3051,8 @@ func TestTranslateConditionalExpression(test *testing.T) {
 					},
 				},
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "ConditionalExpression/success/single conditional case/empty",
@@ -3088,7 +3090,8 @@ func TestTranslateConditionalExpression(test *testing.T) {
 					Command:   runtime.CommandGroup(nil),
 				},
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "ConditionalExpression/success/few conditional cases/nonempty",
@@ -3317,7 +3320,8 @@ func TestTranslateConditionalExpression(test *testing.T) {
 					},
 				},
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "ConditionalExpression/success/few conditional cases/empty",
@@ -3405,7 +3409,8 @@ func TestTranslateConditionalExpression(test *testing.T) {
 					Command:   runtime.CommandGroup(nil),
 				},
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "ConditionalExpression/success/without conditional cases",
@@ -3413,8 +3418,9 @@ func TestTranslateConditionalExpression(test *testing.T) {
 				conditionalExpression: &parser.ConditionalExpression{},
 				declaredIdentifiers:   mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewConditionalExpression(nil),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewConditionalExpression(nil),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "ConditionalExpression/error/condition translating",
@@ -3836,10 +3842,11 @@ func TestTranslateConditionalExpression(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotExpression, gotErr :=
+			gotExpression, gotSettedStates, gotErr :=
 				translateConditionalExpression(data.args.conditionalExpression, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
 			data.wantErr(test, gotErr)
 		})
 	}

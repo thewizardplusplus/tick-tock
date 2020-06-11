@@ -320,7 +320,7 @@ func translateAtom(
 			return nil, errors.Wrap(err, "unable to translate the function call")
 		}
 	case atom.ConditionalExpression != nil:
-		expression, err = translateConditionalExpression(atom.ConditionalExpression, declaredIdentifiers)
+		expression, _, err = translateConditionalExpression(atom.ConditionalExpression, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to translate the conditional expression")
 		}
@@ -384,17 +384,22 @@ func translateFunctionCall(
 func translateConditionalExpression(
 	conditionalExpression *parser.ConditionalExpression,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
 	var conditionalCases []expressions.ConditionalCase
+	settedStates = mapset.NewSet()
 	for index, conditionalCase := range conditionalExpression.ConditionalCases {
 		condition, err := translateExpression(conditionalCase.Condition, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrapf(err, "unable to translate the condition #%d", index)
+			return nil, nil, errors.Wrapf(err, "unable to translate the condition #%d", index)
 		}
 
 		commands, _, err := translateCommands(conditionalCase.Commands, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrapf(err, "unable to translate commands of the condition #%d", index)
+			return nil, nil, errors.Wrapf(err, "unable to translate commands of the condition #%d", index)
 		}
 
 		conditionalCases = append(conditionalCases, expressions.ConditionalCase{
@@ -403,6 +408,6 @@ func translateConditionalExpression(
 		})
 	}
 
-	expression := expressions.NewConditionalExpression(conditionalCases)
-	return expression, nil
+	expression = expressions.NewConditionalExpression(conditionalCases)
+	return expression, settedStates, nil
 }
