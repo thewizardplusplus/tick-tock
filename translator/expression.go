@@ -35,7 +35,7 @@ func translateExpression(
 	expression *parser.Expression,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	result, err := translateListConstruction(expression.ListConstruction, declaredIdentifiers)
+	result, _, err := translateListConstruction(expression.ListConstruction, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the list construction")
 	}
@@ -46,26 +46,33 @@ func translateExpression(
 func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	argumentOne, _, err := translateDisjunction(listConstruction.Disjunction, declaredIdentifiers)
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err :=
+		translateDisjunction(listConstruction.Disjunction, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the disjunction")
+		return nil, nil, errors.Wrap(err, "unable to translate the disjunction")
 	}
 	if listConstruction.ListConstruction == nil {
-		return argumentOne, nil
+		return argumentOne, settedStates, nil
 	}
 
-	argumentTwo, err :=
+	argumentTwo, settedStates2, err :=
 		translateListConstruction(listConstruction.ListConstruction, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the list construction")
+		return nil, nil, errors.Wrap(err, "unable to translate the list construction")
 	}
 
-	expression := expressions.NewFunctionCall(
+	expression = expressions.NewFunctionCall(
 		ListConstructionFunctionName,
 		[]expressions.Expression{argumentOne, argumentTwo},
 	)
-	return expression, nil
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
 }
 
 func translateDisjunction(
