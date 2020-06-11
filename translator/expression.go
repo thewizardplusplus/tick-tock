@@ -284,7 +284,7 @@ func translateMultiplication(
 
 	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	settedStates.Union(settedStates2)
+	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil
 }
