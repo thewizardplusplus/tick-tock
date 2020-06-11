@@ -6,6 +6,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
 // Options ...
@@ -115,7 +116,7 @@ func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Se
 ) {
 	localDeclaredIdentifiers := declaredIdentifiers.Clone()
 	for index, command := range commands {
-		translatedCommand, newSettedState, didReturn, err :=
+		translatedCommand, newSettedState, _, didReturn, err :=
 			translateCommand(command, localDeclaredIdentifiers)
 		if err != nil {
 			return nil, "", errors.Wrapf(err, "unable to translate the command #%d", index)
@@ -141,15 +142,17 @@ func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Se
 
 func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 	translatedCommand runtime.Command,
-	settedState string,
+	topLevelSettedState string,
+	settedStates mapset.Set,
 	didReturn bool,
 	err error,
 ) {
 	switch {
 	case command.Let != nil:
-		expression, _, err2 := translateExpression(command.Let.Expression, declaredIdentifiers)
-		if err2 != nil {
-			return nil, "", false, errors.Wrap(err2, "unable to translate the let command")
+		var expression expressions.Expression
+		expression, settedStates, err = translateExpression(command.Let.Expression, declaredIdentifiers)
+		if err != nil {
+			return nil, "", nil, false, errors.Wrap(err, "unable to translate the let command")
 		}
 
 		translatedCommand = commands.NewLetCommand(command.Let.Identifier, expression)
@@ -158,18 +161,23 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 		translatedCommand = commands.NewSendCommand(*command.Send)
 	case command.Set != nil:
 		translatedCommand = commands.NewSetCommand(*command.Set)
-		settedState = *command.Set
+		topLevelSettedState = *command.Set
+		settedStates = mapset.NewSet(*command.Set)
 	case command.Return:
 		translatedCommand = commands.ReturnCommand{}
 		didReturn = true
 	case command.Expression != nil:
-		expression, _, err2 := translateExpression(command.Expression, declaredIdentifiers)
-		if err2 != nil {
-			return nil, "", false, errors.Wrap(err2, "unable to translate the expression command")
+		var expression expressions.Expression
+		expression, settedStates, err = translateExpression(command.Expression, declaredIdentifiers)
+		if err != nil {
+			return nil, "", nil, false, errors.Wrap(err, "unable to translate the expression command")
 		}
 
 		translatedCommand = commands.NewExpressionCommand(expression)
 	}
+	if settedStates == nil {
+		settedStates = mapset.NewSet()
+	}
 
-	return translatedCommand, settedState, didReturn, nil
+	return translatedCommand, topLevelSettedState, settedStates, didReturn, nil
 }

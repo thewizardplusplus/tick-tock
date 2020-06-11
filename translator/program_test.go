@@ -956,7 +956,8 @@ func TestTranslateCommand(test *testing.T) {
 		args                    args
 		wantDeclaredIdentifiers mapset.Set
 		wantCommand             runtime.Command
-		wantState               string
+		wantTopLevelSettedState string
+		wantSettedStates        mapset.Set
 		wantReturn              assert.BoolAssertionFunc
 		wantErr                 assert.ErrorAssertionFunc
 	}{
@@ -991,7 +992,8 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test", "test2"),
 			wantCommand:             commands.NewLetCommand("test2", expressions.NewNumber(23)),
-			wantState:               "",
+			wantTopLevelSettedState: "",
+			wantSettedStates:        mapset.NewSet(),
 			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
@@ -1026,7 +1028,8 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewLetCommand("test", expressions.NewNumber(23)),
-			wantState:               "",
+			wantTopLevelSettedState: "",
+			wantSettedStates:        mapset.NewSet(),
 			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
@@ -1063,7 +1066,7 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             nil,
-			wantState:               "",
+			wantTopLevelSettedState: "",
 			wantReturn:              assert.False,
 			wantErr:                 assert.Error,
 		},
@@ -1075,7 +1078,8 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewSendCommand("test"),
-			wantState:               "",
+			wantTopLevelSettedState: "",
+			wantSettedStates:        mapset.NewSet(),
 			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
@@ -1087,7 +1091,8 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewSetCommand("test"),
-			wantState:               "test",
+			wantTopLevelSettedState: "test",
+			wantSettedStates:        mapset.NewSet("test"),
 			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
@@ -1099,7 +1104,8 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.ReturnCommand{},
-			wantState:               "",
+			wantTopLevelSettedState: "",
+			wantSettedStates:        mapset.NewSet(),
 			wantReturn:              assert.True,
 			wantErr:                 assert.NoError,
 		},
@@ -1133,7 +1139,8 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             commands.NewExpressionCommand(expressions.NewIdentifier("test")),
-			wantState:               "",
+			wantTopLevelSettedState: "",
+			wantSettedStates:        mapset.NewSet(),
 			wantReturn:              assert.False,
 			wantErr:                 assert.NoError,
 		},
@@ -1167,18 +1174,19 @@ func TestTranslateCommand(test *testing.T) {
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
 			wantCommand:             nil,
-			wantState:               "",
+			wantTopLevelSettedState: "",
 			wantReturn:              assert.False,
 			wantErr:                 assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			gotCommand, gotState, gotReturn, err :=
+			gotCommand, gotTopLevelSettedState, gotSettedStates, gotReturn, err :=
 				translateCommand(testData.args.command, testData.args.declaredIdentifiers)
 
 			assert.Equal(test, testData.wantDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.wantCommand, gotCommand)
-			assert.Equal(test, testData.wantState, gotState)
+			assert.Equal(test, testData.wantTopLevelSettedState, gotTopLevelSettedState)
+			assert.Equal(test, testData.wantSettedStates, gotSettedStates)
 			testData.wantReturn(test, gotReturn)
 			testData.wantErr(test, err)
 		})
