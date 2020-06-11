@@ -270,7 +270,7 @@ func translateAccessor(
 	accessor *parser.Accessor,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateAtom(accessor.Atom, declaredIdentifiers)
+	argumentOne, _, err := translateAtom(accessor.Atom, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the atom")
 	}
@@ -293,7 +293,11 @@ func translateAccessor(
 func translateAtom(
 	atom *parser.Atom,
 	declaredIdentifiers mapset.Set,
-) (expression expressions.Expression, err error) {
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
 	switch {
 	case atom.Number != nil:
 		expression = expressions.NewNumber(*atom.Number)
@@ -305,33 +309,37 @@ func translateAtom(
 	case atom.Identifier != nil:
 		identifier := *atom.Identifier
 		if !declaredIdentifiers.Contains(identifier) {
-			return nil, errors.Errorf("unknown identifier %s", identifier)
+			return nil, nil, errors.Errorf("unknown identifier %s", identifier)
 		}
 
 		expression = expressions.NewIdentifier(identifier)
 	case atom.ListDefinition != nil:
 		expression, err = translateListDefinition(atom.ListDefinition, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to translate the list definition")
+			return nil, nil, errors.Wrap(err, "unable to translate the list definition")
 		}
 	case atom.FunctionCall != nil:
 		expression, err = translateFunctionCall(atom.FunctionCall, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to translate the function call")
+			return nil, nil, errors.Wrap(err, "unable to translate the function call")
 		}
 	case atom.ConditionalExpression != nil:
-		expression, _, err = translateConditionalExpression(atom.ConditionalExpression, declaredIdentifiers)
+		expression, settedStates, err =
+			translateConditionalExpression(atom.ConditionalExpression, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to translate the conditional expression")
+			return nil, nil, errors.Wrap(err, "unable to translate the conditional expression")
 		}
 	case atom.Expression != nil:
 		expression, err = translateExpression(atom.Expression, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to translate the expression")
+			return nil, nil, errors.Wrap(err, "unable to translate the expression")
 		}
 	}
+	if settedStates == nil {
+		settedStates = mapset.NewSet()
+	}
 
-	return expression, nil
+	return expression, settedStates, nil
 }
 
 func translateListDefinition(

@@ -1641,10 +1641,11 @@ func TestTranslateAtom(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name           string
-		args           args
-		wantExpression expressions.Expression
-		wantErr        assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "Atom/number",
@@ -1652,8 +1653,9 @@ func TestTranslateAtom(test *testing.T) {
 				atom:                &parser.Atom{Number: pointer.ToFloat64(23)},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewNumber(23),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewNumber(23),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/symbol/latin1",
@@ -1661,8 +1663,9 @@ func TestTranslateAtom(test *testing.T) {
 				atom:                &parser.Atom{Symbol: pointer.ToString("t")},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewNumber(116),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewNumber(116),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/symbol/not latin1",
@@ -1670,8 +1673,9 @@ func TestTranslateAtom(test *testing.T) {
 				atom:                &parser.Atom{Symbol: pointer.ToString("т")},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewNumber(1090),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewNumber(1090),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/string",
@@ -1679,8 +1683,9 @@ func TestTranslateAtom(test *testing.T) {
 				atom:                &parser.Atom{String: pointer.ToString("test")},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewString("test"),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewString("test"),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/list definition/success",
@@ -1763,7 +1768,8 @@ func TestTranslateAtom(test *testing.T) {
 					}),
 				},
 			),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/list definition/error",
@@ -1912,7 +1918,8 @@ func TestTranslateAtom(test *testing.T) {
 				expressions.NewNumber(23),
 				expressions.NewNumber(42),
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/function call/error",
@@ -2217,7 +2224,8 @@ func TestTranslateAtom(test *testing.T) {
 					},
 				},
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/conditional expression/error",
@@ -2436,8 +2444,9 @@ func TestTranslateAtom(test *testing.T) {
 				atom:                &parser.Atom{Identifier: pointer.ToString("test")},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewIdentifier("test"),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewIdentifier("test"),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/identifier/error",
@@ -2474,8 +2483,9 @@ func TestTranslateAtom(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewNumber(23),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewNumber(23),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Atom/expression/error",
@@ -2510,9 +2520,11 @@ func TestTranslateAtom(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotExpression, gotErr := translateAtom(data.args.atom, data.args.declaredIdentifiers)
+			gotExpression, gotSettedStates, gotErr :=
+				translateAtom(data.args.atom, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
 			data.wantErr(test, gotErr)
 		})
 	}
