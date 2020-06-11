@@ -47,7 +47,7 @@ func translateListConstruction(
 	listConstruction *parser.ListConstruction,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateDisjunction(listConstruction.Disjunction, declaredIdentifiers)
+	argumentOne, _, err := translateDisjunction(listConstruction.Disjunction, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the disjunction")
 	}
@@ -71,22 +71,30 @@ func translateListConstruction(
 func translateDisjunction(
 	disjunction *parser.Disjunction,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	argumentOne, _, err := translateConjunction(disjunction.Conjunction, declaredIdentifiers)
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err :=
+		translateConjunction(disjunction.Conjunction, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the conjunction")
+		return nil, nil, errors.Wrap(err, "unable to translate the conjunction")
 	}
 	if disjunction.Disjunction == nil {
-		return argumentOne, nil
+		return argumentOne, settedStates, nil
 	}
 
-	argumentTwo, err := translateDisjunction(disjunction.Disjunction, declaredIdentifiers)
+	argumentTwo, settedStates2, err :=
+		translateDisjunction(disjunction.Disjunction, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the disjunction")
+		return nil, nil, errors.Wrap(err, "unable to translate the disjunction")
 	}
 
-	expression := expressions.NewBooleanOperator(argumentOne, argumentTwo, types.True)
-	return expression, nil
+	expression = expressions.NewBooleanOperator(argumentOne, argumentTwo, types.True)
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
 }
 
 func translateConjunction(
