@@ -208,7 +208,7 @@ func translateMultiplication(
 	multiplication *parser.Multiplication,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateUnary(multiplication.Unary, declaredIdentifiers)
+	argumentOne, _, err := translateUnary(multiplication.Unary, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the unary")
 	}
@@ -239,19 +239,23 @@ func translateMultiplication(
 func translateUnary(
 	unary *parser.Unary,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
 	if unary.Accessor != nil {
-		expression, _, err := translateAccessor(unary.Accessor, declaredIdentifiers)
+		expression, settedStates, err = translateAccessor(unary.Accessor, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to translate the accessor")
+			return nil, nil, errors.Wrap(err, "unable to translate the accessor")
 		}
 
-		return expression, nil
+		return expression, settedStates, nil
 	}
 
-	argument, err := translateUnary(unary.Unary, declaredIdentifiers)
+	argument, settedStates, err := translateUnary(unary.Unary, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the unary")
+		return nil, nil, errors.Wrap(err, "unable to translate the unary")
 	}
 
 	var functionName string
@@ -262,8 +266,8 @@ func translateUnary(
 		functionName = LogicalNegationFunctionName
 	}
 
-	expression := expressions.NewFunctionCall(functionName, []expressions.Expression{argument})
-	return expression, nil
+	expression = expressions.NewFunctionCall(functionName, []expressions.Expression{argument})
+	return expression, settedStates, nil
 }
 
 func translateAccessor(
