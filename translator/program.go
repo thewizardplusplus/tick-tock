@@ -157,6 +157,7 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 	didReturn bool,
 	err error,
 ) {
+	settedStates = mapset.NewSet()
 	switch {
 	case command.Let != nil:
 		var expression expressions.Expression
@@ -184,9 +185,6 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 		}
 
 		translatedCommand = commands.NewExpressionCommand(expression)
-	}
-	if settedStates == nil {
-		settedStates = mapset.NewSet()
 	}
 
 	return translatedCommand, topLevelSettedState, settedStates, didReturn, nil
