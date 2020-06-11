@@ -360,6 +360,7 @@ func translateAtom(
 	settedStates mapset.Set,
 	err error,
 ) {
+	settedStates = mapset.NewSet()
 	switch {
 	case atom.Number != nil:
 		expression = expressions.NewNumber(*atom.Number)
@@ -396,9 +397,6 @@ func translateAtom(
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to translate the expression")
 		}
-	}
-	if settedStates == nil {
-		settedStates = mapset.NewSet()
 	}
 
 	return expression, settedStates, nil
