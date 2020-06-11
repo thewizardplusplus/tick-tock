@@ -346,7 +346,7 @@ func translateAccessor(
 			KeyAccessorFunctionName,
 			[]expressions.Expression{argumentOne, argumentTwo},
 		)
-		settedStates.Union(settedStates2)
+		settedStates = settedStates.Union(settedStates2)
 	}
 
 	return argumentOne, settedStates, nil
