@@ -376,7 +376,7 @@ func translateAtom(
 
 		expression = expressions.NewIdentifier(identifier)
 	case atom.ListDefinition != nil:
-		expression, err = translateListDefinition(atom.ListDefinition, declaredIdentifiers)
+		expression, settedStates, err = translateListDefinition(atom.ListDefinition, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to translate the list definition")
 		}
@@ -407,21 +407,32 @@ func translateAtom(
 func translateListDefinition(
 	listDefinition *parser.ListDefinition,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
 	argumentTwo := expressions.Expression(expressions.NewIdentifier(EmptyListConstantName))
+	settedStates = mapset.NewSet()
 	for index := len(listDefinition.Items) - 1; index >= 0; index-- {
-		argumentOne, _, err := translateExpression(listDefinition.Items[index], declaredIdentifiers)
+		argumentOne, settedStates2, err :=
+			translateExpression(listDefinition.Items[index], declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrapf(err, "unable to translate the item #%d of the list definition", index)
+			return nil, nil, errors.Wrapf(
+				err,
+				"unable to translate the item #%d of the list definition",
+				index,
+			)
 		}
 
 		argumentTwo = expressions.NewFunctionCall(
 			ListConstructionFunctionName,
 			[]expressions.Expression{argumentOne, argumentTwo},
 		)
+		settedStates = settedStates.Union(settedStates2)
 	}
 
-	return argumentTwo, nil
+	return argumentTwo, settedStates, nil
 }
 
 func translateFunctionCall(

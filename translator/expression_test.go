@@ -2588,10 +2588,11 @@ func TestTranslateListDefinition(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name           string
-		args           args
-		wantExpression expressions.Expression
-		wantErr        assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "ListDefinition/success/few items",
@@ -2672,7 +2673,8 @@ func TestTranslateListDefinition(test *testing.T) {
 					}),
 				},
 			),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "ListDefinition/success/no items",
@@ -2682,8 +2684,9 @@ func TestTranslateListDefinition(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewIdentifier(EmptyListConstantName),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewIdentifier(EmptyListConstantName),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "ListDefinition/error",
@@ -2758,10 +2761,11 @@ func TestTranslateListDefinition(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotExpression, gotErr :=
+			gotExpression, gotSettedStates, gotErr :=
 				translateListDefinition(data.args.listDefinition, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
 			data.wantErr(test, gotErr)
 		})
 	}
