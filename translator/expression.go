@@ -241,7 +241,7 @@ func translateUnary(
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
 	if unary.Accessor != nil {
-		expression, err := translateAccessor(unary.Accessor, declaredIdentifiers)
+		expression, _, err := translateAccessor(unary.Accessor, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to translate the accessor")
 		}
@@ -269,16 +269,20 @@ func translateUnary(
 func translateAccessor(
 	accessor *parser.Accessor,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	argumentOne, _, err := translateAtom(accessor.Atom, declaredIdentifiers)
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err := translateAtom(accessor.Atom, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the atom")
+		return nil, nil, errors.Wrap(err, "unable to translate the atom")
 	}
 
 	for index, key := range accessor.Keys {
 		argumentTwo, err := translateExpression(key, declaredIdentifiers)
 		if err != nil {
-			return nil, errors.Wrapf(err, "unable to translate the key #%d of the accessor", index)
+			return nil, nil, errors.Wrapf(err, "unable to translate the key #%d of the accessor", index)
 		}
 
 		argumentOne = expressions.NewFunctionCall(
@@ -287,7 +291,7 @@ func translateAccessor(
 		)
 	}
 
-	return argumentOne, nil
+	return argumentOne, settedStates, nil
 }
 
 func translateAtom(

@@ -1438,10 +1438,11 @@ func TestTranslateAccessor(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name           string
-		args           args
-		wantExpression expressions.Expression
-		wantErr        assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "Accessor/nonempty/success",
@@ -1498,7 +1499,8 @@ func TestTranslateAccessor(test *testing.T) {
 				}),
 				expressions.NewNumber(23),
 			}),
-			wantErr: assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Accessor/nonempty/error/atom translating",
@@ -1610,8 +1612,9 @@ func TestTranslateAccessor(test *testing.T) {
 				accessor:            &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewNumber(23),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewNumber(23),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Accessor/empty/error",
@@ -1626,9 +1629,11 @@ func TestTranslateAccessor(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotExpression, gotErr := translateAccessor(data.args.accessor, data.args.declaredIdentifiers)
+			gotExpression, gotSettedStates, gotErr :=
+				translateAccessor(data.args.accessor, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
 			data.wantErr(test, gotErr)
 		})
 	}
