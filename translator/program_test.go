@@ -719,12 +719,11 @@ func TestTranslateCommands(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name                    string
-		args                    args
-		wantCommands            runtime.CommandGroup
-		wantTopLevelSettedState string
-		wantSettedStates        mapset.Set
-		wantErr                 assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantCommands     runtime.CommandGroup
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with commands (without a set command)",
@@ -755,9 +754,8 @@ func TestTranslateCommands(test *testing.T) {
 				commands.NewSendCommand("one"),
 				commands.NewSetCommand("two"),
 			},
-			wantTopLevelSettedState: "two",
-			wantSettedStates:        mapset.NewSet("two"),
-			wantErr:                 assert.NoError,
+			wantSettedStates: mapset.NewSet("two"),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "success with the return command",
@@ -810,9 +808,8 @@ func TestTranslateCommands(test *testing.T) {
 			wantCommands: runtime.CommandGroup{
 				commands.NewExpressionCommand(expressions.NewIdentifier("test")),
 			},
-			wantTopLevelSettedState: "",
-			wantSettedStates:        mapset.NewSet(),
-			wantErr:                 assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "success with commands (with an expression command and an nonexistent identifier)",
@@ -872,9 +869,8 @@ func TestTranslateCommands(test *testing.T) {
 				commands.NewLetCommand("test2", expressions.NewNumber(23)),
 				commands.NewExpressionCommand(expressions.NewIdentifier("test2")),
 			},
-			wantTopLevelSettedState: "",
-			wantSettedStates:        mapset.NewSet(),
-			wantErr:                 assert.NoError,
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "success without commands",
@@ -950,12 +946,11 @@ func TestTranslateCommands(test *testing.T) {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
-			gotCommands, gotTopLevelSettedState, gotSettedStates, err :=
+			gotCommands, gotSettedStates, err :=
 				translateCommands(testData.args.commands, testData.args.declaredIdentifiers)
 
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.wantCommands, gotCommands)
-			assert.Equal(test, testData.wantTopLevelSettedState, gotTopLevelSettedState)
 			assert.Equal(test, testData.wantSettedStates, gotSettedStates)
 			testData.wantErr(test, err)
 		})

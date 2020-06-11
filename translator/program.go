@@ -101,8 +101,7 @@ func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Se
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, _, settedStates, err :=
-			translateCommands(message.Commands, declaredIdentifiers)
+		translatedCommands, settedStates, err := translateCommands(message.Commands, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
@@ -116,20 +115,20 @@ func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Se
 
 func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Set) (
 	translatedCommands runtime.CommandGroup,
-	topLevelSettedState string,
 	settedStates mapset.Set,
 	err error,
 ) {
 	localDeclaredIdentifiers := declaredIdentifiers.Clone()
 	settedStates = mapset.NewSet()
+	var topLevelSettedState string
 	for index, command := range commands {
 		translatedCommand, topLevelSettedState2, settedStates2, didReturn, err :=
 			translateCommand(command, localDeclaredIdentifiers)
 		if err != nil {
-			return nil, "", nil, errors.Wrapf(err, "unable to translate the command #%d", index)
+			return nil, nil, errors.Wrapf(err, "unable to translate the command #%d", index)
 		}
 		if didReturn && index != len(commands)-1 {
-			return nil, "", nil, errors.Errorf("unreachable commands after the command #%d", index)
+			return nil, nil, errors.Errorf("unreachable commands after the command #%d", index)
 		}
 
 		translatedCommands = append(translatedCommands, translatedCommand)
@@ -139,7 +138,7 @@ func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Se
 			continue
 		}
 		if len(topLevelSettedState) != 0 {
-			return nil, "", nil, errors.Errorf(
+			return nil, nil, errors.Errorf(
 				"second set command %s (first was %s)",
 				topLevelSettedState2,
 				topLevelSettedState,
@@ -148,7 +147,7 @@ func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Se
 		topLevelSettedState = topLevelSettedState2
 	}
 
-	return translatedCommands, topLevelSettedState, settedStates, nil
+	return translatedCommands, settedStates, nil
 }
 
 func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
