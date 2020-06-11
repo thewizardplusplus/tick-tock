@@ -485,7 +485,8 @@ func translateConditionalExpression(
 			return nil, nil, errors.Wrapf(err, "unable to translate the condition #%d", index)
 		}
 
-		commands, _, err := translateCommands(conditionalCase.Commands, declaredIdentifiers)
+		commands, _, settedStates3, err :=
+			translateCommands(conditionalCase.Commands, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate commands of the condition #%d", index)
 		}
@@ -494,7 +495,8 @@ func translateConditionalExpression(
 			Condition: condition,
 			Command:   commands,
 		})
-		settedStates.Union(settedStates2)
+		settedStates = settedStates.Union(settedStates2)
+		settedStates = settedStates.Union(settedStates3)
 	}
 
 	expression = expressions.NewConditionalExpression(conditionalCases)
