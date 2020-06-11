@@ -147,7 +147,7 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 ) {
 	switch {
 	case command.Let != nil:
-		expression, err2 := translateExpression(command.Let.Expression, declaredIdentifiers)
+		expression, _, err2 := translateExpression(command.Let.Expression, declaredIdentifiers)
 		if err2 != nil {
 			return nil, "", false, errors.Wrap(err2, "unable to translate the let command")
 		}
@@ -163,7 +163,7 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 		translatedCommand = commands.ReturnCommand{}
 		didReturn = true
 	case command.Expression != nil:
-		expression, err2 := translateExpression(command.Expression, declaredIdentifiers)
+		expression, _, err2 := translateExpression(command.Expression, declaredIdentifiers)
 		if err2 != nil {
 			return nil, "", false, errors.Wrap(err2, "unable to translate the expression command")
 		}

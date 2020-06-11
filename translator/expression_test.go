@@ -20,10 +20,11 @@ func TestTranslateExpression(test *testing.T) {
 	}
 
 	for _, data := range []struct {
-		name           string
-		args           args
-		wantExpression expressions.Expression
-		wantErr        assert.ErrorAssertionFunc
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
 			name: "Expression/success",
@@ -49,8 +50,9 @@ func TestTranslateExpression(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantExpression: expressions.NewNumber(23),
-			wantErr:        assert.NoError,
+			wantExpression:   expressions.NewNumber(23),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
 		},
 		{
 			name: "Expression/error",
@@ -83,9 +85,11 @@ func TestTranslateExpression(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotExpression, gotErr := translateExpression(data.args.expression, data.args.declaredIdentifiers)
+			gotExpression, gotSettedStates, gotErr :=
+				translateExpression(data.args.expression, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
 			data.wantErr(test, gotErr)
 		})
 	}

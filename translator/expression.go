@@ -34,13 +34,18 @@ const (
 func translateExpression(
 	expression *parser.Expression,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	result, _, err := translateListConstruction(expression.ListConstruction, declaredIdentifiers)
+) (
+	result expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	result, settedStates, err =
+		translateListConstruction(expression.ListConstruction, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the list construction")
+		return nil, nil, errors.Wrap(err, "unable to translate the list construction")
 	}
 
-	return result, nil
+	return result, settedStates, nil
 }
 
 func translateListConstruction(
@@ -332,7 +337,7 @@ func translateAccessor(
 	}
 
 	for index, key := range accessor.Keys {
-		argumentTwo, err := translateExpression(key, declaredIdentifiers)
+		argumentTwo, settedStates2, err := translateExpression(key, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the key #%d of the accessor", index)
 		}
@@ -341,6 +346,7 @@ func translateAccessor(
 			KeyAccessorFunctionName,
 			[]expressions.Expression{argumentOne, argumentTwo},
 		)
+		settedStates.Union(settedStates2)
 	}
 
 	return argumentOne, settedStates, nil
@@ -386,7 +392,7 @@ func translateAtom(
 			return nil, nil, errors.Wrap(err, "unable to translate the conditional expression")
 		}
 	case atom.Expression != nil:
-		expression, err = translateExpression(atom.Expression, declaredIdentifiers)
+		expression, settedStates, err = translateExpression(atom.Expression, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to translate the expression")
 		}
@@ -404,7 +410,7 @@ func translateListDefinition(
 ) (expressions.Expression, error) {
 	argumentTwo := expressions.Expression(expressions.NewIdentifier(EmptyListConstantName))
 	for index := len(listDefinition.Items) - 1; index >= 0; index-- {
-		argumentOne, err := translateExpression(listDefinition.Items[index], declaredIdentifiers)
+		argumentOne, _, err := translateExpression(listDefinition.Items[index], declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the item #%d of the list definition", index)
 		}
@@ -428,7 +434,7 @@ func translateFunctionCall(
 
 	var arguments []expressions.Expression
 	for index, argument := range functionCall.Arguments {
-		result, err := translateExpression(argument, declaredIdentifiers)
+		result, _, err := translateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrapf(
 				err,
@@ -456,7 +462,8 @@ func translateConditionalExpression(
 	var conditionalCases []expressions.ConditionalCase
 	settedStates = mapset.NewSet()
 	for index, conditionalCase := range conditionalExpression.ConditionalCases {
-		condition, err := translateExpression(conditionalCase.Condition, declaredIdentifiers)
+		condition, settedStates2, err :=
+			translateExpression(conditionalCase.Condition, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the condition #%d", index)
 		}
@@ -470,6 +477,7 @@ func translateConditionalExpression(
 			Condition: condition,
 			Command:   commands,
 		})
+		settedStates.Union(settedStates2)
 	}
 
 	expression = expressions.NewConditionalExpression(conditionalCases)
