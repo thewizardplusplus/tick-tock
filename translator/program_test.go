@@ -475,11 +475,11 @@ func TestTranslateMessages(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name         string
-		args         args
-		wantMessages runtime.MessageGroup
-		wantStates   settedStateGroup
-		wantErr      assert.ErrorAssertionFunc
+		name                       string
+		args                       args
+		wantMessages               runtime.MessageGroup
+		wantSettedStatesByMessages settedStateGroup
+		wantErr                    assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with nonempty messages (without set commands)",
@@ -512,8 +512,11 @@ func TestTranslateMessages(test *testing.T) {
 					commands.NewSendCommand("command_3"),
 				},
 			},
-			wantStates: make(settedStateGroup),
-			wantErr:    assert.NoError,
+			wantSettedStatesByMessages: settedStateGroup{
+				"message_0": mapset.NewSet(),
+				"message_1": mapset.NewSet(),
+			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "success with nonempty messages (with set commands)",
@@ -546,8 +549,11 @@ func TestTranslateMessages(test *testing.T) {
 					commands.NewSetCommand("command_3"),
 				},
 			},
-			wantStates: settedStateGroup{"message_0": "command_1", "message_1": "command_3"},
-			wantErr:    assert.NoError,
+			wantSettedStatesByMessages: settedStateGroup{
+				"message_0": mapset.NewSet("command_1"),
+				"message_1": mapset.NewSet("command_3"),
+			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "success with empty messages",
@@ -556,8 +562,11 @@ func TestTranslateMessages(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantMessages: runtime.MessageGroup{"message_0": nil, "message_1": nil},
-			wantStates:   make(settedStateGroup),
-			wantErr:      assert.NoError,
+			wantSettedStatesByMessages: settedStateGroup{
+				"message_0": mapset.NewSet(),
+				"message_1": mapset.NewSet(),
+			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "success without messages",
@@ -565,9 +574,9 @@ func TestTranslateMessages(test *testing.T) {
 				messages:            nil,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantMessages: runtime.MessageGroup{},
-			wantStates:   make(settedStateGroup),
-			wantErr:      assert.NoError,
+			wantMessages:               runtime.MessageGroup{},
+			wantSettedStatesByMessages: make(settedStateGroup),
+			wantErr:                    assert.NoError,
 		},
 		{
 			name: "success with the expression",
@@ -609,8 +618,8 @@ func TestTranslateMessages(test *testing.T) {
 					commands.NewExpressionCommand(expressions.NewIdentifier("test")),
 				},
 			},
-			wantStates: make(settedStateGroup),
-			wantErr:    assert.NoError,
+			wantSettedStatesByMessages: settedStateGroup{"message_0": mapset.NewSet()},
+			wantErr:                    assert.NoError,
 		},
 		{
 			name: "error with duplicate messages",
@@ -618,9 +627,9 @@ func TestTranslateMessages(test *testing.T) {
 				messages:            []*parser.Message{{Name: "test"}, {Name: "test"}},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantMessages: nil,
-			wantStates:   nil,
-			wantErr:      assert.Error,
+			wantMessages:               nil,
+			wantSettedStatesByMessages: nil,
+			wantErr:                    assert.Error,
 		},
 		{
 			name: "error with commands translation",
@@ -645,9 +654,9 @@ func TestTranslateMessages(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantMessages: nil,
-			wantStates:   nil,
-			wantErr:      assert.Error,
+			wantMessages:               nil,
+			wantSettedStatesByMessages: nil,
+			wantErr:                    assert.Error,
 		},
 		{
 			name: "error with the expression",
@@ -684,20 +693,20 @@ func TestTranslateMessages(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantMessages: nil,
-			wantStates:   nil,
-			wantErr:      assert.Error,
+			wantMessages:               nil,
+			wantSettedStatesByMessages: nil,
+			wantErr:                    assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
-			gotMessages, gotStates, err :=
+			gotMessages, gotSettedStatesByMessages, err :=
 				translateMessages(testData.args.messages, testData.args.declaredIdentifiers)
 
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.wantMessages, gotMessages)
-			assert.Equal(test, testData.wantStates, gotStates)
+			assert.Equal(test, testData.wantSettedStatesByMessages, gotSettedStatesByMessages)
 			testData.wantErr(test, err)
 		})
 	}

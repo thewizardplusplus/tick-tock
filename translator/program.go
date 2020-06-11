@@ -55,24 +55,30 @@ func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 	}
 
 	translatedStates = make(runtime.StateGroup)
-	messagesWithSettings := make(map[string][]string)
+	messagesWithSettingsByStates := make(map[string][]string)
 	for _, state := range states {
 		if _, ok := translatedStates[state.Name]; ok {
 			return nil, errors.Errorf("duplicate state %s", state.Name)
 		}
 
-		translatedMessages, settedStates, err := translateMessages(state.Messages, declaredIdentifiers)
+		translatedMessages, settedStatesByMessages, err :=
+			translateMessages(state.Messages, declaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}
 
 		translatedStates[state.Name] = translatedMessages
-		for message, state := range settedStates {
-			messagesWithSettings[state] = append(messagesWithSettings[state], message)
+		for message, settedStates := range settedStatesByMessages {
+			for _, state := range settedStates.ToSlice() {
+				messagesWithSettingsByStates[state.(string)] = append(
+					messagesWithSettingsByStates[state.(string)],
+					message,
+				)
+			}
 		}
 	}
 
-	for state, messages := range messagesWithSettings {
+	for state, messages := range messagesWithSettingsByStates {
 		if _, ok := translatedStates[state]; !ok {
 			return nil, errors.Errorf("unknown state %s in messages %v", state, messages)
 		}
@@ -81,33 +87,31 @@ func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 	return translatedStates, nil
 }
 
-type settedStateGroup map[string]string
+type settedStateGroup map[string]mapset.Set
 
 func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Set) (
 	translatedMessages runtime.MessageGroup,
-	settedStates settedStateGroup,
+	settedStatesByMessages settedStateGroup,
 	err error,
 ) {
 	translatedMessages = make(runtime.MessageGroup)
-	settedStates = make(settedStateGroup)
+	settedStatesByMessages = make(settedStateGroup)
 	for _, message := range messages {
 		if _, ok := translatedMessages[message.Name]; ok {
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, settedState, _, err :=
+		translatedCommands, _, settedStates, err :=
 			translateCommands(message.Commands, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
 
 		translatedMessages[message.Name] = translatedCommands
-		if len(settedState) != 0 {
-			settedStates[message.Name] = settedState
-		}
+		settedStatesByMessages[message.Name] = settedStates
 	}
 
-	return translatedMessages, settedStates, nil
+	return translatedMessages, settedStatesByMessages, nil
 }
 
 func translateCommands(commands []*parser.Command, declaredIdentifiers mapset.Set) (
