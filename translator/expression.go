@@ -114,7 +114,7 @@ func translateEquality(
 	equality *parser.Equality,
 	declaredIdentifiers mapset.Set,
 ) (expressions.Expression, error) {
-	argumentOne, err := translateComparison(equality.Comparison, declaredIdentifiers)
+	argumentOne, _, err := translateComparison(equality.Comparison, declaredIdentifiers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to translate the comparison")
 	}
@@ -143,18 +143,22 @@ func translateEquality(
 func translateComparison(
 	comparison *parser.Comparison,
 	declaredIdentifiers mapset.Set,
-) (expressions.Expression, error) {
-	argumentOne, _, err := translateAddition(comparison.Addition, declaredIdentifiers)
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err := translateAddition(comparison.Addition, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the addition")
+		return nil, nil, errors.Wrap(err, "unable to translate the addition")
 	}
 	if comparison.Comparison == nil {
-		return argumentOne, nil
+		return argumentOne, settedStates, nil
 	}
 
-	argumentTwo, err := translateComparison(comparison.Comparison, declaredIdentifiers)
+	argumentTwo, settedStates2, err := translateComparison(comparison.Comparison, declaredIdentifiers)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to translate the comparison")
+		return nil, nil, errors.Wrap(err, "unable to translate the comparison")
 	}
 
 	var functionName string
@@ -169,9 +173,11 @@ func translateComparison(
 		functionName = GreaterOrEqualFunctionName
 	}
 
-	expression :=
+	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	return expression, nil
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
 }
 
 func translateAddition(
