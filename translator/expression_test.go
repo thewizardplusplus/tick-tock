@@ -55,6 +55,98 @@ func TestTranslateExpression(test *testing.T) {
 			wantErr:          assert.NoError,
 		},
 		{
+			name: "Expression/success/with setted states",
+			args: args{
+				expression: &parser.Expression{
+					ListConstruction: &parser.ListConstruction{
+						Disjunction: &parser.Disjunction{
+							Conjunction: &parser.Conjunction{
+								Equality: &parser.Equality{
+									Comparison: &parser.Comparison{
+										Addition: &parser.Addition{
+											Multiplication: &parser.Multiplication{
+												Unary: &parser.Unary{
+													Accessor: &parser.Accessor{
+														Atom: &parser.Atom{
+															ConditionalExpression: &parser.ConditionalExpression{
+																ConditionalCases: []*parser.ConditionalCase{
+																	{
+																		Condition: &parser.Expression{
+																			ListConstruction: &parser.ListConstruction{
+																				Disjunction: &parser.Disjunction{
+																					Conjunction: &parser.Conjunction{
+																						Equality: &parser.Equality{
+																							Comparison: &parser.Comparison{
+																								Addition: &parser.Addition{
+																									Multiplication: &parser.Multiplication{
+																										Unary: &parser.Unary{
+																											Accessor: &parser.Accessor{
+																												Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																				},
+																			},
+																		},
+																		Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																	},
+																	{
+																		Condition: &parser.Expression{
+																			ListConstruction: &parser.ListConstruction{
+																				Disjunction: &parser.Disjunction{
+																					Conjunction: &parser.Conjunction{
+																						Equality: &parser.Equality{
+																							Comparison: &parser.Comparison{
+																								Addition: &parser.Addition{
+																									Multiplication: &parser.Multiplication{
+																										Unary: &parser.Unary{
+																											Accessor: &parser.Accessor{
+																												Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																				},
+																			},
+																		},
+																		Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(23),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+				},
+				{
+					Condition: expressions.NewNumber(42),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+				},
+			}),
+			wantSettedStates: mapset.NewSet("one", "two"),
+			wantErr:          assert.NoError,
+		},
+		{
 			name: "Expression/error",
 			args: args{
 				expression: &parser.Expression{
