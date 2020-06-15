@@ -1,5 +1,14 @@
 # Change Log
 
+## [v1.2](https://github.com/thewizardplusplus/tick-tock/tree/v1.2) (2020-06-15)
+
+- support expression evaluation:
+  - support operations:
+    - conditional expression (`when...;`);
+- examples:
+  - improve the example with the guessing game;
+  - add the new example with the [maze](https://10print.org/).
+
 ## [v1.2-alpha](https://github.com/thewizardplusplus/tick-tock/tree/v1.2-alpha) (2020-05-19)
 
 - support expression evaluation:
