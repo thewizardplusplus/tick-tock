@@ -519,7 +519,7 @@ func TestTranslateMessages(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "success with nonempty messages (with set commands)",
+			name: "success with nonempty messages (with different set commands)",
 			args: args{
 				messages: []*parser.Message{
 					{
@@ -552,6 +552,43 @@ func TestTranslateMessages(test *testing.T) {
 			wantSettedStatesByMessages: settedStateGroup{
 				"message_0": mapset.NewSet("command_1"),
 				"message_1": mapset.NewSet("command_3"),
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "success with nonempty messages (with same set commands)",
+			args: args{
+				messages: []*parser.Message{
+					{
+						Name: "message_0",
+						Commands: []*parser.Command{
+							{Send: pointer.ToString("command_1")},
+							{Set: pointer.ToString("command_0")},
+						},
+					},
+					{
+						Name: "message_1",
+						Commands: []*parser.Command{
+							{Send: pointer.ToString("command_2")},
+							{Set: pointer.ToString("command_0")},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantMessages: runtime.MessageGroup{
+				"message_0": runtime.CommandGroup{
+					commands.NewSendCommand("command_1"),
+					commands.NewSetCommand("command_0"),
+				},
+				"message_1": runtime.CommandGroup{
+					commands.NewSendCommand("command_2"),
+					commands.NewSetCommand("command_0"),
+				},
+			},
+			wantSettedStatesByMessages: settedStateGroup{
+				"message_0": mapset.NewSet("command_0"),
+				"message_1": mapset.NewSet("command_0"),
 			},
 			wantErr: assert.NoError,
 		},
