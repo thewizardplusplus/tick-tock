@@ -1324,6 +1324,157 @@ func TestTranslateMultiplication(test *testing.T) {
 			wantErr:          assert.NoError,
 		},
 		{
+			name: "Multiplication/nonempty/success/with setted states",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{
+							Atom: &parser.Atom{
+								ConditionalExpression: &parser.ConditionalExpression{
+									ConditionalCases: []*parser.ConditionalCase{
+										{
+											Condition: &parser.Expression{
+												ListConstruction: &parser.ListConstruction{
+													Disjunction: &parser.Disjunction{
+														Conjunction: &parser.Conjunction{
+															Equality: &parser.Equality{
+																Comparison: &parser.Comparison{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+										},
+										{
+											Condition: &parser.Expression{
+												ListConstruction: &parser.ListConstruction{
+													Disjunction: &parser.Disjunction{
+														Conjunction: &parser.Conjunction{
+															Equality: &parser.Equality{
+																Comparison: &parser.Comparison{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+										},
+									},
+								},
+							},
+						},
+					},
+					Operation: "*",
+					Multiplication: &parser.Multiplication{
+						Unary: &parser.Unary{
+							Accessor: &parser.Accessor{
+								Atom: &parser.Atom{
+									ConditionalExpression: &parser.ConditionalExpression{
+										ConditionalCases: []*parser.ConditionalCase{
+											{
+												Condition: &parser.Expression{
+													ListConstruction: &parser.ListConstruction{
+														Disjunction: &parser.Disjunction{
+															Conjunction: &parser.Conjunction{
+																Equality: &parser.Equality{
+																	Comparison: &parser.Comparison{
+																		Addition: &parser.Addition{
+																			Multiplication: &parser.Multiplication{
+																				Unary: &parser.Unary{
+																					Accessor: &parser.Accessor{
+																						Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+												Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+											},
+											{
+												Condition: &parser.Expression{
+													ListConstruction: &parser.ListConstruction{
+														Disjunction: &parser.Disjunction{
+															Conjunction: &parser.Conjunction{
+																Equality: &parser.Equality{
+																	Comparison: &parser.Comparison{
+																		Addition: &parser.Addition{
+																			Multiplication: &parser.Multiplication{
+																				Unary: &parser.Unary{
+																					Accessor: &parser.Accessor{
+																						Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+												Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewFunctionCall(MultiplicationFunctionName, []expressions.Expression{
+				expressions.NewConditionalExpression([]expressions.ConditionalCase{
+					{
+						Condition: expressions.NewNumber(23),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					},
+					{
+						Condition: expressions.NewNumber(42),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					},
+				}),
+				expressions.NewConditionalExpression([]expressions.ConditionalCase{
+					{
+						Condition: expressions.NewNumber(24),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					},
+					{
+						Condition: expressions.NewNumber(43),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+					},
+				}),
+			}),
+			wantSettedStates: mapset.NewSet("one", "two", "three"),
+			wantErr:          assert.NoError,
+		},
+		{
 			name: "Multiplication/nonempty/error",
 			args: args{
 				multiplication: &parser.Multiplication{
@@ -1360,6 +1511,84 @@ func TestTranslateMultiplication(test *testing.T) {
 			},
 			wantExpression:   expressions.NewNumber(23),
 			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "Multiplication/empty/success/with setted states",
+			args: args{
+				multiplication: &parser.Multiplication{
+					Unary: &parser.Unary{
+						Accessor: &parser.Accessor{
+							Atom: &parser.Atom{
+								ConditionalExpression: &parser.ConditionalExpression{
+									ConditionalCases: []*parser.ConditionalCase{
+										{
+											Condition: &parser.Expression{
+												ListConstruction: &parser.ListConstruction{
+													Disjunction: &parser.Disjunction{
+														Conjunction: &parser.Conjunction{
+															Equality: &parser.Equality{
+																Comparison: &parser.Comparison{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+										},
+										{
+											Condition: &parser.Expression{
+												ListConstruction: &parser.ListConstruction{
+													Disjunction: &parser.Disjunction{
+														Conjunction: &parser.Conjunction{
+															Equality: &parser.Equality{
+																Comparison: &parser.Comparison{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(23),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+				},
+				{
+					Condition: expressions.NewNumber(42),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+				},
+			}),
+			wantSettedStates: mapset.NewSet("one", "two"),
 			wantErr:          assert.NoError,
 		},
 		{
