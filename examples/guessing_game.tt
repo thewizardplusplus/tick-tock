@@ -1,7 +1,7 @@
 // https://www.rosettacode.org/wiki/Guess_the_number
 actor
   state __initialization__
-    message __initialize__
+    message __initialize__()
       out("Input a number from 1 to 10 inclusive: ")
 
       let line = inln(-1)

@@ -91,8 +91,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "Message/nonempty",
-			args: args{"message test send one send two;", new(Message)},
+			name: "Message/nonempty/no parameters",
+			args: args{"message test() send one send two;", new(Message)},
 			wantAST: &Message{
 				Name:     "test",
 				Commands: []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
@@ -100,15 +100,55 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "Message/nonempty/single parameter",
+			args: args{"message test(x) send one send two;", new(Message)},
+			wantAST: &Message{
+				Name:       "test",
+				Parameters: []string{"x"},
+				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Message/nonempty/single parameter/trailing comma",
+			args: args{"message test(x,) send one send two;", new(Message)},
+			wantAST: &Message{
+				Name:       "test",
+				Parameters: []string{"x"},
+				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Message/nonempty/few parameters",
+			args: args{"message test(x, y, z) send one send two;", new(Message)},
+			wantAST: &Message{
+				Name:       "test",
+				Parameters: []string{"x", "y", "z"},
+				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Message/nonempty/few parameters/trailing comma",
+			args: args{"message test(x, y, z,) send one send two;", new(Message)},
+			wantAST: &Message{
+				Name:       "test",
+				Parameters: []string{"x", "y", "z"},
+				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Message/empty",
-			args:    args{"message test;", new(Message)},
-			wantAST: &Message{"test", nil},
+			args:    args{"message test();", new(Message)},
+			wantAST: &Message{"test", nil, nil},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "State/nonempty",
-			args:    args{"state test message one; message two;;", new(State)},
-			wantAST: &State{"test", []*Message{{"one", nil}, {"two", nil}}},
+			args:    args{"state test message one(); message two();;", new(State)},
+			wantAST: &State{"test", []*Message{{"one", nil, nil}, {"two", nil, nil}}},
 			wantErr: assert.NoError,
 		},
 		{
