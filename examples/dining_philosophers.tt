@@ -8,19 +8,19 @@ actor
   state free
     message take_left_fork_by_john()
       set taken
-      send taken_left_fork_by_john
+      send taken_left_fork_by_john()
     ;
     message take_left_fork_by_jane()
       set taken
-      send taken_left_fork_by_jane
+      send taken_left_fork_by_jane()
     ;
   ;
   state taken
     message take_left_fork_by_john()
-      send busy_left_fork_for_john
+      send busy_left_fork_for_john()
     ;
     message take_left_fork_by_jane()
-      send busy_left_fork_for_jane
+      send busy_left_fork_for_jane()
     ;
     message put_left_fork()
       set free
@@ -38,19 +38,19 @@ actor
   state free
     message take_right_fork_by_john()
       set taken
-      send taken_right_fork_by_john
+      send taken_right_fork_by_john()
     ;
     message take_right_fork_by_jane()
       set taken
-      send taken_right_fork_by_jane
+      send taken_right_fork_by_jane()
     ;
   ;
   state taken
     message take_right_fork_by_john()
-      send busy_right_fork_for_john
+      send busy_right_fork_for_john()
     ;
     message take_right_fork_by_jane()
-      send busy_right_fork_for_jane
+      send busy_right_fork_for_jane()
     ;
     message put_right_fork()
       set free
@@ -63,56 +63,56 @@ actor
   state __initialization__
     message __initialize__()
       set thinking
-      send start_thinking_john
+      send start_thinking_john()
     ;
   ;
   state thinking
     message start_thinking_john()
       sleep(random() * 0.5 + 0.5)
-      send stop_thinking_john
+      send stop_thinking_john()
     ;
     message stop_thinking_john()
       outln("\x1b[32mJohn\x1b[m: become hungry, try to take the \x1b[32mleft fork\x1b[m")
       set wait_left
-      send take_left_fork_by_john
+      send take_left_fork_by_john()
     ;
   ;
   state wait_left
     message taken_left_fork_by_john()
       outln("\x1b[32mJohn\x1b[m: the \x1b[32mleft fork\x1b[m taken, try to take the \x1b[34mright fork\x1b[m")
       set wait_right
-      send take_right_fork_by_john
+      send take_right_fork_by_john()
     ;
     message busy_left_fork_for_john()
       outln("\x1b[32mJohn\x1b[m: the \x1b[32mleft fork\x1b[m is busy, return to \x1b[32mthinking\x1b[m")
       set thinking
-      send start_thinking_john
+      send start_thinking_john()
     ;
   ;
   state wait_right
     message taken_right_fork_by_john()
       outln("\x1b[32mJohn\x1b[m: the \x1b[34mright fork\x1b[m taken, start \x1b[34meating\x1b[m")
       set eating
-      send start_eating_john
+      send start_eating_john()
     ;
     message busy_right_fork_for_john()
       outln("\x1b[32mJohn\x1b[m: the \x1b[34mright fork\x1b[m is busy, put the \x1b[32mleft fork\x1b[m and return to \x1b[32mthinking\x1b[m")
-      send put_left_fork
+      send put_left_fork()
       set thinking
-      send start_thinking_john
+      send start_thinking_john()
     ;
   ;
   state eating
     message start_eating_john()
       sleep(random() * 0.5 + 0.5)
-      send stop_eating_john
+      send stop_eating_john()
     ;
     message stop_eating_john()
       outln("\x1b[32mJohn\x1b[m: stop \x1b[34meating\x1b[m, put forks and return to \x1b[32mthinking\x1b[m")
-      send put_left_fork
-      send put_right_fork
+      send put_left_fork()
+      send put_right_fork()
       set thinking
-      send start_thinking_john
+      send start_thinking_john()
     ;
   ;
 ;
@@ -122,56 +122,56 @@ actor
   state __initialization__
     message __initialize__()
       set thinking
-      send start_thinking_jane
+      send start_thinking_jane()
     ;
   ;
   state thinking
     message start_thinking_jane()
       sleep(random() * 0.5 + 0.5)
-      send stop_thinking_jane
+      send stop_thinking_jane()
     ;
     message stop_thinking_jane()
       outln("\x1b[34mJane\x1b[m: become hungry, try to take the \x1b[34mright fork\x1b[m")
       set wait_right
-      send take_right_fork_by_jane
+      send take_right_fork_by_jane()
     ;
   ;
   state wait_right
     message taken_right_fork_by_jane()
       outln("\x1b[34mJane\x1b[m: the \x1b[34mright fork\x1b[m taken, try to take the \x1b[32mleft fork\x1b[m")
       set wait_left
-      send take_left_fork_by_jane
+      send take_left_fork_by_jane()
     ;
     message busy_right_fork_for_jane()
       outln("\x1b[34mJane\x1b[m: the \x1b[34mright fork\x1b[m is busy, return to \x1b[32mthinking\x1b[m")
       set thinking
-      send start_thinking_jane
+      send start_thinking_jane()
     ;
   ;
   state wait_left
     message taken_left_fork_by_jane()
       outln("\x1b[34mJane\x1b[m: the \x1b[32mleft fork\x1b[m taken, start \x1b[34meating\x1b[m")
       set eating
-      send start_eating_jane
+      send start_eating_jane()
     ;
     message busy_left_fork_for_jane()
       outln("\x1b[34mJane\x1b[m: the \x1b[32mleft fork\x1b[m is busy, put the \x1b[34mright fork\x1b[m and return to \x1b[32mthinking\x1b[m")
-      send put_right_fork
+      send put_right_fork()
       set thinking
-      send start_thinking_jane
+      send start_thinking_jane()
     ;
   ;
   state eating
     message start_eating_jane()
       sleep(random() * 0.5 + 0.5)
-      send stop_eating_jane
+      send stop_eating_jane()
     ;
     message stop_eating_jane()
       outln("\x1b[34mJane\x1b[m: stop \x1b[34meating\x1b[m, put forks and return to \x1b[32mthinking\x1b[m")
-      send put_left_fork
-      send put_right_fork
+      send put_left_fork()
+      send put_right_fork()
       set thinking
-      send start_thinking_jane
+      send start_thinking_jane()
     ;
   ;
 ;

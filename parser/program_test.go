@@ -47,9 +47,193 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Command/send",
-			args:    args{"send test", new(Command)},
-			wantAST: &Command{Send: pointer.ToString("test")},
+			name:    "Command/send/no arguments",
+			args:    args{"send test()", new(Command)},
+			wantAST: &Command{Send: &SendCommand{Name: "test"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/send/single argument",
+			args: args{"send test(12)", new(Command)},
+			wantAST: &Command{
+				Send: &SendCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/send/single argument/trailing comma",
+			args: args{"send test(12,)", new(Command)},
+			wantAST: &Command{
+				Send: &SendCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/send/few arguments",
+			args: args{"send test(12, 23, 42)", new(Command)},
+			wantAST: &Command{
+				Send: &SendCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/send/few arguments/trailing comma",
+			args: args{"send test(12, 23, 42,)", new(Command)},
+			wantAST: &Command{
+				Send: &SendCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -92,50 +276,50 @@ func TestParseToAST_withProgram(test *testing.T) {
 		},
 		{
 			name: "Message/nonempty/no parameters",
-			args: args{"message test() send one send two;", new(Message)},
+			args: args{"message test() send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:     "test",
-				Commands: []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+				Commands: []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Message/nonempty/single parameter",
-			args: args{"message test(x) send one send two;", new(Message)},
+			args: args{"message test(x) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x"},
-				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Message/nonempty/single parameter/trailing comma",
-			args: args{"message test(x,) send one send two;", new(Message)},
+			args: args{"message test(x,) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x"},
-				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Message/nonempty/few parameters",
-			args: args{"message test(x, y, z) send one send two;", new(Message)},
+			args: args{"message test(x, y, z) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x", "y", "z"},
-				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Message/nonempty/few parameters/trailing comma",
-			args: args{"message test(x, y, z,) send one send two;", new(Message)},
+			args: args{"message test(x, y, z,) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x", "y", "z"},
-				Commands:   []*Command{{Send: pointer.ToString("one")}, {Send: pointer.ToString("two")}},
+				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
 			},
 			wantErr: assert.NoError,
 		},

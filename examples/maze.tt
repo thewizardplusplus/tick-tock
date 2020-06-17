@@ -11,7 +11,7 @@ actor
       ;
       out(symbol)
 
-      send __initialize__
+      send __initialize__()
     ;
   ;
 ;

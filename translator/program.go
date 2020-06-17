@@ -169,7 +169,7 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 		translatedCommand = commands.NewLetCommand(command.Let.Identifier, expression)
 		declaredIdentifiers.Add(command.Let.Identifier)
 	case command.Send != nil:
-		translatedCommand = commands.NewSendCommand(*command.Send)
+		translatedCommand = commands.NewSendCommand(command.Send.Name)
 	case command.Set != nil:
 		translatedCommand = commands.NewSetCommand(*command.Set)
 		topLevelSettedState = *command.Set

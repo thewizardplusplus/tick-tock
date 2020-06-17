@@ -3,7 +3,7 @@ actor
   state __initialization__
     message __initialize__()
       outln("\x1b[32mpinger\x1b[m sent \x1b[32mping\x1b[m")
-      send ping
+      send ping()
     ;
     message pong()
       outln("\x1b[32mpinger\x1b[m received \x1b[34mpong\x1b[m")
@@ -18,7 +18,7 @@ actor
     message ping()
       outln("\x1b[34mponger\x1b[m received \x1b[32mping\x1b[m")
       outln("\x1b[34mponger\x1b[m sent \x1b[34mpong\x1b[m")
-      send pong
+      send pong()
       outln("\x1b[34mponger\x1b[m finished")
     ;
   ;

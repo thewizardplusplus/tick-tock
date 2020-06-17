@@ -25,15 +25,21 @@ type Message struct {
 
 // Command ...
 type Command struct {
-	Let        *LetCommand `parser:"@@"`
-	Send       *string     `parser:"| \"send\" @Ident"`
-	Set        *string     `parser:"| \"set\" @Ident"`
-	Return     bool        `parser:"| @\"return\""`
-	Expression *Expression `parser:"| @@"`
+	Let        *LetCommand  `parser:"@@"`
+	Send       *SendCommand `parser:"| @@"`
+	Set        *string      `parser:"| \"set\" @Ident"`
+	Return     bool         `parser:"| @\"return\""`
+	Expression *Expression  `parser:"| @@"`
 }
 
 // LetCommand ...
 type LetCommand struct {
 	Identifier string      `parser:"\"let\" @Ident \"=\""`
 	Expression *Expression `parser:"@@"`
+}
+
+// SendCommand ...
+type SendCommand struct {
+	Name      string        `parser:"\"send\" @Ident"`
+	Arguments []*Expression `parser:"\"(\" [ @@ { \",\" @@ } [ \",\" ] ] \")\""`
 }

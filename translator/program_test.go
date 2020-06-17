@@ -393,14 +393,14 @@ func TestTranslateStates(test *testing.T) {
 							{
 								Name: "message_0",
 								Commands: []*parser.Command{
-									{Send: pointer.ToString("command_0")},
+									{Send: &parser.SendCommand{Name: "command_0"}},
 									{Set: pointer.ToString("state_unknown")},
 								},
 							},
 							{
 								Name: "message_1",
 								Commands: []*parser.Command{
-									{Send: pointer.ToString("command_2")},
+									{Send: &parser.SendCommand{Name: "command_2"}},
 									{Set: pointer.ToString("state_unknown")},
 								},
 							},
@@ -488,15 +488,15 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_0")},
-							{Send: pointer.ToString("command_1")},
+							{Send: &parser.SendCommand{Name: "command_0"}},
+							{Send: &parser.SendCommand{Name: "command_1"}},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_2")},
-							{Send: pointer.ToString("command_3")},
+							{Send: &parser.SendCommand{Name: "command_2"}},
+							{Send: &parser.SendCommand{Name: "command_3"}},
 						},
 					},
 				},
@@ -525,14 +525,14 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_0")},
+							{Send: &parser.SendCommand{Name: "command_0"}},
 							{Set: pointer.ToString("command_1")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_2")},
+							{Send: &parser.SendCommand{Name: "command_2"}},
 							{Set: pointer.ToString("command_3")},
 						},
 					},
@@ -562,14 +562,14 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_1")},
+							{Send: &parser.SendCommand{Name: "command_1"}},
 							{Set: pointer.ToString("command_0")},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_2")},
+							{Send: &parser.SendCommand{Name: "command_2"}},
 							{Set: pointer.ToString("command_0")},
 						},
 					},
@@ -675,16 +675,16 @@ func TestTranslateMessages(test *testing.T) {
 					{
 						Name: "message_0",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_0")},
-							{Send: pointer.ToString("command_1")},
+							{Send: &parser.SendCommand{Name: "command_0"}},
+							{Send: &parser.SendCommand{Name: "command_1"}},
 						},
 					},
 					{
 						Name: "message_1",
 						Commands: []*parser.Command{
-							{Send: pointer.ToString("command_2")},
+							{Send: &parser.SendCommand{Name: "command_2"}},
 							{Set: pointer.ToString("command_3")},
-							{Send: pointer.ToString("command_4")},
+							{Send: &parser.SendCommand{Name: "command_4"}},
 							{Set: pointer.ToString("command_5")},
 						},
 					},
@@ -766,8 +766,8 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success with commands (without a set command)",
 			args: args{
 				commands: []*parser.Command{
-					{Send: pointer.ToString("one")},
-					{Send: pointer.ToString("two")},
+					{Send: &parser.SendCommand{Name: "one"}},
+					{Send: &parser.SendCommand{Name: "two"}},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
@@ -782,7 +782,7 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success with commands (with a set command)",
 			args: args{
 				commands: []*parser.Command{
-					{Send: pointer.ToString("one")},
+					{Send: &parser.SendCommand{Name: "one"}},
 					{Set: pointer.ToString("two")},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
@@ -798,8 +798,8 @@ func TestTranslateCommands(test *testing.T) {
 			name: "success with the return command",
 			args: args{
 				commands: []*parser.Command{
-					{Send: pointer.ToString("one")},
-					{Send: pointer.ToString("two")},
+					{Send: &parser.SendCommand{Name: "one"}},
+					{Send: &parser.SendCommand{Name: "two"}},
 					{Return: true},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
@@ -1144,9 +1144,9 @@ func TestTranslateCommands(test *testing.T) {
 			name: "error with the return command",
 			args: args{
 				commands: []*parser.Command{
-					{Send: pointer.ToString("one")},
+					{Send: &parser.SendCommand{Name: "one"}},
 					{Return: true},
-					{Send: pointer.ToString("two")},
+					{Send: &parser.SendCommand{Name: "two"}},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
@@ -1157,9 +1157,9 @@ func TestTranslateCommands(test *testing.T) {
 			name: "error with a second set command",
 			args: args{
 				commands: []*parser.Command{
-					{Send: pointer.ToString("one")},
+					{Send: &parser.SendCommand{Name: "one"}},
 					{Set: pointer.ToString("two")},
-					{Send: pointer.ToString("three")},
+					{Send: &parser.SendCommand{Name: "three"}},
 					{Set: pointer.ToString("four")},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
@@ -1413,7 +1413,7 @@ func TestTranslateCommand(test *testing.T) {
 		{
 			name: "Command/send",
 			args: args{
-				command:             &parser.Command{Send: pointer.ToString("test")},
+				command:             &parser.Command{Send: &parser.SendCommand{Name: "test"}},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
