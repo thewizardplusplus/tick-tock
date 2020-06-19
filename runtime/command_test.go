@@ -58,3 +58,82 @@ func TestCommandGroup(test *testing.T) {
 		})
 	}
 }
+
+func TestParameterizedCommandGroup(test *testing.T) {
+	type fields struct {
+		parameters   []string
+		makeCommands func(context context.Context, log *commandLog) CommandGroup
+	}
+	type args struct {
+		context   context.Context
+		arguments []interface{}
+	}
+
+	for _, testData := range []struct {
+		name       string
+		fields     fields
+		args       args
+		wantLog    []int
+		wantResult interface{}
+		wantErr    assert.ErrorAssertionFunc
+	}{
+		{
+			name: "success",
+			fields: fields{
+				parameters: []string{"one", "two"},
+				makeCommands: func(context context.Context, log *commandLog) CommandGroup {
+					return newLoggableCommands(context, log, group(5), withCalls())
+				},
+			},
+			args: args{
+				context: func() context.Context {
+					context := new(mocks.Context)
+					context.On("SetValue", "one", 23).Return()
+					context.On("SetValue", "two", 42).Return()
+
+					return context
+				}(),
+				arguments: []interface{}{23, 42},
+			},
+			wantLog:    []int{0, 1, 2, 3, 4},
+			wantResult: 4,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "error",
+			fields: fields{
+				parameters: []string{"one", "two"},
+				makeCommands: func(context context.Context, log *commandLog) CommandGroup {
+					return newLoggableCommands(context, log, group(5), withErrOn(2))
+				},
+			},
+			args: args{
+				context: func() context.Context {
+					context := new(mocks.Context)
+					context.On("SetValue", "one", 23).Return()
+					context.On("SetValue", "two", 42).Return()
+
+					return context
+				}(),
+				arguments: []interface{}{23, 42},
+			},
+			wantLog:    []int{0, 1, 2},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			var log commandLog
+			commands := testData.fields.makeCommands(testData.args.context, &log)
+			parameterizedCommands := NewParameterizedCommandGroup(testData.fields.parameters, commands)
+			gotResult, gotErr :=
+				parameterizedCommands.ParameterizedRun(testData.args.context, testData.args.arguments)
+
+			mock.AssertExpectationsForObjects(test, testData.args.context)
+			checkCommands(test, commands)
+			assert.Equal(test, testData.wantLog, log.commands)
+			assert.Equal(test, testData.wantResult, gotResult)
+			testData.wantErr(test, gotErr)
+		})
+	}
+}
