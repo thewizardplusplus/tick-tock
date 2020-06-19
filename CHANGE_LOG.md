@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.3](https://github.com/thewizardplusplus/tick-tock/tree/v1.3) (2020-06-15)
+
+- support expression evaluation:
+  - support operations:
+    - optimize evaluation of conditional expressions;
+
 ## [v1.2](https://github.com/thewizardplusplus/tick-tock/tree/v1.2) (2020-06-15)
 
 - support expression evaluation:

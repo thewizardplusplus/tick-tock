@@ -28,8 +28,7 @@ func (expression ConditionalExpression) Evaluate(
 	context context.Context,
 ) (result interface{}, err error) {
 	for index, conditionalCase := range expression.conditionalCases {
-		contextCopy := context.Copy()
-		conditionResult, err := conditionalCase.Condition.Evaluate(contextCopy)
+		conditionResult, err := conditionalCase.Condition.Evaluate(context)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to evaluate the condition #%d", index)
 		}
@@ -39,6 +38,7 @@ func (expression ConditionalExpression) Evaluate(
 			return nil, errors.Wrapf(err, "unable to convert the condition #%d to boolean", index)
 		}
 		if conditionBooleanResult == types.True {
+			contextCopy := context.Copy()
 			commandResult, err := conditionalCase.Command.Run(contextCopy)
 			if err != nil {
 				return nil, errors.Wrapf(err, "unable to evaluate the command of the condition #%d", index)

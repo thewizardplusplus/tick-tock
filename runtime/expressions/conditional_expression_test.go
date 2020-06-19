@@ -148,12 +148,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 				},
 			},
 			args: args{
-				context: func() context.Context {
-					context := new(contextmocks.Context)
-					context.On("Copy").Return(context)
-
-					return context
-				}(),
+				context: new(contextmocks.Context),
 			},
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
@@ -191,12 +186,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 				},
 			},
 			args: args{
-				context: func() context.Context {
-					context := new(contextmocks.Context)
-					context.On("Copy").Return(context)
-
-					return context
-				}(),
+				context: new(contextmocks.Context),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -234,12 +224,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 				},
 			},
 			args: args{
-				context: func() context.Context {
-					context := new(contextmocks.Context)
-					context.On("Copy").Return(context)
-
-					return context
-				}(),
+				context: new(contextmocks.Context),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
