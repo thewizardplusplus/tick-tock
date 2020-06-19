@@ -106,7 +106,8 @@ func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Se
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
 
-		translatedMessages[message.Name] = translatedCommands
+		translatedMessages[message.Name] =
+			runtime.NewParameterizedCommandGroup(message.Parameters, translatedCommands)
 		settedStatesByMessages[message.Name] = settedStates
 	}
 

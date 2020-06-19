@@ -136,9 +136,9 @@ func TestTranslate(test *testing.T) {
 				actorOne, _ := runtime.NewActor(
 					runtime.StateGroup{
 						options.InitialState: runtime.MessageGroup{
-							"message_0": runtime.CommandGroup{
+							"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 								commands.NewExpressionCommand(expressions.NewIdentifier("test")),
-							},
+							}),
 						},
 					},
 					options.InitialState,
@@ -287,8 +287,14 @@ func TestTranslateStates(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
-				"state_0": runtime.MessageGroup{"message_0": nil, "message_1": nil},
-				"state_1": runtime.MessageGroup{"message_2": nil, "message_3": nil},
+				"state_0": runtime.MessageGroup{
+					"message_0": runtime.NewParameterizedCommandGroup(nil, nil),
+					"message_1": runtime.NewParameterizedCommandGroup(nil, nil),
+				},
+				"state_1": runtime.MessageGroup{
+					"message_2": runtime.NewParameterizedCommandGroup(nil, nil),
+					"message_3": runtime.NewParameterizedCommandGroup(nil, nil),
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -346,9 +352,9 @@ func TestTranslateStates(test *testing.T) {
 			},
 			wantStates: runtime.StateGroup{
 				"state_0": runtime.MessageGroup{
-					"message_0": runtime.CommandGroup{
+					"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 						commands.NewExpressionCommand(expressions.NewIdentifier("test")),
-					},
+					}),
 				},
 			},
 			wantErr: assert.NoError,
@@ -503,14 +509,14 @@ func TestTranslateMessages(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantMessages: runtime.MessageGroup{
-				"message_0": runtime.CommandGroup{
+				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_0"),
 					commands.NewSendCommand("command_1"),
-				},
-				"message_1": runtime.CommandGroup{
+				}),
+				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_2"),
 					commands.NewSendCommand("command_3"),
-				},
+				}),
 			},
 			wantSettedStatesByMessages: settedStateGroup{
 				"message_0": mapset.NewSet(),
@@ -540,14 +546,14 @@ func TestTranslateMessages(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantMessages: runtime.MessageGroup{
-				"message_0": runtime.CommandGroup{
+				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_0"),
 					commands.NewSetCommand("command_1"),
-				},
-				"message_1": runtime.CommandGroup{
+				}),
+				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_2"),
 					commands.NewSetCommand("command_3"),
-				},
+				}),
 			},
 			wantSettedStatesByMessages: settedStateGroup{
 				"message_0": mapset.NewSet("command_1"),
@@ -577,14 +583,14 @@ func TestTranslateMessages(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantMessages: runtime.MessageGroup{
-				"message_0": runtime.CommandGroup{
+				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_1"),
 					commands.NewSetCommand("command_0"),
-				},
-				"message_1": runtime.CommandGroup{
+				}),
+				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_2"),
 					commands.NewSetCommand("command_0"),
-				},
+				}),
 			},
 			wantSettedStatesByMessages: settedStateGroup{
 				"message_0": mapset.NewSet("command_0"),
@@ -598,7 +604,10 @@ func TestTranslateMessages(test *testing.T) {
 				messages:            []*parser.Message{{Name: "message_0"}, {Name: "message_1"}},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantMessages: runtime.MessageGroup{"message_0": nil, "message_1": nil},
+			wantMessages: runtime.MessageGroup{
+				"message_0": runtime.NewParameterizedCommandGroup(nil, nil),
+				"message_1": runtime.NewParameterizedCommandGroup(nil, nil),
+			},
 			wantSettedStatesByMessages: settedStateGroup{
 				"message_0": mapset.NewSet(),
 				"message_1": mapset.NewSet(),
@@ -651,9 +660,36 @@ func TestTranslateMessages(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantMessages: runtime.MessageGroup{
-				"message_0": runtime.CommandGroup{
+				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+				}),
+			},
+			wantSettedStatesByMessages: settedStateGroup{"message_0": mapset.NewSet()},
+			wantErr:                    assert.NoError,
+		},
+		{
+			name: "success with parameters",
+			args: args{
+				messages: []*parser.Message{
+					{
+						Name:       "message_0",
+						Parameters: []string{"one", "two"},
+						Commands: []*parser.Command{
+							{Send: &parser.SendCommand{Name: "command_0"}},
+							{Send: &parser.SendCommand{Name: "command_1"}},
+						},
+					},
 				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantMessages: runtime.MessageGroup{
+				"message_0": runtime.NewParameterizedCommandGroup(
+					[]string{"one", "two"},
+					runtime.CommandGroup{
+						commands.NewSendCommand("command_0"),
+						commands.NewSendCommand("command_1"),
+					},
+				),
 			},
 			wantSettedStatesByMessages: settedStateGroup{"message_0": mapset.NewSet()},
 			wantErr:                    assert.NoError,

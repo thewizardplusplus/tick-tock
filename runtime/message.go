@@ -6,11 +6,12 @@ import (
 )
 
 // MessageGroup ...
-type MessageGroup map[string]CommandGroup
+type MessageGroup map[string]ParameterizedCommandGroup
 
 // ProcessMessage ...
 func (messages MessageGroup) ProcessMessage(context context.Context, message string) error {
-	if _, err := messages[message].Run(context); err != nil && errors.Cause(err) != ErrReturn {
+	_, err := messages[message].ParameterizedRun(context, nil)
+	if err != nil && errors.Cause(err) != ErrReturn {
 		return errors.Wrapf(err, "unable to process the message %s", message)
 	}
 

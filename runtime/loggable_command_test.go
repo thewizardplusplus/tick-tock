@@ -140,7 +140,8 @@ func newLoggableMessages(
 	for i := messageConfig.idOffset; i < messageConfig.idOffset+messageConfig.size; i++ {
 		message := fmt.Sprintf("message_%d", i)
 		config := group(commandConfig.size, i*commandConfig.size+commandConfig.idOffset)
-		messages[message] = newLoggableCommands(context, log, config, options[message]...)
+		commands := newLoggableCommands(context, log, config, options[message]...)
+		messages[message] = NewParameterizedCommandGroup(nil, commands)
 	}
 
 	return messages
@@ -171,8 +172,8 @@ func checkCommands(test *testing.T, commands CommandGroup) {
 }
 
 func checkMessages(test *testing.T, messages MessageGroup) {
-	for _, commands := range messages {
-		checkCommands(test, commands)
+	for _, parameterizedCommands := range messages {
+		checkCommands(test, parameterizedCommands.commands)
 	}
 }
 
