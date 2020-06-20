@@ -9,7 +9,7 @@ Tick-tock — интерпретируемый высокоуровневый я
 ```
 actor
   state __initialization__
-    message __initialize__
+    message __initialize__()
       outln("Hello, world!")
     ;
   ;
