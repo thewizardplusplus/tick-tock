@@ -8,7 +8,11 @@
 
 ## [v1.2](https://github.com/thewizardplusplus/tick-tock/tree/v1.2) (2020-06-15)
 
+- support commands:
+  - return command (early exit from message processing);
 - support expression evaluation:
+  - support types:
+    - symbol constants (based on real numbers);
   - support operations:
     - conditional expression (`when...;`);
 - examples:
