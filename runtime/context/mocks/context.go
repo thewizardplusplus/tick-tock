@@ -28,7 +28,7 @@ func (_m *Context) Copy() context.Context {
 }
 
 // SendMessage provides a mock function with given fields: message
-func (_m *Context) SendMessage(message string) {
+func (_m *Context) SendMessage(message context.Message) {
 	_m.Called(message)
 }
 

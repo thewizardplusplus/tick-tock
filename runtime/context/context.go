@@ -1,9 +1,15 @@
 package context
 
+// Message ...
+type Message struct {
+	Name      string
+	Arguments []interface{}
+}
+
 // MessageSender ...
 //go:generate mockery -name=MessageSender -case=underscore
 type MessageSender interface {
-	SendMessage(message string)
+	SendMessage(message Message)
 }
 
 // StateHolder ...
