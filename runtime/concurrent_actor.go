@@ -5,6 +5,8 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/waiter"
 )
 
+type inbox chan context.Message
+
 // Dependencies ...
 type Dependencies struct {
 	waiter.Waiter
@@ -14,13 +16,13 @@ type Dependencies struct {
 // ConcurrentActor ...
 type ConcurrentActor struct {
 	innerActor   *Actor
-	inbox        chan string
+	inbox        inbox
 	dependencies Dependencies
 }
 
 // NewConcurrentActor ...
 func NewConcurrentActor(actor *Actor, inboxSize int, dependencies Dependencies) ConcurrentActor {
-	return ConcurrentActor{actor, make(chan string, inboxSize), dependencies}
+	return ConcurrentActor{actor, make(inbox, inboxSize), dependencies}
 }
 
 // Start ...
@@ -37,7 +39,7 @@ func (actor ConcurrentActor) Start(context context.Context) {
 }
 
 // SendMessage ...
-func (actor ConcurrentActor) SendMessage(message string) {
+func (actor ConcurrentActor) SendMessage(message context.Message) {
 	actor.dependencies.Waiter.Add(1)
 	go func() { actor.inbox <- message }()
 }
@@ -56,7 +58,7 @@ func (actors ConcurrentActorGroup) Start(context context.Context) {
 }
 
 // SendMessage ...
-func (actors ConcurrentActorGroup) SendMessage(message string) {
+func (actors ConcurrentActorGroup) SendMessage(message context.Message) {
 	for _, actor := range actors {
 		actor.SendMessage(message)
 	}

@@ -17,7 +17,7 @@ func TestConcurrentActor(test *testing.T) {
 		makeStates   func(context context.Context, log *commandLog) StateGroup
 		initialState string
 		inboxSize    int
-		messages     []string
+		messages     []context.Message
 	}
 
 	for _, testData := range []struct {
@@ -36,7 +36,10 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				initialState: "state_1",
-				messages:     []string{"message_2", "message_3"},
+				messages: []context.Message{
+					{Name: "message_2"},
+					{Name: "message_3"},
+				},
 			},
 			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 		},
@@ -51,7 +54,10 @@ func TestConcurrentActor(test *testing.T) {
 				},
 				initialState: "state_1",
 				inboxSize:    testutils.BufferedInbox,
-				messages:     []string{"message_2", "message_3"},
+				messages: []context.Message{
+					{Name: "message_2"},
+					{Name: "message_3"},
+				},
 			},
 			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 		},
@@ -74,7 +80,10 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				initialState: "state_1",
-				messages:     []string{"message_2", "message_3"},
+				messages: []context.Message{
+					{Name: "message_2"},
+					{Name: "message_3"},
+				},
 			},
 			errCount: 2,
 			wantLog:  []int{10, 11, 12, 15, 16, 17},
@@ -131,7 +140,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 	for _, testData := range []struct {
 		name     string
 		args     []args
-		messages []string
+		messages []context.Message
 		wantLog  []int
 	}{
 		{
@@ -156,12 +165,18 @@ func TestConcurrentActorGroup(test *testing.T) {
 					initialState: "state_1",
 				},
 			},
-			messages: []string{"message_2", "message_3"},
-			wantLog:  []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39},
+			messages: []context.Message{
+				{Name: "message_2"},
+				{Name: "message_3"},
+			},
+			wantLog: []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39},
 		},
 		{
-			name:     "success without actors",
-			messages: []string{"message_2", "message_3"},
+			name: "success without actors",
+			messages: []context.Message{
+				{Name: "message_2"},
+				{Name: "message_3"},
+			},
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {

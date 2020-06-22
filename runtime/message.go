@@ -9,8 +9,11 @@ import (
 type MessageGroup map[string]ParameterizedCommandGroup
 
 // ProcessMessage ...
-func (messages MessageGroup) ProcessMessage(context context.Context, message string) error {
-	_, err := messages[message].ParameterizedRun(context, nil)
+func (messages MessageGroup) ProcessMessage(
+	context context.Context,
+	message context.Message,
+) error {
+	_, err := messages[message.Name].ParameterizedRun(context, message.Arguments)
 	if err != nil && errors.Cause(err) != ErrReturn {
 		return errors.Wrapf(err, "unable to process the message %s", message)
 	}

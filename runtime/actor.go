@@ -28,7 +28,7 @@ func (actor *Actor) SetState(state string) error {
 }
 
 // ProcessMessage ...
-func (actor *Actor) ProcessMessage(context context.Context, message string) error {
+func (actor *Actor) ProcessMessage(context context.Context, message context.Message) error {
 	context = context.Copy()
 	context.SetStateHolder(actor)
 

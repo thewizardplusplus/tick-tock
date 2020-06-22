@@ -12,7 +12,7 @@ type StateGroup map[string]MessageGroup
 func (states StateGroup) ProcessMessage(
 	context context.Context,
 	state string,
-	message string,
+	message context.Message,
 ) error {
 	messages, ok := states[state]
 	if !ok {

@@ -97,7 +97,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			currentState string
 		}
 		args struct {
-			message string
+			message context.Message
 		}
 	)
 
@@ -118,7 +118,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 				},
 				currentState: "state_1",
 			},
-			args:    args{"message_3"},
+			args: args{
+				message: context.Message{Name: "message_3"},
+			},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
 		},
@@ -132,7 +134,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 				},
 				currentState: "state_1",
 			},
-			args:    args{"message_3"},
+			args: args{
+				message: context.Message{Name: "message_3"},
+			},
 			wantLog: []int{15, 16, 17},
 			wantErr: assert.Error,
 		},

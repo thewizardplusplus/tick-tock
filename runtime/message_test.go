@@ -12,7 +12,7 @@ import (
 
 func TestMessageGroup(test *testing.T) {
 	type args struct {
-		message string
+		message context.Message
 	}
 
 	for _, testData := range []struct {
@@ -25,15 +25,19 @@ func TestMessageGroup(test *testing.T) {
 		{
 			name:         "success with an empty group",
 			makeMessages: func(context context.Context, log *commandLog) MessageGroup { return nil },
-			args:         args{"two"},
-			wantErr:      assert.NoError,
+			args: args{
+				message: context.Message{Name: "two"},
+			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "success with an unknown message",
 			makeMessages: func(context context.Context, log *commandLog) MessageGroup {
 				return newLoggableMessages(context, log, group(2), group(5), nil)
 			},
-			args:    args{"unknown"},
+			args: args{
+				message: context.Message{Name: "unknown"},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -43,7 +47,9 @@ func TestMessageGroup(test *testing.T) {
 					"message_1": {withCalls()},
 				})
 			},
-			args:    args{"message_1"},
+			args: args{
+				message: context.Message{Name: "message_1"},
+			},
 			wantLog: []int{5, 6, 7, 8, 9},
 			wantErr: assert.NoError,
 		},
@@ -54,7 +60,9 @@ func TestMessageGroup(test *testing.T) {
 					"message_1": {withErrOn(2)},
 				})
 			},
-			args:    args{"message_1"},
+			args: args{
+				message: context.Message{Name: "message_1"},
+			},
 			wantLog: []int{5, 6, 7},
 			wantErr: assert.Error,
 		},
@@ -65,7 +73,9 @@ func TestMessageGroup(test *testing.T) {
 					"message_1": {withCustomErrOn(ErrReturn, 2)},
 				})
 			},
-			args:    args{"message_1"},
+			args: args{
+				message: context.Message{Name: "message_1"},
+			},
 			wantLog: []int{5, 6, 7},
 			wantErr: assert.NoError,
 		},
@@ -76,7 +86,9 @@ func TestMessageGroup(test *testing.T) {
 					"message_1": {withCustomErrOn(errors.Wrap(errors.Wrap(ErrReturn, "level #1"), "level #2"), 2)},
 				})
 			},
-			args:    args{"message_1"},
+			args: args{
+				message: context.Message{Name: "message_1"},
+			},
 			wantLog: []int{5, 6, 7},
 			wantErr: assert.NoError,
 		},
