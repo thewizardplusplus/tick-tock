@@ -2,13 +2,18 @@
 actor
   state __initialization__
     message __initialize__()
+      let secret = floor(random() * 10) + 1
+      send guess_number(secret)
+    ;
+
+    message guess_number(secret)
       out("Input a number from 1 to 10 inclusive: ")
 
       let line = inln(-1)
       when
         => line == nil
           errln("Error: unable to read the number.")
-          send __initialize__()
+          send guess_number(secret)
           return
       ;
 
@@ -16,19 +21,15 @@ actor
       when
         => number == nil
           errln("Error: unable to parse the number.")
-          send __initialize__()
+          send guess_number(secret)
           return
         => number < 1 || number > 10
           errln("Error: number out of the range.")
-          send __initialize__()
+          send guess_number(secret)
           return
-      ;
-
-      let secret = floor(random() * 10) + 1
-      when
         => number != secret
           outln("Failure.")
-          send __initialize__()
+          send guess_number(secret)
           return
       ;
 
