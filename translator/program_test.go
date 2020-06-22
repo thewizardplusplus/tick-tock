@@ -675,8 +675,52 @@ func TestTranslateMessages(test *testing.T) {
 						Name:       "message_0",
 						Parameters: []string{"one", "two"},
 						Commands: []*parser.Command{
-							{Send: &parser.SendCommand{Name: "command_0"}},
-							{Send: &parser.SendCommand{Name: "command_1"}},
+							{
+								Expression: &parser.Expression{
+									ListConstruction: &parser.ListConstruction{
+										Disjunction: &parser.Disjunction{
+											Conjunction: &parser.Conjunction{
+												Equality: &parser.Equality{
+													Comparison: &parser.Comparison{
+														Addition: &parser.Addition{
+															Multiplication: &parser.Multiplication{
+																Unary: &parser.Unary{
+																	Accessor: &parser.Accessor{
+																		Atom: &parser.Atom{Identifier: pointer.ToString("one")},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							{
+								Expression: &parser.Expression{
+									ListConstruction: &parser.ListConstruction{
+										Disjunction: &parser.Disjunction{
+											Conjunction: &parser.Conjunction{
+												Equality: &parser.Equality{
+													Comparison: &parser.Comparison{
+														Addition: &parser.Addition{
+															Multiplication: &parser.Multiplication{
+																Unary: &parser.Unary{
+																	Accessor: &parser.Accessor{
+																		Atom: &parser.Atom{Identifier: pointer.ToString("two")},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -686,8 +730,8 @@ func TestTranslateMessages(test *testing.T) {
 				"message_0": runtime.NewParameterizedCommandGroup(
 					[]string{"one", "two"},
 					runtime.CommandGroup{
-						commands.NewSendCommand("command_0", nil),
-						commands.NewSendCommand("command_1", nil),
+						commands.NewExpressionCommand(expressions.NewIdentifier("one")),
+						commands.NewExpressionCommand(expressions.NewIdentifier("two")),
 					},
 				),
 			},

@@ -101,7 +101,13 @@ func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Se
 			return nil, nil, errors.Errorf("duplicate message %s", message.Name)
 		}
 
-		translatedCommands, settedStates, err := translateCommands(message.Commands, declaredIdentifiers)
+		localDeclaredIdentifiers := declaredIdentifiers.Clone()
+		for _, parameter := range message.Parameters {
+			localDeclaredIdentifiers.Add(parameter)
+		}
+
+		translatedCommands, settedStates, err :=
+			translateCommands(message.Commands, localDeclaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the message %s", message.Name)
 		}
