@@ -21,7 +21,7 @@ type Dependencies struct {
 }
 
 // Interpret ...
-func Interpret(context context.Context, options Options, dependencies Dependencies) error {
+func Interpret(ctx context.Context, options Options, dependencies Dependencies) error {
 	code, err := readCode(options.Filename, dependencies.Reader)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func Interpret(context context.Context, options Options, dependencies Dependenci
 
 	actors, err := translator.Translate(
 		program.Actors,
-		context.ValuesNames(),
+		ctx.ValuesNames(),
 		options.Translator,
 		dependencies.Runtime,
 	)
@@ -42,8 +42,8 @@ func Interpret(context context.Context, options Options, dependencies Dependenci
 		return err
 	}
 
-	actors.Start(context)
-	actors.SendMessage(options.InitialMessage)
+	actors.Start(ctx)
+	actors.SendMessage(context.Message{Name: options.InitialMessage})
 
 	return nil
 }
