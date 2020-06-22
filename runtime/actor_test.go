@@ -97,7 +97,8 @@ func TestActor_ProcessMessage(test *testing.T) {
 			currentState string
 		}
 		args struct {
-			message context.Message
+			contextCopy context.Context
+			message     context.Message
 		}
 	)
 
@@ -119,7 +120,34 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: "state_1",
 			},
 			args: args{
-				message: context.Message{Name: "message_3"},
+				contextCopy: new(mocks.Context),
+				message:     context.Message{Name: "message_3"},
+			},
+			wantLog: []int{15, 16, 17, 18, 19},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "success with message arguments",
+			fields: fields{
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
+					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+						"message_3": {withParameters([]string{"one", "two"}), withCalls()},
+					})
+				},
+				currentState: "state_1",
+			},
+			args: args{
+				contextCopy: func() context.Context {
+					context := new(mocks.Context)
+					context.On("SetValue", "one", 23).Return()
+					context.On("SetValue", "two", 42).Return()
+
+					return context
+				}(),
+				message: context.Message{
+					Name:      "message_3",
+					Arguments: []interface{}{23, 42},
+				},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
@@ -135,26 +163,26 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: "state_1",
 			},
 			args: args{
-				message: context.Message{Name: "message_3"},
+				contextCopy: new(mocks.Context),
+				message:     context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17},
 			wantErr: assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			contextCopy := new(mocks.Context)
 			contextOriginal := new(mocks.Context)
-			contextOriginal.On("Copy").Return(contextCopy)
+			contextOriginal.On("Copy").Return(testData.args.contextCopy)
 
 			actor := Actor{nil, testData.fields.currentState}
-			contextCopy.On("SetStateHolder", &actor).Return()
+			testData.args.contextCopy.(*mocks.Context).On("SetStateHolder", &actor).Return()
 
 			var log commandLog
-			actor.states = testData.fields.makeStates(contextCopy, &log)
+			actor.states = testData.fields.makeStates(testData.args.contextCopy, &log)
 
 			err := actor.ProcessMessage(contextOriginal, testData.args.message)
 
-			mock.AssertExpectationsForObjects(test, contextCopy, contextOriginal)
+			mock.AssertExpectationsForObjects(test, testData.args.contextCopy, contextOriginal)
 			checkStates(test, actor.states)
 			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)

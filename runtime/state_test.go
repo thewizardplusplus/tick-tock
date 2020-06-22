@@ -11,6 +11,7 @@ import (
 
 func TestStateGroup(test *testing.T) {
 	type args struct {
+		context context.Context
 		state   string
 		message context.Message
 	}
@@ -30,8 +31,33 @@ func TestStateGroup(test *testing.T) {
 				})
 			},
 			args: args{
+				context: new(mocks.Context),
 				state:   "state_1",
 				message: context.Message{Name: "message_3"},
+			},
+			wantLog: []int{15, 16, 17, 18, 19},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "success with message arguments",
+			makeStates: func(context context.Context, log *commandLog) StateGroup {
+				return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					"message_3": {withParameters([]string{"one", "two"}), withCalls()},
+				})
+			},
+			args: args{
+				context: func() context.Context {
+					context := new(mocks.Context)
+					context.On("SetValue", "one", 23).Return()
+					context.On("SetValue", "two", 42).Return()
+
+					return context
+				}(),
+				state: "state_1",
+				message: context.Message{
+					Name:      "message_3",
+					Arguments: []interface{}{23, 42},
+				},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
@@ -40,6 +66,7 @@ func TestStateGroup(test *testing.T) {
 			name:       "error with an empty group",
 			makeStates: func(context context.Context, log *commandLog) StateGroup { return nil },
 			args: args{
+				context: new(mocks.Context),
 				state:   "state_unknown",
 				message: context.Message{Name: "message_unknown"},
 			},
@@ -51,6 +78,7 @@ func TestStateGroup(test *testing.T) {
 				return newLoggableStates(context, log, 2, 2, group(5), nil)
 			},
 			args: args{
+				context: new(mocks.Context),
 				state:   "state_unknown",
 				message: context.Message{Name: "message_unknown"},
 			},
@@ -64,6 +92,7 @@ func TestStateGroup(test *testing.T) {
 				})
 			},
 			args: args{
+				context: new(mocks.Context),
 				state:   "state_1",
 				message: context.Message{Name: "message_3"},
 			},
@@ -72,12 +101,11 @@ func TestStateGroup(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			context := new(mocks.Context)
 			var log commandLog
-			states := testData.makeStates(context, &log)
-			err := states.ProcessMessage(context, testData.args.state, testData.args.message)
+			states := testData.makeStates(testData.args.context, &log)
+			err := states.ProcessMessage(testData.args.context, testData.args.state, testData.args.message)
 
-			mock.AssertExpectationsForObjects(test, context)
+			mock.AssertExpectationsForObjects(test, testData.args.context)
 			checkStates(test, states)
 			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)

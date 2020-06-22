@@ -12,6 +12,7 @@ import (
 
 func TestMessageGroup(test *testing.T) {
 	type args struct {
+		context context.Context
 		message context.Message
 	}
 
@@ -26,6 +27,7 @@ func TestMessageGroup(test *testing.T) {
 			name:         "success with an empty group",
 			makeMessages: func(context context.Context, log *commandLog) MessageGroup { return nil },
 			args: args{
+				context: new(mocks.Context),
 				message: context.Message{Name: "two"},
 			},
 			wantErr: assert.NoError,
@@ -36,6 +38,7 @@ func TestMessageGroup(test *testing.T) {
 				return newLoggableMessages(context, log, group(2), group(5), nil)
 			},
 			args: args{
+				context: new(mocks.Context),
 				message: context.Message{Name: "unknown"},
 			},
 			wantErr: assert.NoError,
@@ -48,7 +51,31 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
+				context: new(mocks.Context),
 				message: context.Message{Name: "message_1"},
+			},
+			wantLog: []int{5, 6, 7, 8, 9},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "success with message arguments",
+			makeMessages: func(context context.Context, log *commandLog) MessageGroup {
+				return newLoggableMessages(context, log, group(2), group(5), loggableCommandOptions{
+					"message_1": {withParameters([]string{"one", "two"}), withCalls()},
+				})
+			},
+			args: args{
+				context: func() context.Context {
+					context := new(mocks.Context)
+					context.On("SetValue", "one", 23).Return()
+					context.On("SetValue", "two", 42).Return()
+
+					return context
+				}(),
+				message: context.Message{
+					Name:      "message_1",
+					Arguments: []interface{}{23, 42},
+				},
 			},
 			wantLog: []int{5, 6, 7, 8, 9},
 			wantErr: assert.NoError,
@@ -61,6 +88,7 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
+				context: new(mocks.Context),
 				message: context.Message{Name: "message_1"},
 			},
 			wantLog: []int{5, 6, 7},
@@ -74,6 +102,7 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
+				context: new(mocks.Context),
 				message: context.Message{Name: "message_1"},
 			},
 			wantLog: []int{5, 6, 7},
@@ -87,6 +116,7 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
+				context: new(mocks.Context),
 				message: context.Message{Name: "message_1"},
 			},
 			wantLog: []int{5, 6, 7},
@@ -94,12 +124,11 @@ func TestMessageGroup(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			context := new(mocks.Context)
 			var log commandLog
-			messages := testData.makeMessages(context, &log)
-			err := messages.ProcessMessage(context, testData.args.message)
+			messages := testData.makeMessages(testData.args.context, &log)
+			err := messages.ProcessMessage(testData.args.context, testData.args.message)
 
-			mock.AssertExpectationsForObjects(test, context)
+			mock.AssertExpectationsForObjects(test, testData.args.context)
 			checkMessages(test, messages)
 			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)
