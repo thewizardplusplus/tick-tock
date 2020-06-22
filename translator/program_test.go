@@ -510,12 +510,12 @@ func TestTranslateMessages(test *testing.T) {
 			},
 			wantMessages: runtime.MessageGroup{
 				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-					commands.NewSendCommand("command_0"),
-					commands.NewSendCommand("command_1"),
+					commands.NewSendCommand("command_0", nil),
+					commands.NewSendCommand("command_1", nil),
 				}),
 				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-					commands.NewSendCommand("command_2"),
-					commands.NewSendCommand("command_3"),
+					commands.NewSendCommand("command_2", nil),
+					commands.NewSendCommand("command_3", nil),
 				}),
 			},
 			wantSettedStatesByMessages: settedStateGroup{
@@ -547,11 +547,11 @@ func TestTranslateMessages(test *testing.T) {
 			},
 			wantMessages: runtime.MessageGroup{
 				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-					commands.NewSendCommand("command_0"),
+					commands.NewSendCommand("command_0", nil),
 					commands.NewSetCommand("command_1"),
 				}),
 				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-					commands.NewSendCommand("command_2"),
+					commands.NewSendCommand("command_2", nil),
 					commands.NewSetCommand("command_3"),
 				}),
 			},
@@ -584,11 +584,11 @@ func TestTranslateMessages(test *testing.T) {
 			},
 			wantMessages: runtime.MessageGroup{
 				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-					commands.NewSendCommand("command_1"),
+					commands.NewSendCommand("command_1", nil),
 					commands.NewSetCommand("command_0"),
 				}),
 				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-					commands.NewSendCommand("command_2"),
+					commands.NewSendCommand("command_2", nil),
 					commands.NewSetCommand("command_0"),
 				}),
 			},
@@ -686,8 +686,8 @@ func TestTranslateMessages(test *testing.T) {
 				"message_0": runtime.NewParameterizedCommandGroup(
 					[]string{"one", "two"},
 					runtime.CommandGroup{
-						commands.NewSendCommand("command_0"),
-						commands.NewSendCommand("command_1"),
+						commands.NewSendCommand("command_0", nil),
+						commands.NewSendCommand("command_1", nil),
 					},
 				),
 			},
@@ -808,8 +808,8 @@ func TestTranslateCommands(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantCommands: runtime.CommandGroup{
-				commands.NewSendCommand("one"),
-				commands.NewSendCommand("two"),
+				commands.NewSendCommand("one", nil),
+				commands.NewSendCommand("two", nil),
 			},
 			wantSettedStates: mapset.NewSet(),
 			wantErr:          assert.NoError,
@@ -824,7 +824,7 @@ func TestTranslateCommands(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantCommands: runtime.CommandGroup{
-				commands.NewSendCommand("one"),
+				commands.NewSendCommand("one", nil),
 				commands.NewSetCommand("two"),
 			},
 			wantSettedStates: mapset.NewSet("two"),
@@ -841,8 +841,8 @@ func TestTranslateCommands(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantCommands: runtime.CommandGroup{
-				commands.NewSendCommand("one"),
-				commands.NewSendCommand("two"),
+				commands.NewSendCommand("one", nil),
+				commands.NewSendCommand("two", nil),
 				commands.ReturnCommand{},
 			},
 			wantSettedStates: mapset.NewSet(),
@@ -1453,7 +1453,7 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
-			wantCommand:             commands.NewSendCommand("test"),
+			wantCommand:             commands.NewSendCommand("test", nil),
 			wantTopLevelSettedState: "",
 			wantSettedStates:        mapset.NewSet(),
 			wantReturn:              assert.False,
