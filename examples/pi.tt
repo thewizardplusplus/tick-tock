@@ -1,25 +1,31 @@
-// Gauss-Legendre algorithm
+// https://en.wikipedia.org/wiki/Gauss–Legendre_algorithm
 actor
   state __initialization__
     message __initialize__()
-      let a_0 = 1
-      let b_0 = 1 / sqrt(2)
-      let t_0 = 1 / 4
-      let p_0 = 1
+      send evaluate_pi(1e-6)
+    ;
 
-      // first iteration
-      let a_1 = (a_0 + b_0) / 2
-      let b_1 = sqrt(a_0 * b_0)
-      let t_1 = t_0 - p_0 * (a_0 - a_1) * (a_0 - a_1)
-      let p_1 = 2 * p_0
+    message evaluate_pi(epsilon, a, b, t, p)
+      let a = a || 1
+      let b = b || 1 / sqrt(2)
+      let t = t || 1 / 4
+      let p = p || 1
 
-      // second iteration
-      let a_2 = (a_1 + b_1) / 2
-      let b_2 = sqrt(a_1 * b_1)
-      let t_2 = t_1 - p_1 * (a_1 - a_2) * (a_1 - a_2)
-      let p_2 = 2 * p_1
+      let a_next = (a + b) / 2
+      let b_next = sqrt(a * b)
+      let t_next = t - p * pow(a - a_next, 2)
+      let p_next = 2 * p
+      when
+        => abs(a - b) > epsilon
+          send evaluate_pi(epsilon, a_next, b_next, t_next, p_next)
+          return
+      ;
 
-      let pi = (a_2 + b_2) * (a_2 + b_2) / (4 * t_2)
+      let pi = pow(a_next + b_next, 2) / (4 * t_next)
+      send pi_evaluated(pi)
+    ;
+
+    message pi_evaluated(pi)
       outln("Pi = " + str(pi) + ".")
     ;
   ;
