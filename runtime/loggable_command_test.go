@@ -63,9 +63,10 @@ const (
 type loggableCommandConfig struct {
 	groupConfig
 
-	mode     loggableCommandMode
-	err      error
-	errIndex int
+	parameters []string
+	mode       loggableCommandMode
+	err        error
+	errIndex   int
 }
 
 func (config loggableCommandConfig) moddedErrIndex() int {
@@ -77,6 +78,10 @@ func (config loggableCommandConfig) moddedErrIndex() int {
 }
 
 type loggableCommandOption func(*loggableCommandConfig)
+
+func withParameters(parameters []string) loggableCommandOption {
+	return func(config *loggableCommandConfig) { config.parameters = parameters }
+}
 
 func withCalls() loggableCommandOption {
 	return func(config *loggableCommandConfig) { config.mode = loggableCommandCalls }
@@ -127,6 +132,21 @@ func newLoggableCommands(
 	return commands
 }
 
+func newLoggableParameterizedCommands(
+	context context.Context,
+	log *commandLog,
+	config groupConfig,
+	options ...loggableCommandOption,
+) ParameterizedCommandGroup {
+	commandConfig := loggableCommandConfig{groupConfig: config}
+	for _, option := range options {
+		option(&commandConfig)
+	}
+
+	commands := newLoggableCommands(context, log, config, options...)
+	return NewParameterizedCommandGroup(commandConfig.parameters, commands)
+}
+
 type loggableCommandOptions map[string][]loggableCommandOption
 
 func newLoggableMessages(
@@ -140,8 +160,7 @@ func newLoggableMessages(
 	for i := messageConfig.idOffset; i < messageConfig.idOffset+messageConfig.size; i++ {
 		message := fmt.Sprintf("message_%d", i)
 		config := group(commandConfig.size, i*commandConfig.size+commandConfig.idOffset)
-		commands := newLoggableCommands(context, log, config, options[message]...)
-		messages[message] = NewParameterizedCommandGroup(nil, commands)
+		messages[message] = newLoggableParameterizedCommands(context, log, config, options[message]...)
 	}
 
 	return messages
