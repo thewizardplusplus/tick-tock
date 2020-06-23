@@ -5,7 +5,10 @@ program = {actor};
 
 actor = "actor", state, {state}, ";";
 state = "state", identifier, {message}, ";";
-message = "message", identifier, {command}, ";";
+message =
+  "message", identifier, "(", [identifier, {",", identifier}, [","]], ")",
+    {command},
+  ";";
 
 command =
   let command
@@ -14,7 +17,7 @@ command =
   | return command
   | expression;
 let command = "let", identifier, "=", expression;
-send command = "send", identifier;
+send command = "send", identifier, "(", [expression, {",", expression}, [","]], ")";
 set command = "set", identifier;
 return command = "return";
 
