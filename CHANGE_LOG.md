@@ -1,10 +1,16 @@
 # Change Log
 
-## [v1.3](https://github.com/thewizardplusplus/tick-tock/tree/v1.3) (2020-06-15)
+## [v1.3](https://github.com/thewizardplusplus/tick-tock/tree/v1.3) (2020-06-23)
 
+- support message parameters;
 - support expression evaluation:
   - support operations:
     - optimize evaluation of conditional expressions;
+- examples:
+  - improve the example with dining philosophers;
+  - improve the example with the guessing game;
+  - improve the example with pi evaluation;
+  - improve the example with ping-pong.
 
 ## [v1.2](https://github.com/thewizardplusplus/tick-tock/tree/v1.2) (2020-06-15)
 
