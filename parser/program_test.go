@@ -237,9 +237,193 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Command/set",
-			args:    args{"set test", new(Command)},
-			wantAST: &Command{Set: pointer.ToString("test")},
+			name:    "Command/set/no arguments",
+			args:    args{"set test()", new(Command)},
+			wantAST: &Command{Set: &SetCommand{Name: "test"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/set/single argument",
+			args: args{"set test(12)", new(Command)},
+			wantAST: &Command{
+				Set: &SetCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/set/single argument/trailing comma",
+			args: args{"set test(12,)", new(Command)},
+			wantAST: &Command{
+				Set: &SetCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/set/few arguments",
+			args: args{"set test(12, 23, 42)", new(Command)},
+			wantAST: &Command{
+				Set: &SetCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/set/few arguments/trailing comma",
+			args: args{"set test(12, 23, 42,)", new(Command)},
+			wantAST: &Command{
+				Set: &SetCommand{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			wantErr: assert.NoError,
 		},
 		{

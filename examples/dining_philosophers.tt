@@ -2,14 +2,14 @@
 actor
   state __initialization__()
     message __initialize__()
-      set free
+      set free()
     ;
   ;
   state free()
     message take_fork(fork, philosopher)
       when => fork != "left" return;
 
-      set taken
+      set taken()
       send fork_taken(fork, philosopher)
     ;
   ;
@@ -20,7 +20,7 @@ actor
     ;
     message put_fork(fork)
       when => fork != "left" return;
-      set free
+      set free()
     ;
   ;
 ;
@@ -29,14 +29,14 @@ actor
 actor
   state __initialization__()
     message __initialize__()
-      set free
+      set free()
     ;
   ;
   state free()
     message take_fork(fork, philosopher)
       when => fork != "right" return;
 
-      set taken
+      set taken()
       send fork_taken(fork, philosopher)
     ;
   ;
@@ -47,7 +47,7 @@ actor
     ;
     message put_fork(fork)
       when => fork != "right" return;
-      set free
+      set free()
     ;
   ;
 ;
@@ -56,7 +56,7 @@ actor
 actor
   state __initialization__()
     message __initialize__()
-      set thinking
+      set thinking()
       send start_thinking("John")
     ;
   ;
@@ -71,7 +71,7 @@ actor
       when => philosopher != "John" return;
 
       outln("\x1b[32m" + philosopher + "\x1b[m: become hungry, try to take the \x1b[32mleft fork\x1b[m")
-      set wait_left
+      set wait_left()
       send take_fork("left", philosopher)
     ;
   ;
@@ -80,14 +80,14 @@ actor
       when => fork != "left" || philosopher != "John" return;
 
       outln("\x1b[32m" + philosopher + "\x1b[m: the \x1b[32mleft fork\x1b[m taken, try to take the \x1b[34mright fork\x1b[m")
-      set wait_right
+      set wait_right()
       send take_fork("right", philosopher)
     ;
     message fork_busy(fork, philosopher)
       when => fork != "left" || philosopher != "John" return;
 
       outln("\x1b[32m" + philosopher + "\x1b[m: the \x1b[32mleft fork\x1b[m is busy, return to \x1b[32mthinking\x1b[m")
-      set thinking
+      set thinking()
       send start_thinking("John")
     ;
   ;
@@ -96,7 +96,7 @@ actor
       when => fork != "right" || philosopher != "John" return;
 
       outln("\x1b[32m" + philosopher + "\x1b[m: the \x1b[34mright fork\x1b[m taken, start \x1b[34meating\x1b[m")
-      set eating
+      set eating()
       send start_eating("John")
     ;
     message fork_busy(fork, philosopher)
@@ -104,7 +104,7 @@ actor
 
       outln("\x1b[32m" + philosopher + "\x1b[m: the \x1b[34mright fork\x1b[m is busy, put the \x1b[32mleft fork\x1b[m and return to \x1b[32mthinking\x1b[m")
       send put_fork("left")
-      set thinking
+      set thinking()
       send start_thinking("John")
     ;
   ;
@@ -121,7 +121,7 @@ actor
       outln("\x1b[32m" + philosopher + "\x1b[m: stop \x1b[34meating\x1b[m, put forks and return to \x1b[32mthinking\x1b[m")
       send put_fork("left")
       send put_fork("right")
-      set thinking
+      set thinking()
       send start_thinking("John")
     ;
   ;
@@ -131,7 +131,7 @@ actor
 actor
   state __initialization__()
     message __initialize__()
-      set thinking
+      set thinking()
       send start_thinking("Jane")
     ;
   ;
@@ -146,7 +146,7 @@ actor
       when => philosopher != "Jane" return;
 
       outln("\x1b[34m" + philosopher + "\x1b[m: become hungry, try to take the \x1b[34mright fork\x1b[m")
-      set wait_right
+      set wait_right()
       send take_fork("right", philosopher)
     ;
   ;
@@ -155,14 +155,14 @@ actor
       when => fork != "right" || philosopher != "Jane" return;
 
       outln("\x1b[34m" + philosopher + "\x1b[m: the \x1b[34mright fork\x1b[m taken, try to take the \x1b[32mleft fork\x1b[m")
-      set wait_left
+      set wait_left()
       send take_fork("left", philosopher)
     ;
     message fork_busy(fork, philosopher)
       when => fork != "right" || philosopher != "Jane" return;
 
       outln("\x1b[34m" + philosopher + "\x1b[m: the \x1b[34mright fork\x1b[m is busy, return to \x1b[32mthinking\x1b[m")
-      set thinking
+      set thinking()
       send start_thinking("Jane")
     ;
   ;
@@ -171,7 +171,7 @@ actor
       when => fork != "left" || philosopher != "Jane" return;
 
       outln("\x1b[34m" + philosopher + "\x1b[m: the \x1b[32mleft fork\x1b[m taken, start \x1b[34meating\x1b[m")
-      set eating
+      set eating()
       send start_eating("Jane")
     ;
     message fork_busy(fork, philosopher)
@@ -179,7 +179,7 @@ actor
 
       outln("\x1b[34m" + philosopher + "\x1b[m: the \x1b[32mleft fork\x1b[m is busy, put the \x1b[34mright fork\x1b[m and return to \x1b[32mthinking\x1b[m")
       send put_fork("right")
-      set thinking
+      set thinking()
       send start_thinking("Jane")
     ;
   ;
@@ -196,7 +196,7 @@ actor
       outln("\x1b[34m" + philosopher + "\x1b[m: stop \x1b[34meating\x1b[m, put forks and return to \x1b[32mthinking\x1b[m")
       send put_fork("left")
       send put_fork("right")
-      set thinking
+      set thinking()
       send start_thinking("Jane")
     ;
   ;

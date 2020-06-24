@@ -21,7 +21,7 @@ command =
   | expression;
 let command = "let", identifier, "=", expression;
 send command = "send", identifier, "(", [expression, {",", expression}, [","]], ")";
-set command = "set", identifier;
+set command = "set", identifier, "(", [expression, {",", expression}, [","]], ")";
 return command = "return";
 
 expression = list construction;

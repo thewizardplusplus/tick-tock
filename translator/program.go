@@ -181,9 +181,9 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 			return nil, "", nil, false, errors.Wrap(err, "unable to translate the send command")
 		}
 	case command.Set != nil:
-		translatedCommand = commands.NewSetCommand(*command.Set)
-		topLevelSettedState = *command.Set
-		settedStates = mapset.NewSet(*command.Set)
+		translatedCommand = commands.NewSetCommand(command.Set.Name)
+		topLevelSettedState = command.Set.Name
+		settedStates = mapset.NewSet(command.Set.Name)
 	case command.Return:
 		translatedCommand = commands.ReturnCommand{}
 		didReturn = true

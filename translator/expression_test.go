@@ -92,7 +92,7 @@ func TestTranslateExpression(test *testing.T) {
 																				},
 																			},
 																		},
-																		Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																		Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																	},
 																	{
 																		Condition: &parser.Expression{
@@ -116,7 +116,7 @@ func TestTranslateExpression(test *testing.T) {
 																				},
 																			},
 																		},
-																		Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																		Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																	},
 																},
 															},
@@ -283,7 +283,7 @@ func TestTranslateListConstruction(test *testing.T) {
 																			},
 																		},
 																	},
-																	Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																	Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																},
 																{
 																	Condition: &parser.Expression{
@@ -307,7 +307,7 @@ func TestTranslateListConstruction(test *testing.T) {
 																			},
 																		},
 																	},
-																	Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																	Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																},
 															},
 														},
@@ -354,7 +354,7 @@ func TestTranslateListConstruction(test *testing.T) {
 																				},
 																			},
 																		},
-																		Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																		Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																	},
 																	{
 																		Condition: &parser.Expression{
@@ -378,7 +378,7 @@ func TestTranslateListConstruction(test *testing.T) {
 																				},
 																			},
 																		},
-																		Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+																		Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 																	},
 																},
 															},
@@ -530,7 +530,7 @@ func TestTranslateListConstruction(test *testing.T) {
 																			},
 																		},
 																	},
-																	Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																	Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																},
 																{
 																	Condition: &parser.Expression{
@@ -554,7 +554,7 @@ func TestTranslateListConstruction(test *testing.T) {
 																			},
 																		},
 																	},
-																	Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																	Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																},
 															},
 														},
@@ -731,7 +731,7 @@ func TestTranslateDisjunction(test *testing.T) {
 																		},
 																	},
 																},
-																Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 															},
 															{
 																Condition: &parser.Expression{
@@ -755,7 +755,7 @@ func TestTranslateDisjunction(test *testing.T) {
 																		},
 																	},
 																},
-																Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 															},
 														},
 													},
@@ -800,7 +800,7 @@ func TestTranslateDisjunction(test *testing.T) {
 																			},
 																		},
 																	},
-																	Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																	Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																},
 																{
 																	Condition: &parser.Expression{
@@ -824,7 +824,7 @@ func TestTranslateDisjunction(test *testing.T) {
 																			},
 																		},
 																	},
-																	Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+																	Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 																},
 															},
 														},
@@ -981,7 +981,7 @@ func TestTranslateDisjunction(test *testing.T) {
 																		},
 																	},
 																},
-																Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 															},
 															{
 																Condition: &parser.Expression{
@@ -1005,7 +1005,7 @@ func TestTranslateDisjunction(test *testing.T) {
 																		},
 																	},
 																},
-																Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 															},
 														},
 													},
@@ -1172,7 +1172,7 @@ func TestTranslateConjunction(test *testing.T) {
 																	},
 																},
 															},
-															Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+															Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 														},
 														{
 															Condition: &parser.Expression{
@@ -1196,7 +1196,7 @@ func TestTranslateConjunction(test *testing.T) {
 																	},
 																},
 															},
-															Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+															Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 														},
 													},
 												},
@@ -1239,7 +1239,7 @@ func TestTranslateConjunction(test *testing.T) {
 																		},
 																	},
 																},
-																Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 															},
 															{
 																Condition: &parser.Expression{
@@ -1263,7 +1263,7 @@ func TestTranslateConjunction(test *testing.T) {
 																		},
 																	},
 																},
-																Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+																Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 															},
 														},
 													},
@@ -1408,7 +1408,7 @@ func TestTranslateConjunction(test *testing.T) {
 																	},
 																},
 															},
-															Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+															Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 														},
 														{
 															Condition: &parser.Expression{
@@ -1432,7 +1432,7 @@ func TestTranslateConjunction(test *testing.T) {
 																	},
 																},
 															},
-															Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+															Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 														},
 													},
 												},
@@ -1589,7 +1589,7 @@ func TestTranslateEquality(test *testing.T) {
 																},
 															},
 														},
-														Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 													},
 													{
 														Condition: &parser.Expression{
@@ -1613,7 +1613,7 @@ func TestTranslateEquality(test *testing.T) {
 																},
 															},
 														},
-														Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 													},
 												},
 											},
@@ -1655,7 +1655,7 @@ func TestTranslateEquality(test *testing.T) {
 																	},
 																},
 															},
-															Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+															Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 														},
 														{
 															Condition: &parser.Expression{
@@ -1679,7 +1679,7 @@ func TestTranslateEquality(test *testing.T) {
 																	},
 																},
 															},
-															Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+															Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 														},
 													},
 												},
@@ -1815,7 +1815,7 @@ func TestTranslateEquality(test *testing.T) {
 																},
 															},
 														},
-														Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 													},
 													{
 														Condition: &parser.Expression{
@@ -1839,7 +1839,7 @@ func TestTranslateEquality(test *testing.T) {
 																},
 															},
 														},
-														Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 													},
 												},
 											},
@@ -2118,7 +2118,7 @@ func TestTranslateComparison(test *testing.T) {
 															},
 														},
 													},
-													Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 												},
 												{
 													Condition: &parser.Expression{
@@ -2142,7 +2142,7 @@ func TestTranslateComparison(test *testing.T) {
 															},
 														},
 													},
-													Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 												},
 											},
 										},
@@ -2182,7 +2182,7 @@ func TestTranslateComparison(test *testing.T) {
 																},
 															},
 														},
-														Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 													},
 													{
 														Condition: &parser.Expression{
@@ -2206,7 +2206,7 @@ func TestTranslateComparison(test *testing.T) {
 																},
 															},
 														},
-														Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 													},
 												},
 											},
@@ -2332,7 +2332,7 @@ func TestTranslateComparison(test *testing.T) {
 															},
 														},
 													},
-													Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 												},
 												{
 													Condition: &parser.Expression{
@@ -2356,7 +2356,7 @@ func TestTranslateComparison(test *testing.T) {
 															},
 														},
 													},
-													Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 												},
 											},
 										},
@@ -2531,7 +2531,7 @@ func TestTranslateAddition(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 											},
 											{
 												Condition: &parser.Expression{
@@ -2555,7 +2555,7 @@ func TestTranslateAddition(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 											},
 										},
 									},
@@ -2593,7 +2593,7 @@ func TestTranslateAddition(test *testing.T) {
 															},
 														},
 													},
-													Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 												},
 												{
 													Condition: &parser.Expression{
@@ -2617,7 +2617,7 @@ func TestTranslateAddition(test *testing.T) {
 															},
 														},
 													},
-													Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 												},
 											},
 										},
@@ -2733,7 +2733,7 @@ func TestTranslateAddition(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 											},
 											{
 												Condition: &parser.Expression{
@@ -2757,7 +2757,7 @@ func TestTranslateAddition(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 											},
 										},
 									},
@@ -2948,7 +2948,7 @@ func TestTranslateMultiplication(test *testing.T) {
 													},
 												},
 											},
-											Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+											Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 										},
 										{
 											Condition: &parser.Expression{
@@ -2972,7 +2972,7 @@ func TestTranslateMultiplication(test *testing.T) {
 													},
 												},
 											},
-											Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+											Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 										},
 									},
 								},
@@ -3008,7 +3008,7 @@ func TestTranslateMultiplication(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 											},
 											{
 												Condition: &parser.Expression{
@@ -3032,7 +3032,7 @@ func TestTranslateMultiplication(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 											},
 										},
 									},
@@ -3138,7 +3138,7 @@ func TestTranslateMultiplication(test *testing.T) {
 													},
 												},
 											},
-											Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+											Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 										},
 										{
 											Condition: &parser.Expression{
@@ -3162,7 +3162,7 @@ func TestTranslateMultiplication(test *testing.T) {
 													},
 												},
 											},
-											Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+											Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 										},
 									},
 								},
@@ -3282,7 +3282,7 @@ func TestTranslateUnary(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 											},
 											{
 												Condition: &parser.Expression{
@@ -3306,7 +3306,7 @@ func TestTranslateUnary(test *testing.T) {
 														},
 													},
 												},
-												Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 											},
 										},
 									},
@@ -3396,7 +3396,7 @@ func TestTranslateUnary(test *testing.T) {
 												},
 											},
 										},
-										Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+										Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 									},
 									{
 										Condition: &parser.Expression{
@@ -3420,7 +3420,7 @@ func TestTranslateUnary(test *testing.T) {
 												},
 											},
 										},
-										Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+										Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 									},
 								},
 							},
@@ -3565,7 +3565,7 @@ func TestTranslateAccessor(test *testing.T) {
 											},
 										},
 									},
-									Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+									Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 								},
 								{
 									Condition: &parser.Expression{
@@ -3589,7 +3589,7 @@ func TestTranslateAccessor(test *testing.T) {
 											},
 										},
 									},
-									Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+									Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 								},
 							},
 						},
@@ -3630,7 +3630,7 @@ func TestTranslateAccessor(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																			},
 																			{
 																				Condition: &parser.Expression{
@@ -3654,7 +3654,7 @@ func TestTranslateAccessor(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 																			},
 																		},
 																	},
@@ -3841,7 +3841,7 @@ func TestTranslateAccessor(test *testing.T) {
 											},
 										},
 									},
-									Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+									Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 								},
 								{
 									Condition: &parser.Expression{
@@ -3865,7 +3865,7 @@ func TestTranslateAccessor(test *testing.T) {
 											},
 										},
 									},
-									Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+									Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 								},
 							},
 						},
@@ -4087,7 +4087,7 @@ func TestTranslateAtom(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																				},
 																				{
 																					Condition: &parser.Expression{
@@ -4111,7 +4111,7 @@ func TestTranslateAtom(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																				},
 																			},
 																		},
@@ -4342,7 +4342,7 @@ func TestTranslateAtom(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																				},
 																				{
 																					Condition: &parser.Expression{
@@ -4366,7 +4366,7 @@ func TestTranslateAtom(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																				},
 																			},
 																		},
@@ -4733,7 +4733,7 @@ func TestTranslateAtom(test *testing.T) {
 										},
 									},
 								},
-								Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+								Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 							},
 							{
 								Condition: &parser.Expression{
@@ -4755,7 +4755,7 @@ func TestTranslateAtom(test *testing.T) {
 										},
 									},
 								},
-								Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+								Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 							},
 						},
 					},
@@ -5074,7 +5074,7 @@ func TestTranslateAtom(test *testing.T) {
 																					},
 																				},
 																			},
-																			Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																			Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																		},
 																		{
 																			Condition: &parser.Expression{
@@ -5098,7 +5098,7 @@ func TestTranslateAtom(test *testing.T) {
 																					},
 																				},
 																			},
-																			Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																			Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																		},
 																	},
 																},
@@ -5307,7 +5307,7 @@ func TestTranslateListDefinition(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																			},
 																			{
 																				Condition: &parser.Expression{
@@ -5331,7 +5331,7 @@ func TestTranslateListDefinition(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																			},
 																		},
 																	},
@@ -5381,7 +5381,7 @@ func TestTranslateListDefinition(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																			},
 																			{
 																				Condition: &parser.Expression{
@@ -5405,7 +5405,7 @@ func TestTranslateListDefinition(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 																			},
 																		},
 																	},
@@ -5679,7 +5679,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																			},
 																			{
 																				Condition: &parser.Expression{
@@ -5703,7 +5703,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																			},
 																		},
 																	},
@@ -5753,7 +5753,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																			},
 																			{
 																				Condition: &parser.Expression{
@@ -5777,7 +5777,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 																						},
 																					},
 																				},
-																				Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+																				Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 																			},
 																		},
 																	},
@@ -6496,7 +6496,7 @@ func TestTranslateConditionalExpression(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																				},
 																				{
 																					Condition: &parser.Expression{
@@ -6520,7 +6520,7 @@ func TestTranslateConditionalExpression(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																				},
 																			},
 																		},
@@ -6572,7 +6572,7 @@ func TestTranslateConditionalExpression(test *testing.T) {
 																									},
 																								},
 																							},
-																							Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																							Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																						},
 																						{
 																							Condition: &parser.Expression{
@@ -6596,7 +6596,7 @@ func TestTranslateConditionalExpression(test *testing.T) {
 																									},
 																								},
 																							},
-																							Commands: []*parser.Command{{Set: pointer.ToString("three")}},
+																							Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
 																						},
 																					},
 																				},
@@ -6690,7 +6690,7 @@ func TestTranslateConditionalExpression(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("one")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
 																				},
 																				{
 																					Condition: &parser.Expression{
@@ -6714,7 +6714,7 @@ func TestTranslateConditionalExpression(test *testing.T) {
 																							},
 																						},
 																					},
-																					Commands: []*parser.Command{{Set: pointer.ToString("two")}},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
 																				},
 																			},
 																		},
