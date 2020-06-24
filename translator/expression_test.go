@@ -136,11 +136,11 @@ func TestTranslateExpression(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -401,21 +401,21 @@ func TestTranslateListConstruction(test *testing.T) {
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(23),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(42),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 					}),
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(24),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(43),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 						},
 					}),
 				},
@@ -573,11 +573,11 @@ func TestTranslateListConstruction(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -844,21 +844,21 @@ func TestTranslateDisjunction(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 				types.True,
@@ -1023,11 +1023,11 @@ func TestTranslateDisjunction(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -1282,21 +1282,21 @@ func TestTranslateConjunction(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 				types.False,
@@ -1449,11 +1449,11 @@ func TestTranslateConjunction(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -1697,21 +1697,21 @@ func TestTranslateEquality(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),
@@ -1855,11 +1855,11 @@ func TestTranslateEquality(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -2223,21 +2223,21 @@ func TestTranslateComparison(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),
@@ -2371,11 +2371,11 @@ func TestTranslateComparison(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -2633,21 +2633,21 @@ func TestTranslateAddition(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),
@@ -2771,11 +2771,11 @@ func TestTranslateAddition(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -3047,21 +3047,21 @@ func TestTranslateMultiplication(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),
@@ -3175,11 +3175,11 @@ func TestTranslateMultiplication(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -3324,11 +3324,11 @@ func TestTranslateUnary(test *testing.T) {
 						expressions.NewConditionalExpression([]expressions.ConditionalCase{
 							{
 								Condition: expressions.NewNumber(23),
-								Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+								Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 							},
 							{
 								Condition: expressions.NewNumber(42),
-								Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+								Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 							},
 						}),
 					}),
@@ -3432,11 +3432,11 @@ func TestTranslateUnary(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -3677,21 +3677,21 @@ func TestTranslateAccessor(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),
@@ -3876,11 +3876,11 @@ func TestTranslateAccessor(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -4137,11 +4137,11 @@ func TestTranslateAtom(test *testing.T) {
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(23),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(42),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 					}),
 					expressions.NewIdentifier(EmptyListConstantName),
@@ -4390,11 +4390,11 @@ func TestTranslateAtom(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 			}),
@@ -4765,11 +4765,11 @@ func TestTranslateAtom(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -5119,11 +5119,11 @@ func TestTranslateAtom(test *testing.T) {
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 				{
 					Condition: expressions.NewNumber(23),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 				},
 				{
 					Condition: expressions.NewNumber(42),
-					Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 				},
 			}),
 			wantSettedStates: mapset.NewSet("one", "two"),
@@ -5430,22 +5430,22 @@ func TestTranslateListDefinition(test *testing.T) {
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(23),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(42),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 					}),
 					expressions.NewFunctionCall(ListConstructionFunctionName, []expressions.Expression{
 						expressions.NewConditionalExpression([]expressions.ConditionalCase{
 							{
 								Condition: expressions.NewNumber(24),
-								Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+								Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 							},
 							{
 								Condition: expressions.NewNumber(43),
-								Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+								Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 							},
 						}),
 						expressions.NewIdentifier(EmptyListConstantName),
@@ -5800,21 +5800,21 @@ func TestTranslateFunctionCall(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),
@@ -6623,11 +6623,11 @@ func TestTranslateConditionalExpression(test *testing.T) {
 					Condition: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(23),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(42),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 					}),
 					Command: runtime.CommandGroup{
@@ -6635,11 +6635,11 @@ func TestTranslateConditionalExpression(test *testing.T) {
 							expressions.NewConditionalExpression([]expressions.ConditionalCase{
 								{
 									Condition: expressions.NewNumber(24),
-									Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+									Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 								},
 								{
 									Condition: expressions.NewNumber(43),
-									Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+									Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 								},
 							}),
 						),
@@ -6739,11 +6739,11 @@ func TestTranslateConditionalExpression(test *testing.T) {
 					Condition: expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(23),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(42),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 					}),
 					Command: runtime.CommandGroup(nil),

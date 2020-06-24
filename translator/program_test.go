@@ -13,6 +13,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
@@ -38,8 +39,8 @@ func TestTranslate(test *testing.T) {
 			args: args{
 				makeActors: func(options Options) []*parser.Actor {
 					return []*parser.Actor{
-						{States: []*parser.State{{Name: options.InitialState}, {Name: "one"}}},
-						{States: []*parser.State{{Name: options.InitialState}, {Name: "two"}}},
+						{States: []*parser.State{{Name: options.InitialState.Name}, {Name: "one"}}},
+						{States: []*parser.State{{Name: options.InitialState.Name}, {Name: "two"}}},
 					}
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
@@ -50,15 +51,15 @@ func TestTranslate(test *testing.T) {
 			) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
 					runtime.StateGroup{
-						options.InitialState: runtime.MessageGroup{},
-						"one":                runtime.MessageGroup{},
+						options.InitialState.Name: runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						"one":                     runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
 					},
 					options.InitialState,
 				)
 				actorTwo, _ := runtime.NewActor(
 					runtime.StateGroup{
-						options.InitialState: runtime.MessageGroup{},
-						"two":                runtime.MessageGroup{},
+						options.InitialState.Name: runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						"two":                     runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
 					},
 					options.InitialState,
 				)
@@ -91,7 +92,7 @@ func TestTranslate(test *testing.T) {
 						{
 							States: []*parser.State{
 								{
-									Name: options.InitialState,
+									Name: options.InitialState.Name,
 									Messages: []*parser.Message{
 										{
 											Name: "message_0",
@@ -135,11 +136,11 @@ func TestTranslate(test *testing.T) {
 			) runtime.ConcurrentActorGroup {
 				actorOne, _ := runtime.NewActor(
 					runtime.StateGroup{
-						options.InitialState: runtime.MessageGroup{
+						options.InitialState.Name: runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
 							"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 								commands.NewExpressionCommand(expressions.NewIdentifier("test")),
 							}),
-						},
+						}),
 					},
 					options.InitialState,
 				)
@@ -153,7 +154,7 @@ func TestTranslate(test *testing.T) {
 			name: "error with states translation",
 			args: args{
 				makeActors: func(options Options) []*parser.Actor {
-					return []*parser.Actor{{States: []*parser.State{{Name: options.InitialState}}}, {}}
+					return []*parser.Actor{{States: []*parser.State{{Name: options.InitialState.Name}}}, {}}
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
@@ -192,7 +193,7 @@ func TestTranslate(test *testing.T) {
 						{
 							States: []*parser.State{
 								{
-									Name: options.InitialState,
+									Name: options.InitialState.Name,
 									Messages: []*parser.Message{
 										{
 											Name: "message_0",
@@ -242,7 +243,7 @@ func TestTranslate(test *testing.T) {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
-			options := Options{testutils.BufferedInbox, "__initialization__"}
+			options := Options{testutils.BufferedInbox, context.State{Name: "__initialization__"}}
 			waiter := new(waitermocks.Waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			dependencies := runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler}
@@ -287,14 +288,14 @@ func TestTranslateStates(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
-				"state_0": runtime.MessageGroup{
+				"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
 					"message_0": runtime.NewParameterizedCommandGroup(nil, nil),
 					"message_1": runtime.NewParameterizedCommandGroup(nil, nil),
-				},
-				"state_1": runtime.MessageGroup{
+				}),
+				"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
 					"message_2": runtime.NewParameterizedCommandGroup(nil, nil),
 					"message_3": runtime.NewParameterizedCommandGroup(nil, nil),
-				},
+				}),
 			},
 			wantErr: assert.NoError,
 		},
@@ -305,8 +306,8 @@ func TestTranslateStates(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
-				"state_0": runtime.MessageGroup{},
-				"state_1": runtime.MessageGroup{},
+				"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+				"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
 			},
 			wantErr: assert.NoError,
 		},
@@ -351,11 +352,11 @@ func TestTranslateStates(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
-				"state_0": runtime.MessageGroup{
+				"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
 					"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 						commands.NewExpressionCommand(expressions.NewIdentifier("test")),
 					}),
-				},
+				}),
 			},
 			wantErr: assert.NoError,
 		},
@@ -548,11 +549,11 @@ func TestTranslateMessages(test *testing.T) {
 			wantMessages: runtime.MessageGroup{
 				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_0", nil),
-					commands.NewSetCommand("command_1"),
+					commands.NewSetCommand("command_1", nil),
 				}),
 				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_2", nil),
-					commands.NewSetCommand("command_3"),
+					commands.NewSetCommand("command_3", nil),
 				}),
 			},
 			wantSettedStatesByMessages: settedStateGroup{
@@ -585,11 +586,11 @@ func TestTranslateMessages(test *testing.T) {
 			wantMessages: runtime.MessageGroup{
 				"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_1", nil),
-					commands.NewSetCommand("command_0"),
+					commands.NewSetCommand("command_0", nil),
 				}),
 				"message_1": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
 					commands.NewSendCommand("command_2", nil),
-					commands.NewSetCommand("command_0"),
+					commands.NewSetCommand("command_0", nil),
 				}),
 			},
 			wantSettedStatesByMessages: settedStateGroup{
@@ -869,7 +870,7 @@ func TestTranslateCommands(test *testing.T) {
 			},
 			wantCommands: runtime.CommandGroup{
 				commands.NewSendCommand("one", nil),
-				commands.NewSetCommand("two"),
+				commands.NewSetCommand("two", nil),
 			},
 			wantSettedStates: mapset.NewSet("two"),
 			wantErr:          assert.NoError,
@@ -1163,11 +1164,11 @@ func TestTranslateCommands(test *testing.T) {
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(23),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(42),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 					}),
 				),
@@ -1175,11 +1176,11 @@ func TestTranslateCommands(test *testing.T) {
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(24),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 						},
 						{
 							Condition: expressions.NewNumber(43),
-							Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+							Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 						},
 					}),
 				),
@@ -1440,11 +1441,11 @@ func TestTranslateCommand(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 			),
@@ -1735,21 +1736,21 @@ func TestTranslateCommand(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),
@@ -1843,7 +1844,7 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
-			wantCommand:             commands.NewSetCommand("test"),
+			wantCommand:             commands.NewSetCommand("test", nil),
 			wantTopLevelSettedState: "test",
 			wantSettedStates:        mapset.NewSet("test"),
 			wantReturn:              assert.False,
@@ -1983,11 +1984,11 @@ func TestTranslateCommand(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 			),
@@ -2295,21 +2296,21 @@ func TestTranslateSendCommand(test *testing.T) {
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(23),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("one")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(42),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
 				expressions.NewConditionalExpression([]expressions.ConditionalCase{
 					{
 						Condition: expressions.NewNumber(24),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("two")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 					{
 						Condition: expressions.NewNumber(43),
-						Command:   runtime.CommandGroup{commands.NewSetCommand("three")},
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
 					},
 				}),
 			}),

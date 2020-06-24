@@ -6,13 +6,14 @@ import (
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
 // Options ...
 type Options struct {
 	InboxSize    int
-	InitialState string
+	InitialState context.State
 }
 
 // Translate ...
@@ -67,7 +68,8 @@ func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 			return nil, errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}
 
-		translatedStates[state.Name] = translatedMessages
+		translatedStates[state.Name] =
+			runtime.NewParameterizedMessageGroup(state.Parameters, translatedMessages)
 		for message, settedStates := range settedStatesByMessages {
 			for _, state := range settedStates.ToSlice() {
 				messagesWithSettingsByStates[state.(string)] = append(
@@ -181,7 +183,7 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 			return nil, "", nil, false, errors.Wrap(err, "unable to translate the send command")
 		}
 	case command.Set != nil:
-		translatedCommand = commands.NewSetCommand(command.Set.Name)
+		translatedCommand = commands.NewSetCommand(command.Set.Name, nil)
 		topLevelSettedState = command.Set.Name
 		settedStates = mapset.NewSet(command.Set.Name)
 	case command.Return:
