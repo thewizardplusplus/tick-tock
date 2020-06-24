@@ -1,0 +1,31 @@
+// counter
+actor
+  state __initialization__()
+    message __initialize__()
+      set counting(0)
+    ;
+  ;
+
+  state counting(counter)
+    message increment_counter(delta)
+      let counter_next = counter + delta
+      set counting(counter_next)
+      send counter_updated(counter_next)
+    ;
+  ;
+;
+
+actor
+  state __initialization__()
+    message __initialize__()
+      send increment_counter(random())
+      sleep(0.1)
+
+      send __initialize__()
+    ;
+
+    message counter_updated(counter)
+      outln("Counter = " + str(round(counter)) + ".")
+    ;
+  ;
+;
