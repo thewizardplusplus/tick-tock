@@ -188,9 +188,13 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 			return nil, "", nil, false, errors.Wrap(err, "unable to translate the send command")
 		}
 	case command.Set != nil:
-		translatedCommand = commands.NewSetCommand(command.Set.Name, nil)
+		translatedCommand, settedStates, err = translateSetCommand(command.Set, declaredIdentifiers)
+		if err != nil {
+			return nil, "", nil, false, errors.Wrap(err, "unable to translate the set command")
+		}
+
 		topLevelSettedState = command.Set.Name
-		settedStates = mapset.NewSet(command.Set.Name)
+		settedStates.Add(command.Set.Name)
 	case command.Return:
 		translatedCommand = commands.ReturnCommand{}
 		didReturn = true
@@ -229,5 +233,30 @@ func translateSendCommand(sendCommand *parser.SendCommand, declaredIdentifiers m
 	}
 
 	translatedCommand = commands.NewSendCommand(sendCommand.Name, arguments)
+	return translatedCommand, settedStates, nil
+}
+
+func translateSetCommand(setCommand *parser.SetCommand, declaredIdentifiers mapset.Set) (
+	translatedCommand runtime.Command,
+	settedStates mapset.Set,
+	err error,
+) {
+	var arguments []expressions.Expression
+	settedStates = mapset.NewSet()
+	for index, argument := range setCommand.Arguments {
+		result, settedStates2, err := translateExpression(argument, declaredIdentifiers)
+		if err != nil {
+			return nil, nil, errors.Wrapf(
+				err,
+				"unable to translate the argument #%d for the set command",
+				index,
+			)
+		}
+
+		arguments = append(arguments, result)
+		settedStates = settedStates.Union(settedStates2)
+	}
+
+	translatedCommand = commands.NewSetCommand(setCommand.Name, arguments)
 	return translatedCommand, settedStates, nil
 }
