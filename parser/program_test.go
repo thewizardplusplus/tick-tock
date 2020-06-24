@@ -330,21 +330,53 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "State/nonempty",
-			args:    args{"state test message one(); message two();;", new(State)},
-			wantAST: &State{"test", []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			name:    "State/nonempty/no parameters",
+			args:    args{"state test() message one(); message two();;", new(State)},
+			wantAST: &State{"test", nil, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "State/nonempty/single parameter",
+			args:    args{"state test(x) message one(); message two();;", new(State)},
+			wantAST: &State{"test", []string{"x"}, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "State/nonempty/single parameter/trailing comma",
+			args:    args{"state test(x,) message one(); message two();;", new(State)},
+			wantAST: &State{"test", []string{"x"}, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "State/nonempty/few parameters",
+			args: args{"state test(x, y, z) message one(); message two();;", new(State)},
+			wantAST: &State{
+				Name:       "test",
+				Parameters: []string{"x", "y", "z"},
+				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "State/nonempty/few parameters/trailing comma",
+			args: args{"state test(x, y, z,) message one(); message two();;", new(State)},
+			wantAST: &State{
+				Name:       "test",
+				Parameters: []string{"x", "y", "z"},
+				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "State/empty",
-			args:    args{"state test;", new(State)},
-			wantAST: &State{"test", nil},
+			args:    args{"state test();", new(State)},
+			wantAST: &State{"test", nil, nil},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Actor/nonempty",
-			args:    args{"actor state one; state two;;", new(Actor)},
-			wantAST: &Actor{[]*State{{"one", nil}, {"two", nil}}},
+			args:    args{"actor state one(); state two();;", new(Actor)},
+			wantAST: &Actor{[]*State{{"one", nil, nil}, {"two", nil, nil}}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -355,8 +387,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 		},
 		{
 			name:    "Program/nonempty",
-			args:    args{"actor state one;; actor state two;;", new(Program)},
-			wantAST: &Program{[]*Actor{{[]*State{{"one", nil}}}, {[]*State{{"two", nil}}}}},
+			args:    args{"actor state one();; actor state two();;", new(Program)},
+			wantAST: &Program{[]*Actor{{[]*State{{"one", nil, nil}}}, {[]*State{{"two", nil, nil}}}}},
 			wantErr: assert.NoError,
 		},
 		{

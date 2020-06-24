@@ -1,6 +1,6 @@
 // https://10print.org/
 actor
-  state __initialization__
+  state __initialization__()
     message __initialize__()
       let factor = random()
       let symbol = when

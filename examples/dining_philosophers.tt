@@ -1,11 +1,11 @@
 // left fork
 actor
-  state __initialization__
+  state __initialization__()
     message __initialize__()
       set free
     ;
   ;
-  state free
+  state free()
     message take_fork(fork, philosopher)
       when => fork != "left" return;
 
@@ -13,7 +13,7 @@ actor
       send fork_taken(fork, philosopher)
     ;
   ;
-  state taken
+  state taken()
     message take_fork(fork, philosopher)
       when => fork != "left" return;
       send fork_busy(fork, philosopher)
@@ -27,12 +27,12 @@ actor
 
 // right fork
 actor
-  state __initialization__
+  state __initialization__()
     message __initialize__()
       set free
     ;
   ;
-  state free
+  state free()
     message take_fork(fork, philosopher)
       when => fork != "right" return;
 
@@ -40,7 +40,7 @@ actor
       send fork_taken(fork, philosopher)
     ;
   ;
-  state taken
+  state taken()
     message take_fork(fork, philosopher)
       when => fork != "right" return;
       send fork_busy(fork, philosopher)
@@ -54,13 +54,13 @@ actor
 
 // philosopher John
 actor
-  state __initialization__
+  state __initialization__()
     message __initialize__()
       set thinking
       send start_thinking("John")
     ;
   ;
-  state thinking
+  state thinking()
     message start_thinking(philosopher)
       when => philosopher != "John" return;
 
@@ -75,7 +75,7 @@ actor
       send take_fork("left", philosopher)
     ;
   ;
-  state wait_left
+  state wait_left()
     message fork_taken(fork, philosopher)
       when => fork != "left" || philosopher != "John" return;
 
@@ -91,7 +91,7 @@ actor
       send start_thinking("John")
     ;
   ;
-  state wait_right
+  state wait_right()
     message fork_taken(fork, philosopher)
       when => fork != "right" || philosopher != "John" return;
 
@@ -108,7 +108,7 @@ actor
       send start_thinking("John")
     ;
   ;
-  state eating
+  state eating()
     message start_eating(philosopher)
       when => philosopher != "John" return;
 
@@ -129,13 +129,13 @@ actor
 
 // philosopher Jane
 actor
-  state __initialization__
+  state __initialization__()
     message __initialize__()
       set thinking
       send start_thinking("Jane")
     ;
   ;
-  state thinking
+  state thinking()
     message start_thinking(philosopher)
       when => philosopher != "Jane" return;
 
@@ -150,7 +150,7 @@ actor
       send take_fork("right", philosopher)
     ;
   ;
-  state wait_right
+  state wait_right()
     message fork_taken(fork, philosopher)
       when => fork != "right" || philosopher != "Jane" return;
 
@@ -166,7 +166,7 @@ actor
       send start_thinking("Jane")
     ;
   ;
-  state wait_left
+  state wait_left()
     message fork_taken(fork, philosopher)
       when => fork != "left" || philosopher != "Jane" return;
 
@@ -183,7 +183,7 @@ actor
       send start_thinking("Jane")
     ;
   ;
-  state eating
+  state eating()
     message start_eating(philosopher)
       when => philosopher != "Jane" return;
 

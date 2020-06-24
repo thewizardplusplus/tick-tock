@@ -19,8 +19,8 @@ func TestParse(test *testing.T) {
 	}{
 		{
 			name:    "success",
-			args:    args{"actor state one;; actor state two;;"},
-			want:    &Program{[]*Actor{{[]*State{{"one", nil}}}, {[]*State{{"two", nil}}}}},
+			args:    args{"actor state one();; actor state two();;"},
+			want:    &Program{[]*Actor{{[]*State{{"one", nil, nil}}}, {[]*State{{"two", nil, nil}}}}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -73,15 +73,21 @@ func TestParseToAST(test *testing.T) {
 			wantErr: assert.Error,
 		},
 		{
-			name:    "comment/line",
-			args:    args{"actor state one;;\n// actor state two;;\nactor state three;;", new(Program)},
-			wantAST: &Program{[]*Actor{{[]*State{{"one", nil}}}, {[]*State{{"three", nil}}}}},
+			name: "comment/line",
+			args: args{
+				code: "actor state one();;\n// actor state two();;\nactor state three();;",
+				ast:  new(Program),
+			},
+			wantAST: &Program{[]*Actor{{[]*State{{"one", nil, nil}}}, {[]*State{{"three", nil, nil}}}}},
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "comment/block",
-			args:    args{"actor state one;; /* actor state two;; */ actor state three;;", new(Program)},
-			wantAST: &Program{[]*Actor{{[]*State{{"one", nil}}}, {[]*State{{"three", nil}}}}},
+			name: "comment/block",
+			args: args{
+				code: "actor state one();; /* actor state two();; */ actor state three();;",
+				ast:  new(Program),
+			},
+			wantAST: &Program{[]*Actor{{[]*State{{"one", nil, nil}}}, {[]*State{{"three", nil, nil}}}}},
 			wantErr: assert.NoError,
 		},
 	} {

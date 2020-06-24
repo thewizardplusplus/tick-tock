@@ -4,7 +4,10 @@
 program = {actor};
 
 actor = "actor", state, {state}, ";";
-state = "state", identifier, {message}, ";";
+state =
+  "state", identifier, "(", [identifier, {",", identifier}, [","]], ")",
+    {message},
+  ";";
 message =
   "message", identifier, "(", [identifier, {",", identifier}, [","]], ")",
     {command},

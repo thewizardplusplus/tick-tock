@@ -1,6 +1,6 @@
 // https://en.wikipedia.org/wiki/Gauss–Legendre_algorithm
 actor
-  state __initialization__
+  state __initialization__()
     message __initialize__()
       send evaluate_pi(1e-6)
     ;

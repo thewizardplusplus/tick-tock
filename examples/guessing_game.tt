@@ -1,6 +1,6 @@
 // https://www.rosettacode.org/wiki/Guess_the_number
 actor
-  state __initialization__
+  state __initialization__()
     message __initialize__()
       let secret = floor(random() * 10) + 1
       send guess_number(secret)
