@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 func TestStateGroup(test *testing.T) {
@@ -39,17 +40,42 @@ func TestStateGroup(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "success with message arguments",
+			name: "success with state arguments",
 			makeStates: func(context context.Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
-					"message_3": {withParameters([]string{"one", "two"}), withCalls()},
+				messageConfig := parameterizedGroup(2, "one", "two")
+				return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
+					"message_3": {withCalls()},
 				})
 			},
 			args: args{
 				context: func() context.Context {
 					context := new(mocks.Context)
-					context.On("SetValue", "one", 23).Return()
-					context.On("SetValue", "two", 42).Return()
+					context.On("SetValue", "one", types.Nil{}).Return()
+					context.On("SetValue", "two", types.Nil{}).Return()
+
+					return context
+				}(),
+				state:   "state_1",
+				message: context.Message{Name: "message_3"},
+			},
+			wantLog: []int{15, 16, 17, 18, 19},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "success with message arguments",
+			makeStates: func(context context.Context, log *commandLog) StateGroup {
+				messageConfig := parameterizedGroup(2, "one", "two")
+				return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
+					"message_3": {withParameters([]string{"two", "three"}), withCalls()},
+				})
+			},
+			args: args{
+				context: func() context.Context {
+					context := new(mocks.Context)
+					context.On("SetValue", "one", types.Nil{}).Return()
+					context.On("SetValue", "two", types.Nil{}).Return()
+					context.On("SetValue", "two", 23).Return()
+					context.On("SetValue", "three", 42).Return()
 
 					return context
 				}(),

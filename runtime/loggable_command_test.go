@@ -54,6 +54,13 @@ func group(size int, idOffset ...int) groupConfig {
 	return config
 }
 
+func parameterizedGroup(size int, parameters ...string) groupConfig {
+	config := group(size)
+	config.parameters = parameters
+
+	return config
+}
+
 type loggableCommandMode int
 
 const (
