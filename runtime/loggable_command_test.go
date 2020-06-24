@@ -181,15 +181,17 @@ func newLoggableStates(
 	context context.Context,
 	log *commandLog,
 	stateCount int,
-	messageCount int,
+	messageConfig groupConfig,
 	commandConfig groupConfig,
 	options loggableCommandOptions,
 ) StateGroup {
 	states := make(StateGroup)
 	for i := 0; i < stateCount; i++ {
+		messageConfig.idOffset = i * messageConfig.size
+
 		state := fmt.Sprintf("state_%d", i)
-		config := group(messageCount, i*messageCount)
-		states[state] = newLoggableParameterizedMessages(context, log, config, commandConfig, options)
+		states[state] =
+			newLoggableParameterizedMessages(context, log, messageConfig, commandConfig, options)
 	}
 
 	return states

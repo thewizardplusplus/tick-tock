@@ -149,7 +149,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "success",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 						"message_3": {withCalls()},
 					})
 				},
@@ -166,7 +166,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "success with message arguments",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 						"message_3": {withParameters([]string{"one", "two"}), withCalls()},
 					})
 				},
@@ -192,7 +192,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			name: "error",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 						"message_3": {withErrOn(2)},
 					})
 				},

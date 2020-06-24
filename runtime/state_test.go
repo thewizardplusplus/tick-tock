@@ -26,7 +26,7 @@ func TestStateGroup(test *testing.T) {
 		{
 			name: "success",
 			makeStates: func(context context.Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+				return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 					"message_3": {withCalls()},
 				})
 			},
@@ -41,7 +41,7 @@ func TestStateGroup(test *testing.T) {
 		{
 			name: "success with message arguments",
 			makeStates: func(context context.Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+				return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 					"message_3": {withParameters([]string{"one", "two"}), withCalls()},
 				})
 			},
@@ -75,7 +75,7 @@ func TestStateGroup(test *testing.T) {
 		{
 			name: "error with an unknown state",
 			makeStates: func(context context.Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, 2, 2, group(5), nil)
+				return newLoggableStates(context, log, 2, group(2), group(5), nil)
 			},
 			args: args{
 				context: new(mocks.Context),
@@ -87,7 +87,7 @@ func TestStateGroup(test *testing.T) {
 		{
 			name: "error on command execution",
 			makeStates: func(context context.Context, log *commandLog) StateGroup {
-				return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+				return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 					"message_3": {withErrOn(2)},
 				})
 			},

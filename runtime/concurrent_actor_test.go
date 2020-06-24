@@ -32,7 +32,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				contextCopy: new(contextmocks.Context),
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
 					})
@@ -50,7 +50,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				contextCopy: new(contextmocks.Context),
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 						"message_2": {withCalls()},
 						"message_3": {withCalls()},
 					})
@@ -75,7 +75,7 @@ func TestConcurrentActor(test *testing.T) {
 					return context
 				}(),
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 						"message_2": {withParameters([]string{"one", "two"}), withCalls()},
 					})
 				},
@@ -92,7 +92,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				contextCopy: new(contextmocks.Context),
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), nil)
+					return newLoggableStates(context, log, 2, group(2), group(5), nil)
 				},
 				initialState: "state_1",
 			},
@@ -102,7 +102,7 @@ func TestConcurrentActor(test *testing.T) {
 			args: args{
 				contextCopy: new(contextmocks.Context),
 				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 						"message_2": {withErrOn(2)},
 						"message_3": {withErrOn(2)},
 					})
@@ -181,7 +181,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			args: []args{
 				{
 					makeStates: func(context context.Context, log *commandLog) StateGroup {
-						return newLoggableStates(context, log, 2, 2, group(5), loggableCommandOptions{
+						return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
 						})
@@ -190,7 +190,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 				},
 				{
 					makeStates: func(context context.Context, log *commandLog) StateGroup {
-						return newLoggableStates(context, log, 2, 2, group(5, 20), loggableCommandOptions{
+						return newLoggableStates(context, log, 2, group(2), group(5, 20), loggableCommandOptions{
 							"message_2": {withCalls()},
 							"message_3": {withCalls()},
 						})
@@ -275,7 +275,7 @@ func TestConcurrentActorGroup_withMessageArguments(test *testing.T) {
 	contextOriginal.On("Copy").Return(contextFirstCopy)
 
 	var log commandLog
-	states := newLoggableStates(contextSecondCopy, &log, 2, 2, group(5), loggableCommandOptions{
+	states := newLoggableStates(contextSecondCopy, &log, 2, group(2), group(5), loggableCommandOptions{
 		"message_2": {withParameters([]string{"one", "two"}), withCalls()},
 	})
 	actor := &Actor{states, "state_1"}
