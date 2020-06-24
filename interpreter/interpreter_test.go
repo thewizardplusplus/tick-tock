@@ -16,7 +16,6 @@ import (
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
-	"github.com/thewizardplusplus/tick-tock/translator"
 )
 
 func TestInterpret(test *testing.T) {
@@ -52,7 +51,7 @@ func TestInterpret(test *testing.T) {
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
 							`actor state %s() message %s() test;;;`,
-							options.Translator.InitialState,
+							options.InitialState,
 							options.InitialMessage,
 						))
 					}, io.EOF)
@@ -81,7 +80,7 @@ func TestInterpret(test *testing.T) {
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
 							`actor state %s() message %s() test;;;`,
-							options.Translator.InitialState,
+							options.InitialState,
 							options.InitialMessage,
 						))
 					}, io.EOF)
@@ -127,7 +126,7 @@ func TestInterpret(test *testing.T) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
-						return copy(buffer, fmt.Sprintf("actor state %s();; actor;", options.Translator.InitialState))
+						return copy(buffer, fmt.Sprintf("actor state %s();; actor;", options.InitialState))
 					}, io.EOF)
 			},
 			wantErr: assert.Error,
@@ -147,7 +146,7 @@ func TestInterpret(test *testing.T) {
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
 							`actor state %s() message %s() unknown;;;`,
-							options.Translator.InitialState,
+							options.InitialState,
 							options.InitialMessage,
 						))
 					}, io.EOF)
@@ -157,11 +156,9 @@ func TestInterpret(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			options := Options{
+				InboxSize:      testutils.BufferedInbox,
+				InitialState:   "__initialization__",
 				InitialMessage: "__initialize__",
-				Translator: translator.Options{
-					InboxSize:    testutils.BufferedInbox,
-					InitialState: "__initialization__",
-				},
 			}
 			context := new(contextmocks.Context)
 			waiter := new(waitermocks.Waiter)

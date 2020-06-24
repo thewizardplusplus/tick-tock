@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/interpreter"
-	"github.com/thewizardplusplus/tick-tock/translator"
 )
 
 func TestParse(test *testing.T) {
@@ -36,11 +35,9 @@ Args:
 
 `
 	defaultOptions := interpreter.Options{
+		InboxSize:      DefaultInboxSize,
+		InitialState:   DefaultInitialState,
 		InitialMessage: DefaultInitialMessage,
-		Translator: translator.Options{
-			InboxSize:    DefaultInboxSize,
-			InitialState: DefaultInitialState,
-		},
 	}
 	for _, testData := range []struct {
 		name                   string
@@ -93,28 +90,28 @@ Args:
 			name:                   "success with the -i flag",
 			args:                   args{[]string{executablePath, "-i", "1000"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "Translator.InboxSize", 1000),
+			want:                   setOption(defaultOptions, "InboxSize", 1000),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the --inbox flag",
 			args:                   args{[]string{executablePath, "--inbox", "1000"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "Translator.InboxSize", 1000),
+			want:                   setOption(defaultOptions, "InboxSize", 1000),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the -s flag",
 			args:                   args{[]string{executablePath, "-s", "test"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "Translator.InitialState", "test"),
+			want:                   setOption(defaultOptions, "InitialState", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the --state flag",
 			args:                   args{[]string{executablePath, "--state", "test"}},
 			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
-			want:                   setOption(defaultOptions, "Translator.InitialState", "test"),
+			want:                   setOption(defaultOptions, "InitialState", "test"),
 			wantErr:                assert.NoError,
 		},
 		{

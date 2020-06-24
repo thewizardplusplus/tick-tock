@@ -10,8 +10,9 @@ import (
 // Options ...
 type Options struct {
 	Filename       string
+	InboxSize      int
+	InitialState   string
 	InitialMessage string
-	Translator     translator.Options
 }
 
 // Dependencies ...
@@ -35,7 +36,10 @@ func Interpret(ctx context.Context, options Options, dependencies Dependencies) 
 	actors, err := translator.Translate(
 		program.Actors,
 		ctx.ValuesNames(),
-		options.Translator,
+		translator.Options{
+			InboxSize:    options.InboxSize,
+			InitialState: context.State{Name: options.InitialState},
+		},
 		dependencies.Runtime,
 	)
 	if err != nil {
