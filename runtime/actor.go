@@ -5,22 +5,22 @@ import "github.com/thewizardplusplus/tick-tock/runtime/context"
 // Actor ...
 type Actor struct {
 	states       StateGroup
-	currentState string
+	currentState context.State
 }
 
 // NewActor ...
-func NewActor(states StateGroup, initialState string) (*Actor, error) {
-	if _, ok := states[initialState]; !ok {
-		return nil, newUnknownStateError(initialState)
+func NewActor(states StateGroup, initialState context.State) (*Actor, error) {
+	if _, ok := states[initialState.Name]; !ok {
+		return nil, newUnknownStateError(initialState.Name)
 	}
 
 	return &Actor{states, initialState}, nil
 }
 
 // SetState ...
-func (actor *Actor) SetState(state string) error {
-	if _, ok := actor.states[state]; !ok {
-		return newUnknownStateError(state)
+func (actor *Actor) SetState(state context.State) error {
+	if _, ok := actor.states[state.Name]; !ok {
+		return newUnknownStateError(state.Name)
 	}
 
 	actor.currentState = state

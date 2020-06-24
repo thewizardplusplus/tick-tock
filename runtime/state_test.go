@@ -7,13 +7,12 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
-	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 func TestStateGroup(test *testing.T) {
 	type args struct {
 		context context.Context
-		state   string
+		state   context.State
 		message context.Message
 	}
 
@@ -33,7 +32,7 @@ func TestStateGroup(test *testing.T) {
 			},
 			args: args{
 				context: new(mocks.Context),
-				state:   "state_1",
+				state:   context.State{Name: "state_1"},
 				message: context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
@@ -50,12 +49,15 @@ func TestStateGroup(test *testing.T) {
 			args: args{
 				context: func() context.Context {
 					context := new(mocks.Context)
-					context.On("SetValue", "one", types.Nil{}).Return()
-					context.On("SetValue", "two", types.Nil{}).Return()
+					context.On("SetValue", "one", 5).Return()
+					context.On("SetValue", "two", 12).Return()
 
 					return context
 				}(),
-				state:   "state_1",
+				state: context.State{
+					Name:      "state_1",
+					Arguments: []interface{}{5, 12},
+				},
 				message: context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
@@ -72,14 +74,17 @@ func TestStateGroup(test *testing.T) {
 			args: args{
 				context: func() context.Context {
 					context := new(mocks.Context)
-					context.On("SetValue", "one", types.Nil{}).Return()
-					context.On("SetValue", "two", types.Nil{}).Return()
+					context.On("SetValue", "one", 5).Return()
+					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
 					context.On("SetValue", "three", 42).Return()
 
 					return context
 				}(),
-				state: "state_1",
+				state: context.State{
+					Name:      "state_1",
+					Arguments: []interface{}{5, 12},
+				},
 				message: context.Message{
 					Name:      "message_3",
 					Arguments: []interface{}{23, 42},
@@ -93,7 +98,7 @@ func TestStateGroup(test *testing.T) {
 			makeStates: func(context context.Context, log *commandLog) StateGroup { return nil },
 			args: args{
 				context: new(mocks.Context),
-				state:   "state_unknown",
+				state:   context.State{Name: "state_unknown"},
 				message: context.Message{Name: "message_unknown"},
 			},
 			wantErr: assert.Error,
@@ -105,7 +110,7 @@ func TestStateGroup(test *testing.T) {
 			},
 			args: args{
 				context: new(mocks.Context),
-				state:   "state_unknown",
+				state:   context.State{Name: "state_unknown"},
 				message: context.Message{Name: "message_unknown"},
 			},
 			wantErr: assert.Error,
@@ -119,7 +124,7 @@ func TestStateGroup(test *testing.T) {
 			},
 			args: args{
 				context: new(mocks.Context),
-				state:   "state_1",
+				state:   context.State{Name: "state_1"},
 				message: context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17},

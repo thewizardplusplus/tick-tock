@@ -11,15 +11,15 @@ type StateGroup map[string]ParameterizedMessageGroup
 // ProcessMessage ...
 func (states StateGroup) ProcessMessage(
 	context context.Context,
-	state string,
+	state context.State,
 	message context.Message,
 ) error {
-	messages, ok := states[state]
+	messages, ok := states[state.Name]
 	if !ok {
-		return newUnknownStateError(state)
+		return newUnknownStateError(state.Name)
 	}
 
-	if err := messages.ParameterizedProcessMessage(context, nil, message); err != nil {
+	if err := messages.ParameterizedProcessMessage(context, state.Arguments, message); err != nil {
 		return errors.Wrapf(err, "unable to process the state %s", state)
 	}
 
