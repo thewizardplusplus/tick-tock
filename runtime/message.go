@@ -20,3 +20,33 @@ func (messages MessageGroup) ProcessMessage(
 
 	return nil
 }
+
+// ParameterizedMessageGroup ...
+type ParameterizedMessageGroup struct {
+	parameters []string
+	messages   MessageGroup
+}
+
+// NewParameterizedMessageGroup ...
+func NewParameterizedMessageGroup(
+	parameters []string,
+	messages MessageGroup,
+) ParameterizedMessageGroup {
+	return ParameterizedMessageGroup{parameters, messages}
+}
+
+// ParameterizedProcessMessage ...
+func (parameterizedMessages ParameterizedMessageGroup) ParameterizedProcessMessage(
+	ctx context.Context,
+	arguments []interface{},
+	message context.Message,
+) error {
+	values := context.ZipValues(parameterizedMessages.parameters, arguments)
+	context.SetValues(ctx, values)
+
+	if err := parameterizedMessages.messages.ProcessMessage(ctx, message); err != nil {
+		return errors.Wrap(err, "unable to process parameterized messages")
+	}
+
+	return nil
+}
