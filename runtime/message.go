@@ -15,7 +15,7 @@ func (messages MessageGroup) ProcessMessage(
 ) error {
 	_, err := messages[message.Name].ParameterizedRun(context, message.Arguments)
 	if err != nil && errors.Cause(err) != ErrReturn {
-		return errors.Wrapf(err, "unable to process the message %s", message)
+		return errors.Wrapf(err, "unable to process the message %s", message.Name)
 	}
 
 	return nil
