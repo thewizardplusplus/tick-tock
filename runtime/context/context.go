@@ -12,10 +12,16 @@ type MessageSender interface {
 	SendMessage(message Message)
 }
 
+// State ...
+type State struct {
+	Name      string
+	Arguments []interface{}
+}
+
 // StateHolder ...
 //go:generate mockery -name=StateHolder -case=underscore
 type StateHolder interface {
-	SetState(state string) error
+	SetState(state State) error
 }
 
 // Context ...

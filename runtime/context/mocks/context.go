@@ -38,11 +38,11 @@ func (_m *Context) SetMessageSender(sender context.MessageSender) {
 }
 
 // SetState provides a mock function with given fields: state
-func (_m *Context) SetState(state string) error {
+func (_m *Context) SetState(state context.State) error {
 	ret := _m.Called(state)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
+	if rf, ok := ret.Get(0).(func(context.State) error); ok {
 		r0 = rf(state)
 	} else {
 		r0 = ret.Error(0)
