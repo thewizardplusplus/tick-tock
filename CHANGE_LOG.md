@@ -1,5 +1,14 @@
 # Change Log
 
+## [v1.4](https://github.com/thewizardplusplus/tick-tock/tree/v1.4) (2020-06-24)
+
+- support state parameters;
+- support message parameters:
+  - fix texts of errors on message processing;
+- examples:
+  - improve the example with dining philosophers;
+  - add the example with the random counter.
+
 ## [v1.3](https://github.com/thewizardplusplus/tick-tock/tree/v1.3) (2020-06-23)
 
 - support message parameters;
