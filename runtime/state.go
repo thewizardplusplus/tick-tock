@@ -20,7 +20,7 @@ func (states StateGroup) ProcessMessage(
 	}
 
 	if err := messages.ParameterizedProcessMessage(context, state.Arguments, message); err != nil {
-		return errors.Wrapf(err, "unable to process the state %s", state)
+		return errors.Wrapf(err, "unable to process the state %s", state.Name)
 	}
 
 	return nil
