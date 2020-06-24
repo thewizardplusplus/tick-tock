@@ -62,8 +62,13 @@ func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 			return nil, errors.Errorf("duplicate state %s", state.Name)
 		}
 
+		localDeclaredIdentifiers := declaredIdentifiers.Clone()
+		for _, parameter := range state.Parameters {
+			localDeclaredIdentifiers.Add(parameter)
+		}
+
 		translatedMessages, settedStatesByMessages, err :=
-			translateMessages(state.Messages, declaredIdentifiers)
+			translateMessages(state.Messages, localDeclaredIdentifiers)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to translate the state %s", state.Name)
 		}

@@ -361,6 +361,80 @@ func TestTranslateStates(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "success with parameters",
+			args: args{
+				states: []*parser.State{
+					{
+						Name:       "state_0",
+						Parameters: []string{"one", "two"},
+						Messages: []*parser.Message{
+							{
+								Name: "message_0",
+								Commands: []*parser.Command{
+									{
+										Expression: &parser.Expression{
+											ListConstruction: &parser.ListConstruction{
+												Disjunction: &parser.Disjunction{
+													Conjunction: &parser.Conjunction{
+														Equality: &parser.Equality{
+															Comparison: &parser.Comparison{
+																Addition: &parser.Addition{
+																	Multiplication: &parser.Multiplication{
+																		Unary: &parser.Unary{
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{Identifier: pointer.ToString("one")},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									{
+										Expression: &parser.Expression{
+											ListConstruction: &parser.ListConstruction{
+												Disjunction: &parser.Disjunction{
+													Conjunction: &parser.Conjunction{
+														Equality: &parser.Equality{
+															Comparison: &parser.Comparison{
+																Addition: &parser.Addition{
+																	Multiplication: &parser.Multiplication{
+																		Unary: &parser.Unary{
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{Identifier: pointer.ToString("two")},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantStates: runtime.StateGroup{
+				"state_0": runtime.NewParameterizedMessageGroup([]string{"one", "two"}, runtime.MessageGroup{
+					"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
+						commands.NewExpressionCommand(expressions.NewIdentifier("one")),
+						commands.NewExpressionCommand(expressions.NewIdentifier("two")),
+					}),
+				}),
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "error without states",
 			args: args{
 				states:              nil,
