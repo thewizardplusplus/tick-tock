@@ -40,8 +40,9 @@ func (command loggableCommand) Run(context context.Context) (result interface{},
 }
 
 type groupConfig struct {
-	size     int
-	idOffset int
+	size       int
+	idOffset   int
+	parameters []string
 }
 
 func group(size int, idOffset ...int) groupConfig {
@@ -63,10 +64,9 @@ const (
 type loggableCommandConfig struct {
 	groupConfig
 
-	parameters []string
-	mode       loggableCommandMode
-	err        error
-	errIndex   int
+	mode     loggableCommandMode
+	err      error
+	errIndex int
 }
 
 func (config loggableCommandConfig) moddedErrIndex() int {
@@ -166,6 +166,17 @@ func newLoggableMessages(
 	return messages
 }
 
+func newLoggableParameterizedMessages(
+	context context.Context,
+	log *commandLog,
+	messageConfig groupConfig,
+	commandConfig groupConfig,
+	options loggableCommandOptions,
+) ParameterizedMessageGroup {
+	messages := newLoggableMessages(context, log, messageConfig, commandConfig, options)
+	return NewParameterizedMessageGroup(messageConfig.parameters, messages)
+}
+
 func newLoggableStates(
 	context context.Context,
 	log *commandLog,
@@ -178,7 +189,7 @@ func newLoggableStates(
 	for i := 0; i < stateCount; i++ {
 		state := fmt.Sprintf("state_%d", i)
 		config := group(messageCount, i*messageCount)
-		states[state] = newLoggableMessages(context, log, config, commandConfig, options)
+		states[state] = newLoggableParameterizedMessages(context, log, config, commandConfig, options)
 	}
 
 	return states
@@ -197,7 +208,7 @@ func checkMessages(test *testing.T, messages MessageGroup) {
 }
 
 func checkStates(test *testing.T, states StateGroup) {
-	for _, messages := range states {
-		checkMessages(test, messages)
+	for _, parameterizedMessages := range states {
+		checkMessages(test, parameterizedMessages.messages)
 	}
 }

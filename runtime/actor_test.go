@@ -22,14 +22,32 @@ func TestNewActor(test *testing.T) {
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
-			name:    "success",
-			args:    args{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
-			want:    &Actor{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
+			name: "success",
+			args: args{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				initialState: "state_0",
+			},
+			want: &Actor{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				currentState: "state_0",
+			},
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "error",
-			args:    args{StateGroup{"state_0": nil, "state_1": nil}, "state_unknown"},
+			name: "error",
+			args: args{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				initialState: "state_unknown",
+			},
 			wantErr: assert.Error,
 		},
 	} {
@@ -60,22 +78,40 @@ func TestActor_SetState(test *testing.T) {
 		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
-			name:             "success with a different state",
-			fields:           fields{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
+			name: "success with a different state",
+			fields: fields{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				currentState: "state_0",
+			},
 			args:             args{"state_1"},
 			wantCurrentState: "state_1",
 			wantErr:          assert.NoError,
 		},
 		{
-			name:             "success with a same state",
-			fields:           fields{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
+			name: "success with a same state",
+			fields: fields{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				currentState: "state_0",
+			},
 			args:             args{"state_0"},
 			wantCurrentState: "state_0",
 			wantErr:          assert.NoError,
 		},
 		{
-			name:             "error",
-			fields:           fields{StateGroup{"state_0": nil, "state_1": nil}, "state_0"},
+			name: "error",
+			fields: fields{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				currentState: "state_0",
+			},
 			args:             args{"state_unknown"},
 			wantCurrentState: "state_0",
 			wantErr:          assert.Error,

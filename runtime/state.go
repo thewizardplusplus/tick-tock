@@ -6,7 +6,7 @@ import (
 )
 
 // StateGroup ...
-type StateGroup map[string]MessageGroup
+type StateGroup map[string]ParameterizedMessageGroup
 
 // ProcessMessage ...
 func (states StateGroup) ProcessMessage(
@@ -19,7 +19,7 @@ func (states StateGroup) ProcessMessage(
 		return newUnknownStateError(state)
 	}
 
-	if err := messages.ProcessMessage(context, message); err != nil {
+	if err := messages.ParameterizedProcessMessage(context, nil, message); err != nil {
 		return errors.Wrapf(err, "unable to process the state %s", state)
 	}
 
