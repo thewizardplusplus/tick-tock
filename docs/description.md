@@ -8,7 +8,7 @@ Tick-tock — интерпретируемый высокоуровневый я
 
 #### Ключевые слова
 
-8 ключевых слов: `actor`, `state`, `message`, `let`, `send`, `set`, `return`, `when`.
+9 ключевых слов: `actor`, `class`, `state`, `message`, `let`, `send`, `set`, `return`, `when`.
 
 #### Типы
 

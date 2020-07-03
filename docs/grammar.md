@@ -4,8 +4,10 @@
 program = {definition};
 
 definition =
-  actor;
+  actor
+  | actor class;
 actor = "actor", identifier, state, {state}, ";";
+actor class = "class", identifier, state, {state}, ";";
 state =
   "state", identifier, "(", [identifier, {",", identifier}, [","]], ")",
     {message},
@@ -57,7 +59,7 @@ function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 conditional expression = "when", {conditional case}, ";";
 conditional case = "=>", expression, {command};
 identifier = IDENTIFIER - key words;
-key words = "actor" | "state" | "message" | "let" | "send" | "set" | "return";
+key words = "actor" | "class" | "state" | "message" | "let" | "send" | "set" | "return";
 
 LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;

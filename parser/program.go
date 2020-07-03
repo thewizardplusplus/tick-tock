@@ -7,12 +7,19 @@ type Program struct {
 
 // Definition ...
 type Definition struct {
-	Actor *Actor `parser:"@@"`
+	Actor      *Actor      `parser:"@@"`
+	ActorClass *ActorClass `parser:"| @@"`
 }
 
 // Actor ...
 type Actor struct {
 	Name   string   `parser:"\"actor\" @Ident"`
+	States []*State `parser:"{ @@ } \";\""`
+}
+
+// ActorClass ...
+type ActorClass struct {
+	Name   string   `parser:"\"class\" @Ident"`
 	States []*State `parser:"{ @@ } \";\""`
 }
 
