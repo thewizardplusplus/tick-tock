@@ -2,7 +2,12 @@ package parser
 
 // Program ...
 type Program struct {
-	Actors []*Actor `parser:"{ @@ }"`
+	Definitions []*Definition `parser:"{ @@ }"`
+}
+
+// Definition ...
+type Definition struct {
+	Actor *Actor `parser:"@@"`
 }
 
 // Actor ...

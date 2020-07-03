@@ -1,8 +1,10 @@
 ### ![](logo/logo.png) Грамматика
 
 ```
-program = {actor};
+program = {definition};
 
+definition =
+  actor;
 actor = "actor", state, {state}, ";";
 state =
   "state", identifier, "(", [identifier, {",", identifier}, [","]], ")",
