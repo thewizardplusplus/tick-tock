@@ -10,15 +10,6 @@ type Actor struct {
 	currentState context.State
 }
 
-// NewActor ...
-func NewActor(states StateGroup, initialState context.State) (*Actor, error) {
-	if _, ok := states[initialState.Name]; !ok {
-		return nil, newUnknownStateError(initialState.Name)
-	}
-
-	return &Actor{states, initialState}, nil
-}
-
 // SetState ...
 func (actor *Actor) SetState(state context.State) error {
 	if _, ok := actor.states[state.Name]; !ok {
