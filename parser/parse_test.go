@@ -19,12 +19,9 @@ func TestParse(test *testing.T) {
 	}{
 		{
 			name: "success",
-			args: args{"actor state one();; actor state two();;"},
+			args: args{"actor One; actor Two;"},
 			want: &Program{
-				Definitions: []*Definition{
-					{Actor: &Actor{[]*State{{"one", nil, nil}}}},
-					{Actor: &Actor{[]*State{{"two", nil, nil}}}},
-				},
+				Definitions: []*Definition{{Actor: &Actor{"One", nil}}, {Actor: &Actor{"Two", nil}}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -80,28 +77,22 @@ func TestParseToAST(test *testing.T) {
 		{
 			name: "comment/line",
 			args: args{
-				code: "actor state one();;\n// actor state two();;\nactor state three();;",
+				code: "actor One;\n// actor Two;\nactor Three;",
 				ast:  new(Program),
 			},
 			wantAST: &Program{
-				Definitions: []*Definition{
-					{Actor: &Actor{[]*State{{"one", nil, nil}}}},
-					{Actor: &Actor{[]*State{{"three", nil, nil}}}},
-				},
+				Definitions: []*Definition{{Actor: &Actor{Name: "One"}}, {Actor: &Actor{Name: "Three"}}},
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "comment/block",
 			args: args{
-				code: "actor state one();; /* actor state two();; */ actor state three();;",
+				code: "actor One; /* actor Two; */ actor Three;",
 				ast:  new(Program),
 			},
 			wantAST: &Program{
-				Definitions: []*Definition{
-					{Actor: &Actor{[]*State{{"one", nil, nil}}}},
-					{Actor: &Actor{[]*State{{"three", nil, nil}}}},
-				},
+				Definitions: []*Definition{{Actor: &Actor{Name: "One"}}, {Actor: &Actor{Name: "Three"}}},
 			},
 			wantErr: assert.NoError,
 		},

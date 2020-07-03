@@ -5,7 +5,7 @@ program = {definition};
 
 definition =
   actor;
-actor = "actor", state, {state}, ";";
+actor = "actor", identifier, state, {state}, ";";
 state =
   "state", identifier, "(", [identifier, {",", identifier}, [","]], ")",
     {message},

@@ -12,7 +12,8 @@ type Definition struct {
 
 // Actor ...
 type Actor struct {
-	States []*State `parser:"\"actor\" { @@ } \";\""`
+	Name   string   `parser:"\"actor\" @Ident"`
+	States []*State `parser:"{ @@ } \";\""`
 }
 
 // State ...
