@@ -16,10 +16,10 @@ func TestNewActor(test *testing.T) {
 	}
 
 	for _, testData := range []struct {
-		name    string
-		args    args
-		want    *Actor
-		wantErr assert.ErrorAssertionFunc
+		name      string
+		args      args
+		wantActor *Actor
+		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success",
@@ -30,7 +30,7 @@ func TestNewActor(test *testing.T) {
 				},
 				initialState: context.State{Name: "state_0"},
 			},
-			want: &Actor{
+			wantActor: &Actor{
 				states: StateGroup{
 					"state_0": ParameterizedMessageGroup{},
 					"state_1": ParameterizedMessageGroup{},
@@ -48,27 +48,27 @@ func TestNewActor(test *testing.T) {
 				},
 				initialState: context.State{Name: "state_unknown"},
 			},
-			wantErr: assert.Error,
+			wantActor: nil,
+			wantErr:   assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			got, err := NewActor(testData.args.states, testData.args.initialState)
-			assert.Equal(test, testData.want, got)
+			gotActor, err := NewActor(testData.args.states, testData.args.initialState)
+
+			assert.Equal(test, testData.wantActor, gotActor)
 			testData.wantErr(test, err)
 		})
 	}
 }
 
 func TestActor_SetState(test *testing.T) {
-	type (
-		fields struct {
-			states       StateGroup
-			currentState context.State
-		}
-		args struct {
-			state context.State
-		}
-	)
+	type fields struct {
+		states       StateGroup
+		currentState context.State
+	}
+	type args struct {
+		state context.State
+	}
 
 	for _, testData := range []struct {
 		name             string
@@ -126,6 +126,7 @@ func TestActor_SetState(test *testing.T) {
 		test.Run(testData.name, func(test *testing.T) {
 			actor := Actor{testData.fields.states, testData.fields.currentState}
 			err := actor.SetState(testData.args.state)
+
 			assert.Equal(test, testData.wantCurrentState, actor.currentState)
 			testData.wantErr(test, err)
 		})
@@ -133,16 +134,14 @@ func TestActor_SetState(test *testing.T) {
 }
 
 func TestActor_ProcessMessage(test *testing.T) {
-	type (
-		fields struct {
-			makeStates   func(context context.Context, log *commandLog) StateGroup
-			currentState context.State
-		}
-		args struct {
-			contextCopy context.Context
-			message     context.Message
-		}
-	)
+	type fields struct {
+		makeStates   func(context context.Context, log *commandLog) StateGroup
+		currentState context.State
+	}
+	type args struct {
+		contextCopy context.Context
+		message     context.Message
+	}
 
 	for _, testData := range []struct {
 		name    string
@@ -246,19 +245,18 @@ func TestActor_ProcessMessage(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			var log commandLog
+			states := testData.fields.makeStates(testData.args.contextCopy, &log)
+			actor := Actor{states, testData.fields.currentState}
+			testData.args.contextCopy.(*mocks.Context).On("SetStateHolder", &actor).Return()
+
 			contextOriginal := new(mocks.Context)
 			contextOriginal.On("Copy").Return(testData.args.contextCopy)
 
-			actor := Actor{nil, testData.fields.currentState}
-			testData.args.contextCopy.(*mocks.Context).On("SetStateHolder", &actor).Return()
-
-			var log commandLog
-			actor.states = testData.fields.makeStates(testData.args.contextCopy, &log)
-
 			err := actor.ProcessMessage(contextOriginal, testData.args.message)
 
-			mock.AssertExpectationsForObjects(test, testData.args.contextCopy, contextOriginal)
-			checkStates(test, actor.states)
+			mock.AssertExpectationsForObjects(test, contextOriginal, testData.args.contextCopy)
+			checkStates(test, states)
 			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)
 		})

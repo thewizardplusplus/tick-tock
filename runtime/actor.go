@@ -1,6 +1,8 @@
 package runtime
 
-import "github.com/thewizardplusplus/tick-tock/runtime/context"
+import (
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
+)
 
 // Actor ...
 type Actor struct {
@@ -29,8 +31,8 @@ func (actor *Actor) SetState(state context.State) error {
 
 // ProcessMessage ...
 func (actor *Actor) ProcessMessage(context context.Context, message context.Message) error {
-	context = context.Copy()
-	context.SetStateHolder(actor)
+	contextCopy := context.Copy()
+	contextCopy.SetStateHolder(actor)
 
-	return actor.states.ProcessMessage(context, actor.currentState, message)
+	return actor.states.ProcessMessage(contextCopy, actor.currentState, message)
 }
