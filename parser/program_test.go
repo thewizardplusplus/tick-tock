@@ -47,6 +47,40 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name:    "Command/start/identifier",
+			args:    args{"start Test", new(Command)},
+			wantAST: &Command{Start: &StartCommand{Name: "Test"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/start/expression",
+			args: args{"start [test()]", new(Command)},
+			wantAST: &Command{
+				Start: &StartCommand{
+					Expression: &Expression{
+						ListConstruction: &ListConstruction{
+							Disjunction: &Disjunction{
+								Conjunction: &Conjunction{
+									Equality: &Equality{
+										Comparison: &Comparison{
+											Addition: &Addition{
+												Multiplication: &Multiplication{
+													Unary: &Unary{
+														Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Command/send/no arguments",
 			args:    args{"send test()", new(Command)},
 			wantAST: &Command{Send: &SendCommand{Name: "test"}},

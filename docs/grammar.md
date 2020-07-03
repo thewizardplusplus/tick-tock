@@ -19,11 +19,13 @@ message =
 
 command =
   let command
+  | start command
   | send command
   | set command
   | return command
   | expression;
 let command = "let", identifier, "=", expression;
+start command = "start", (identifier | "[", expression, "]");
 send command = "send", identifier, "(", [expression, {",", expression}, [","]], ")";
 set command = "set", identifier, "(", [expression, {",", expression}, [","]], ")";
 return command = "return";
@@ -59,7 +61,7 @@ function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 conditional expression = "when", {conditional case}, ";";
 conditional case = "=>", expression, {command};
 identifier = IDENTIFIER - key words;
-key words = "actor" | "class" | "state" | "message" | "let" | "send" | "set" | "return";
+key words = "actor" | "class" | "state" | "message" | "let" | "start" | "send" | "set" | "return";
 
 LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;

@@ -39,17 +39,24 @@ type Message struct {
 
 // Command ...
 type Command struct {
-	Let        *LetCommand  `parser:"@@"`
-	Send       *SendCommand `parser:"| @@"`
-	Set        *SetCommand  `parser:"| @@"`
-	Return     bool         `parser:"| @\"return\""`
-	Expression *Expression  `parser:"| @@"`
+	Let        *LetCommand   `parser:"@@"`
+	Start      *StartCommand `parser:"| @@"`
+	Send       *SendCommand  `parser:"| @@"`
+	Set        *SetCommand   `parser:"| @@"`
+	Return     bool          `parser:"| @\"return\""`
+	Expression *Expression   `parser:"| @@"`
 }
 
 // LetCommand ...
 type LetCommand struct {
 	Identifier string      `parser:"\"let\" @Ident \"=\""`
 	Expression *Expression `parser:"@@"`
+}
+
+// StartCommand ...
+type StartCommand struct {
+	Name       string      `parser:"\"start\" ( @Ident"`
+	Expression *Expression `parser:"| \"[\" @@ \"]\" )"`
 }
 
 // SendCommand ...
