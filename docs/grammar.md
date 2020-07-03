@@ -61,7 +61,17 @@ function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 conditional expression = "when", {conditional case}, ";";
 conditional case = "=>", expression, {command};
 identifier = IDENTIFIER - key words;
-key words = "actor" | "class" | "state" | "message" | "let" | "start" | "send" | "set" | "return";
+key words =
+  "actor"
+  | "class"
+  | "state"
+  | "message"
+  | "let"
+  | "start"
+  | "send"
+  | "set"
+  | "return"
+  | "when";
 
 LINE COMMENT = ? /\/\/.*/ ?;
 BLOCK COMMENT = ? /\/\*.*?\*\//s ?;
