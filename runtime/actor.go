@@ -36,3 +36,23 @@ func (actor *Actor) ProcessMessage(context context.Context, message context.Mess
 
 	return actor.states.ProcessMessage(contextCopy, actor.currentState, message)
 }
+
+// ActorFactory ...
+type ActorFactory struct {
+	states       StateGroup
+	initialState context.State
+}
+
+// NewActorFactory ...
+func NewActorFactory(states StateGroup, initialState context.State) (ActorFactory, error) {
+	if _, ok := states[initialState.Name]; !ok {
+		return ActorFactory{}, newUnknownStateError(initialState.Name)
+	}
+
+	return ActorFactory{states, initialState}, nil
+}
+
+// CreateActor ...
+func (factory ActorFactory) CreateActor() *Actor {
+	return &Actor{factory.states, factory.initialState}
+}

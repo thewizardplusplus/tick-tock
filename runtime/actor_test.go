@@ -262,3 +262,75 @@ func TestActor_ProcessMessage(test *testing.T) {
 		})
 	}
 }
+
+func TestNewActorFactory(test *testing.T) {
+	type args struct {
+		states       StateGroup
+		initialState context.State
+	}
+
+	for _, testData := range []struct {
+		name             string
+		args             args
+		wantActorFactory ActorFactory
+		wantErr          assert.ErrorAssertionFunc
+	}{
+		{
+			name: "success",
+			args: args{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				initialState: context.State{Name: "state_0"},
+			},
+			wantActorFactory: ActorFactory{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				initialState: context.State{Name: "state_0"},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error",
+			args: args{
+				states: StateGroup{
+					"state_0": ParameterizedMessageGroup{},
+					"state_1": ParameterizedMessageGroup{},
+				},
+				initialState: context.State{Name: "state_unknown"},
+			},
+			wantActorFactory: ActorFactory{},
+			wantErr:          assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			gotActorFactory, err := NewActorFactory(testData.args.states, testData.args.initialState)
+
+			assert.Equal(test, testData.wantActorFactory, gotActorFactory)
+			testData.wantErr(test, err)
+		})
+	}
+}
+
+func TestActorFactory_CreateActor(test *testing.T) {
+	factory := ActorFactory{
+		states: StateGroup{
+			"state_0": ParameterizedMessageGroup{},
+			"state_1": ParameterizedMessageGroup{},
+		},
+		initialState: context.State{Name: "state_0"},
+	}
+	got := factory.CreateActor()
+
+	want := &Actor{
+		states: StateGroup{
+			"state_0": ParameterizedMessageGroup{},
+			"state_1": ParameterizedMessageGroup{},
+		},
+		currentState: context.State{Name: "state_0"},
+	}
+	assert.Equal(test, want, got)
+}
