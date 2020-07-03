@@ -28,7 +28,7 @@ func TestMessageGroup(test *testing.T) {
 			makeMessages: func(context context.Context, log *commandLog) MessageGroup { return nil },
 			args: args{
 				context: new(mocks.Context),
-				message: context.Message{Name: "two"},
+				message: context.Message{Name: "unknown"},
 			},
 			wantErr: assert.NoError,
 		},
