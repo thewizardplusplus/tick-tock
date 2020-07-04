@@ -217,6 +217,39 @@ func TestConcurrentActor(test *testing.T) {
 	}
 }
 
+func TestConcurrentActorFactory(test *testing.T) {
+	actorFactory := ActorFactory{
+		states: StateGroup{
+			"state_0": ParameterizedMessageGroup{},
+			"state_1": ParameterizedMessageGroup{},
+		},
+		initialState: context.State{Name: "state_0"},
+	}
+	dependencies := Dependencies{
+		Waiter:       new(waitermocks.Waiter),
+		ErrorHandler: new(runtimemocks.ErrorHandler),
+	}
+	factory := NewConcurrentActorFactory(actorFactory, 23, dependencies)
+	got := factory.CreateActor()
+
+	mock.AssertExpectationsForObjects(test, dependencies.Waiter, dependencies.ErrorHandler)
+
+	assert.Equal(test, 23, cap(got.inbox))
+	got.inbox = nil
+
+	want := ConcurrentActor{
+		innerActor: &Actor{
+			states: StateGroup{
+				"state_0": ParameterizedMessageGroup{},
+				"state_1": ParameterizedMessageGroup{},
+			},
+			currentState: context.State{Name: "state_0"},
+		},
+		dependencies: dependencies,
+	}
+	assert.Equal(test, want, got)
+}
+
 func TestConcurrentActorGroup(test *testing.T) {
 	type fields struct {
 		makeStates   func(context context.Context, log *commandLog) StateGroup
