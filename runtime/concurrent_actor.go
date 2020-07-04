@@ -22,7 +22,8 @@ type ConcurrentActor struct {
 
 // NewConcurrentActor ...
 func NewConcurrentActor(actor *Actor, inboxSize int, dependencies Dependencies) ConcurrentActor {
-	return ConcurrentActor{actor, make(inbox, inboxSize), dependencies}
+	inbox := make(inbox, inboxSize) // nolint: vetshadow
+	return ConcurrentActor{actor, inbox, dependencies}
 }
 
 // Start ...
