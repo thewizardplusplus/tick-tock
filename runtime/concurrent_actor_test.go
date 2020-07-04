@@ -315,117 +315,119 @@ func TestConcurrentActorGroup(test *testing.T) {
 	}
 }
 
-func TestConcurrentActorGroup_withStateArguments(test *testing.T) {
-	contextSecondCopy := new(contextmocks.Context)
-	contextSecondCopy.On("SetValue", "one", 5).Return()
-	contextSecondCopy.On("SetValue", "two", 12).Return()
-
-	contextFirstCopy := new(contextmocks.Context)
-	contextFirstCopy.On("Copy").Return(contextSecondCopy)
-
-	contextOriginal := new(contextmocks.Context)
-	contextOriginal.On("Copy").Return(contextFirstCopy)
-
-	var log commandLog
-	messageConfig := parameterizedGroup(2, "one", "two")
-	states :=
-		newLoggableStates(contextSecondCopy, &log, 2, messageConfig, group(5), loggableCommandOptions{
-			"message_2": {withCalls()},
-		})
-	actor := &Actor{
-		states: states,
-		currentState: context.State{
-			Name:      "state_1",
-			Arguments: []interface{}{5, 12},
-		},
+func TestConcurrentActorGroup_withArguments(test *testing.T) {
+	type fields struct {
+		makeStates   func(context context.Context, log *commandLog) StateGroup
+		currentState context.State
 	}
-	contextSecondCopy.On("SetStateHolder", actor).Return()
-
-	waiter := new(waitermocks.Waiter)
-	waiter.On("Add", 1).Times(1)
-	waiter.On("Done").Times(1)
-
-	synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
-	errorHandler := new(runtimemocks.ErrorHandler)
-	concurrentActor := NewConcurrentActor(actor, testutils.UnbufferedInbox, Dependencies{
-		Waiter:       synchronousWaiter,
-		ErrorHandler: errorHandler,
-	})
-	concurrentActors := ConcurrentActorGroup{concurrentActor}
-	contextFirstCopy.On("SetMessageSender", concurrentActors).Return()
-
-	concurrentActors.Start(contextOriginal)
-	concurrentActors.SendMessage(context.Message{Name: "message_2"})
-	synchronousWaiter.Wait()
-
-	mock.AssertExpectationsForObjects(
-		test,
-		contextOriginal,
-		contextFirstCopy,
-		contextSecondCopy,
-		waiter,
-		errorHandler,
-	)
-	checkStates(test, states)
-	assert.ElementsMatch(test, []int{10, 11, 12, 13, 14}, log.commands)
-}
-
-func TestConcurrentActorGroup_withMessageArguments(test *testing.T) {
-	contextSecondCopy := new(contextmocks.Context)
-	contextSecondCopy.On("SetValue", "one", 5).Return()
-	contextSecondCopy.On("SetValue", "two", 12).Return()
-	contextSecondCopy.On("SetValue", "two", 23).Return()
-	contextSecondCopy.On("SetValue", "three", 42).Return()
-
-	contextFirstCopy := new(contextmocks.Context)
-	contextFirstCopy.On("Copy").Return(contextSecondCopy)
-
-	contextOriginal := new(contextmocks.Context)
-	contextOriginal.On("Copy").Return(contextFirstCopy)
-
-	var log commandLog
-	messageConfig := parameterizedGroup(2, "one", "two")
-	states :=
-		newLoggableStates(contextSecondCopy, &log, 2, messageConfig, group(5), loggableCommandOptions{
-			"message_2": {withParameters([]string{"two", "three"}), withCalls()},
-		})
-	actor := &Actor{
-		states: states,
-		currentState: context.State{
-			Name:      "state_1",
-			Arguments: []interface{}{5, 12},
-		},
+	type args struct {
+		contextSecondCopy context.Context
+		message           context.Message
 	}
-	contextSecondCopy.On("SetStateHolder", actor).Return()
 
-	waiter := new(waitermocks.Waiter)
-	waiter.On("Add", 1).Times(1)
-	waiter.On("Done").Times(1)
+	for _, testData := range []struct {
+		name    string
+		fields  fields
+		args    args
+		wantLog []int
+	}{
+		{
+			name: "success with state arguments",
+			fields: fields{
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
+					messageConfig := parameterizedGroup(2, "one", "two")
+					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
+						"message_2": {withCalls()},
+					})
+				},
+				currentState: context.State{
+					Name:      "state_1",
+					Arguments: []interface{}{5, 12},
+				},
+			},
+			args: args{
+				contextSecondCopy: func() context.Context {
+					context := new(contextmocks.Context)
+					context.On("SetValue", "one", 5).Return()
+					context.On("SetValue", "two", 12).Return()
 
-	synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
-	errorHandler := new(runtimemocks.ErrorHandler)
-	concurrentActor := NewConcurrentActor(actor, testutils.UnbufferedInbox, Dependencies{
-		Waiter:       synchronousWaiter,
-		ErrorHandler: errorHandler,
-	})
-	concurrentActors := ConcurrentActorGroup{concurrentActor}
-	contextFirstCopy.On("SetMessageSender", concurrentActors).Return()
+					return context
+				}(),
+				message: context.Message{Name: "message_2"},
+			},
+			wantLog: []int{10, 11, 12, 13, 14},
+		},
+		{
+			name: "success with message arguments",
+			fields: fields{
+				makeStates: func(context context.Context, log *commandLog) StateGroup {
+					messageConfig := parameterizedGroup(2, "one", "two")
+					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
+						"message_2": {withParameters([]string{"two", "three"}), withCalls()},
+					})
+				},
+				currentState: context.State{
+					Name:      "state_1",
+					Arguments: []interface{}{5, 12},
+				},
+			},
+			args: args{
+				contextSecondCopy: func() context.Context {
+					context := new(contextmocks.Context)
+					context.On("SetValue", "one", 5).Return()
+					context.On("SetValue", "two", 12).Return()
+					context.On("SetValue", "two", 23).Return()
+					context.On("SetValue", "three", 42).Return()
 
-	concurrentActors.Start(contextOriginal)
-	concurrentActors.SendMessage(context.Message{
-		Name:      "message_2",
-		Arguments: []interface{}{23, 42},
-	})
-	synchronousWaiter.Wait()
+					return context
+				}(),
+				message: context.Message{
+					Name:      "message_2",
+					Arguments: []interface{}{23, 42},
+				},
+			},
+			wantLog: []int{10, 11, 12, 13, 14},
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			waiter := new(waitermocks.Waiter)
+			waiter.On("Add", 1).Times(1)
+			waiter.On("Done").Times(1)
 
-	mock.AssertExpectationsForObjects(
-		test,
-		contextOriginal,
-		contextFirstCopy,
-		contextSecondCopy,
-		waiter,
-		errorHandler,
-	)
-	checkStates(test, states)
-	assert.ElementsMatch(test, []int{10, 11, 12, 13, 14}, log.commands)
+			contextFirstCopy := new(contextmocks.Context)
+			contextFirstCopy.On("Copy").Return(testData.args.contextSecondCopy)
+
+			contextOriginal := new(contextmocks.Context)
+			contextOriginal.On("Copy").Return(contextFirstCopy)
+
+			var log commandLog
+			states := testData.fields.makeStates(testData.args.contextSecondCopy, &log)
+			actor := &Actor{states, testData.fields.currentState}
+			testData.args.contextSecondCopy.(*contextmocks.Context).On("SetStateHolder", actor).Return()
+
+			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
+			errorHandler := new(runtimemocks.ErrorHandler)
+			concurrentActor := NewConcurrentActor(actor, testutils.UnbufferedInbox, Dependencies{
+				Waiter:       synchronousWaiter,
+				ErrorHandler: errorHandler,
+			})
+			concurrentActors := ConcurrentActorGroup{concurrentActor}
+			contextFirstCopy.On("SetMessageSender", concurrentActors).Return()
+
+			concurrentActors.Start(contextOriginal)
+			concurrentActors.SendMessage(testData.args.message)
+			synchronousWaiter.Wait()
+
+			mock.AssertExpectationsForObjects(
+				test,
+				contextOriginal,
+				contextFirstCopy,
+				testData.args.contextSecondCopy,
+				waiter,
+				errorHandler,
+			)
+			checkStates(test, states)
+			assert.ElementsMatch(test, testData.wantLog, log.commands)
+		})
+	}
 }
