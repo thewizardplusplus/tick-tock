@@ -16,7 +16,7 @@ func TestConcurrentActor(test *testing.T) {
 	type fields struct {
 		makeStates   func(context context.Context, log *commandLog) StateGroup
 		currentState context.State
-		inboxSize    int
+		inbox        inbox
 	}
 	type args struct {
 		contextCopy context.Context
@@ -40,7 +40,7 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				currentState: context.State{Name: "state_1"},
-				inboxSize:    testutils.UnbufferedInbox,
+				inbox:        make(inbox, testutils.UnbufferedInbox),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -59,7 +59,7 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				currentState: context.State{Name: "state_1"},
-				inboxSize:    testutils.BufferedInbox,
+				inbox:        make(inbox, testutils.BufferedInbox),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -81,7 +81,7 @@ func TestConcurrentActor(test *testing.T) {
 					Name:      "state_1",
 					Arguments: []interface{}{5, 12},
 				},
-				inboxSize: testutils.UnbufferedInbox,
+				inbox: make(inbox, testutils.UnbufferedInbox),
 			},
 			args: args{
 				contextCopy: func() context.Context {
@@ -109,7 +109,7 @@ func TestConcurrentActor(test *testing.T) {
 					Name:      "state_1",
 					Arguments: []interface{}{5, 12},
 				},
-				inboxSize: testutils.UnbufferedInbox,
+				inbox: make(inbox, testutils.UnbufferedInbox),
 			},
 			args: args{
 				contextCopy: func() context.Context {
@@ -138,7 +138,7 @@ func TestConcurrentActor(test *testing.T) {
 					return newLoggableStates(context, log, 2, group(2), group(5), nil)
 				},
 				currentState: context.State{Name: "state_1"},
-				inboxSize:    testutils.UnbufferedInbox,
+				inbox:        make(inbox, testutils.UnbufferedInbox),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -157,7 +157,7 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				currentState: context.State{Name: "state_1"},
-				inboxSize:    testutils.UnbufferedInbox,
+				inbox:        make(inbox, testutils.UnbufferedInbox),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -194,10 +194,14 @@ func TestConcurrentActor(test *testing.T) {
 			}
 
 			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
-			concurrentActor := NewConcurrentActor(actor, testData.fields.inboxSize, Dependencies{
-				Waiter:       synchronousWaiter,
-				ErrorHandler: errorHandler,
-			})
+			concurrentActor := ConcurrentActor{
+				innerActor: actor,
+				inbox:      testData.fields.inbox,
+				dependencies: Dependencies{
+					Waiter:       synchronousWaiter,
+					ErrorHandler: errorHandler,
+				},
+			}
 			concurrentActor.Start(contextOriginal)
 			for _, message := range testData.args.messages {
 				concurrentActor.SendMessage(message)
@@ -321,10 +325,14 @@ func TestConcurrentActorGroup(test *testing.T) {
 				actor := &Actor{states, args.currentState}
 				contextSecondCopy.On("SetStateHolder", actor).Return()
 
-				concurrentActor := NewConcurrentActor(actor, testutils.UnbufferedInbox, Dependencies{
-					Waiter:       synchronousWaiter,
-					ErrorHandler: errorHandler,
-				})
+				concurrentActor := ConcurrentActor{
+					innerActor: actor,
+					inbox:      make(inbox, testutils.UnbufferedInbox),
+					dependencies: Dependencies{
+						Waiter:       synchronousWaiter,
+						ErrorHandler: errorHandler,
+					},
+				}
 				concurrentActors = append(concurrentActors, concurrentActor)
 			}
 			contextFirstCopy.On("SetMessageSender", concurrentActors).Return()
@@ -440,10 +448,14 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 
 			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
-			concurrentActor := NewConcurrentActor(actor, testutils.UnbufferedInbox, Dependencies{
-				Waiter:       synchronousWaiter,
-				ErrorHandler: errorHandler,
-			})
+			concurrentActor := ConcurrentActor{
+				innerActor: actor,
+				inbox:      make(inbox, testutils.UnbufferedInbox),
+				dependencies: Dependencies{
+					Waiter:       synchronousWaiter,
+					ErrorHandler: errorHandler,
+				},
+			}
 			concurrentActors := ConcurrentActorGroup{concurrentActor}
 			contextFirstCopy.On("SetMessageSender", concurrentActors).Return()
 
