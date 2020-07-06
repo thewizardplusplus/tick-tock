@@ -48,7 +48,7 @@ func (store DefaultValueStore) SetValue(name string, value interface{}) {
 func (store DefaultValueStore) Copy() CopyableValueStore {
 	copy := make(DefaultValueStore)
 	for name, value := range store {
-		copy.SetValue(name, value)
+		copy[name] = value
 	}
 
 	return copy

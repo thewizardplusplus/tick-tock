@@ -4,14 +4,14 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
-// ValueGroup ...
-type ValueGroup map[string]interface{}
-
 // ValueHolder ...
 //go:generate mockery -name=ValueHolder -case=underscore
 type ValueHolder interface {
 	SetValue(name string, value interface{})
 }
+
+// ValueGroup ...
+type ValueGroup map[string]interface{}
 
 // ZipValues ...
 func ZipValues(parameters []string, arguments []interface{}) ValueGroup {
