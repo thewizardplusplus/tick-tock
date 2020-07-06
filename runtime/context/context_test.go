@@ -36,6 +36,15 @@ func TestDefaultContext_SetStateHolder(test *testing.T) {
 	assert.Equal(test, context.DefaultContext{StateHolder: holder}, defaultContext)
 }
 
+func TestDefaultContext_SetActorRegister(test *testing.T) {
+	register := new(mocks.ActorRegister)
+	defaultContext := context.DefaultContext{}
+	defaultContext.SetActorRegister(register)
+
+	mock.AssertExpectationsForObjects(test, register)
+	assert.Equal(test, context.DefaultContext{ActorRegister: register}, defaultContext)
+}
+
 func TestDefaultContext_SetValueStore(test *testing.T) {
 	store := new(mocks.CopyableValueStore)
 	defaultContext := context.DefaultContext{}
@@ -51,9 +60,11 @@ func TestDefaultContext_Copy(test *testing.T) {
 
 	sender := new(mocks.MessageSender)
 	holder := new(mocks.StateHolder)
+	register := new(mocks.ActorRegister)
 	defaultContext := &context.DefaultContext{
 		MessageSender:      sender,
 		StateHolder:        holder,
+		ActorRegister:      register,
 		CopyableValueStore: store,
 	}
 	defaultContextCopy := defaultContext.Copy()

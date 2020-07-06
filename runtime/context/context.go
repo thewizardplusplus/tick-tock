@@ -24,15 +24,30 @@ type StateHolder interface {
 	SetState(state State) error
 }
 
+// Actor ...
+type Actor interface {
+	MessageSender
+
+	Start(context Context)
+}
+
+// ActorRegister ...
+//go:generate mockery -name=ActorRegister -case=underscore
+type ActorRegister interface {
+	RegisterActor(actor Actor)
+}
+
 // Context ...
 //go:generate mockery -name=Context -case=underscore
 type Context interface {
 	MessageSender
 	StateHolder
+	ActorRegister
 	ValueStore
 
 	SetMessageSender(sender MessageSender)
 	SetStateHolder(holder StateHolder)
+	SetActorRegister(register ActorRegister)
 	SetValueStore(store CopyableValueStore)
 	Copy() Context
 }
@@ -41,6 +56,7 @@ type Context interface {
 type DefaultContext struct {
 	MessageSender
 	StateHolder
+	ActorRegister
 	CopyableValueStore
 }
 
@@ -60,6 +76,11 @@ func (context *DefaultContext) SetStateHolder(holder StateHolder) {
 	context.StateHolder = holder
 }
 
+// SetActorRegister ...
+func (context *DefaultContext) SetActorRegister(register ActorRegister) {
+	context.ActorRegister = register
+}
+
 // SetValueStore ...
 func (context *DefaultContext) SetValueStore(store CopyableValueStore) {
 	context.CopyableValueStore = store
@@ -67,6 +88,10 @@ func (context *DefaultContext) SetValueStore(store CopyableValueStore) {
 
 // Copy ...
 func (context DefaultContext) Copy() Context {
-	valueStoreCopy := context.CopyableValueStore.Copy()
-	return &DefaultContext{context.MessageSender, context.StateHolder, valueStoreCopy}
+	return &DefaultContext{
+		MessageSender:      context.MessageSender,
+		StateHolder:        context.StateHolder,
+		ActorRegister:      context.ActorRegister,
+		CopyableValueStore: context.CopyableValueStore.Copy(),
+	}
 }
