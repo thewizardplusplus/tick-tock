@@ -202,7 +202,7 @@ func TestConcurrentActor(test *testing.T) {
 					ErrorHandler: errorHandler,
 				},
 			}
-			concurrentActor.Start(contextOriginal)
+			go concurrentActor.Start(contextOriginal)
 			for _, message := range testData.args.messages {
 				concurrentActor.SendMessage(message)
 			}
