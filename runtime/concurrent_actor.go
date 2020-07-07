@@ -35,7 +35,11 @@ func (actor ConcurrentActor) Start(context context.Context) {
 
 // SendMessage ...
 func (actor ConcurrentActor) SendMessage(message context.Message) {
+	// waiter increment should call synchronously
+	// otherwise the program may end before all messages are processed
 	actor.dependencies.Waiter.Add(1)
+
+	// simulate an unbounded channel
 	go func() { actor.inbox <- message }()
 }
 
