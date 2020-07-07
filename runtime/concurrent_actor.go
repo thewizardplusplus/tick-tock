@@ -1,6 +1,8 @@
 package runtime
 
 import (
+	"sync"
+
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/waiter"
 )
@@ -63,21 +65,37 @@ func (factory ConcurrentActorFactory) CreateActor() ConcurrentActor {
 }
 
 // ConcurrentActorGroup ...
-type ConcurrentActorGroup []ConcurrentActor
+type ConcurrentActorGroup struct {
+	context context.Context
+	locker  sync.RWMutex
+	actors  []context.Actor
+}
 
-// Start ...
-func (actors ConcurrentActorGroup) Start(context context.Context) {
-	context = context.Copy()
-	context.SetMessageSender(actors)
+// NewConcurrentActorGroup ...
+func NewConcurrentActorGroup(context context.Context) *ConcurrentActorGroup {
+	contextCopy := context.Copy()
+	group := &ConcurrentActorGroup{context: contextCopy}
+	group.context.SetMessageSender(group)
+	group.context.SetActorRegister(group)
 
-	for _, actor := range actors {
-		actor.Start(context)
-	}
+	return group
+}
+
+// RegisterActor ...
+func (group *ConcurrentActorGroup) RegisterActor(actor context.Actor) {
+	group.locker.Lock()
+	defer group.locker.Unlock()
+
+	group.actors = append(group.actors, actor)
+	actor.Start(group.context)
 }
 
 // SendMessage ...
-func (actors ConcurrentActorGroup) SendMessage(message context.Message) {
-	for _, actor := range actors {
+func (group *ConcurrentActorGroup) SendMessage(message context.Message) {
+	group.locker.RLock()
+	defer group.locker.RUnlock()
+
+	for _, actor := range group.actors {
 		actor.SendMessage(message)
 	}
 }
