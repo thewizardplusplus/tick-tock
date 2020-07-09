@@ -30,17 +30,27 @@ func (actor *Actor) ProcessMessage(context context.Context, message context.Mess
 
 // ActorFactory ...
 type ActorFactory struct {
+	name         string
 	states       StateGroup
 	initialState context.State
 }
 
 // NewActorFactory ...
-func NewActorFactory(states StateGroup, initialState context.State) (ActorFactory, error) {
+func NewActorFactory(
+	name string,
+	states StateGroup,
+	initialState context.State,
+) (ActorFactory, error) {
 	if _, ok := states[initialState.Name]; !ok {
 		return ActorFactory{}, newUnknownStateError(initialState.Name)
 	}
 
-	return ActorFactory{states, initialState}, nil
+	return ActorFactory{name, states, initialState}, nil
+}
+
+// Name ...
+func (factory ActorFactory) Name() string {
+	return factory.name
 }
 
 // CreateActor ...

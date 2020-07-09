@@ -213,6 +213,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 
 func TestNewActorFactory(test *testing.T) {
 	type args struct {
+		name         string
 		states       StateGroup
 		initialState context.State
 	}
@@ -226,6 +227,7 @@ func TestNewActorFactory(test *testing.T) {
 		{
 			name: "success",
 			args: args{
+				name: "Test",
 				states: StateGroup{
 					"state_0": ParameterizedMessageGroup{},
 					"state_1": ParameterizedMessageGroup{},
@@ -233,6 +235,7 @@ func TestNewActorFactory(test *testing.T) {
 				initialState: context.State{Name: "state_0"},
 			},
 			wantActorFactory: ActorFactory{
+				name: "Test",
 				states: StateGroup{
 					"state_0": ParameterizedMessageGroup{},
 					"state_1": ParameterizedMessageGroup{},
@@ -244,6 +247,7 @@ func TestNewActorFactory(test *testing.T) {
 		{
 			name: "error",
 			args: args{
+				name: "Test",
 				states: StateGroup{
 					"state_0": ParameterizedMessageGroup{},
 					"state_1": ParameterizedMessageGroup{},
@@ -255,7 +259,8 @@ func TestNewActorFactory(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			gotActorFactory, err := NewActorFactory(testData.args.states, testData.args.initialState)
+			gotActorFactory, err :=
+				NewActorFactory(testData.args.name, testData.args.states, testData.args.initialState)
 
 			assert.Equal(test, testData.wantActorFactory, gotActorFactory)
 			testData.wantErr(test, err)
@@ -263,8 +268,23 @@ func TestNewActorFactory(test *testing.T) {
 	}
 }
 
+func TestActorFactory_Name(test *testing.T) {
+	factory := ActorFactory{
+		name: "Test",
+		states: StateGroup{
+			"state_0": ParameterizedMessageGroup{},
+			"state_1": ParameterizedMessageGroup{},
+		},
+		initialState: context.State{Name: "state_0"},
+	}
+	got := factory.Name()
+
+	assert.Equal(test, "Test", got)
+}
+
 func TestActorFactory_CreateActor(test *testing.T) {
 	factory := ActorFactory{
+		name: "Test",
 		states: StateGroup{
 			"state_0": ParameterizedMessageGroup{},
 			"state_1": ParameterizedMessageGroup{},
