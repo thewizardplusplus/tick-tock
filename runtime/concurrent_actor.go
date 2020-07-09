@@ -59,6 +59,11 @@ func NewConcurrentActorFactory(
 	return ConcurrentActorFactory{actorFactory, inboxSize, dependencies}
 }
 
+// Name ...
+func (factory ConcurrentActorFactory) Name() string {
+	return factory.actorFactory.Name()
+}
+
 // CreateActor ...
 func (factory ConcurrentActorFactory) CreateActor() ConcurrentActor {
 	actor := factory.actorFactory.CreateActor()
