@@ -16,7 +16,7 @@ func (states StateGroup) ProcessMessage(
 ) error {
 	messages, ok := states[state.Name]
 	if !ok {
-		return newUnknownStateError(state.Name)
+		return newUnknownStateError(state)
 	}
 
 	if err := messages.ParameterizedProcessMessage(context, state.Arguments, message); err != nil {

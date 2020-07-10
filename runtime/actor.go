@@ -13,7 +13,7 @@ type Actor struct {
 // SetState ...
 func (actor *Actor) SetState(state context.State) error {
 	if _, ok := actor.states[state.Name]; !ok {
-		return newUnknownStateError(state.Name)
+		return newUnknownStateError(state)
 	}
 
 	actor.currentState = state
@@ -42,7 +42,7 @@ func NewActorFactory(
 	initialState context.State,
 ) (ActorFactory, error) {
 	if _, ok := states[initialState.Name]; !ok {
-		return ActorFactory{}, newUnknownStateError(initialState.Name)
+		return ActorFactory{}, newUnknownStateError(initialState)
 	}
 
 	return ActorFactory{name, states, initialState}, nil

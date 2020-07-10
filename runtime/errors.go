@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/pkg/errors"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
 // ErrReturn ...
@@ -36,6 +37,6 @@ func (handler DefaultErrorHandler) HandleError(err error) {
 	handler.exiter(1)
 }
 
-func newUnknownStateError(state string) error {
-	return errors.Errorf("unknown state %s", state)
+func newUnknownStateError(state context.State) error {
+	return errors.Errorf("unknown state %s", state.Name)
 }
