@@ -182,6 +182,11 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 
 		translatedCommand = commands.NewLetCommand(command.Let.Identifier, expression)
 		declaredIdentifiers.Add(command.Let.Identifier)
+	case command.Start != nil:
+		translatedCommand, settedStates, err = translateStartCommand(command.Start, declaredIdentifiers)
+		if err != nil {
+			return nil, "", nil, false, errors.Wrap(err, "unable to translate the start command")
+		}
 	case command.Send != nil:
 		translatedCommand, settedStates, err = translateSendCommand(command.Send, declaredIdentifiers)
 		if err != nil {
