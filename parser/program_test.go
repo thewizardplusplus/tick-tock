@@ -49,7 +49,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 		{
 			name:    "Command/start/identifier",
 			args:    args{"start Test", new(Command)},
-			wantAST: &Command{Start: &StartCommand{Name: "Test"}},
+			wantAST: &Command{Start: &StartCommand{Name: pointer.ToString("Test")}},
 			wantErr: assert.NoError,
 		},
 		{
