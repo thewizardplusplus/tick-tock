@@ -211,6 +211,33 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 	return translatedCommand, topLevelSettedState, settedStates, didReturn, nil
 }
 
+func translateStartCommand(startCommand *parser.StartCommand, declaredIdentifiers mapset.Set) (
+	translatedCommand runtime.Command,
+	settedStates mapset.Set,
+	err error,
+) {
+	var actorFactory expressions.Expression
+	switch {
+	case startCommand.Name != nil:
+		identifier := *startCommand.Name
+		if !declaredIdentifiers.Contains(identifier) {
+			return nil, nil, errors.Errorf("unknown identifier %s", identifier)
+		}
+
+		actorFactory = expressions.NewIdentifier(identifier)
+		settedStates = mapset.NewSet()
+	case startCommand.Expression != nil:
+		actorFactory, settedStates, err =
+			translateExpression(startCommand.Expression, declaredIdentifiers)
+		if err != nil {
+			return nil, nil, errors.Wrapf(err, "unable to translate the actor class for the start command")
+		}
+	}
+
+	translatedCommand = commands.NewStartCommand(actorFactory)
+	return translatedCommand, settedStates, nil
+}
+
 func translateSendCommand(sendCommand *parser.SendCommand, declaredIdentifiers mapset.Set) (
 	translatedCommand runtime.Command,
 	settedStates mapset.Set,
