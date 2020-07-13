@@ -47,6 +47,30 @@ func Translate(
 	return translatedActors, nil
 }
 
+func translateActorClass(
+	actorClass *parser.ActorClass,
+	declaredIdentifiers mapset.Set,
+	options Options,
+	dependencies runtime.Dependencies,
+) (
+	translatedActorClass runtime.ConcurrentActorFactory,
+	err error,
+) {
+	states, err := translateStates(actorClass.States, declaredIdentifiers)
+	if err != nil {
+		return runtime.ConcurrentActorFactory{}, errors.Wrapf(err, "unable to translate states")
+	}
+
+	actorFactory, err := runtime.NewActorFactory(actorClass.Name, states, options.InitialState)
+	if err != nil {
+		return runtime.ConcurrentActorFactory{}, errors.Wrapf(err, "unable to construct the factory")
+	}
+
+	concurrentActorFactory :=
+		runtime.NewConcurrentActorFactory(actorFactory, options.InboxSize, dependencies)
+	return concurrentActorFactory, nil
+}
+
 func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 	translatedStates runtime.StateGroup,
 	err error,
