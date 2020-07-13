@@ -47,6 +47,45 @@ func Translate(
 	return translatedActors, nil
 }
 
+func translateDefinition(
+	definition *parser.Definition,
+	declaredIdentifiers mapset.Set,
+	options Options,
+	dependencies runtime.Dependencies,
+) (
+	translatedActorClass runtime.ConcurrentActorFactory,
+	wasActor bool,
+	err error,
+) {
+	switch {
+	case definition.Actor != nil:
+		actorClass := (*parser.ActorClass)(definition.Actor)
+		translatedActorClass, err =
+			translateActorClass(actorClass, declaredIdentifiers, options, dependencies)
+		if err != nil {
+			return runtime.ConcurrentActorFactory{}, false, errors.Wrapf(
+				err,
+				"unable to translate the actor %s",
+				definition.Actor.Name,
+			)
+		}
+
+		wasActor = true
+	case definition.ActorClass != nil:
+		translatedActorClass, err =
+			translateActorClass(definition.ActorClass, declaredIdentifiers, options, dependencies)
+		if err != nil {
+			return runtime.ConcurrentActorFactory{}, false, errors.Wrapf(
+				err,
+				"unable to translate the actor class %s",
+				definition.ActorClass.Name,
+			)
+		}
+	}
+
+	return translatedActorClass, wasActor, nil
+}
+
 func translateActorClass(
 	actorClass *parser.ActorClass,
 	declaredIdentifiers mapset.Set,
