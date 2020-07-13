@@ -2453,6 +2453,209 @@ func TestTranslateCommand(test *testing.T) {
 	}
 }
 
+func TestTranslateStartCommand(test *testing.T) {
+	type args struct {
+		startCommand        *parser.StartCommand
+		declaredIdentifiers mapset.Set
+	}
+
+	for _, testData := range []struct {
+		name             string
+		args             args
+		wantCommand      runtime.Command
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
+	}{
+		{
+			name: "StartCommand/success/name",
+			args: args{
+				startCommand:        &parser.StartCommand{Name: pointer.ToString("test")},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantCommand:      commands.NewStartCommand(expressions.NewIdentifier("test")),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "StartCommand/success/expression",
+			args: args{
+				startCommand: &parser.StartCommand{
+					Expression: &parser.Expression{
+						ListConstruction: &parser.ListConstruction{
+							Disjunction: &parser.Disjunction{
+								Conjunction: &parser.Conjunction{
+									Equality: &parser.Equality{
+										Comparison: &parser.Comparison{
+											Addition: &parser.Addition{
+												Multiplication: &parser.Multiplication{
+													Unary: &parser.Unary{
+														Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("test")}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantCommand:      commands.NewStartCommand(expressions.NewIdentifier("test")),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "StartCommand/success/expression/with setted states",
+			args: args{
+				startCommand: &parser.StartCommand{
+					Expression: &parser.Expression{
+						ListConstruction: &parser.ListConstruction{
+							Disjunction: &parser.Disjunction{
+								Conjunction: &parser.Conjunction{
+									Equality: &parser.Equality{
+										Comparison: &parser.Comparison{
+											Addition: &parser.Addition{
+												Multiplication: &parser.Multiplication{
+													Unary: &parser.Unary{
+														Accessor: &parser.Accessor{
+															Atom: &parser.Atom{
+																ConditionalExpression: &parser.ConditionalExpression{
+																	ConditionalCases: []*parser.ConditionalCase{
+																		{
+																			Condition: &parser.Expression{
+																				ListConstruction: &parser.ListConstruction{
+																					Disjunction: &parser.Disjunction{
+																						Conjunction: &parser.Conjunction{
+																							Equality: &parser.Equality{
+																								Comparison: &parser.Comparison{
+																									Addition: &parser.Addition{
+																										Multiplication: &parser.Multiplication{
+																											Unary: &parser.Unary{
+																												Accessor: &parser.Accessor{
+																													Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																				},
+																			},
+																			Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
+																		},
+																		{
+																			Condition: &parser.Expression{
+																				ListConstruction: &parser.ListConstruction{
+																					Disjunction: &parser.Disjunction{
+																						Conjunction: &parser.Conjunction{
+																							Equality: &parser.Equality{
+																								Comparison: &parser.Comparison{
+																									Addition: &parser.Addition{
+																										Multiplication: &parser.Multiplication{
+																											Unary: &parser.Unary{
+																												Accessor: &parser.Accessor{
+																													Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																				},
+																			},
+																			Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantCommand: commands.NewStartCommand(
+				expressions.NewConditionalExpression([]expressions.ConditionalCase{
+					{
+						Condition: expressions.NewNumber(23),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
+					},
+					{
+						Condition: expressions.NewNumber(42),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+					},
+				}),
+			),
+			wantSettedStates: mapset.NewSet("one", "two"),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "StartCommand/error/unknown identifier in the name",
+			args: args{
+				startCommand:        &parser.StartCommand{Name: pointer.ToString("unknown")},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantCommand:      nil,
+			wantSettedStates: nil,
+			wantErr:          assert.Error,
+		},
+		{
+			name: "StartCommand/error/unknown identifier in the expression",
+			args: args{
+				startCommand: &parser.StartCommand{
+					Expression: &parser.Expression{
+						ListConstruction: &parser.ListConstruction{
+							Disjunction: &parser.Disjunction{
+								Conjunction: &parser.Conjunction{
+									Equality: &parser.Equality{
+										Comparison: &parser.Comparison{
+											Addition: &parser.Addition{
+												Multiplication: &parser.Multiplication{
+													Unary: &parser.Unary{
+														Accessor: &parser.Accessor{
+															Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantCommand:      nil,
+			wantSettedStates: nil,
+			wantErr:          assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			gotCommand, gotSettedStates, err :=
+				translateStartCommand(testData.args.startCommand, testData.args.declaredIdentifiers)
+
+			assert.Equal(test, testData.wantCommand, gotCommand)
+			assert.Equal(test, testData.wantSettedStates, gotSettedStates)
+			testData.wantErr(test, err)
+		})
+	}
+}
+
 func TestTranslateSendCommand(test *testing.T) {
 	type args struct {
 		sendCommand         *parser.SendCommand
