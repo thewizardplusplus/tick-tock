@@ -18,33 +18,35 @@ type Options struct {
 
 // Translate ...
 func Translate(
-	actors []*parser.Actor,
+	program *parser.Program,
 	declaredIdentifiers mapset.Set,
 	options Options,
 	dependencies runtime.Dependencies,
 ) (
-	translatedActors runtime.ConcurrentActorGroup,
+	definitions context.ValueGroup,
+	translatedActors []runtime.ConcurrentActorFactory,
 	err error,
 ) {
-	for index, actor := range actors {
-		translatedStates, err := translateStates(actor.States, declaredIdentifiers)
+	definitions = make(context.ValueGroup)
+	for index, definition := range program.Definitions {
+		translatedActorClass, wasActor, err :=
+			translateDefinition(definition, declaredIdentifiers, options, dependencies)
 		if err != nil {
-			return nil, errors.Wrapf(err, "unable to translate the actor #%d", index)
+			return nil, nil, errors.Wrapf(err, "unable to translate the definition #%d", index)
 		}
 
-		translatedActor, err := runtime.NewActor(translatedStates, options.InitialState)
-		if err != nil {
-			return nil, errors.Wrapf(err, "unable to construct the actor #%d", index)
+		definitionName := translatedActorClass.Name()
+		if _, ok := definitions[definitionName]; ok {
+			return nil, nil, errors.Errorf("duplicate definition %s", definitionName)
 		}
 
-		translatedActors = append(translatedActors, runtime.NewConcurrentActor(
-			translatedActor,
-			options.InboxSize,
-			dependencies,
-		))
+		definitions[definitionName] = translatedActorClass
+		if wasActor {
+			translatedActors = append(translatedActors, translatedActorClass)
+		}
 	}
 
-	return translatedActors, nil
+	return definitions, translatedActors, nil
 }
 
 func translateDefinition(
