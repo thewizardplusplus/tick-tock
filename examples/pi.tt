@@ -1,4 +1,4 @@
-// https://en.wikipedia.org/wiki/Gauss–Legendre_algorithm
+// https://en.wikipedia.org/wiki/Gauss-Legendre_algorithm
 actor
   state __initialization__()
     message __initialize__()
