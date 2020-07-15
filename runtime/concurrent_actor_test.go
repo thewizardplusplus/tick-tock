@@ -223,11 +223,8 @@ func TestConcurrentActor(test *testing.T) {
 
 func TestConcurrentActorFactory(test *testing.T) {
 	actorFactory := ActorFactory{
-		name: "Test",
-		states: StateGroup{
-			"state_0": ParameterizedMessageGroup{},
-			"state_1": ParameterizedMessageGroup{},
-		},
+		name:         "Test",
+		states:       StateGroup{"state_0": {}, "state_1": {}},
 		initialState: context.State{Name: "state_0"},
 	}
 	dependencies := Dependencies{
@@ -244,10 +241,7 @@ func TestConcurrentActorFactory(test *testing.T) {
 
 	want := ConcurrentActor{
 		innerActor: &Actor{
-			states: StateGroup{
-				"state_0": ParameterizedMessageGroup{},
-				"state_1": ParameterizedMessageGroup{},
-			},
+			states:       StateGroup{"state_0": {}, "state_1": {}},
 			currentState: context.State{Name: "state_0"},
 		},
 		dependencies: dependencies,
@@ -257,11 +251,8 @@ func TestConcurrentActorFactory(test *testing.T) {
 
 func TestConcurrentActorFactory_Name(test *testing.T) {
 	actorFactory := ActorFactory{
-		name: "Test",
-		states: StateGroup{
-			"state_0": ParameterizedMessageGroup{},
-			"state_1": ParameterizedMessageGroup{},
-		},
+		name:         "Test",
+		states:       StateGroup{"state_0": {}, "state_1": {}},
 		initialState: context.State{Name: "state_0"},
 	}
 	dependencies := Dependencies{

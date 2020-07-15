@@ -38,10 +38,7 @@ func TestStartCommand(test *testing.T) {
 				actorFactory: func() expressions.Expression {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test",
-						runtime.StateGroup{
-							"state_0": runtime.ParameterizedMessageGroup{},
-							"state_1": runtime.ParameterizedMessageGroup{},
-						},
+						runtime.StateGroup{"state_0": {}, "state_1": {}},
 						context.State{Name: "state_0"},
 					)
 					concurrentActorFactory := runtime.NewConcurrentActorFactory(
@@ -62,10 +59,7 @@ func TestStartCommand(test *testing.T) {
 				context: func() context.Context {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test",
-						runtime.StateGroup{
-							"state_0": runtime.ParameterizedMessageGroup{},
-							"state_1": runtime.ParameterizedMessageGroup{},
-						},
+						runtime.StateGroup{"state_0": {}, "state_1": {}},
 						context.State{Name: "state_0"},
 					)
 					concurrentActorFactory := runtime.NewConcurrentActorFactory(

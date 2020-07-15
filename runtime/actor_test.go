@@ -28,10 +28,7 @@ func TestActor_SetState(test *testing.T) {
 		{
 			name: "success with a different state",
 			fields: fields{
-				states: StateGroup{
-					"state_0": ParameterizedMessageGroup{},
-					"state_1": ParameterizedMessageGroup{},
-				},
+				states:       StateGroup{"state_0": {}, "state_1": {}},
 				currentState: context.State{Name: "state_0"},
 			},
 			args: args{
@@ -43,10 +40,7 @@ func TestActor_SetState(test *testing.T) {
 		{
 			name: "success with a same state",
 			fields: fields{
-				states: StateGroup{
-					"state_0": ParameterizedMessageGroup{},
-					"state_1": ParameterizedMessageGroup{},
-				},
+				states:       StateGroup{"state_0": {}, "state_1": {}},
 				currentState: context.State{Name: "state_0"},
 			},
 			args: args{
@@ -58,10 +52,7 @@ func TestActor_SetState(test *testing.T) {
 		{
 			name: "error",
 			fields: fields{
-				states: StateGroup{
-					"state_0": ParameterizedMessageGroup{},
-					"state_1": ParameterizedMessageGroup{},
-				},
+				states:       StateGroup{"state_0": {}, "state_1": {}},
 				currentState: context.State{Name: "state_0"},
 			},
 			args: args{
@@ -227,19 +218,13 @@ func TestNewActorFactory(test *testing.T) {
 		{
 			name: "success",
 			args: args{
-				name: "Test",
-				states: StateGroup{
-					"state_0": ParameterizedMessageGroup{},
-					"state_1": ParameterizedMessageGroup{},
-				},
+				name:         "Test",
+				states:       StateGroup{"state_0": {}, "state_1": {}},
 				initialState: context.State{Name: "state_0"},
 			},
 			wantActorFactory: ActorFactory{
-				name: "Test",
-				states: StateGroup{
-					"state_0": ParameterizedMessageGroup{},
-					"state_1": ParameterizedMessageGroup{},
-				},
+				name:         "Test",
+				states:       StateGroup{"state_0": {}, "state_1": {}},
 				initialState: context.State{Name: "state_0"},
 			},
 			wantErr: assert.NoError,
@@ -247,11 +232,8 @@ func TestNewActorFactory(test *testing.T) {
 		{
 			name: "error",
 			args: args{
-				name: "Test",
-				states: StateGroup{
-					"state_0": ParameterizedMessageGroup{},
-					"state_1": ParameterizedMessageGroup{},
-				},
+				name:         "Test",
+				states:       StateGroup{"state_0": {}, "state_1": {}},
 				initialState: context.State{Name: "state_unknown"},
 			},
 			wantActorFactory: ActorFactory{},
@@ -270,11 +252,8 @@ func TestNewActorFactory(test *testing.T) {
 
 func TestActorFactory_Name(test *testing.T) {
 	factory := ActorFactory{
-		name: "Test",
-		states: StateGroup{
-			"state_0": ParameterizedMessageGroup{},
-			"state_1": ParameterizedMessageGroup{},
-		},
+		name:         "Test",
+		states:       StateGroup{"state_0": {}, "state_1": {}},
 		initialState: context.State{Name: "state_0"},
 	}
 	got := factory.Name()
@@ -284,20 +263,14 @@ func TestActorFactory_Name(test *testing.T) {
 
 func TestActorFactory_CreateActor(test *testing.T) {
 	factory := ActorFactory{
-		name: "Test",
-		states: StateGroup{
-			"state_0": ParameterizedMessageGroup{},
-			"state_1": ParameterizedMessageGroup{},
-		},
+		name:         "Test",
+		states:       StateGroup{"state_0": {}, "state_1": {}},
 		initialState: context.State{Name: "state_0"},
 	}
 	got := factory.CreateActor()
 
 	want := &Actor{
-		states: StateGroup{
-			"state_0": ParameterizedMessageGroup{},
-			"state_1": ParameterizedMessageGroup{},
-		},
+		states:       StateGroup{"state_0": {}, "state_1": {}},
 		currentState: context.State{Name: "state_0"},
 	}
 	assert.Equal(test, want, got)
