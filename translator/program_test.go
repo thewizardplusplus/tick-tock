@@ -266,6 +266,151 @@ func TestTranslate(test *testing.T) {
 	}
 }
 
+func TestTranslateDefinition(test *testing.T) {
+	type args struct {
+		definition          *parser.Definition
+		declaredIdentifiers mapset.Set
+		options             Options
+		dependencies        runtime.Dependencies
+	}
+
+	for _, testData := range []struct {
+		name                     string
+		args                     args
+		wantTranslatedActorClass runtime.ConcurrentActorFactory
+		wantActor                assert.BoolAssertionFunc
+		wantErr                  assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Definition/actor/success",
+			args: args{
+				definition: &parser.Definition{
+					Actor: &parser.Actor{
+						Name:   "Test",
+						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
+				actorFactory, _ := runtime.NewActorFactory(
+					"Test",
+					runtime.StateGroup{
+						"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+					},
+					context.State{Name: "state_0"},
+				)
+				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				})
+			}(),
+			wantActor: assert.True,
+			wantErr:   assert.NoError,
+		},
+		{
+			name: "Definition/actor/error",
+			args: args{
+				definition: &parser.Definition{
+					Actor: &parser.Actor{
+						Name:   "Test",
+						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantTranslatedActorClass: runtime.ConcurrentActorFactory{},
+			wantActor:                assert.False,
+			wantErr:                  assert.Error,
+		},
+		{
+			name: "Definition/actor class/success",
+			args: args{
+				definition: &parser.Definition{
+					ActorClass: &parser.ActorClass{
+						Name:   "Test",
+						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
+				actorFactory, _ := runtime.NewActorFactory(
+					"Test",
+					runtime.StateGroup{
+						"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+					},
+					context.State{Name: "state_0"},
+				)
+				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				})
+			}(),
+			wantActor: assert.False,
+			wantErr:   assert.NoError,
+		},
+		{
+			name: "Definition/actor class/error",
+			args: args{
+				definition: &parser.Definition{
+					ActorClass: &parser.ActorClass{
+						Name:   "Test",
+						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantTranslatedActorClass: runtime.ConcurrentActorFactory{},
+			wantActor:                assert.False,
+			wantErr:                  assert.Error,
+		},
+	} {
+		test.Run(testData.name, func(test *testing.T) {
+			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
+
+			gotTranslatedActorClass, gotActor, err := translateDefinition(
+				testData.args.definition,
+				testData.args.declaredIdentifiers,
+				testData.args.options,
+				testData.args.dependencies,
+			)
+
+			mock.AssertExpectationsForObjects(
+				test,
+				testData.args.dependencies.Waiter,
+				testData.args.dependencies.ErrorHandler,
+			)
+			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
+			assert.Equal(test, testData.wantTranslatedActorClass, gotTranslatedActorClass)
+			testData.wantActor(test, gotActor)
+			testData.wantErr(test, err)
+		})
+	}
+}
+
 func TestTranslateActorClass(test *testing.T) {
 	type args struct {
 		actorClass          *parser.ActorClass
