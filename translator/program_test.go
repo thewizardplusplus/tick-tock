@@ -478,6 +478,7 @@ func TestTranslateDefinition(test *testing.T) {
 	for _, testData := range []struct {
 		name                     string
 		args                     args
+		wantDeclaredIdentifiers  mapset.Set
 		wantTranslatedActorClass runtime.ConcurrentActorFactory
 		wantActor                assert.BoolAssertionFunc
 		wantErr                  assert.ErrorAssertionFunc
@@ -498,6 +499,7 @@ func TestTranslateDefinition(test *testing.T) {
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
+			wantDeclaredIdentifiers: mapset.NewSet("test", "Test"),
 			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
 				actorFactory, _ := runtime.NewActorFactory(
 					"Test",
@@ -531,6 +533,7 @@ func TestTranslateDefinition(test *testing.T) {
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
+			wantDeclaredIdentifiers:  mapset.NewSet("test"),
 			wantTranslatedActorClass: runtime.ConcurrentActorFactory{},
 			wantActor:                assert.False,
 			wantErr:                  assert.Error,
@@ -551,6 +554,7 @@ func TestTranslateDefinition(test *testing.T) {
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
+			wantDeclaredIdentifiers: mapset.NewSet("test", "Test"),
 			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
 				actorFactory, _ := runtime.NewActorFactory(
 					"Test",
@@ -584,14 +588,13 @@ func TestTranslateDefinition(test *testing.T) {
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
+			wantDeclaredIdentifiers:  mapset.NewSet("test"),
 			wantTranslatedActorClass: runtime.ConcurrentActorFactory{},
 			wantActor:                assert.False,
 			wantErr:                  assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
-
 			gotTranslatedActorClass, gotActor, err := translateDefinition(
 				testData.args.definition,
 				testData.args.declaredIdentifiers,
@@ -604,7 +607,7 @@ func TestTranslateDefinition(test *testing.T) {
 				testData.args.dependencies.Waiter,
 				testData.args.dependencies.ErrorHandler,
 			)
-			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
+			assert.Equal(test, testData.wantDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.wantTranslatedActorClass, gotTranslatedActorClass)
 			testData.wantActor(test, gotActor)
 			testData.wantErr(test, err)

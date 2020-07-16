@@ -72,6 +72,7 @@ func translateDefinition(
 			)
 		}
 
+		declaredIdentifiers.Add(definition.Actor.Name)
 		wasActor = true
 	case definition.ActorClass != nil:
 		translatedActorClass, err =
@@ -83,6 +84,8 @@ func translateDefinition(
 				definition.ActorClass.Name,
 			)
 		}
+
+		declaredIdentifiers.Add(definition.ActorClass.Name)
 	}
 
 	return translatedActorClass, wasActor, nil
