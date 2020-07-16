@@ -2,7 +2,7 @@
   'editor':
     'commentStart': '// '
     'increaseIndentPattern': '(?x)
-      \\b(actor|state|message|when)\\b[^;]*$
+      \\b(actor|class|state|message|when)\\b[^;]*$
       | [\\(\\[]\\s*$
       | ^\\s*[\\)\\]]
       | ^\\s*=>
