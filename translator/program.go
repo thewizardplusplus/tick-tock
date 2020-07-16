@@ -28,9 +28,10 @@ func Translate(
 	err error,
 ) {
 	definitions = make(context.ValueGroup)
+	localDeclaredIdentifiers := declaredIdentifiers.Clone()
 	for index, definition := range program.Definitions {
 		translatedActorClass, wasActor, err :=
-			translateDefinition(definition, declaredIdentifiers, options, dependencies)
+			translateDefinition(definition, localDeclaredIdentifiers, options, dependencies)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the definition #%d", index)
 		}
