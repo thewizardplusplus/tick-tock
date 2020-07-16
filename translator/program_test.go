@@ -1,15 +1,12 @@
 package translator
 
 import (
-	"reflect"
 	"testing"
-	"unsafe"
 
 	"github.com/AlekSi/pointer"
 	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/commands"
@@ -21,246 +18,450 @@ import (
 
 func TestTranslate(test *testing.T) {
 	type args struct {
-		makeActors          func(options Options) []*parser.Actor
+		program             *parser.Program
 		declaredIdentifiers mapset.Set
+		options             Options
+		dependencies        runtime.Dependencies
 	}
 
 	for _, testData := range []struct {
-		name           string
-		args           args
-		makeWantActors func(
-			options Options,
-			dependencies runtime.Dependencies,
-		) runtime.ConcurrentActorGroup
-		wantErr assert.ErrorAssertionFunc
+		name                 string
+		args                 args
+		wantDefinitions      context.ValueGroup
+		wantTranslatedActors []runtime.ConcurrentActorFactory
+		wantErr              assert.ErrorAssertionFunc
 	}{
 		{
-			name: "success with actors",
+			name: "success without definitions",
 			args: args{
-				makeActors: func(options Options) []*parser.Actor {
-					return []*parser.Actor{
-						{States: []*parser.State{{Name: options.InitialState.Name}, {Name: "one"}}},
-						{States: []*parser.State{{Name: options.InitialState.Name}, {Name: "two"}}},
-					}
+				program: &parser.Program{
+					Definitions: nil,
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
 			},
-			makeWantActors: func(
-				options Options,
-				dependencies runtime.Dependencies,
-			) runtime.ConcurrentActorGroup {
-				actorOne, _ := runtime.NewActor(
-					runtime.StateGroup{
-						options.InitialState.Name: runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-						"one":                     runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-					},
-					options.InitialState,
-				)
-				actorTwo, _ := runtime.NewActor(
-					runtime.StateGroup{
-						options.InitialState.Name: runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-						"two":                     runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-					},
-					options.InitialState,
-				)
-				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies),
-					runtime.NewConcurrentActor(actorTwo, options.InboxSize, dependencies),
-				}
-			},
-			wantErr: assert.NoError,
+			wantDefinitions:      context.ValueGroup{},
+			wantTranslatedActors: nil,
+			wantErr:              assert.NoError,
 		},
 		{
-			name: "success without actors",
+			name: "success with only few actors",
 			args: args{
-				makeActors:          func(options Options) []*parser.Actor { return nil },
-				declaredIdentifiers: mapset.NewSet("test"),
-			},
-			makeWantActors: func(
-				options Options,
-				dependencies runtime.Dependencies,
-			) runtime.ConcurrentActorGroup {
-				return nil
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "success with the expression",
-			args: args{
-				makeActors: func(options Options) []*parser.Actor {
-					return []*parser.Actor{
+				program: &parser.Program{
+					Definitions: []*parser.Definition{
 						{
-							States: []*parser.State{
-								{
-									Name: options.InitialState.Name,
-									Messages: []*parser.Message{
-										{
-											Name: "message_0",
-											Commands: []*parser.Command{
-												{
-													Expression: &parser.Expression{
-														ListConstruction: &parser.ListConstruction{
-															Disjunction: &parser.Disjunction{
-																Conjunction: &parser.Conjunction{
-																	Equality: &parser.Equality{
-																		Comparison: &parser.Comparison{
-																			Addition: &parser.Addition{
-																				Multiplication: &parser.Multiplication{
-																					Unary: &parser.Unary{
-																						Accessor: &parser.Accessor{
-																							Atom: &parser.Atom{Identifier: pointer.ToString("test")},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
+							Actor: &parser.Actor{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
 							},
 						},
-					}
+						{
+							Actor: &parser.Actor{
+								Name:   "Test1",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+					},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
 			},
-			makeWantActors: func(
-				options Options,
-				dependencies runtime.Dependencies,
-			) runtime.ConcurrentActorGroup {
-				actorOne, _ := runtime.NewActor(
-					runtime.StateGroup{
-						options.InitialState.Name: runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
-							"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-								commands.NewExpressionCommand(expressions.NewIdentifier("test")),
-							}),
-						}),
-					},
-					options.InitialState,
-				)
-				return runtime.ConcurrentActorGroup{
-					runtime.NewConcurrentActor(actorOne, options.InboxSize, dependencies),
-				}
+			wantDefinitions: context.ValueGroup{
+				"Test0": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test0",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+				"Test1": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test1",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+			},
+			wantTranslatedActors: []runtime.ConcurrentActorFactory{
+				func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test0",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+				func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test1",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
 			},
 			wantErr: assert.NoError,
 		},
 		{
-			name: "error with states translation",
+			name: "success with only few actor classes",
 			args: args{
-				makeActors: func(options Options) []*parser.Actor {
-					return []*parser.Actor{{States: []*parser.State{{Name: options.InitialState.Name}}}, {}}
-				},
-				declaredIdentifiers: mapset.NewSet("test"),
-			},
-			makeWantActors: func(
-				options Options,
-				dependencies runtime.Dependencies,
-			) runtime.ConcurrentActorGroup {
-				return nil
-			},
-			wantErr: assert.Error,
-		},
-		{
-			name: "error with actor construction",
-			args: args{
-				makeActors: func(options Options) []*parser.Actor {
-					return []*parser.Actor{
-						{States: []*parser.State{{Name: "one"}}},
-						{States: []*parser.State{{Name: "two"}}},
-					}
-				},
-				declaredIdentifiers: mapset.NewSet("test"),
-			},
-			makeWantActors: func(
-				options Options,
-				dependencies runtime.Dependencies,
-			) runtime.ConcurrentActorGroup {
-				return nil
-			},
-			wantErr: assert.Error,
-		},
-		{
-			name: "error with the expression",
-			args: args{
-				makeActors: func(options Options) []*parser.Actor {
-					return []*parser.Actor{
+				program: &parser.Program{
+					Definitions: []*parser.Definition{
 						{
-							States: []*parser.State{
-								{
-									Name: options.InitialState.Name,
-									Messages: []*parser.Message{
-										{
-											Name: "message_0",
-											Commands: []*parser.Command{
-												{
-													Expression: &parser.Expression{
-														ListConstruction: &parser.ListConstruction{
-															Disjunction: &parser.Disjunction{
-																Conjunction: &parser.Conjunction{
-																	Equality: &parser.Equality{
-																		Comparison: &parser.Comparison{
-																			Addition: &parser.Addition{
-																				Multiplication: &parser.Multiplication{
-																					Unary: &parser.Unary{
-																						Accessor: &parser.Accessor{
-																							Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
+							ActorClass: &parser.ActorClass{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
 							},
 						},
-					}
+						{
+							ActorClass: &parser.ActorClass{
+								Name:   "Test1",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+					},
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
 			},
-			makeWantActors: func(
-				options Options,
-				dependencies runtime.Dependencies,
-			) runtime.ConcurrentActorGroup {
-				return nil
+			wantDefinitions: context.ValueGroup{
+				"Test0": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test0",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+				"Test1": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test1",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
 			},
-			wantErr: assert.Error,
+			wantTranslatedActors: nil,
+			wantErr:              assert.NoError,
+		},
+		{
+			name: "success with few actors and actor classes",
+			args: args{
+				program: &parser.Program{
+					Definitions: []*parser.Definition{
+						{
+							Actor: &parser.Actor{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+						{
+							ActorClass: &parser.ActorClass{
+								Name:   "Test1",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+						{
+							Actor: &parser.Actor{
+								Name:   "Test2",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+						{
+							ActorClass: &parser.ActorClass{
+								Name:   "Test3",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantDefinitions: context.ValueGroup{
+				"Test0": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test0",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+				"Test1": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test1",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+				"Test2": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test2",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+				"Test3": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test3",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+			},
+			wantTranslatedActors: []runtime.ConcurrentActorFactory{
+				func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test0",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+				func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test2",
+						runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+						Waiter:       new(waitermocks.Waiter),
+						ErrorHandler: new(runtimemocks.ErrorHandler),
+					})
+				}(),
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error with definition translation",
+			args: args{
+				program: &parser.Program{
+					Definitions: []*parser.Definition{
+						{
+							Actor: &parser.Actor{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+						{
+							Actor: &parser.Actor{
+								Name:   "Test1",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_0"}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantDefinitions:      nil,
+			wantTranslatedActors: nil,
+			wantErr:              assert.Error,
+		},
+		{
+			name: "error with duplicate actors",
+			args: args{
+				program: &parser.Program{
+					Definitions: []*parser.Definition{
+						{
+							Actor: &parser.Actor{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+						{
+							Actor: &parser.Actor{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantDefinitions:      nil,
+			wantTranslatedActors: nil,
+			wantErr:              assert.Error,
+		},
+		{
+			name: "error with duplicate actor classes",
+			args: args{
+				program: &parser.Program{
+					Definitions: []*parser.Definition{
+						{
+							ActorClass: &parser.ActorClass{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+						{
+							ActorClass: &parser.ActorClass{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantDefinitions:      nil,
+			wantTranslatedActors: nil,
+			wantErr:              assert.Error,
+		},
+		{
+			name: "error with the actor and the actor class with the same name",
+			args: args{
+				program: &parser.Program{
+					Definitions: []*parser.Definition{
+						{
+							Actor: &parser.Actor{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+						{
+							ActorClass: &parser.ActorClass{
+								Name:   "Test0",
+								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantDefinitions:      nil,
+			wantTranslatedActors: nil,
+			wantErr:              assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
-			options := Options{testutils.BufferedInbox, context.State{Name: "__initialization__"}}
-			waiter := new(waitermocks.Waiter)
-			errorHandler := new(runtimemocks.ErrorHandler)
-			dependencies := runtime.Dependencies{Waiter: waiter, ErrorHandler: errorHandler}
-			gotActors, err := Translate(
-				testData.args.makeActors(options),
+			gotDefinitions, gotTranslatedActors, err := Translate(
+				testData.args.program,
 				testData.args.declaredIdentifiers,
-				options,
-				dependencies,
+				testData.args.options,
+				testData.args.dependencies,
 			)
-			cleanInboxes(gotActors)
 
-			wantActors := testData.makeWantActors(options, dependencies)
-			cleanInboxes(wantActors)
-
-			mock.AssertExpectationsForObjects(test, waiter, errorHandler)
+			mock.AssertExpectationsForObjects(
+				test,
+				testData.args.dependencies.Waiter,
+				testData.args.dependencies.ErrorHandler,
+			)
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
-			assert.Equal(test, wantActors, gotActors)
+			assert.Equal(test, testData.wantDefinitions, gotDefinitions)
+			assert.Equal(test, testData.wantTranslatedActors, gotTranslatedActors)
 			testData.wantErr(test, err)
 		})
 	}
@@ -3926,13 +4127,5 @@ func TestTranslateSetCommand(test *testing.T) {
 			assert.Equal(test, testData.wantSettedStates, gotSettedStates)
 			testData.wantErr(test, err)
 		})
-	}
-}
-
-func cleanInboxes(actors runtime.ConcurrentActorGroup) {
-	for index := range actors {
-		actorPointer := &actors[index]
-		inboxField := reflect.ValueOf(actorPointer).Elem().FieldByName("inbox")
-		*(*chan string)(unsafe.Pointer(inboxField.UnsafeAddr())) = nil
 	}
 }
