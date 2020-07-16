@@ -1,199 +1,141 @@
-actor LeftFork
+class Fork
   state __initialization__()
-    message __initialize__()
-      set free()
+    message initialize_fork(current_fork)
+      set free(current_fork)
     ;
   ;
-  state free()
-    message take_fork(fork, philosopher)
-      when => fork != "left" return;
 
-      set taken()
+  state free(current_fork)
+    message take_fork(fork, philosopher)
+      when => fork != current_fork return;
+
+      set taken(fork)
       send fork_taken(fork, philosopher)
     ;
   ;
-  state taken()
+
+  state taken(current_fork)
     message take_fork(fork, philosopher)
-      when => fork != "left" return;
+      when => fork != current_fork return;
+
       send fork_busy(fork, philosopher)
     ;
+
     message put_fork(fork)
-      when => fork != "left" return;
-      set free()
+      when => fork != current_fork return;
+
+      set free(fork)
     ;
   ;
 ;
 
-actor RightFork
+class Philosopher
   state __initialization__()
-    message __initialize__()
-      set free()
+    message initialize_philosopher(current_philosopher, left_fork, right_fork)
+      set thinking(current_philosopher, left_fork, right_fork)
+      send start_thinking(current_philosopher, left_fork, right_fork)
     ;
   ;
-  state free()
-    message take_fork(fork, philosopher)
-      when => fork != "right" return;
 
-      set taken()
-      send fork_taken(fork, philosopher)
-    ;
-  ;
-  state taken()
-    message take_fork(fork, philosopher)
-      when => fork != "right" return;
-      send fork_busy(fork, philosopher)
-    ;
-    message put_fork(fork)
-      when => fork != "right" return;
-      set free()
-    ;
-  ;
-;
-
-actor PhilosopherJohn
-  state __initialization__()
-    message __initialize__()
-      set thinking()
-      send start_thinking("John")
-    ;
-  ;
-  state thinking()
+  state thinking(current_philosopher, left_fork, right_fork)
     message start_thinking(philosopher)
-      when => philosopher != "John" return;
+      when => philosopher != current_philosopher return;
 
       sleep(random() * 0.5 + 0.5)
       send stop_thinking(philosopher)
     ;
+
     message stop_thinking(philosopher)
-      when => philosopher != "John" return;
+      when => philosopher != current_philosopher return;
 
-      outln("\x1b[32m" + philosopher + "\x1b[m: become hungry, try to take the \x1b[33mleft fork\x1b[m")
-      set fork_waiting("left")
-      send take_fork("left", philosopher)
+      outln(philosopher + ": become hungry, try to take the fork " + strs(left_fork))
+      set fork_waiting(
+        philosopher, left_fork, right_fork, // class arguments
+        left_fork,                          // state arguments
+      )
+      send take_fork(left_fork, philosopher)
     ;
   ;
-  state fork_waiting(waited_fork)
+
+  state fork_waiting(
+    current_philosopher, left_fork, right_fork, // class parameters
+    waited_fork,                                // state parameters
+  )
     message fork_taken(fork, philosopher)
-      when => fork != waited_fork || philosopher != "John" return;
+      when => fork != waited_fork || philosopher != current_philosopher return;
 
-      out("\x1b[32m" + philosopher + "\x1b[m: the \x1b[33m" + fork + " fork\x1b[m taken, ")
+      out(philosopher + ": the fork " + strs(fork) + " taken, ")
       when
-        => fork == "left"
-          outln("try to take the \x1b[33mright fork\x1b[m")
+        => fork == left_fork
+          outln("try to take the fork " + strs(right_fork))
 
-          set fork_waiting("right")
-          send take_fork("right", philosopher)
-        => fork == "right"
-          outln("start \x1b[34meating\x1b[m")
+          set fork_waiting(
+            philosopher, left_fork, right_fork, // class arguments
+            right_fork,                         // state arguments
+          )
+          send take_fork(right_fork, philosopher)
+        => fork == right_fork
+          outln("start eating")
 
-          set eating()
-          send start_eating("John")
+          set eating(philosopher, left_fork, right_fork)
+          send start_eating(philosopher)
       ;
     ;
-    message fork_busy(fork, philosopher)
-      when => fork != waited_fork || philosopher != "John" return;
 
-      out("\x1b[32m" + philosopher + "\x1b[m: the \x1b[33m" + fork + " fork\x1b[m is busy, ")
+    message fork_busy(fork, philosopher)
+      when => fork != waited_fork || philosopher != current_philosopher return;
+
+      out(philosopher + ": the fork " + strs(fork) + " is busy, ")
       when
-        => fork == "right"
-          out("put the \x1b[33mleft fork\x1b[m and ")
-          send put_fork("left")
+        => fork == right_fork
+          out("put the fork " + strs(left_fork) + " and ")
+          send put_fork(left_fork)
       ;
 
-      outln("return to \x1b[32mthinking\x1b[m")
-      set thinking()
-      send start_thinking("John")
+      outln("return to thinking")
+      set thinking(philosopher, left_fork, right_fork)
+      send start_thinking(philosopher)
     ;
   ;
-  state eating()
+
+  state eating(current_philosopher, left_fork, right_fork)
     message start_eating(philosopher)
-      when => philosopher != "John" return;
+      when => philosopher != current_philosopher return;
 
       sleep(random() * 0.5 + 0.5)
-      send stop_eating("John")
+      send stop_eating(philosopher)
     ;
-    message stop_eating(philosopher)
-      when => philosopher != "John" return;
 
-      outln("\x1b[32m" + philosopher + "\x1b[m: stop \x1b[34meating\x1b[m, put forks and return to \x1b[32mthinking\x1b[m")
-      send put_fork("left")
-      send put_fork("right")
-      set thinking()
-      send start_thinking("John")
+    message stop_eating(philosopher)
+      when => philosopher != current_philosopher return;
+
+      outln(philosopher + ": stop eating, put forks and return to thinking")
+      send put_fork(left_fork)
+      send put_fork(right_fork)
+      set thinking(philosopher, left_fork, right_fork)
+      send start_thinking(philosopher)
     ;
   ;
 ;
 
-actor PhilosopherJane
+actor Main
   state __initialization__()
     message __initialize__()
-      set thinking()
-      send start_thinking("Jane")
-    ;
-  ;
-  state thinking()
-    message start_thinking(philosopher)
-      when => philosopher != "Jane" return;
+      // left fork
+      start Fork
+      send initialize_fork("left")
 
-      sleep(random() * 0.5 + 0.5)
-      send stop_thinking(philosopher)
-    ;
-    message stop_thinking(philosopher)
-      when => philosopher != "Jane" return;
+      // right fork
+      start Fork
+      send initialize_fork("right")
 
-      outln("\x1b[34m" + philosopher + "\x1b[m: become hungry, try to take the \x1b[33mright fork\x1b[m")
-      set fork_waiting("right")
-      send take_fork("right", philosopher)
-    ;
-  ;
-  state fork_waiting(waited_fork)
-    message fork_taken(fork, philosopher)
-      when => fork != waited_fork || philosopher != "Jane" return;
+      // philosopher John
+      start Philosopher
+      send initialize_philosopher("John", "left", "right")
 
-      out("\x1b[34m" + philosopher + "\x1b[m: the \x1b[33m" + fork + " fork\x1b[m taken, ")
-      when
-        => fork == "right"
-          outln("try to take the \x1b[33mleft fork\x1b[m")
-
-          set fork_waiting("left")
-          send take_fork("left", philosopher)
-        => fork == "left"
-          outln("start \x1b[34meating\x1b[m")
-
-          set eating()
-          send start_eating("Jane")
-      ;
-    ;
-    message fork_busy(fork, philosopher)
-      when => fork != waited_fork || philosopher != "Jane" return;
-
-      out("\x1b[34m" + philosopher + "\x1b[m: the \x1b[33m" + fork + " fork\x1b[m is busy, ")
-      when
-        => fork == "left"
-          out("put the \x1b[33mright fork\x1b[m and ")
-          send put_fork("right")
-      ;
-
-      outln("return to \x1b[32mthinking\x1b[m")
-      set thinking()
-      send start_thinking("Jane")
-    ;
-  ;
-  state eating()
-    message start_eating(philosopher)
-      when => philosopher != "Jane" return;
-
-      sleep(random() * 0.5 + 0.5)
-      send stop_eating("Jane")
-    ;
-    message stop_eating(philosopher)
-      when => philosopher != "Jane" return;
-
-      outln("\x1b[34m" + philosopher + "\x1b[m: stop \x1b[34meating\x1b[m, put forks and return to \x1b[32mthinking\x1b[m")
-      send put_fork("left")
-      send put_fork("right")
-      set thinking()
-      send start_thinking("Jane")
+      // philosopher Jane
+      start Philosopher
+      send initialize_philosopher("Jane", "right", "left")
     ;
   ;
 ;
