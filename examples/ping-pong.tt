@@ -1,23 +1,20 @@
-actor Pinger
+class Ticker
   state __initialization__()
-    message pong()
-      outln("\x1b[32mpinger\x1b[m received \x1b[34mpong\x1b[m")
-      sleep(0.5)
-
-      outln("\x1b[32mpinger\x1b[m sent \x1b[32mping\x1b[m")
-      send ping()
+    message start_ticking(in_kind, out_kind)
+      set ticking(in_kind, out_kind)
     ;
   ;
-;
 
-actor Ponger
-  state __initialization__()
-    message ping()
-      outln("\x1b[34mponger\x1b[m received \x1b[32mping\x1b[m")
+  state ticking(in_kind, out_kind)
+    message tick(kind)
+      when => kind != in_kind return;
+
+      let ticker_name = "ticker(" + in_kind + ")"
+      outln(ticker_name + " received " + in_kind)
       sleep(0.5)
 
-      outln("\x1b[34mponger\x1b[m sent \x1b[34mpong\x1b[m")
-      send pong()
+      outln(ticker_name + " sent " + out_kind)
+      send tick(out_kind)
     ;
   ;
 ;
@@ -25,7 +22,15 @@ actor Ponger
 actor Main
   state __initialization__()
     message __initialize__()
-      send ping()
+      // pinger
+      start Ticker
+      send start_ticking("pong", "ping")
+
+      // ponger
+      start Ticker
+      send start_ticking("ping", "pong")
+
+      send tick("ping")
     ;
   ;
 ;
