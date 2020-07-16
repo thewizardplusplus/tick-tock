@@ -1,5 +1,4 @@
-// counter
-actor
+actor Counter
   state __initialization__()
     message __initialize__()
       set counting(0)
@@ -15,7 +14,7 @@ actor
   ;
 ;
 
-actor
+actor Main
   state __initialization__()
     message __initialize__()
       send increment_counter(random())

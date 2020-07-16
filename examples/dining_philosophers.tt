@@ -1,5 +1,4 @@
-// left fork
-actor
+actor LeftFork
   state __initialization__()
     message __initialize__()
       set free()
@@ -25,8 +24,7 @@ actor
   ;
 ;
 
-// right fork
-actor
+actor RightFork
   state __initialization__()
     message __initialize__()
       set free()
@@ -52,8 +50,7 @@ actor
   ;
 ;
 
-// philosopher John
-actor
+actor PhilosopherJohn
   state __initialization__()
     message __initialize__()
       set thinking()
@@ -127,8 +124,7 @@ actor
   ;
 ;
 
-// philosopher Jane
-actor
+actor PhilosopherJane
   state __initialization__()
     message __initialize__()
       set thinking()

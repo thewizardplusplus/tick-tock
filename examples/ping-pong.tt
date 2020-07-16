@@ -1,5 +1,4 @@
-// pinger
-actor
+actor Pinger
   state __initialization__()
     message pong()
       outln("\x1b[32mpinger\x1b[m received \x1b[34mpong\x1b[m")
@@ -11,8 +10,7 @@ actor
   ;
 ;
 
-// ponger
-actor
+actor Ponger
   state __initialization__()
     message ping()
       outln("\x1b[34mponger\x1b[m received \x1b[32mping\x1b[m")
@@ -24,7 +22,7 @@ actor
   ;
 ;
 
-actor
+actor Main
   state __initialization__()
     message __initialize__()
       send ping()

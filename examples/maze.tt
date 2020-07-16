@@ -1,5 +1,5 @@
 // https://10print.org/
-actor
+actor Main
   state __initialization__()
     message __initialize__()
       let factor = random()
