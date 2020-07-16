@@ -39,7 +39,9 @@ func TestInterpret(test *testing.T) {
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(types.Nil{}, true)
-				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
+				context.On("SetValue", "Main", mock.AnythingOfType("runtime.ConcurrentActorFactory")).Return()
+				context.On("SetMessageSender", mock.AnythingOfType("*runtime.ConcurrentActorGroup")).Return()
+				context.On("SetActorRegister", mock.AnythingOfType("*runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
 				context.On("Copy").Return(context)
 
@@ -50,7 +52,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor state %s() message %s() test;;;`,
+							`actor Main state %s() message %s() test;;;`,
 							options.InitialState,
 							options.InitialMessage,
 						))
@@ -68,7 +70,9 @@ func TestInterpret(test *testing.T) {
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(float64(23), true)
-				context.On("SetMessageSender", mock.AnythingOfType("runtime.ConcurrentActorGroup")).Return()
+				context.On("SetValue", "Main", mock.AnythingOfType("runtime.ConcurrentActorFactory")).Return()
+				context.On("SetMessageSender", mock.AnythingOfType("*runtime.ConcurrentActorGroup")).Return()
+				context.On("SetActorRegister", mock.AnythingOfType("*runtime.ConcurrentActorGroup")).Return()
 				context.On("SetStateHolder", mock.AnythingOfType("*runtime.Actor")).Return()
 				context.On("Copy").Return(context)
 
@@ -79,7 +83,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor state %s() message %s() test;;;`,
+							`actor Main state %s() message %s() test;;;`,
 							options.InitialState,
 							options.InitialMessage,
 						))
@@ -126,7 +130,10 @@ func TestInterpret(test *testing.T) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
-						return copy(buffer, fmt.Sprintf("actor state %s();; actor;", options.InitialState))
+						return copy(buffer, fmt.Sprintf(
+							"actor Main state %s();; actor Incorrect;",
+							options.InitialState,
+						))
 					}, io.EOF)
 			},
 			wantErr: assert.Error,
@@ -145,7 +152,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor state %s() message %s() unknown;;;`,
+							`actor Main state %s() message %s() unknown;;;`,
 							options.InitialState,
 							options.InitialMessage,
 						))
@@ -156,7 +163,7 @@ func TestInterpret(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			options := Options{
-				InboxSize:      testutils.BufferedInbox,
+				InboxSize:      testutils.UnbufferedInbox,
 				InitialState:   "__initialization__",
 				InitialMessage: "__initialize__",
 			}

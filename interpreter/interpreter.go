@@ -33,8 +33,8 @@ func Interpret(ctx context.Context, options Options, dependencies Dependencies) 
 		return err
 	}
 
-	actors, err := translator.Translate(
-		program.Actors,
+	definitions, initialFactories, err := translator.Translate(
+		program,
 		ctx.ValuesNames(),
 		translator.Options{
 			InboxSize:    options.InboxSize,
@@ -46,7 +46,12 @@ func Interpret(ctx context.Context, options Options, dependencies Dependencies) 
 		return err
 	}
 
-	actors.Start(ctx)
+	context.SetValues(ctx, definitions)
+
+	actors := runtime.NewConcurrentActorGroup(ctx)
+	for _, factory := range initialFactories {
+		actors.RegisterActor(factory.CreateActor())
+	}
 	actors.SendMessage(context.Message{Name: options.InitialMessage})
 
 	return nil
