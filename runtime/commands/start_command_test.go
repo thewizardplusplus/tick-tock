@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
@@ -41,11 +40,8 @@ func TestStartCommand(test *testing.T) {
 						runtime.StateGroup{"state_0": {}, "state_1": {}},
 						context.State{Name: "state_0"},
 					)
-					concurrentActorFactory := runtime.NewConcurrentActorFactory(
-						actorFactory,
-						testutils.UnbufferedInbox,
-						runtime.Dependencies{},
-					)
+					concurrentActorFactory :=
+						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 
 					expression := new(expressionsmocks.Expression)
 					expression.
@@ -62,11 +58,8 @@ func TestStartCommand(test *testing.T) {
 						runtime.StateGroup{"state_0": {}, "state_1": {}},
 						context.State{Name: "state_0"},
 					)
-					concurrentActorFactory := runtime.NewConcurrentActorFactory(
-						actorFactory,
-						testutils.UnbufferedInbox,
-						runtime.Dependencies{},
-					)
+					concurrentActorFactory :=
+						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 					wantActor := concurrentActorFactory.CreateActor()
 					cleanInbox(&wantActor)
 

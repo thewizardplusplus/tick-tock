@@ -40,7 +40,7 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				currentState: context.State{Name: "state_1"},
-				inbox:        make(inbox, testutils.UnbufferedInbox),
+				inbox:        make(inbox),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -59,7 +59,7 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				currentState: context.State{Name: "state_1"},
-				inbox:        make(inbox, testutils.BufferedInbox),
+				inbox:        make(inbox, 23),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -81,7 +81,7 @@ func TestConcurrentActor(test *testing.T) {
 					Name:      "state_1",
 					Arguments: []interface{}{5, 12},
 				},
-				inbox: make(inbox, testutils.UnbufferedInbox),
+				inbox: make(inbox),
 			},
 			args: args{
 				contextCopy: func() context.Context {
@@ -109,7 +109,7 @@ func TestConcurrentActor(test *testing.T) {
 					Name:      "state_1",
 					Arguments: []interface{}{5, 12},
 				},
-				inbox: make(inbox, testutils.UnbufferedInbox),
+				inbox: make(inbox),
 			},
 			args: args{
 				contextCopy: func() context.Context {
@@ -138,7 +138,7 @@ func TestConcurrentActor(test *testing.T) {
 					return newLoggableStates(context, log, 2, group(2), group(5), nil)
 				},
 				currentState: context.State{Name: "state_1"},
-				inbox:        make(inbox, testutils.UnbufferedInbox),
+				inbox:        make(inbox),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -157,7 +157,7 @@ func TestConcurrentActor(test *testing.T) {
 					})
 				},
 				currentState: context.State{Name: "state_1"},
-				inbox:        make(inbox, testutils.UnbufferedInbox),
+				inbox:        make(inbox),
 			},
 			args: args{
 				contextCopy: new(contextmocks.Context),
@@ -355,7 +355,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 
 				concurrentActors.RegisterActor(ConcurrentActor{
 					innerActor: actor,
-					inbox:      make(inbox, testutils.UnbufferedInbox),
+					inbox:      make(inbox),
 					dependencies: Dependencies{
 						Waiter:       synchronousWaiter,
 						ErrorHandler: errorHandler,
@@ -472,7 +472,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			concurrentActors := &ConcurrentActorGroup{context: contextOriginal}
 			concurrentActors.RegisterActor(ConcurrentActor{
 				innerActor: actor,
-				inbox:      make(inbox, testutils.UnbufferedInbox),
+				inbox:      make(inbox),
 				dependencies: Dependencies{
 					Waiter:       synchronousWaiter,
 					ErrorHandler: errorHandler,

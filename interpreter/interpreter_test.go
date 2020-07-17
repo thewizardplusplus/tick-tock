@@ -163,7 +163,7 @@ func TestInterpret(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			options := Options{
-				InboxSize:      testutils.UnbufferedInbox,
+				InboxSize:      0,
 				InitialState:   "__initialization__",
 				InitialMessage: "__initialize__",
 			}
