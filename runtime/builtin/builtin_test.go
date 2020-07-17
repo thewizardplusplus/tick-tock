@@ -539,6 +539,24 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
+			name: "name",
+			additionalDefinitions: context.ValueGroup{
+				"Test": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+			},
+			expression: expressions.NewFunctionCall("name", []expressions.Expression{
+				expressions.NewIdentifier("Test"),
+			}),
+			wantResult: types.NewPairFromText("Test"),
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "size",
 			expression: expressions.NewFunctionCall("size", []expressions.Expression{
 				expressions.NewFunctionCall(

@@ -171,6 +171,10 @@ var (
 
 			return types.NewPairFromText(name), nil
 		},
+		"name": func(factory runtime.ConcurrentActorFactory) (*types.Pair, error) {
+			name := factory.Name()
+			return types.NewPairFromText(name), nil
+		},
 		"size": func(pair *types.Pair) (float64, error) {
 			return float64(pair.Size()), nil
 		},
