@@ -19,10 +19,11 @@ import (
 
 func TestValues(test *testing.T) {
 	for _, data := range []struct {
-		name       string
-		expression expressions.Expression
-		wantResult interface{}
-		wantErr    assert.ErrorAssertionFunc
+		name                  string
+		additionalDefinitions context.ValueGroup
+		expression            expressions.Expression
+		wantResult            interface{}
+		wantErr               assert.ErrorAssertionFunc
 	}{
 		{
 			name:       "empty list",
@@ -1243,6 +1244,7 @@ func TestValues(test *testing.T) {
 		test.Run(data.name, func(test *testing.T) {
 			ctx := context.NewDefaultContext()
 			context.SetValues(ctx, Values)
+			context.SetValues(ctx, data.additionalDefinitions)
 
 			gotResult, gotErr := data.expression.Evaluate(ctx)
 
