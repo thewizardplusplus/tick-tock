@@ -118,7 +118,6 @@ func (pair *Pair) DeepSlice() []interface{} {
 
 	var head interface{}
 	switch typedHead := pair.Head.(type) {
-	case Nil:
 	case *Pair:
 		head = typedHead.DeepSlice()
 	default:
