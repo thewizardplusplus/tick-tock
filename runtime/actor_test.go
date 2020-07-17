@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -270,6 +271,20 @@ func TestActorFactory_String(test *testing.T) {
 	got := factory.String()
 
 	assert.Equal(test, "<class Test>", got)
+}
+
+func TestActorFactory_MarshalText(test *testing.T) {
+	factory := ActorFactory{
+		name:         "Test",
+		states:       StateGroup{"state_0": {}, "state_1": {}},
+		initialState: context.State{Name: "state_0"},
+	}
+	// it's an example of an implicit call of the runtime.ActorFactory.MarshalText() method;
+	// you also can use json.Encoder with its method SetEscapeHTML() to avoid HTML escaping
+	gotBytes, gotErr := json.Marshal(factory)
+
+	assert.Equal(test, []byte(`"\u003cclass Test\u003e"`), gotBytes)
+	assert.NoError(test, gotErr)
 }
 
 func TestActorFactory_CreateActor(test *testing.T) {

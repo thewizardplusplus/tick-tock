@@ -60,6 +60,11 @@ func (factory ActorFactory) String() string {
 	return fmt.Sprintf("<class %s>", factory.name)
 }
 
+// MarshalText ...
+func (factory ActorFactory) MarshalText() (text []byte, err error) {
+	return []byte(factory.String()), nil
+}
+
 // CreateActor ...
 func (factory ActorFactory) CreateActor() *Actor {
 	return &Actor{factory.states, factory.initialState}
