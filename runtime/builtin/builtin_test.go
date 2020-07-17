@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
@@ -509,6 +510,24 @@ func TestValues(test *testing.T) {
 				),
 			}),
 			wantResult: types.NewPairFromText("list"),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "type/success/actor class",
+			additionalDefinitions: context.ValueGroup{
+				"Test": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+			},
+			expression: expressions.NewFunctionCall("type", []expressions.Expression{
+				expressions.NewIdentifier("Test"),
+			}),
+			wantResult: types.NewPairFromText("class"),
 			wantErr:    assert.NoError,
 		},
 		{

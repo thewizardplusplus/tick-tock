@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 	"github.com/thewizardplusplus/tick-tock/translator"
@@ -161,6 +162,8 @@ var (
 				name = "num"
 			case *types.Pair:
 				name = "list"
+			case runtime.ConcurrentActorFactory:
+				name = "class"
 			default:
 				return nil, errors.Errorf("unsupported type %T of the argument #0 for the function type", value)
 			}
