@@ -249,23 +249,6 @@ func TestConcurrentActorFactory(test *testing.T) {
 	assert.Equal(test, want, got)
 }
 
-func TestConcurrentActorFactory_Name(test *testing.T) {
-	actorFactory := ActorFactory{
-		name:         "Test",
-		states:       StateGroup{"state_0": {}, "state_1": {}},
-		initialState: context.State{Name: "state_0"},
-	}
-	dependencies := Dependencies{
-		Waiter:       new(waitermocks.Waiter),
-		ErrorHandler: new(runtimemocks.ErrorHandler),
-	}
-	factory := NewConcurrentActorFactory(actorFactory, 23, dependencies)
-	got := factory.Name()
-
-	mock.AssertExpectationsForObjects(test, dependencies.Waiter, dependencies.ErrorHandler)
-	assert.Equal(test, "Test", got)
-}
-
 func TestNewConcurrentActorGroup(test *testing.T) {
 	contextFirstCopy := new(contextmocks.Context)
 	contextFirstCopy.

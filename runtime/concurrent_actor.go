@@ -45,7 +45,8 @@ func (actor ConcurrentActor) SendMessage(message context.Message) {
 
 // ConcurrentActorFactory ...
 type ConcurrentActorFactory struct {
-	actorFactory ActorFactory
+	ActorFactory
+
 	inboxSize    int
 	dependencies Dependencies
 }
@@ -59,14 +60,9 @@ func NewConcurrentActorFactory(
 	return ConcurrentActorFactory{actorFactory, inboxSize, dependencies}
 }
 
-// Name ...
-func (factory ConcurrentActorFactory) Name() string {
-	return factory.actorFactory.Name()
-}
-
 // CreateActor ...
 func (factory ConcurrentActorFactory) CreateActor() ConcurrentActor {
-	actor := factory.actorFactory.CreateActor()
+	actor := factory.ActorFactory.CreateActor()
 	inbox := make(inbox, factory.inboxSize) // nolint: vetshadow
 	return ConcurrentActor{actor, inbox, factory.dependencies}
 }
