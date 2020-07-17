@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thewizardplusplus/tick-tock/runtime"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -73,6 +75,21 @@ func TestNewBoolean(test *testing.T) {
 			name:       "success/*Pair/empty",
 			args:       args{(*types.Pair)(nil)},
 			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/actor class",
+			args: args{
+				value: func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+			},
+			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
