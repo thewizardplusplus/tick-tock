@@ -1,9 +1,10 @@
-package types
+package types_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 func TestBoolean(test *testing.T) {
@@ -13,15 +14,15 @@ func TestBoolean(test *testing.T) {
 	}{
 		{
 			name:  "true",
-			value: True,
+			value: types.True,
 		},
 		{
 			name:  "false",
-			value: False,
+			value: types.False,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			assert.IsType(test, Boolean(0), data.value)
+			assert.IsType(test, types.Boolean(0), data.value)
 			assert.IsType(test, float64(0), data.value)
 		})
 	}
@@ -35,54 +36,54 @@ func TestNewBoolean(test *testing.T) {
 	for _, data := range []struct {
 		name       string
 		args       args
-		wantResult Boolean
+		wantResult types.Boolean
 		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
 			name:       "success/nil",
-			args:       args{Nil{}},
-			wantResult: False,
+			args:       args{types.Nil{}},
+			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "success/float64/greater than zero",
 			args:       args{23.0},
-			wantResult: True,
+			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "success/float64/less than zero",
 			args:       args{-23.0},
-			wantResult: True,
+			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "success/float64/equal to zero",
 			args:       args{0.0},
-			wantResult: False,
+			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "success/*Pair/nonempty",
-			args:       args{&Pair{"one", &Pair{"two", nil}}},
-			wantResult: True,
+			args:       args{&types.Pair{Head: "one", Tail: &types.Pair{Head: "two", Tail: nil}}},
+			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "success/*Pair/empty",
-			args:       args{(*Pair)(nil)},
-			wantResult: False,
+			args:       args{(*types.Pair)(nil)},
+			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "error",
 			args:       args{func() {}},
-			wantResult: False,
+			wantResult: types.False,
 			wantErr:    assert.Error,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotResult, gotErr := NewBoolean(data.args.value)
+			gotResult, gotErr := types.NewBoolean(data.args.value)
 
 			assert.Equal(test, data.wantResult, gotResult)
 			data.wantErr(test, gotErr)
@@ -98,21 +99,21 @@ func TestNewBooleanFromGoBool(test *testing.T) {
 	for _, data := range []struct {
 		name string
 		args args
-		want Boolean
+		want types.Boolean
 	}{
 		{
 			name: "true",
 			args: args{true},
-			want: True,
+			want: types.True,
 		},
 		{
 			name: "false",
 			args: args{false},
-			want: False,
+			want: types.False,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			got := NewBooleanFromGoBool(data.args.value)
+			got := types.NewBooleanFromGoBool(data.args.value)
 
 			assert.Equal(test, data.want, got)
 		})
@@ -121,27 +122,27 @@ func TestNewBooleanFromGoBool(test *testing.T) {
 
 func TestNegateBoolean(test *testing.T) {
 	type args struct {
-		value Boolean
+		value types.Boolean
 	}
 
 	for _, data := range []struct {
 		name string
 		args args
-		want Boolean
+		want types.Boolean
 	}{
 		{
 			name: "true",
-			args: args{True},
-			want: False,
+			args: args{types.True},
+			want: types.False,
 		},
 		{
 			name: "false",
-			args: args{False},
-			want: True,
+			args: args{types.False},
+			want: types.True,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			got := NegateBoolean(data.args.value)
+			got := types.NegateBoolean(data.args.value)
 
 			assert.Equal(test, data.want, got)
 		})
