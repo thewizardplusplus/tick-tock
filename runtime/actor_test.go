@@ -261,6 +261,17 @@ func TestActorFactory_Name(test *testing.T) {
 	assert.Equal(test, "Test", got)
 }
 
+func TestActorFactory_String(test *testing.T) {
+	factory := ActorFactory{
+		name:         "Test",
+		states:       StateGroup{"state_0": {}, "state_1": {}},
+		initialState: context.State{Name: "state_0"},
+	}
+	got := factory.String()
+
+	assert.Equal(test, "<class Test>", got)
+}
+
 func TestActorFactory_CreateActor(test *testing.T) {
 	factory := ActorFactory{
 		name:         "Test",

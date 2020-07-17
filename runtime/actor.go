@@ -1,6 +1,8 @@
 package runtime
 
 import (
+	"fmt"
+
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
@@ -51,6 +53,11 @@ func NewActorFactory(
 // Name ...
 func (factory ActorFactory) Name() string {
 	return factory.name
+}
+
+// Name ...
+func (factory ActorFactory) String() string {
+	return fmt.Sprintf("<class %s>", factory.name)
 }
 
 // CreateActor ...
