@@ -928,6 +928,60 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "str/success/*types.Pair/with the actor class",
+			additionalDefinitions: context.ValueGroup{
+				"Test": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+			},
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.ListConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewNumber(12),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewIdentifier("Test"),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewNumber(42),
+										expressions.NewIdentifier(translator.EmptyListConstantName),
+									},
+								),
+							},
+						),
+					},
+				),
+			}),
+			wantResult: types.NewPairFromText(`[12,"<class Test>",42]`),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "str/success/actor class",
+			additionalDefinitions: context.ValueGroup{
+				"Test": func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+			},
+			expression: expressions.NewFunctionCall("str", []expressions.Expression{
+				expressions.NewIdentifier("Test"),
+			}),
+			wantResult: types.NewPairFromText("<class Test>"),
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "str/error/JSON marshalling",
 			expression: expressions.NewFunctionCall("str", []expressions.Expression{
 				expressions.NewFunctionCall(

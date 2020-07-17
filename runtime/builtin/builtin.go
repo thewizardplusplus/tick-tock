@@ -2,6 +2,7 @@ package builtin
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -271,13 +272,21 @@ var (
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair:
+				var buffer bytes.Buffer
+				encoder := json.NewEncoder(&buffer)
+				encoder.SetEscapeHTML(false)
+
 				items := typedValue.DeepSlice()
-				textBytes, err := json.Marshal(items)
-				if err != nil {
+				if err := encoder.Encode(items); err != nil {
 					return nil, errors.Wrap(err, "unable to marshal the list to JSON")
 				}
 
+				textBytes := buffer.Bytes()
+				textBytes = textBytes[:len(textBytes)-1] // remove the line break
+
 				text = string(textBytes)
+			case runtime.ConcurrentActorFactory:
+				text = typedValue.String()
 			default:
 				return nil, errors.Errorf(
 					"unsupported type %T of the argument #0 for the function str",
