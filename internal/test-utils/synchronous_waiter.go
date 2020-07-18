@@ -8,28 +8,28 @@ import (
 
 // SynchronousWaiter ...
 type SynchronousWaiter struct {
+	actual sync.WaitGroup
 	mock   waiter.Waiter
-	syncer *sync.WaitGroup
 }
 
 // NewSynchronousWaiter ...
-func NewSynchronousWaiter(waiter waiter.Waiter) SynchronousWaiter {
-	return SynchronousWaiter{waiter, new(sync.WaitGroup)}
+func NewSynchronousWaiter(mock waiter.Waiter) *SynchronousWaiter {
+	return &SynchronousWaiter{mock: mock}
 }
 
 // Add ...
-func (waiter SynchronousWaiter) Add(delta int) {
+func (waiter *SynchronousWaiter) Add(delta int) {
+	waiter.actual.Add(delta)
 	waiter.mock.Add(delta)
-	waiter.syncer.Add(delta)
 }
 
 // Done ...
-func (waiter SynchronousWaiter) Done() {
+func (waiter *SynchronousWaiter) Done() {
+	waiter.actual.Done()
 	waiter.mock.Done()
-	waiter.syncer.Done()
 }
 
 // Wait ...
-func (waiter SynchronousWaiter) Wait() {
-	waiter.syncer.Wait()
+func (waiter *SynchronousWaiter) Wait() {
+	waiter.actual.Wait()
 }
