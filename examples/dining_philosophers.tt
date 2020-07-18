@@ -2,6 +2,7 @@ class Fork
   state __initialization__()
     message initialize_fork(current_fork)
       set free(current_fork)
+      send __initialize__()
     ;
   ;
 
@@ -33,7 +34,7 @@ class Philosopher
   state __initialization__()
     message initialize_philosopher(current_philosopher, left_fork, right_fork)
       set thinking(current_philosopher, left_fork, right_fork)
-      send start_thinking(current_philosopher, left_fork, right_fork)
+      send __initialize__()
     ;
   ;
 
@@ -119,23 +120,32 @@ class Philosopher
 ;
 
 actor Main
-  state __initialization__()
+  state __initialization__(started_actors)
     message __initialize__()
-      // left fork
-      start Fork
-      send initialize_fork("left")
+      let started_actors = started_actors || 0
+      when
+        => started_actors == 0
+          // left fork
+          start Fork
+          send initialize_fork("left")
+        => started_actors == 1
+          // right fork
+          start Fork
+          send initialize_fork("right")
+        => started_actors == 2
+          // philosopher John
+          start Philosopher
+          send initialize_philosopher("John", "left", "right")
+        => started_actors == 3
+          // philosopher Jane
+          start Philosopher
+          send initialize_philosopher("Jane", "right", "left")
+        => started_actors == 4
+          send start_thinking("John")
+          send start_thinking("Jane")
+      ;
 
-      // right fork
-      start Fork
-      send initialize_fork("right")
-
-      // philosopher John
-      start Philosopher
-      send initialize_philosopher("John", "left", "right")
-
-      // philosopher Jane
-      start Philosopher
-      send initialize_philosopher("Jane", "right", "left")
+      set __initialization__(started_actors + 1)
     ;
   ;
 ;
