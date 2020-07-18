@@ -1,8 +1,6 @@
 package types
 
 import (
-	"reflect"
-
 	"github.com/pkg/errors"
 )
 
@@ -19,8 +17,7 @@ const (
 
 // NewBoolean ...
 func NewBoolean(value interface{}) (Boolean, error) {
-	// can't use the type switch for this type because it occurs an import cycle
-	if reflect.TypeOf(value).Name() == "ConcurrentActorFactory" {
+	if isActorClass(value) {
 		return True, nil
 	}
 
