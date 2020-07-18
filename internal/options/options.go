@@ -12,7 +12,7 @@ import (
 
 // ...
 const (
-	Version = "v1.4"
+	Version = "v1.5"
 
 	DefaultInboxSize      = 10
 	DefaultInitialState   = "__initialization__"
