@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thewizardplusplus/tick-tock/runtime"
+	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -29,10 +31,56 @@ func TestEquals(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "success/equal/actor class",
+			args: args{
+				leftValue: func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+				rightValue: func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+			},
+			wantResult: assert.True,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "success/not equal/same types",
 			args: args{
 				leftValue:  23.0,
 				rightValue: 42.0,
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/not equal/same types/actor class",
+			args: args{
+				leftValue: func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test_1",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
+				rightValue: func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test_2",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
 			},
 			wantResult: assert.False,
 			wantErr:    assert.NoError,
@@ -59,6 +107,22 @@ func TestEquals(test *testing.T) {
 			name: "success/not equal/different types/*Pair",
 			args: args{
 				leftValue:  &types.Pair{Head: 12.0, Tail: &types.Pair{Head: 23.0, Tail: nil}},
+				rightValue: types.Nil{},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/not equal/different types/actor class",
+			args: args{
+				leftValue: func() runtime.ConcurrentActorFactory {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.StateGroup{"state_0": runtime.NewParameterizedMessageGroup(nil, nil)},
+						context.State{Name: "state_0"},
+					)
+					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+				}(),
 				rightValue: types.Nil{},
 			},
 			wantResult: assert.False,

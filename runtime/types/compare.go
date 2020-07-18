@@ -16,6 +16,14 @@ const (
 
 // Equals ...
 func Equals(leftValue interface{}, rightValue interface{}) (bool, error) {
+	if isActorClass(leftValue) {
+		if !isActorClass(rightValue) {
+			return false, nil
+		}
+
+		return getActorClassName(leftValue) == getActorClassName(rightValue), nil
+	}
+
 	// if operands have different types, they aren't equal
 	switch leftValue.(type) {
 	case Nil:
