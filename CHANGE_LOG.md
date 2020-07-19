@@ -1,5 +1,25 @@
 # Change Log
 
+## [v1.5](https://github.com/thewizardplusplus/tick-tock/tree/v1.5) (2020-07-19)
+
+- support actor classes;
+- refactoring:
+  - improve marshalling to JSON of the `types.Nil` type;
+  - refactor tests of the `runtime` package;
+  - remove `testutils.UnbufferedInbox` and `testutils.BufferedInbox` constants;
+- fix code style:
+  - of the `context` package;
+  - of the `runtime` package;
+  - of the `testutils` package;
+- рантайм:
+  - функции:
+    - функции для работы с классами акторов:
+      - `name(actorClass: class): str` &mdash; возвращает имя класса акторов `actorClass`;
+- examples:
+  - improve the example with dining philosophers;
+  - fix the comment in the example with pi evaluation;
+  - improve the example with ping-pong.
+
 ## [v1.4](https://github.com/thewizardplusplus/tick-tock/tree/v1.4) (2020-06-24)
 
 - support state parameters;
