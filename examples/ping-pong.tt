@@ -1,20 +1,19 @@
 class Ticker
   state __initialization__()
     message start_ticking(in_kind, out_kind)
-      set ticking(in_kind, out_kind)
+      set ticking(out_kind + "er", in_kind, out_kind)
       send __initialize__()
     ;
   ;
 
-  state ticking(in_kind, out_kind)
+  state ticking(current_ticker, in_kind, out_kind)
     message tick(kind)
       when => kind != in_kind return;
 
-      let ticker_name = "ticker(" + in_kind + ")"
-      outln(ticker_name + " received " + in_kind)
+      outln(current_ticker + " received " + in_kind)
       sleep(0.5)
 
-      outln(ticker_name + " sent " + out_kind)
+      outln(current_ticker + " sent " + out_kind)
       send tick(out_kind)
     ;
   ;
