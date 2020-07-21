@@ -55,8 +55,9 @@ type LetCommand struct {
 
 // StartCommand ...
 type StartCommand struct {
-	Name       *string     `parser:"\"start\" ( @Ident"`
-	Expression *Expression `parser:"| \"[\" @@ \"]\" )"`
+	Name       *string       `parser:"\"start\" ( @Ident"`
+	Expression *Expression   `parser:"| \"[\" @@ \"]\" )"`
+	Arguments  []*Expression `parser:"\"(\" [ @@ { \",\" @@ } [ \",\" ] ] \")\""`
 }
 
 // SendCommand ...

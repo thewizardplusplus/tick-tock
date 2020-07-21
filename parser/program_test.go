@@ -47,14 +47,198 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Command/start/identifier",
-			args:    args{"start Test", new(Command)},
+			name:    "Command/start/identifier/no arguments",
+			args:    args{"start Test()", new(Command)},
 			wantAST: &Command{Start: &StartCommand{Name: pointer.ToString("Test")}},
 			wantErr: assert.NoError,
 		},
 		{
+			name: "Command/start/identifier/single argument",
+			args: args{"start Test(12)", new(Command)},
+			wantAST: &Command{
+				Start: &StartCommand{
+					Name: pointer.ToString("Test"),
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/start/identifier/single argument/trailing comma",
+			args: args{"start Test(12,)", new(Command)},
+			wantAST: &Command{
+				Start: &StartCommand{
+					Name: pointer.ToString("Test"),
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/start/identifier/few arguments",
+			args: args{"start Test(12, 23, 42)", new(Command)},
+			wantAST: &Command{
+				Start: &StartCommand{
+					Name: pointer.ToString("Test"),
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Command/start/identifier/few arguments/trailing comma",
+			args: args{"start Test(12, 23, 42,)", new(Command)},
+			wantAST: &Command{
+				Start: &StartCommand{
+					Name: pointer.ToString("Test"),
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								Disjunction: &Disjunction{
+									Conjunction: &Conjunction{
+										Equality: &Equality{
+											Comparison: &Comparison{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "Command/start/expression",
-			args: args{"start [test()]", new(Command)},
+			args: args{"start [test()]()", new(Command)},
 			wantAST: &Command{
 				Start: &StartCommand{
 					Expression: &Expression{
