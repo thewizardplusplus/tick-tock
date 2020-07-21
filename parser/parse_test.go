@@ -19,9 +19,9 @@ func TestParse(test *testing.T) {
 	}{
 		{
 			name: "success",
-			args: args{"actor One; actor Two;"},
+			args: args{"actor One(); actor Two();"},
 			want: &Program{
-				Definitions: []*Definition{{Actor: &Actor{"One", nil}}, {Actor: &Actor{"Two", nil}}},
+				Definitions: []*Definition{{Actor: &Actor{"One", nil, nil}}, {Actor: &Actor{"Two", nil, nil}}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -77,7 +77,7 @@ func TestParseToAST(test *testing.T) {
 		{
 			name: "comment/line",
 			args: args{
-				code: "actor One;\n// actor Two;\nactor Three;",
+				code: "actor One();\n// actor Two();\nactor Three();",
 				ast:  new(Program),
 			},
 			wantAST: &Program{
@@ -88,7 +88,7 @@ func TestParseToAST(test *testing.T) {
 		{
 			name: "comment/block",
 			args: args{
-				code: "actor One; /* actor Two; */ actor Three;",
+				code: "actor One(); /* actor Two(); */ actor Three();",
 				ast:  new(Program),
 			},
 			wantAST: &Program{

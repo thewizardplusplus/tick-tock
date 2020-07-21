@@ -776,15 +776,39 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Actor/nonempty",
-			args:    args{"actor Main state one(); state two();;", new(Actor)},
-			wantAST: &Actor{"Main", []*State{{"one", nil, nil}, {"two", nil, nil}}},
+			name:    "Actor/nonempty/no parameters",
+			args:    args{"actor Main() state one(); state two();;", new(Actor)},
+			wantAST: &Actor{"Main", nil, []*State{{"one", nil, nil}, {"two", nil, nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Actor/nonempty/single parameter",
+			args:    args{"actor Main(x) state one(); state two();;", new(Actor)},
+			wantAST: &Actor{"Main", []string{"x"}, []*State{{"one", nil, nil}, {"two", nil, nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Actor/nonempty/single parameter/trailing comma",
+			args:    args{"actor Main(x,) state one(); state two();;", new(Actor)},
+			wantAST: &Actor{"Main", []string{"x"}, []*State{{"one", nil, nil}, {"two", nil, nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Actor/nonempty/few parameters",
+			args:    args{"actor Main(x, y, z) state one(); state two();;", new(Actor)},
+			wantAST: &Actor{"Main", []string{"x", "y", "z"}, []*State{{"one", nil, nil}, {"two", nil, nil}}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Actor/nonempty/few parameters/trailing comma",
+			args:    args{"actor Main(x, y, z,) state one(); state two();;", new(Actor)},
+			wantAST: &Actor{"Main", []string{"x", "y", "z"}, []*State{{"one", nil, nil}, {"two", nil, nil}}},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Actor/empty",
-			args:    args{"actor Main;", new(Actor)},
-			wantAST: &Actor{"Main", nil},
+			args:    args{"actor Main();", new(Actor)},
+			wantAST: &Actor{"Main", nil, nil},
 			wantErr: assert.NoError,
 		},
 		{
@@ -833,8 +857,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 		},
 		{
 			name:    "Definition/actor",
-			args:    args{"actor Main state one(); state two();;", new(Definition)},
-			wantAST: &Definition{Actor: &Actor{"Main", []*State{{"one", nil, nil}, {"two", nil, nil}}}},
+			args:    args{"actor Main() state one(); state two();;", new(Definition)},
+			wantAST: &Definition{Actor: &Actor{"Main", nil, []*State{{"one", nil, nil}, {"two", nil, nil}}}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -847,9 +871,9 @@ func TestParseToAST_withProgram(test *testing.T) {
 		},
 		{
 			name: "Program/nonempty",
-			args: args{"actor One; actor Two;", new(Program)},
+			args: args{"actor One(); actor Two();", new(Program)},
 			wantAST: &Program{
-				Definitions: []*Definition{{Actor: &Actor{"One", nil}}, {Actor: &Actor{"Two", nil}}},
+				Definitions: []*Definition{{Actor: &Actor{"One", nil, nil}}, {Actor: &Actor{"Two", nil, nil}}},
 			},
 			wantErr: assert.NoError,
 		},
