@@ -19,8 +19,9 @@ type Actor struct {
 
 // ActorClass ...
 type ActorClass struct {
-	Name   string   `parser:"\"class\" @Ident"`
-	States []*State `parser:"{ @@ } \";\""`
+	Name       string   `parser:"\"class\" @Ident"`
+	Parameters []string `parser:"\"(\" [ @Ident { \",\" @Ident } [ \",\" ] ] \")\""`
+	States     []*State `parser:"{ @@ } \";\""`
 }
 
 // State ...
