@@ -25,3 +25,35 @@ func (states StateGroup) ProcessMessage(
 
 	return nil
 }
+
+// ParameterizedStateGroup ...
+type ParameterizedStateGroup struct {
+	parameters []string
+	states     StateGroup
+}
+
+// NewParameterizedStateGroup ...
+func NewParameterizedStateGroup(parameters []string, states StateGroup) ParameterizedStateGroup {
+	return ParameterizedStateGroup{parameters, states}
+}
+
+// ParameterizedProcessMessage ...
+func (parameterizedStates ParameterizedStateGroup) ParameterizedProcessMessage(
+	ctx context.Context,
+	arguments []interface{},
+	state context.State,
+	message context.Message,
+) error {
+	if _, ok := parameterizedStates.states[state.Name]; !ok {
+		return newUnknownStateError(state)
+	}
+
+	values := context.ZipValues(parameterizedStates.parameters, arguments)
+	context.SetValues(ctx, values)
+
+	if err := parameterizedStates.states.ProcessMessage(ctx, state, message); err != nil {
+		return errors.Wrap(err, "unable to process parameterized states")
+	}
+
+	return nil
+}
