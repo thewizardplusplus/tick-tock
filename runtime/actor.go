@@ -23,11 +23,8 @@ func (actor *Actor) SetState(state context.State) error {
 }
 
 // ProcessMessage ...
-func (actor *Actor) ProcessMessage(context context.Context, message context.Message) error {
-	contextCopy := context.Copy()
-	contextCopy.SetStateHolder(actor)
-
-	return actor.states.ProcessMessage(contextCopy, actor.currentState, message)
+func (actor Actor) ProcessMessage(context context.Context, message context.Message) error {
+	return actor.states.ProcessMessage(context, actor.currentState, message)
 }
 
 // ActorFactory ...

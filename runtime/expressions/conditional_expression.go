@@ -37,9 +37,9 @@ func (expression ConditionalExpression) Evaluate(
 		if err != nil {
 			return nil, errors.Wrapf(err, "unable to convert the condition #%d to boolean", index)
 		}
+
 		if conditionBooleanResult == types.True {
-			contextCopy := context.Copy()
-			commandResult, err := conditionalCase.Command.Run(contextCopy)
+			commandResult, err := conditionalCase.Command.Run(context.Copy())
 			if err != nil {
 				return nil, errors.Wrapf(err, "unable to evaluate the command of the condition #%d", index)
 			}

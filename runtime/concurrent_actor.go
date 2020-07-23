@@ -24,8 +24,11 @@ type ConcurrentActor struct {
 
 // Start ...
 func (actor ConcurrentActor) Start(context context.Context) {
+	context = context.Copy()
+	context.SetStateHolder(actor.innerActor)
+
 	for message := range actor.inbox {
-		if err := actor.innerActor.ProcessMessage(context, message); err != nil {
+		if err := actor.innerActor.ProcessMessage(context.Copy(), message); err != nil {
 			actor.dependencies.ErrorHandler.HandleError(err)
 		}
 
@@ -76,8 +79,7 @@ type ConcurrentActorGroup struct {
 
 // NewConcurrentActorGroup ...
 func NewConcurrentActorGroup(context context.Context) *ConcurrentActorGroup {
-	contextCopy := context.Copy()
-	group := &ConcurrentActorGroup{context: contextCopy}
+	group := &ConcurrentActorGroup{context: context.Copy()}
 	group.context.SetMessageSender(group)
 	group.context.SetActorRegister(group)
 
