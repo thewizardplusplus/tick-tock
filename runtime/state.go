@@ -8,18 +8,24 @@ import (
 // StateGroup ...
 type StateGroup map[string]ParameterizedMessageGroup
 
+// Contains ...
+func (states StateGroup) Contains(state context.State) bool {
+	_, ok := states[state.Name]
+	return ok
+}
+
 // ProcessMessage ...
 func (states StateGroup) ProcessMessage(
 	context context.Context,
 	state context.State,
 	message context.Message,
 ) error {
-	messages, ok := states[state.Name]
-	if !ok {
+	if !states.Contains(state) {
 		return newUnknownStateError(state)
 	}
 
-	if err := messages.ParameterizedProcessMessage(context, state.Arguments, message); err != nil {
+	err := states[state.Name].ParameterizedProcessMessage(context, state.Arguments, message)
+	if err != nil {
 		return errors.Wrapf(err, "unable to process the state %s", state.Name)
 	}
 
@@ -28,13 +34,14 @@ func (states StateGroup) ProcessMessage(
 
 // ParameterizedStateGroup ...
 type ParameterizedStateGroup struct {
+	StateGroup
+
 	parameters []string
-	states     StateGroup
 }
 
 // NewParameterizedStateGroup ...
 func NewParameterizedStateGroup(parameters []string, states StateGroup) ParameterizedStateGroup {
-	return ParameterizedStateGroup{parameters, states}
+	return ParameterizedStateGroup{states, parameters}
 }
 
 // ParameterizedProcessMessage ...
@@ -44,14 +51,14 @@ func (parameterizedStates ParameterizedStateGroup) ParameterizedProcessMessage(
 	state context.State,
 	message context.Message,
 ) error {
-	if _, ok := parameterizedStates.states[state.Name]; !ok {
+	if !parameterizedStates.Contains(state) {
 		return newUnknownStateError(state)
 	}
 
 	values := context.ZipValues(parameterizedStates.parameters, arguments)
 	context.SetValues(ctx, values)
 
-	if err := parameterizedStates.states.ProcessMessage(ctx, state, message); err != nil {
+	if err := parameterizedStates.StateGroup.ProcessMessage(ctx, state, message); err != nil {
 		return errors.Wrap(err, "unable to process parameterized states")
 	}
 

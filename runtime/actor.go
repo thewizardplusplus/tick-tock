@@ -14,7 +14,7 @@ type Actor struct {
 
 // SetState ...
 func (actor *Actor) SetState(state context.State) error {
-	if _, ok := actor.states[state.Name]; !ok {
+	if !actor.states.Contains(state) {
 		return newUnknownStateError(state)
 	}
 
@@ -43,7 +43,7 @@ func NewActorFactory(
 	states StateGroup,
 	initialState context.State,
 ) (ActorFactory, error) {
-	if _, ok := states[initialState.Name]; !ok {
+	if !states.Contains(initialState) {
 		return ActorFactory{}, newUnknownStateError(initialState)
 	}
 
