@@ -10,7 +10,7 @@ type ActorRegister struct {
 	mock.Mock
 }
 
-// RegisterActor provides a mock function with given fields: actor
-func (_m *ActorRegister) RegisterActor(actor context.Actor) {
-	_m.Called(actor)
+// RegisterActor provides a mock function with given fields: actor, arguments
+func (_m *ActorRegister) RegisterActor(actor context.Actor, arguments []interface{}) {
+	_m.Called(actor, arguments)
 }

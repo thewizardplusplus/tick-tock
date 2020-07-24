@@ -28,13 +28,13 @@ type StateHolder interface {
 type Actor interface {
 	MessageSender
 
-	Start(context Context)
+	Start(context Context, arguments []interface{})
 }
 
 // ActorRegister ...
 //go:generate mockery -name=ActorRegister -case=underscore
 type ActorRegister interface {
-	RegisterActor(actor Actor)
+	RegisterActor(actor Actor, arguments []interface{})
 }
 
 // Context ...

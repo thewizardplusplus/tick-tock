@@ -27,9 +27,9 @@ func (_m *Context) Copy() context.Context {
 	return r0
 }
 
-// RegisterActor provides a mock function with given fields: actor
-func (_m *Context) RegisterActor(actor context.Actor) {
-	_m.Called(actor)
+// RegisterActor provides a mock function with given fields: actor, arguments
+func (_m *Context) RegisterActor(actor context.Actor, arguments []interface{}) {
+	_m.Called(actor, arguments)
 }
 
 // SendMessage provides a mock function with given fields: message
