@@ -857,12 +857,12 @@ func TestTranslateStates(test *testing.T) {
 			},
 			wantStates: runtime.StateGroup{
 				"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
-					"message_0": runtime.NewParameterizedCommandGroup(nil, nil),
-					"message_1": runtime.NewParameterizedCommandGroup(nil, nil),
+					"message_0": {},
+					"message_1": {},
 				}),
 				"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
-					"message_2": runtime.NewParameterizedCommandGroup(nil, nil),
-					"message_3": runtime.NewParameterizedCommandGroup(nil, nil),
+					"message_2": {},
+					"message_3": {},
 				}),
 			},
 			wantErr: assert.NoError,
@@ -1247,10 +1247,7 @@ func TestTranslateMessages(test *testing.T) {
 				messages:            []*parser.Message{{Name: "message_0"}, {Name: "message_1"}},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantMessages: runtime.MessageGroup{
-				"message_0": runtime.NewParameterizedCommandGroup(nil, nil),
-				"message_1": runtime.NewParameterizedCommandGroup(nil, nil),
-			},
+			wantMessages: runtime.MessageGroup{"message_0": {}, "message_1": {}},
 			wantSettedStatesByMessages: settedStateGroup{
 				"message_0": mapset.NewSet(),
 				"message_1": mapset.NewSet(),
