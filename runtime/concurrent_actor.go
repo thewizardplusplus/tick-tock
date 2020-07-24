@@ -28,7 +28,7 @@ func (actor ConcurrentActor) Start(context context.Context) {
 	context.SetStateHolder(actor.innerActor)
 
 	for message := range actor.inbox {
-		if err := actor.innerActor.ProcessMessage(context.Copy(), message); err != nil {
+		if err := actor.innerActor.ProcessMessage(context.Copy(), nil, message); err != nil {
 			actor.dependencies.ErrorHandler.HandleError(err)
 		}
 

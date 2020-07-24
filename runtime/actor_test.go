@@ -79,8 +79,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 		currentState context.State
 	}
 	type args struct {
-		context context.Context
-		message context.Message
+		context   context.Context
+		arguments []interface{}
+		message   context.Message
 	}
 
 	for _, testData := range []struct {
@@ -100,8 +101,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: context.State{Name: "state_1"},
 			},
 			args: args{
-				context: new(mocks.Context),
-				message: context.Message{Name: "message_3"},
+				context:   new(mocks.Context),
+				arguments: nil,
+				message:   context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
@@ -127,7 +129,8 @@ func TestActor_ProcessMessage(test *testing.T) {
 
 					return context
 				}(),
-				message: context.Message{Name: "message_3"},
+				arguments: nil,
+				message:   context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
@@ -157,6 +160,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 
 					return context
 				}(),
+				arguments: nil,
 				message: context.Message{
 					Name:      "message_3",
 					Arguments: []interface{}{23, 42},
@@ -175,8 +179,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: context.State{Name: "state_1"},
 			},
 			args: args{
-				context: new(mocks.Context),
-				message: context.Message{Name: "message_3"},
+				context:   new(mocks.Context),
+				arguments: nil,
+				message:   context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17},
 			wantErr: assert.Error,
@@ -187,7 +192,11 @@ func TestActor_ProcessMessage(test *testing.T) {
 			states := testData.fields.makeStates(testData.args.context, &log)
 			actor := Actor{states, testData.fields.currentState}
 
-			err := actor.ProcessMessage(testData.args.context, testData.args.message)
+			err := actor.ProcessMessage(
+				testData.args.context,
+				testData.args.arguments,
+				testData.args.message,
+			)
 
 			mock.AssertExpectationsForObjects(test, testData.args.context)
 			checkStates(test, states.StateGroup)

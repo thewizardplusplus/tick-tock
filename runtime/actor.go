@@ -23,8 +23,12 @@ func (actor *Actor) SetState(state context.State) error {
 }
 
 // ProcessMessage ...
-func (actor Actor) ProcessMessage(context context.Context, message context.Message) error {
-	return actor.states.ProcessMessage(context, actor.currentState, message)
+func (actor Actor) ProcessMessage(
+	context context.Context,
+	arguments []interface{},
+	message context.Message,
+) error {
+	return actor.states.ParameterizedProcessMessage(context, arguments, actor.currentState, message)
 }
 
 // ActorFactory ...
