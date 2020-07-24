@@ -204,6 +204,18 @@ func newLoggableStates(
 	return states
 }
 
+func newLoggableParameterizedStates(
+	context context.Context,
+	log *commandLog,
+	stateConfig groupConfig,
+	messageConfig groupConfig,
+	commandConfig groupConfig,
+	options loggableCommandOptions,
+) ParameterizedStateGroup {
+	states := newLoggableStates(context, log, stateConfig.size, messageConfig, commandConfig, options)
+	return NewParameterizedStateGroup(stateConfig.parameters, states)
+}
+
 func checkCommands(test *testing.T, commands CommandGroup) {
 	for _, command := range commands {
 		mock.AssertExpectationsForObjects(test, command.(loggableCommand).mock)
