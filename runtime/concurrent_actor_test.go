@@ -21,6 +21,7 @@ func TestConcurrentActor(test *testing.T) {
 	}
 	type args struct {
 		contextSecondCopy context.Context
+		arguments         []interface{}
 		messages          []context.Message
 	}
 
@@ -43,6 +44,7 @@ func TestConcurrentActor(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: new(contextmocks.Context),
+				arguments:         nil,
 				messages:          []context.Message{{Name: "message_2"}, {Name: "message_3"}},
 			},
 			errCount: 0,
@@ -60,6 +62,7 @@ func TestConcurrentActor(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: new(contextmocks.Context),
+				arguments:         nil,
 				messages:          []context.Message{{Name: "message_2"}, {Name: "message_3"}},
 			},
 			errCount: 0,
@@ -87,7 +90,8 @@ func TestConcurrentActor(test *testing.T) {
 
 					return context
 				}(),
-				messages: []context.Message{{Name: "message_2"}},
+				arguments: nil,
+				messages:  []context.Message{{Name: "message_2"}},
 			},
 			errCount: 0,
 			wantLog:  []int{10, 11, 12, 13, 14},
@@ -118,6 +122,7 @@ func TestConcurrentActor(test *testing.T) {
 
 					return context
 				}(),
+				arguments: nil,
 				messages: []context.Message{
 					{
 						Name:      "message_2",
@@ -139,6 +144,7 @@ func TestConcurrentActor(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: new(contextmocks.Context),
+				arguments:         nil,
 				messages:          nil,
 			},
 			errCount: 0,
@@ -156,6 +162,7 @@ func TestConcurrentActor(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: new(contextmocks.Context),
+				arguments:         nil,
 				messages:          []context.Message{{Name: "message_2"}, {Name: "message_3"}},
 			},
 			errCount: 2,
@@ -207,7 +214,7 @@ func TestConcurrentActor(test *testing.T) {
 					ErrorHandler: errorHandler,
 				},
 			}
-			go concurrentActor.Start(contextOriginal)
+			go concurrentActor.Start(contextOriginal, testData.args.arguments)
 			initializationWaiter.Wait()
 
 			for _, message := range testData.args.messages {
@@ -346,14 +353,15 @@ func TestConcurrentActorGroup(test *testing.T) {
 				actor := &Actor{states, args.currentState}
 				contextFirstCopy.On("SetStateHolder", actor).Return()
 
-				concurrentActors.RegisterActor(ConcurrentActor{
+				concurrentActor := ConcurrentActor{
 					innerActor: actor,
 					inbox:      make(inbox),
 					dependencies: Dependencies{
 						Waiter:       synchronousWaiter,
 						ErrorHandler: errorHandler,
 					},
-				})
+				}
+				concurrentActors.RegisterActor(concurrentActor, nil)
 			}
 
 			for _, message := range testData.messages {
@@ -381,6 +389,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 	}
 	type args struct {
 		contextSecondCopy context.Context
+		arguments         []interface{}
 		message           context.Message
 	}
 
@@ -411,7 +420,8 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 
 					return context
 				}(),
-				message: context.Message{Name: "message_2"},
+				arguments: nil,
+				message:   context.Message{Name: "message_2"},
 			},
 			wantLog: []int{10, 11, 12, 13, 14},
 		},
@@ -440,6 +450,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 
 					return context
 				}(),
+				arguments: nil,
 				message: context.Message{
 					Name:      "message_2",
 					Arguments: []interface{}{23, 42},
@@ -466,15 +477,16 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 
 			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
 			errorHandler := new(runtimemocks.ErrorHandler)
-			concurrentActors := &ConcurrentActorGroup{context: contextOriginal}
-			concurrentActors.RegisterActor(ConcurrentActor{
+			concurrentActor := ConcurrentActor{
 				innerActor: actor,
 				inbox:      make(inbox),
 				dependencies: Dependencies{
 					Waiter:       synchronousWaiter,
 					ErrorHandler: errorHandler,
 				},
-			})
+			}
+			concurrentActors := &ConcurrentActorGroup{context: contextOriginal}
+			concurrentActors.RegisterActor(concurrentActor, testData.args.arguments)
 			concurrentActors.SendMessage(testData.args.message)
 			synchronousWaiter.Wait()
 

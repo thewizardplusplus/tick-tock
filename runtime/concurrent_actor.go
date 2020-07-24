@@ -23,12 +23,12 @@ type ConcurrentActor struct {
 }
 
 // Start ...
-func (actor ConcurrentActor) Start(context context.Context) {
+func (actor ConcurrentActor) Start(context context.Context, arguments []interface{}) {
 	context = context.Copy()
 	context.SetStateHolder(actor.innerActor)
 
 	for message := range actor.inbox {
-		if err := actor.innerActor.ProcessMessage(context.Copy(), nil, message); err != nil {
+		if err := actor.innerActor.ProcessMessage(context.Copy(), arguments, message); err != nil {
 			actor.dependencies.ErrorHandler.HandleError(err)
 		}
 
@@ -87,12 +87,12 @@ func NewConcurrentActorGroup(context context.Context) *ConcurrentActorGroup {
 }
 
 // RegisterActor ...
-func (group *ConcurrentActorGroup) RegisterActor(actor context.Actor) {
+func (group *ConcurrentActorGroup) RegisterActor(actor context.Actor, arguments []interface{}) {
 	group.locker.Lock()
 	defer group.locker.Unlock()
 
 	group.actors = append(group.actors, actor)
-	go actor.Start(group.context)
+	go actor.Start(group.context, arguments)
 }
 
 // SendMessage ...

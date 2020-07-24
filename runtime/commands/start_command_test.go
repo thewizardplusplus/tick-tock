@@ -65,10 +65,14 @@ func TestStartCommand(test *testing.T) {
 
 					context := new(contextmocks.Context)
 					context.
-						On("RegisterActor", mock.MatchedBy(func(gotActor runtime.ConcurrentActor) bool {
-							cleanInbox(&gotActor)
-							return reflect.DeepEqual(wantActor, gotActor)
-						})).
+						On(
+							"RegisterActor",
+							mock.MatchedBy(func(gotActor runtime.ConcurrentActor) bool {
+								cleanInbox(&gotActor)
+								return reflect.DeepEqual(wantActor, gotActor)
+							}),
+							[]interface{}(nil),
+						).
 						Return()
 
 					return context

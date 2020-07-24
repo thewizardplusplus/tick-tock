@@ -34,7 +34,7 @@ func (command StartCommand) Run(context context.Context) (result interface{}, er
 	}
 
 	actor := typedActorFactory.CreateActor()
-	context.RegisterActor(actor)
+	context.RegisterActor(actor, nil)
 
 	return types.Nil{}, nil
 }
