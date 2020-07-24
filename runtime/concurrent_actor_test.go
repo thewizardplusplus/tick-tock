@@ -15,7 +15,7 @@ import (
 
 func TestConcurrentActor(test *testing.T) {
 	type fields struct {
-		makeStates   func(context context.Context, log *commandLog) StateGroup
+		makeStates   func(context context.Context, log *commandLog) ParameterizedStateGroup
 		currentState context.State
 		inbox        inbox
 	}
@@ -34,11 +34,9 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "success with messages (with an unbuffered inbox)",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
-						"message_2": {withCalls()},
-						"message_3": {withCalls()},
-					})
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					options := loggableCommandOptions{"message_2": {withCalls()}, "message_3": {withCalls()}}
+					return newLoggableParameterizedStates(context, log, group(2), group(2), group(5), options)
 				},
 				currentState: context.State{Name: "state_1"},
 				inbox:        make(inbox),
@@ -53,11 +51,9 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "success with messages (with a buffered inbox)",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
-						"message_2": {withCalls()},
-						"message_3": {withCalls()},
-					})
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					options := loggableCommandOptions{"message_2": {withCalls()}, "message_3": {withCalls()}}
+					return newLoggableParameterizedStates(context, log, group(2), group(2), group(5), options)
 				},
 				currentState: context.State{Name: "state_1"},
 				inbox:        make(inbox, 23),
@@ -72,11 +68,10 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "success with state arguments",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
 					messageConfig := parameterizedGroup(2, "one", "two")
-					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
-						"message_2": {withCalls()},
-					})
+					options := loggableCommandOptions{"message_2": {withCalls()}}
+					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
 				},
 				currentState: context.State{
 					Name:      "state_1",
@@ -100,11 +95,12 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "success with message arguments",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
 					messageConfig := parameterizedGroup(2, "one", "two")
-					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
+					options := loggableCommandOptions{
 						"message_2": {withParameters([]string{"two", "three"}), withCalls()},
-					})
+					}
+					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
 				},
 				currentState: context.State{
 					Name:      "state_1",
@@ -135,8 +131,8 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "success without messages",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, group(2), group(5), nil)
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					return newLoggableParameterizedStates(context, log, group(2), group(2), group(5), nil)
 				},
 				currentState: context.State{Name: "state_1"},
 				inbox:        make(inbox),
@@ -151,11 +147,9 @@ func TestConcurrentActor(test *testing.T) {
 		{
 			name: "error",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
-						"message_2": {withErrOn(2)},
-						"message_3": {withErrOn(2)},
-					})
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					options := loggableCommandOptions{"message_2": {withErrOn(2)}, "message_3": {withErrOn(2)}}
+					return newLoggableParameterizedStates(context, log, group(2), group(2), group(5), options)
 				},
 				currentState: context.State{Name: "state_1"},
 				inbox:        make(inbox),
@@ -229,7 +223,7 @@ func TestConcurrentActor(test *testing.T) {
 				processingWaiter,
 				errorHandler,
 			)
-			checkStates(test, states)
+			checkStates(test, states.StateGroup)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
 		})
 	}
@@ -238,7 +232,7 @@ func TestConcurrentActor(test *testing.T) {
 func TestConcurrentActorFactory(test *testing.T) {
 	actorFactory := ActorFactory{
 		name:         "Test",
-		states:       StateGroup{"state_0": {}, "state_1": {}},
+		states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 		initialState: context.State{Name: "state_0"},
 	}
 	dependencies := Dependencies{
@@ -255,7 +249,7 @@ func TestConcurrentActorFactory(test *testing.T) {
 
 	want := ConcurrentActor{
 		innerActor: &Actor{
-			states:       StateGroup{"state_0": {}, "state_1": {}},
+			states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 			currentState: context.State{Name: "state_0"},
 		},
 		dependencies: dependencies,
@@ -284,7 +278,7 @@ func TestNewConcurrentActorGroup(test *testing.T) {
 
 func TestConcurrentActorGroup(test *testing.T) {
 	type fields struct {
-		makeStates   func(context context.Context, log *commandLog) StateGroup
+		makeStates   func(context context.Context, log *commandLog) ParameterizedStateGroup
 		currentState context.State
 	}
 
@@ -298,20 +292,16 @@ func TestConcurrentActorGroup(test *testing.T) {
 			name: "success with actors",
 			fields: []fields{
 				{
-					makeStates: func(context context.Context, log *commandLog) StateGroup {
-						return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
-							"message_2": {withCalls()},
-							"message_3": {withCalls()},
-						})
+					makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+						options := loggableCommandOptions{"message_2": {withCalls()}, "message_3": {withCalls()}}
+						return newLoggableParameterizedStates(context, log, group(2), group(2), group(5), options)
 					},
 					currentState: context.State{Name: "state_1"},
 				},
 				{
-					makeStates: func(context context.Context, log *commandLog) StateGroup {
-						return newLoggableStates(context, log, 2, group(2), group(5, 20), loggableCommandOptions{
-							"message_2": {withCalls()},
-							"message_3": {withCalls()},
-						})
+					makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+						options := loggableCommandOptions{"message_2": {withCalls()}, "message_3": {withCalls()}}
+						return newLoggableParameterizedStates(context, log, group(2), group(2), group(5, 20), options)
 					},
 					currentState: context.State{Name: "state_1"},
 				},
@@ -351,7 +341,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			concurrentActors := &ConcurrentActorGroup{context: contextOriginal}
 			for _, args := range testData.fields {
 				states := args.makeStates(contextSecondCopy, &log)
-				defer checkStates(test, states)
+				defer checkStates(test, states.StateGroup)
 
 				actor := &Actor{states, args.currentState}
 				contextFirstCopy.On("SetStateHolder", actor).Return()
@@ -386,7 +376,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 
 func TestConcurrentActorGroup_withArguments(test *testing.T) {
 	type fields struct {
-		makeStates   func(context context.Context, log *commandLog) StateGroup
+		makeStates   func(context context.Context, log *commandLog) ParameterizedStateGroup
 		currentState context.State
 	}
 	type args struct {
@@ -403,11 +393,10 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 		{
 			name: "success with state arguments",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
 					messageConfig := parameterizedGroup(2, "one", "two")
-					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
-						"message_2": {withCalls()},
-					})
+					options := loggableCommandOptions{"message_2": {withCalls()}}
+					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
 				},
 				currentState: context.State{
 					Name:      "state_1",
@@ -429,11 +418,12 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 		{
 			name: "success with message arguments",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
 					messageConfig := parameterizedGroup(2, "one", "two")
-					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
+					options := loggableCommandOptions{
 						"message_2": {withParameters([]string{"two", "three"}), withCalls()},
-					})
+					}
+					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
 				},
 				currentState: context.State{
 					Name:      "state_1",
@@ -496,7 +486,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 				waiter,
 				errorHandler,
 			)
-			checkStates(test, states)
+			checkStates(test, states.StateGroup)
 			assert.ElementsMatch(test, testData.wantLog, log.commands)
 		})
 	}

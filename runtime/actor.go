@@ -8,7 +8,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	states       StateGroup
+	states       ParameterizedStateGroup
 	currentState context.State
 }
 
@@ -30,14 +30,14 @@ func (actor Actor) ProcessMessage(context context.Context, message context.Messa
 // ActorFactory ...
 type ActorFactory struct {
 	name         string
-	states       StateGroup
+	states       ParameterizedStateGroup
 	initialState context.State
 }
 
 // NewActorFactory ...
 func NewActorFactory(
 	name string,
-	states StateGroup,
+	states ParameterizedStateGroup,
 	initialState context.State,
 ) (ActorFactory, error) {
 	if !states.Contains(initialState) {

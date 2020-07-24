@@ -12,7 +12,7 @@ import (
 
 func TestActor_SetState(test *testing.T) {
 	type fields struct {
-		states       StateGroup
+		states       ParameterizedStateGroup
 		currentState context.State
 	}
 	type args struct {
@@ -29,7 +29,7 @@ func TestActor_SetState(test *testing.T) {
 		{
 			name: "success with a different state",
 			fields: fields{
-				states:       StateGroup{"state_0": {}, "state_1": {}},
+				states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 				currentState: context.State{Name: "state_0"},
 			},
 			args: args{
@@ -41,7 +41,7 @@ func TestActor_SetState(test *testing.T) {
 		{
 			name: "success with a same state",
 			fields: fields{
-				states:       StateGroup{"state_0": {}, "state_1": {}},
+				states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 				currentState: context.State{Name: "state_0"},
 			},
 			args: args{
@@ -53,7 +53,7 @@ func TestActor_SetState(test *testing.T) {
 		{
 			name: "error",
 			fields: fields{
-				states:       StateGroup{"state_0": {}, "state_1": {}},
+				states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 				currentState: context.State{Name: "state_0"},
 			},
 			args: args{
@@ -75,7 +75,7 @@ func TestActor_SetState(test *testing.T) {
 
 func TestActor_ProcessMessage(test *testing.T) {
 	type fields struct {
-		makeStates   func(context context.Context, log *commandLog) StateGroup
+		makeStates   func(context context.Context, log *commandLog) ParameterizedStateGroup
 		currentState context.State
 	}
 	type args struct {
@@ -93,10 +93,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
-						"message_3": {withCalls()},
-					})
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					options := loggableCommandOptions{"message_3": {withCalls()}}
+					return newLoggableParameterizedStates(context, log, group(2), group(2), group(5), options)
 				},
 				currentState: context.State{Name: "state_1"},
 			},
@@ -110,11 +109,10 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "success with state arguments",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
 					messageConfig := parameterizedGroup(2, "one", "two")
-					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
-						"message_3": {withCalls()},
-					})
+					options := loggableCommandOptions{"message_3": {withCalls()}}
+					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
 				},
 				currentState: context.State{
 					Name:      "state_1",
@@ -137,11 +135,12 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "success with message arguments",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
 					messageConfig := parameterizedGroup(2, "one", "two")
-					return newLoggableStates(context, log, 2, messageConfig, group(5), loggableCommandOptions{
+					options := loggableCommandOptions{
 						"message_3": {withParameters([]string{"two", "three"}), withCalls()},
-					})
+					}
+					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
 				},
 				currentState: context.State{
 					Name:      "state_1",
@@ -169,10 +168,9 @@ func TestActor_ProcessMessage(test *testing.T) {
 		{
 			name: "error",
 			fields: fields{
-				makeStates: func(context context.Context, log *commandLog) StateGroup {
-					return newLoggableStates(context, log, 2, group(2), group(5), loggableCommandOptions{
-						"message_3": {withErrOn(2)},
-					})
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					options := loggableCommandOptions{"message_3": {withErrOn(2)}}
+					return newLoggableParameterizedStates(context, log, group(2), group(2), group(5), options)
 				},
 				currentState: context.State{Name: "state_1"},
 			},
@@ -192,7 +190,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			err := actor.ProcessMessage(testData.args.context, testData.args.message)
 
 			mock.AssertExpectationsForObjects(test, testData.args.context)
-			checkStates(test, states)
+			checkStates(test, states.StateGroup)
 			assert.Equal(test, testData.wantLog, log.commands)
 			testData.wantErr(test, err)
 		})
@@ -202,7 +200,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 func TestNewActorFactory(test *testing.T) {
 	type args struct {
 		name         string
-		states       StateGroup
+		states       ParameterizedStateGroup
 		initialState context.State
 	}
 
@@ -216,12 +214,12 @@ func TestNewActorFactory(test *testing.T) {
 			name: "success",
 			args: args{
 				name:         "Test",
-				states:       StateGroup{"state_0": {}, "state_1": {}},
+				states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 				initialState: context.State{Name: "state_0"},
 			},
 			wantActorFactory: ActorFactory{
 				name:         "Test",
-				states:       StateGroup{"state_0": {}, "state_1": {}},
+				states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 				initialState: context.State{Name: "state_0"},
 			},
 			wantErr: assert.NoError,
@@ -230,7 +228,7 @@ func TestNewActorFactory(test *testing.T) {
 			name: "error",
 			args: args{
 				name:         "Test",
-				states:       StateGroup{"state_0": {}, "state_1": {}},
+				states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 				initialState: context.State{Name: "state_unknown"},
 			},
 			wantActorFactory: ActorFactory{},
@@ -250,7 +248,7 @@ func TestNewActorFactory(test *testing.T) {
 func TestActorFactory_Name(test *testing.T) {
 	factory := ActorFactory{
 		name:         "Test",
-		states:       StateGroup{"state_0": {}, "state_1": {}},
+		states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 		initialState: context.State{Name: "state_0"},
 	}
 	got := factory.Name()
@@ -261,7 +259,7 @@ func TestActorFactory_Name(test *testing.T) {
 func TestActorFactory_String(test *testing.T) {
 	factory := ActorFactory{
 		name:         "Test",
-		states:       StateGroup{"state_0": {}, "state_1": {}},
+		states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 		initialState: context.State{Name: "state_0"},
 	}
 	got := factory.String()
@@ -272,7 +270,7 @@ func TestActorFactory_String(test *testing.T) {
 func TestActorFactory_MarshalText(test *testing.T) {
 	factory := ActorFactory{
 		name:         "Test",
-		states:       StateGroup{"state_0": {}, "state_1": {}},
+		states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 		initialState: context.State{Name: "state_0"},
 	}
 	// it's an example of an implicit call of the runtime.ActorFactory.MarshalText() method;
@@ -286,13 +284,13 @@ func TestActorFactory_MarshalText(test *testing.T) {
 func TestActorFactory_CreateActor(test *testing.T) {
 	factory := ActorFactory{
 		name:         "Test",
-		states:       StateGroup{"state_0": {}, "state_1": {}},
+		states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 		initialState: context.State{Name: "state_0"},
 	}
 	got := factory.CreateActor()
 
 	want := &Actor{
-		states:       StateGroup{"state_0": {}, "state_1": {}},
+		states:       ParameterizedStateGroup{StateGroup: StateGroup{"state_0": {}, "state_1": {}}},
 		currentState: context.State{Name: "state_0"},
 	}
 	assert.Equal(test, want, got)

@@ -83,7 +83,7 @@ func TestNewBoolean(test *testing.T) {
 				value: func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test",
-						runtime.StateGroup{"state_0": {}},
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}}},
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})

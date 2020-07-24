@@ -36,7 +36,7 @@ func TestEquals(test *testing.T) {
 				leftValue: func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test",
-						runtime.StateGroup{"state_0": {}},
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}}},
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
@@ -44,7 +44,7 @@ func TestEquals(test *testing.T) {
 				rightValue: func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test",
-						runtime.StateGroup{"state_0": {}},
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}}},
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
@@ -68,7 +68,7 @@ func TestEquals(test *testing.T) {
 				leftValue: func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test_1",
-						runtime.StateGroup{"state_0": {}},
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}}},
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
@@ -76,7 +76,7 @@ func TestEquals(test *testing.T) {
 				rightValue: func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test_2",
-						runtime.StateGroup{"state_0": {}},
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}}},
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
@@ -118,7 +118,7 @@ func TestEquals(test *testing.T) {
 				leftValue: func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test",
-						runtime.StateGroup{"state_0": {}},
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}}},
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
