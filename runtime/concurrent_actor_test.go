@@ -69,18 +69,15 @@ func TestConcurrentActor(test *testing.T) {
 			wantLog:  []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 		},
 		{
-			name: "success with state arguments",
+			name: "success with actor arguments",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
-					messageConfig := parameterizedGroup(2, "one", "two")
+					stateConfig := parameterizedGroup(2, "one", "two")
 					options := loggableCommandOptions{"message_2": {withCalls()}}
-					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
+					return newLoggableParameterizedStates(context, log, stateConfig, group(2), group(5), options)
 				},
-				currentState: context.State{
-					Name:      "state_1",
-					Arguments: []interface{}{5, 12},
-				},
-				inbox: make(inbox),
+				currentState: context.State{Name: "state_1"},
+				inbox:        make(inbox),
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
@@ -90,25 +87,28 @@ func TestConcurrentActor(test *testing.T) {
 
 					return context
 				}(),
-				arguments: nil,
+				arguments: []interface{}{5, 12},
 				messages:  []context.Message{{Name: "message_2"}},
 			},
 			errCount: 0,
 			wantLog:  []int{10, 11, 12, 13, 14},
 		},
 		{
-			name: "success with message arguments",
+			name: "success with state arguments",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
-					messageConfig := parameterizedGroup(2, "one", "two")
-					options := loggableCommandOptions{
-						"message_2": {withParameters([]string{"two", "three"}), withCalls()},
-					}
-					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
+					return newLoggableParameterizedStates(
+						context,
+						log,
+						parameterizedGroup(2, "one", "two"),
+						parameterizedGroup(2, "two", "three"),
+						group(5),
+						loggableCommandOptions{"message_2": {withCalls()}},
+					)
 				},
 				currentState: context.State{
 					Name:      "state_1",
-					Arguments: []interface{}{5, 12},
+					Arguments: []interface{}{23, 42},
 				},
 				inbox: make(inbox),
 			},
@@ -122,11 +122,50 @@ func TestConcurrentActor(test *testing.T) {
 
 					return context
 				}(),
-				arguments: nil,
+				arguments: []interface{}{5, 12},
+				messages:  []context.Message{{Name: "message_2"}},
+			},
+			errCount: 0,
+			wantLog:  []int{10, 11, 12, 13, 14},
+		},
+		{
+			name: "success with message arguments",
+			fields: fields{
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					return newLoggableParameterizedStates(
+						context,
+						log,
+						parameterizedGroup(2, "one", "two"),
+						parameterizedGroup(2, "two", "three"),
+						group(5),
+						loggableCommandOptions{
+							"message_2": {withParameters([]string{"three", "four"}), withCalls()},
+						},
+					)
+				},
+				currentState: context.State{
+					Name:      "state_1",
+					Arguments: []interface{}{23, 42},
+				},
+				inbox: make(inbox),
+			},
+			args: args{
+				contextSecondCopy: func() context.Context {
+					context := new(contextmocks.Context)
+					context.On("SetValue", "one", 5).Return()
+					context.On("SetValue", "two", 12).Return()
+					context.On("SetValue", "two", 23).Return()
+					context.On("SetValue", "three", 42).Return()
+					context.On("SetValue", "three", 100).Return()
+					context.On("SetValue", "four", 1000).Return()
+
+					return context
+				}(),
+				arguments: []interface{}{5, 12},
 				messages: []context.Message{
 					{
 						Name:      "message_2",
-						Arguments: []interface{}{23, 42},
+						Arguments: []interface{}{100, 1000},
 					},
 				},
 			},
@@ -400,17 +439,14 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 		wantLog []int
 	}{
 		{
-			name: "success with state arguments",
+			name: "success with actor arguments",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
-					messageConfig := parameterizedGroup(2, "one", "two")
+					stateConfig := parameterizedGroup(2, "one", "two")
 					options := loggableCommandOptions{"message_2": {withCalls()}}
-					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
+					return newLoggableParameterizedStates(context, log, stateConfig, group(2), group(5), options)
 				},
-				currentState: context.State{
-					Name:      "state_1",
-					Arguments: []interface{}{5, 12},
-				},
+				currentState: context.State{Name: "state_1"},
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
@@ -420,24 +456,27 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 
 					return context
 				}(),
-				arguments: nil,
+				arguments: []interface{}{5, 12},
 				message:   context.Message{Name: "message_2"},
 			},
 			wantLog: []int{10, 11, 12, 13, 14},
 		},
 		{
-			name: "success with message arguments",
+			name: "success with state arguments",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
-					messageConfig := parameterizedGroup(2, "one", "two")
-					options := loggableCommandOptions{
-						"message_2": {withParameters([]string{"two", "three"}), withCalls()},
-					}
-					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
+					return newLoggableParameterizedStates(
+						context,
+						log,
+						parameterizedGroup(2, "one", "two"),
+						parameterizedGroup(2, "two", "three"),
+						group(5),
+						loggableCommandOptions{"message_2": {withCalls()}},
+					)
 				},
 				currentState: context.State{
 					Name:      "state_1",
-					Arguments: []interface{}{5, 12},
+					Arguments: []interface{}{23, 42},
 				},
 			},
 			args: args{
@@ -450,10 +489,47 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 
 					return context
 				}(),
-				arguments: nil,
+				arguments: []interface{}{5, 12},
+				message:   context.Message{Name: "message_2"},
+			},
+			wantLog: []int{10, 11, 12, 13, 14},
+		},
+		{
+			name: "success with message arguments",
+			fields: fields{
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					return newLoggableParameterizedStates(
+						context,
+						log,
+						parameterizedGroup(2, "one", "two"),
+						parameterizedGroup(2, "two", "three"),
+						group(5),
+						loggableCommandOptions{
+							"message_2": {withParameters([]string{"three", "four"}), withCalls()},
+						},
+					)
+				},
+				currentState: context.State{
+					Name:      "state_1",
+					Arguments: []interface{}{23, 42},
+				},
+			},
+			args: args{
+				contextSecondCopy: func() context.Context {
+					context := new(contextmocks.Context)
+					context.On("SetValue", "one", 5).Return()
+					context.On("SetValue", "two", 12).Return()
+					context.On("SetValue", "two", 23).Return()
+					context.On("SetValue", "three", 42).Return()
+					context.On("SetValue", "three", 100).Return()
+					context.On("SetValue", "four", 1000).Return()
+
+					return context
+				}(),
+				arguments: []interface{}{5, 12},
 				message: context.Message{
 					Name:      "message_2",
-					Arguments: []interface{}{23, 42},
+					Arguments: []interface{}{100, 1000},
 				},
 			},
 			wantLog: []int{10, 11, 12, 13, 14},

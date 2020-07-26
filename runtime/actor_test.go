@@ -109,17 +109,14 @@ func TestActor_ProcessMessage(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "success with state arguments",
+			name: "success with actor arguments",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
-					messageConfig := parameterizedGroup(2, "one", "two")
+					stateConfig := parameterizedGroup(2, "one", "two")
 					options := loggableCommandOptions{"message_3": {withCalls()}}
-					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
+					return newLoggableParameterizedStates(context, log, stateConfig, group(2), group(5), options)
 				},
-				currentState: context.State{
-					Name:      "state_1",
-					Arguments: []interface{}{5, 12},
-				},
+				currentState: context.State{Name: "state_1"},
 			},
 			args: args{
 				context: func() context.Context {
@@ -129,25 +126,28 @@ func TestActor_ProcessMessage(test *testing.T) {
 
 					return context
 				}(),
-				arguments: nil,
+				arguments: []interface{}{5, 12},
 				message:   context.Message{Name: "message_3"},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
 			wantErr: assert.NoError,
 		},
 		{
-			name: "success with message arguments",
+			name: "success with state arguments",
 			fields: fields{
 				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
-					messageConfig := parameterizedGroup(2, "one", "two")
-					options := loggableCommandOptions{
-						"message_3": {withParameters([]string{"two", "three"}), withCalls()},
-					}
-					return newLoggableParameterizedStates(context, log, group(2), messageConfig, group(5), options)
+					return newLoggableParameterizedStates(
+						context,
+						log,
+						parameterizedGroup(2, "one", "two"),
+						parameterizedGroup(2, "two", "three"),
+						group(5),
+						loggableCommandOptions{"message_3": {withCalls()}},
+					)
 				},
 				currentState: context.State{
 					Name:      "state_1",
-					Arguments: []interface{}{5, 12},
+					Arguments: []interface{}{23, 42},
 				},
 			},
 			args: args{
@@ -160,10 +160,48 @@ func TestActor_ProcessMessage(test *testing.T) {
 
 					return context
 				}(),
-				arguments: nil,
+				arguments: []interface{}{5, 12},
+				message:   context.Message{Name: "message_3"},
+			},
+			wantLog: []int{15, 16, 17, 18, 19},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "success with message arguments",
+			fields: fields{
+				makeStates: func(context context.Context, log *commandLog) ParameterizedStateGroup {
+					return newLoggableParameterizedStates(
+						context,
+						log,
+						parameterizedGroup(2, "one", "two"),
+						parameterizedGroup(2, "two", "three"),
+						group(5),
+						loggableCommandOptions{
+							"message_3": {withParameters([]string{"three", "four"}), withCalls()},
+						},
+					)
+				},
+				currentState: context.State{
+					Name:      "state_1",
+					Arguments: []interface{}{23, 42},
+				},
+			},
+			args: args{
+				context: func() context.Context {
+					context := new(mocks.Context)
+					context.On("SetValue", "one", 5).Return()
+					context.On("SetValue", "two", 12).Return()
+					context.On("SetValue", "two", 23).Return()
+					context.On("SetValue", "three", 42).Return()
+					context.On("SetValue", "three", 100).Return()
+					context.On("SetValue", "four", 1000).Return()
+
+					return context
+				}(),
+				arguments: []interface{}{5, 12},
 				message: context.Message{
 					Name:      "message_3",
-					Arguments: []interface{}{23, 42},
+					Arguments: []interface{}{100, 1000},
 				},
 			},
 			wantLog: []int{15, 16, 17, 18, 19},
