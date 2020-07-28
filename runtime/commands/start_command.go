@@ -11,11 +11,15 @@ import (
 // StartCommand ...
 type StartCommand struct {
 	actorFactory expressions.Expression
+	arguments    []expressions.Expression
 }
 
 // NewStartCommand ...
-func NewStartCommand(actorFactory expressions.Expression) StartCommand {
-	return StartCommand{actorFactory}
+func NewStartCommand(
+	actorFactory expressions.Expression,
+	arguments []expressions.Expression,
+) StartCommand {
+	return StartCommand{actorFactory, arguments}
 }
 
 // Run ...
@@ -33,8 +37,22 @@ func (command StartCommand) Run(context context.Context) (result interface{}, er
 		)
 	}
 
+	var arguments []interface{}
+	for index, argument := range command.arguments {
+		result, err := argument.Evaluate(context)
+		if err != nil {
+			return nil, errors.Wrapf(
+				err,
+				"unable to evaluate the argument #%d for the start command",
+				index,
+			)
+		}
+
+		arguments = append(arguments, result)
+	}
+
 	actor := typedActorFactory.CreateActor()
-	context.RegisterActor(actor, nil)
+	context.RegisterActor(actor, arguments)
 
 	return types.Nil{}, nil
 }

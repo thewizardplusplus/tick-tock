@@ -19,6 +19,7 @@ import (
 func TestStartCommand(test *testing.T) {
 	type fields struct {
 		actorFactory expressions.Expression
+		arguments    []expressions.Expression
 	}
 	type args struct {
 		context context.Context
@@ -32,7 +33,7 @@ func TestStartCommand(test *testing.T) {
 		wantErr    assert.ErrorAssertionFunc
 	}{
 		{
-			name: "success",
+			name: "success without arguments",
 			fields: fields{
 				actorFactory: func() expressions.Expression {
 					actorFactory, _ := runtime.NewActorFactory(
@@ -50,6 +51,7 @@ func TestStartCommand(test *testing.T) {
 
 					return expression
 				}(),
+				arguments: nil,
 			},
 			args: args{
 				context: func() context.Context {
@@ -82,6 +84,65 @@ func TestStartCommand(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "success with arguments",
+			fields: fields{
+				actorFactory: func() expressions.Expression {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}, "state_1": {}}},
+						context.State{Name: "state_0"},
+					)
+					concurrentActorFactory :=
+						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+
+					expression := new(expressionsmocks.Expression)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						Return(concurrentActorFactory, nil)
+
+					return expression
+				}(),
+				arguments: func() []expressions.Expression {
+					expressionOne := new(expressionsmocks.Expression)
+					expressionOne.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+
+					expressionTwo := new(expressionsmocks.Expression)
+					expressionTwo.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
+
+					return []expressions.Expression{expressionOne, expressionTwo}
+				}(),
+			},
+			args: args{
+				context: func() context.Context {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}, "state_1": {}}},
+						context.State{Name: "state_0"},
+					)
+					concurrentActorFactory :=
+						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+					wantActor := concurrentActorFactory.CreateActor()
+					cleanInbox(&wantActor)
+
+					context := new(contextmocks.Context)
+					context.
+						On(
+							"RegisterActor",
+							mock.MatchedBy(func(gotActor runtime.ConcurrentActor) bool {
+								cleanInbox(&gotActor)
+								return reflect.DeepEqual(wantActor, gotActor)
+							}),
+							[]interface{}{2.3, 4.2},
+						).
+						Return()
+
+					return context
+				}(),
+			},
+			wantResult: types.Nil{},
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "error with actor class evaluation",
 			fields: fields{
 				actorFactory: func() expressions.Expression {
@@ -90,6 +151,7 @@ func TestStartCommand(test *testing.T) {
 
 					return expression
 				}(),
+				arguments: nil,
 			},
 			args: args{
 				context: new(contextmocks.Context),
@@ -106,6 +168,43 @@ func TestStartCommand(test *testing.T) {
 
 					return expression
 				}(),
+				arguments: nil,
+			},
+			args: args{
+				context: new(contextmocks.Context),
+			},
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error with argument evaluation",
+			fields: fields{
+				actorFactory: func() expressions.Expression {
+					actorFactory, _ := runtime.NewActorFactory(
+						"Test",
+						runtime.ParameterizedStateGroup{StateGroup: runtime.StateGroup{"state_0": {}, "state_1": {}}},
+						context.State{Name: "state_0"},
+					)
+					concurrentActorFactory :=
+						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
+
+					expression := new(expressionsmocks.Expression)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						Return(concurrentActorFactory, nil)
+
+					return expression
+				}(),
+				arguments: func() []expressions.Expression {
+					expressionOne := new(expressionsmocks.Expression)
+					expressionOne.
+						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						Return(nil, iotest.ErrTimeout)
+
+					expressionTwo := new(expressionsmocks.Expression)
+
+					return []expressions.Expression{expressionOne, expressionTwo}
+				}(),
 			},
 			args: args{
 				context: new(contextmocks.Context),
@@ -115,7 +214,8 @@ func TestStartCommand(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			gotResult, gotErr := NewStartCommand(testData.fields.actorFactory).Run(testData.args.context)
+			gotResult, gotErr := NewStartCommand(testData.fields.actorFactory, testData.fields.arguments).
+				Run(testData.args.context)
 
 			mock.AssertExpectationsForObjects(test, testData.args.context)
 			assert.Equal(test, testData.wantResult, gotResult)
