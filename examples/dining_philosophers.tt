@@ -1,12 +1,12 @@
-class Fork()
+class Fork(current_fork)
   state __initialization__()
-    message initialize_fork(current_fork)
-      set free(current_fork)
+    message initialize_fork()
+      set free()
       send __initialize__()
     ;
   ;
 
-  state free(current_fork)
+  state free()
     message take_fork(fork, philosopher)
       when => fork != current_fork return;
 
@@ -15,7 +15,7 @@ class Fork()
     ;
   ;
 
-  state taken(current_fork)
+  state taken()
     message take_fork(fork, philosopher)
       when => fork != current_fork return;
 
@@ -30,15 +30,15 @@ class Fork()
   ;
 ;
 
-class Philosopher()
+class Philosopher(current_philosopher, left_fork, right_fork)
   state __initialization__()
-    message initialize_philosopher(current_philosopher, left_fork, right_fork)
-      set thinking(current_philosopher, left_fork, right_fork)
+    message initialize_philosopher()
+      set thinking()
       send __initialize__()
     ;
   ;
 
-  state thinking(current_philosopher, left_fork, right_fork)
+  state thinking()
     message start_thinking(philosopher)
       when => philosopher != current_philosopher return;
 
@@ -50,18 +50,12 @@ class Philosopher()
       when => philosopher != current_philosopher return;
 
       outln(philosopher + ": become hungry, try to take the fork " + strs(left_fork))
-      set fork_waiting(
-        philosopher, left_fork, right_fork, // class arguments
-        left_fork,                          // state arguments
-      )
+      set fork_waiting(left_fork)
       send take_fork(left_fork, philosopher)
     ;
   ;
 
-  state fork_waiting(
-    current_philosopher, left_fork, right_fork, // class parameters
-    waited_fork,                                // state parameters
-  )
+  state fork_waiting(waited_fork)
     message fork_taken(fork, philosopher)
       when => fork != waited_fork || philosopher != current_philosopher return;
 
@@ -70,10 +64,7 @@ class Philosopher()
         => fork == left_fork
           outln("try to take the fork " + strs(right_fork))
 
-          set fork_waiting(
-            philosopher, left_fork, right_fork, // class arguments
-            right_fork,                         // state arguments
-          )
+          set fork_waiting(right_fork)
           send take_fork(right_fork, philosopher)
         => fork == right_fork
           outln("start eating")
@@ -99,7 +90,7 @@ class Philosopher()
     ;
   ;
 
-  state eating(current_philosopher, left_fork, right_fork)
+  state eating()
     message start_eating(philosopher)
       when => philosopher != current_philosopher return;
 
@@ -125,21 +116,17 @@ actor Main()
       let started_actors = started_actors || 0
       when
         => started_actors == 0
-          // left fork
-          start Fork()
-          send initialize_fork("left")
+          start Fork("left")
+          send initialize_fork()
         => started_actors == 1
-          // right fork
-          start Fork()
-          send initialize_fork("right")
+          start Fork("right")
+          send initialize_fork()
         => started_actors == 2
-          // philosopher John
-          start Philosopher()
-          send initialize_philosopher("John", "left", "right")
+          start Philosopher("John", "left", "right")
+          send initialize_philosopher()
         => started_actors == 3
-          // philosopher Jane
-          start Philosopher()
-          send initialize_philosopher("Jane", "right", "left")
+          start Philosopher("Jane", "right", "left")
+          send initialize_philosopher()
         => started_actors == 4
           send start_thinking("John")
           send start_thinking("Jane")
