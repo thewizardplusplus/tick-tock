@@ -78,9 +78,11 @@ func TestTranslate(test *testing.T) {
 				"Test0": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test0",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -92,9 +94,11 @@ func TestTranslate(test *testing.T) {
 				"Test1": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test1",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -108,9 +112,11 @@ func TestTranslate(test *testing.T) {
 				func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test0",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -122,9 +128,11 @@ func TestTranslate(test *testing.T) {
 				func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test1",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -166,9 +174,11 @@ func TestTranslate(test *testing.T) {
 				"Test0": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test0",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -180,9 +190,11 @@ func TestTranslate(test *testing.T) {
 				"Test1": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test1",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -237,9 +249,11 @@ func TestTranslate(test *testing.T) {
 				"Test0": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test0",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -251,9 +265,11 @@ func TestTranslate(test *testing.T) {
 				"Test1": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test1",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -265,9 +281,11 @@ func TestTranslate(test *testing.T) {
 				"Test2": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test2",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -279,9 +297,11 @@ func TestTranslate(test *testing.T) {
 				"Test3": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test3",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -295,9 +315,11 @@ func TestTranslate(test *testing.T) {
 				func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test0",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -309,9 +331,11 @@ func TestTranslate(test *testing.T) {
 				func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
 						"Test2",
-						runtime.StateGroup{
-							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						runtime.ParameterizedStateGroup{
+							StateGroup: runtime.StateGroup{
+								"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+								"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							},
 						},
 						context.State{Name: "state_0"},
 					)
@@ -503,9 +527,11 @@ func TestTranslateDefinition(test *testing.T) {
 			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
 				actorFactory, _ := runtime.NewActorFactory(
 					"Test",
-					runtime.StateGroup{
-						"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-						"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+					runtime.ParameterizedStateGroup{
+						StateGroup: runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
 					},
 					context.State{Name: "state_0"},
 				)
@@ -558,9 +584,11 @@ func TestTranslateDefinition(test *testing.T) {
 			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
 				actorFactory, _ := runtime.NewActorFactory(
 					"Test",
-					runtime.StateGroup{
-						"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-						"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+					runtime.ParameterizedStateGroup{
+						StateGroup: runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
 					},
 					context.State{Name: "state_0"},
 				)
@@ -646,9 +674,11 @@ func TestTranslateActorClass(test *testing.T) {
 			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
 				actorFactory, _ := runtime.NewActorFactory(
 					"Test",
-					runtime.StateGroup{
-						"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
-						"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+					runtime.ParameterizedStateGroup{
+						StateGroup: runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+							"state_1": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{}),
+						},
 					},
 					context.State{Name: "state_0"},
 				)
@@ -710,12 +740,14 @@ func TestTranslateActorClass(test *testing.T) {
 			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
 				actorFactory, _ := runtime.NewActorFactory(
 					"Test",
-					runtime.StateGroup{
-						"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
-							"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
-								commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+					runtime.ParameterizedStateGroup{
+						StateGroup: runtime.StateGroup{
+							"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
+								"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
+									commands.NewExpressionCommand(expressions.NewIdentifier("test")),
+								}),
 							}),
-						}),
+						},
 					},
 					context.State{Name: "state_0"},
 				)
@@ -2159,7 +2191,7 @@ func TestTranslateCommand(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantDeclaredIdentifiers: mapset.NewSet("test"),
-			wantCommand:             commands.NewStartCommand(expressions.NewIdentifier("test")),
+			wantCommand:             commands.NewStartCommand(expressions.NewIdentifier("test"), nil),
 			wantTopLevelSettedState: "",
 			wantSettedStates:        mapset.NewSet(),
 			wantReturn:              assert.False,
@@ -2260,6 +2292,7 @@ func TestTranslateCommand(test *testing.T) {
 						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
+				nil,
 			),
 			wantTopLevelSettedState: "",
 			wantSettedStates:        mapset.NewSet("one", "two"),
@@ -3210,7 +3243,7 @@ func TestTranslateStartCommand(test *testing.T) {
 				startCommand:        &parser.StartCommand{Name: pointer.ToString("test")},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantCommand:      commands.NewStartCommand(expressions.NewIdentifier("test")),
+			wantCommand:      commands.NewStartCommand(expressions.NewIdentifier("test"), nil),
 			wantSettedStates: mapset.NewSet(),
 			wantErr:          assert.NoError,
 		},
@@ -3240,7 +3273,7 @@ func TestTranslateStartCommand(test *testing.T) {
 				},
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
-			wantCommand:      commands.NewStartCommand(expressions.NewIdentifier("test")),
+			wantCommand:      commands.NewStartCommand(expressions.NewIdentifier("test"), nil),
 			wantSettedStates: mapset.NewSet(),
 			wantErr:          assert.NoError,
 		},
@@ -3336,6 +3369,7 @@ func TestTranslateStartCommand(test *testing.T) {
 						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
 					},
 				}),
+				nil,
 			),
 			wantSettedStates: mapset.NewSet("one", "two"),
 			wantErr:          assert.NoError,

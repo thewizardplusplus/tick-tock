@@ -106,7 +106,9 @@ func translateActorClass(
 		return runtime.ConcurrentActorFactory{}, errors.Wrapf(err, "unable to translate states")
 	}
 
-	actorFactory, err := runtime.NewActorFactory(actorClass.Name, states, options.InitialState)
+	parameterizedStates := runtime.NewParameterizedStateGroup(actorClass.Parameters, states)
+	actorFactory, err :=
+		runtime.NewActorFactory(actorClass.Name, parameterizedStates, options.InitialState)
 	if err != nil {
 		return runtime.ConcurrentActorFactory{}, errors.Wrapf(err, "unable to construct the factory")
 	}
@@ -308,7 +310,7 @@ func translateStartCommand(startCommand *parser.StartCommand, declaredIdentifier
 		}
 	}
 
-	translatedCommand = commands.NewStartCommand(actorFactory)
+	translatedCommand = commands.NewStartCommand(actorFactory, nil)
 	return translatedCommand, settedStates, nil
 }
 
