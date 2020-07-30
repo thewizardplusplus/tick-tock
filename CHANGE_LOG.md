@@ -1,5 +1,17 @@
 # Change Log
 
+## [v1.6](https://github.com/thewizardplusplus/tick-tock/tree/v1.6) (2020-07-30)
+
+- support actor parameters;
+- support actor classes:
+  - support actor class parameters;
+- refactoring:
+  - refactoring of context copying in the `runtime` package;
+  - simplify using of `runtime.ParameterizedCommandGroup` and `runtime.ParameterizedMessageGroup` structures;
+- examples:
+  - improve the example with dining philosophers;
+  - improve the example with ping-pong.
+
 ## [v1.5](https://github.com/thewizardplusplus/tick-tock/tree/v1.5) (2020-07-19)
 
 - support actor classes;
