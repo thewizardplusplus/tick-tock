@@ -6,8 +6,14 @@ program = {definition};
 definition =
   actor
   | actor class;
-actor = "actor", identifier, state, {state}, ";";
-actor class = "class", identifier, state, {state}, ";";
+actor =
+  "actor", identifier, "(", [identifier, {",", identifier}, [","]], ")",
+    state, {state},
+  ";";
+actor class =
+  "class", identifier, "(", [identifier, {",", identifier}, [","]], ")",
+    state, {state},
+  ";";
 state =
   "state", identifier, "(", [identifier, {",", identifier}, [","]], ")",
     {message},
@@ -25,7 +31,9 @@ command =
   | return command
   | expression;
 let command = "let", identifier, "=", expression;
-start command = "start", (identifier | "[", expression, "]");
+start command =
+  "start", (identifier | "[", expression, "]"),
+  "(", [expression, {",", expression}, [","]], ")";
 send command = "send", identifier, "(", [expression, {",", expression}, [","]], ")";
 set command = "set", identifier, "(", [expression, {",", expression}, [","]], ")";
 return command = "return";
