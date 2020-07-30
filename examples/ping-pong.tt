@@ -1,15 +1,9 @@
-class Ticker()
+class Ticker(in_kind, out_kind)
   state __initialization__()
-    message start_ticking(in_kind, out_kind)
-      set ticking(out_kind + "er", in_kind, out_kind)
-      send __initialize__()
-    ;
-  ;
-
-  state ticking(current_ticker, in_kind, out_kind)
     message tick(kind)
       when => kind != in_kind return;
 
+      let current_ticker = out_kind + "er"
       outln(current_ticker + " received " + in_kind)
       sleep(0.5)
 
@@ -20,23 +14,12 @@ class Ticker()
 ;
 
 actor Main()
-  state __initialization__(started_ticker)
+  state __initialization__()
     message __initialize__()
-      let started_ticker = started_ticker || 0
-      when
-        => started_ticker == 0
-          // pinger
-          start Ticker()
-          send start_ticking("pong", "ping")
-        => started_ticker == 1
-          // ponger
-          start Ticker()
-          send start_ticking("ping", "pong")
-        => started_ticker == 2
-          send tick("ping")
-      ;
+      start Ticker("pong", "ping") // pinger
+      start Ticker("ping", "pong") // ponger
 
-      set __initialization__(started_ticker + 1)
+      send tick("ping")
     ;
   ;
 ;
