@@ -50,7 +50,7 @@ func Interpret(ctx context.Context, options Options, dependencies Dependencies) 
 
 	actors := runtime.NewConcurrentActorGroup(ctx)
 	for _, factory := range initialFactories {
-		actors.RegisterActor(factory.CreateActor())
+		actors.RegisterActor(factory.CreateActor(), nil)
 	}
 	actors.SendMessage(context.Message{Name: options.InitialMessage})
 

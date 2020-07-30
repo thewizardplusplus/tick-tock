@@ -52,7 +52,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor Main state %s() message %s() test;;;`,
+							`actor Main() state %s() message %s() test;;;`,
 							options.InitialState,
 							options.InitialMessage,
 						))
@@ -83,7 +83,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor Main state %s() message %s() test;;;`,
+							`actor Main() state %s() message %s() test;;;`,
 							options.InitialState,
 							options.InitialMessage,
 						))
@@ -131,7 +131,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							"actor Main state %s();; actor Incorrect;",
+							"actor Main() state %s();; actor Incorrect();",
 							options.InitialState,
 						))
 					}, io.EOF)
@@ -152,7 +152,7 @@ func TestInterpret(test *testing.T) {
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int {
 						return copy(buffer, fmt.Sprintf(
-							`actor Main state %s() message %s() unknown;;;`,
+							`actor Main() state %s() message %s() unknown;;;`,
 							options.InitialState,
 							options.InitialMessage,
 						))
