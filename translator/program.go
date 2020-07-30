@@ -101,7 +101,12 @@ func translateActorClass(
 	translatedActorClass runtime.ConcurrentActorFactory,
 	err error,
 ) {
-	states, err := translateStates(actorClass.States, declaredIdentifiers)
+	localDeclaredIdentifiers := declaredIdentifiers.Clone()
+	for _, parameter := range actorClass.Parameters {
+		localDeclaredIdentifiers.Add(parameter)
+	}
+
+	states, err := translateStates(actorClass.States, localDeclaredIdentifiers)
 	if err != nil {
 		return runtime.ConcurrentActorFactory{}, errors.Wrapf(err, "unable to translate states")
 	}

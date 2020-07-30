@@ -759,6 +759,98 @@ func TestTranslateActorClass(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "success with parameters",
+			args: args{
+				actorClass: &parser.ActorClass{
+					Name:       "Test",
+					Parameters: []string{"one", "two"},
+					States: []*parser.State{
+						{
+							Name: "state_0",
+							Messages: []*parser.Message{
+								{
+									Name: "message_0",
+									Commands: []*parser.Command{
+										{
+											Expression: &parser.Expression{
+												ListConstruction: &parser.ListConstruction{
+													Disjunction: &parser.Disjunction{
+														Conjunction: &parser.Conjunction{
+															Equality: &parser.Equality{
+																Comparison: &parser.Comparison{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{Identifier: pointer.ToString("one")},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Expression: &parser.Expression{
+												ListConstruction: &parser.ListConstruction{
+													Disjunction: &parser.Disjunction{
+														Conjunction: &parser.Conjunction{
+															Equality: &parser.Equality{
+																Comparison: &parser.Comparison{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{Identifier: pointer.ToString("two")},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
+				dependencies: runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				},
+			},
+			wantTranslatedActorClass: func() runtime.ConcurrentActorFactory {
+				actorFactory, _ := runtime.NewActorFactory(
+					"Test",
+					runtime.NewParameterizedStateGroup([]string{"one", "two"}, runtime.StateGroup{
+						"state_0": runtime.NewParameterizedMessageGroup(nil, runtime.MessageGroup{
+							"message_0": runtime.NewParameterizedCommandGroup(nil, runtime.CommandGroup{
+								commands.NewExpressionCommand(expressions.NewIdentifier("one")),
+								commands.NewExpressionCommand(expressions.NewIdentifier("two")),
+							}),
+						}),
+					}),
+					context.State{Name: "state_0"},
+				)
+				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
+					Waiter:       new(waitermocks.Waiter),
+					ErrorHandler: new(runtimemocks.ErrorHandler),
+				})
+			}(),
+			wantErr: assert.NoError,
+		},
+		{
 			name: "error with states translation",
 			args: args{
 				actorClass: &parser.ActorClass{
