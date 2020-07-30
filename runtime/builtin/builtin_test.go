@@ -384,6 +384,24 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "bitwise negation/positive",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseNegationFunctionName,
+				[]expressions.Expression{expressions.NewNumber(23)},
+			),
+			wantResult: -24.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "bitwise negation/negative",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseNegationFunctionName,
+				[]expressions.Expression{expressions.NewNumber(-23)},
+			),
+			wantResult: 22.0,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "logical negation/success/false",
 			expression: expressions.NewFunctionCall(
 				translator.LogicalNegationFunctionName,

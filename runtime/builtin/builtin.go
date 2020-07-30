@@ -138,6 +138,9 @@ var (
 		translator.ArithmeticNegationFunctionName: func(a float64) (float64, error) {
 			return -a, nil
 		},
+		translator.BitwiseNegationFunctionName: func(a float64) (float64, error) {
+			return float64(^int64(a)), nil
+		},
 		translator.LogicalNegationFunctionName: func(value interface{}) (types.Boolean, error) {
 			boolean, err := types.NewBoolean(value)
 			if err != nil {

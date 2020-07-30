@@ -893,12 +893,15 @@ func TestParseToAST_withExpression(test *testing.T) {
 		},
 		{
 			name: "Unary/nonempty",
-			args: args{"-!23", new(Unary)},
+			args: args{"-~!23", new(Unary)},
 			wantAST: &Unary{
 				Operation: "-",
 				Unary: &Unary{
-					Operation: "!",
-					Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+					Operation: "~",
+					Unary: &Unary{
+						Operation: "!",
+						Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+					},
 				},
 			},
 			wantErr: assert.NoError,

@@ -3229,9 +3229,12 @@ func TestTranslateUnary(test *testing.T) {
 				unary: &parser.Unary{
 					Operation: "-",
 					Unary: &parser.Unary{
-						Operation: "!",
+						Operation: "~",
 						Unary: &parser.Unary{
-							Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+							Operation: "!",
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+							},
 						},
 					},
 				},
@@ -3240,8 +3243,10 @@ func TestTranslateUnary(test *testing.T) {
 			wantExpression: expressions.NewFunctionCall(
 				ArithmeticNegationFunctionName,
 				[]expressions.Expression{
-					expressions.NewFunctionCall(LogicalNegationFunctionName, []expressions.Expression{
-						expressions.NewNumber(23),
+					expressions.NewFunctionCall(BitwiseNegationFunctionName, []expressions.Expression{
+						expressions.NewFunctionCall(LogicalNegationFunctionName, []expressions.Expression{
+							expressions.NewNumber(23),
+						}),
 					}),
 				},
 			),

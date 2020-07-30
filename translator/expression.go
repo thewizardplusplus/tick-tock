@@ -27,7 +27,8 @@ const (
 	DivisionFunctionName           = "__div__"
 	ModuloFunctionName             = "__mod__"
 	ArithmeticNegationFunctionName = "__neg__"
-	LogicalNegationFunctionName    = "__not__"
+	BitwiseNegationFunctionName    = "__bitwise_not__"
+	LogicalNegationFunctionName    = "__logical_not__"
 	KeyAccessorFunctionName        = "__item__"
 )
 
@@ -315,6 +316,8 @@ func translateUnary(
 	switch unary.Operation {
 	case "-":
 		functionName = ArithmeticNegationFunctionName
+	case "~":
+		functionName = BitwiseNegationFunctionName
 	case "!":
 		functionName = LogicalNegationFunctionName
 	}
