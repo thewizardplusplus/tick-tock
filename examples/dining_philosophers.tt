@@ -1,4 +1,4 @@
-class Fork
+class Fork()
   state __initialization__()
     message initialize_fork(current_fork)
       set free(current_fork)
@@ -30,7 +30,7 @@ class Fork
   ;
 ;
 
-class Philosopher
+class Philosopher()
   state __initialization__()
     message initialize_philosopher(current_philosopher, left_fork, right_fork)
       set thinking(current_philosopher, left_fork, right_fork)
@@ -119,26 +119,26 @@ class Philosopher
   ;
 ;
 
-actor Main
+actor Main()
   state __initialization__(started_actors)
     message __initialize__()
       let started_actors = started_actors || 0
       when
         => started_actors == 0
           // left fork
-          start Fork
+          start Fork()
           send initialize_fork("left")
         => started_actors == 1
           // right fork
-          start Fork
+          start Fork()
           send initialize_fork("right")
         => started_actors == 2
           // philosopher John
-          start Philosopher
+          start Philosopher()
           send initialize_philosopher("John", "left", "right")
         => started_actors == 3
           // philosopher Jane
-          start Philosopher
+          start Philosopher()
           send initialize_philosopher("Jane", "right", "left")
         => started_actors == 4
           send start_thinking("John")
