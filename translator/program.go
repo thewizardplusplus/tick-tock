@@ -310,7 +310,22 @@ func translateStartCommand(startCommand *parser.StartCommand, declaredIdentifier
 		}
 	}
 
-	translatedCommand = commands.NewStartCommand(actorFactory, nil)
+	var arguments []expressions.Expression
+	for index, argument := range startCommand.Arguments {
+		result, settedStates2, err := translateExpression(argument, declaredIdentifiers)
+		if err != nil {
+			return nil, nil, errors.Wrapf(
+				err,
+				"unable to translate the argument #%d for the start command",
+				index,
+			)
+		}
+
+		arguments = append(arguments, result)
+		settedStates = settedStates.Union(settedStates2)
+	}
+
+	translatedCommand = commands.NewStartCommand(actorFactory, arguments)
 	return translatedCommand, settedStates, nil
 }
 
