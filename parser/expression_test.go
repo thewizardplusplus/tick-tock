@@ -914,15 +914,19 @@ func TestParseToAST_withExpression(test *testing.T) {
 		},
 		{
 			name: "Multiplication/nonempty",
-			args: args{"12 * 23 / 42", new(Multiplication)},
+			args: args{"5 * 12 / 23 % 42", new(Multiplication)},
 			wantAST: &Multiplication{
-				Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+				Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(5)}}},
 				Operation: "*",
 				Multiplication: &Multiplication{
-					Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+					Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
 					Operation: "/",
 					Multiplication: &Multiplication{
-						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+						Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						Operation: "%",
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+						},
 					},
 				},
 			},
@@ -964,6 +968,54 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Addition{
 				Multiplication: &Multiplication{
 					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Shift/nonempty",
+			args: args{"5 << 12 >> 23 >>> 42", new(Shift)},
+			wantAST: &Shift{
+				Addition: &Addition{
+					Multiplication: &Multiplication{
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(5)}}},
+					},
+				},
+				Operation: "<<",
+				Shift: &Shift{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+						},
+					},
+					Operation: ">>",
+					Shift: &Shift{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							},
+						},
+						Operation: ">>>",
+						Shift: &Shift{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Shift/empty",
+			args: args{"23", new(Shift)},
+			wantAST: &Shift{
+				Addition: &Addition{
+					Multiplication: &Multiplication{
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+					},
 				},
 			},
 			wantErr: assert.NoError,

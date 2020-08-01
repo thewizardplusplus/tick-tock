@@ -2410,6 +2410,419 @@ func TestTranslateComparison(test *testing.T) {
 	}
 }
 
+func TestTranslateShift(test *testing.T) {
+	type args struct {
+		shift               *parser.Shift
+		declaredIdentifiers mapset.Set
+	}
+
+	for _, data := range []struct {
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
+	}{
+		{
+			name: "Shift/nonempty/success",
+			args: args{
+				shift: &parser.Shift{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(5)}},
+							},
+						},
+					},
+					Operation: "<<",
+					Shift: &parser.Shift{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+								},
+							},
+						},
+						Operation: ">>",
+						Shift: &parser.Shift{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+									},
+								},
+							},
+							Operation: ">>>",
+							Shift: &parser.Shift{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewFunctionCall(
+				BitwiseLeftShiftFunctionName,
+				[]expressions.Expression{
+					expressions.NewNumber(5),
+					expressions.NewFunctionCall(BitwiseRightShiftFunctionName, []expressions.Expression{
+						expressions.NewNumber(12),
+						expressions.NewFunctionCall(BitwiseUnsignedRightShiftFunctionName, []expressions.Expression{
+							expressions.NewNumber(23),
+							expressions.NewNumber(42),
+						}),
+					}),
+				},
+			),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "Shift/nonempty/success/with setted states",
+			args: args{
+				shift: &parser.Shift{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{
+									Atom: &parser.Atom{
+										ConditionalExpression: &parser.ConditionalExpression{
+											ConditionalCases: []*parser.ConditionalCase{
+												{
+													Condition: &parser.Expression{
+														ListConstruction: &parser.ListConstruction{
+															Disjunction: &parser.Disjunction{
+																Conjunction: &parser.Conjunction{
+																	Equality: &parser.Equality{
+																		Comparison: &parser.Comparison{
+																			Addition: &parser.Addition{
+																				Multiplication: &parser.Multiplication{
+																					Unary: &parser.Unary{
+																						Accessor: &parser.Accessor{
+																							Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
+												},
+												{
+													Condition: &parser.Expression{
+														ListConstruction: &parser.ListConstruction{
+															Disjunction: &parser.Disjunction{
+																Conjunction: &parser.Conjunction{
+																	Equality: &parser.Equality{
+																		Comparison: &parser.Comparison{
+																			Addition: &parser.Addition{
+																				Multiplication: &parser.Multiplication{
+																					Unary: &parser.Unary{
+																						Accessor: &parser.Accessor{
+																							Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Operation: "<<",
+					Shift: &parser.Shift{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{
+										Atom: &parser.Atom{
+											ConditionalExpression: &parser.ConditionalExpression{
+												ConditionalCases: []*parser.ConditionalCase{
+													{
+														Condition: &parser.Expression{
+															ListConstruction: &parser.ListConstruction{
+																Disjunction: &parser.Disjunction{
+																	Conjunction: &parser.Conjunction{
+																		Equality: &parser.Equality{
+																			Comparison: &parser.Comparison{
+																				Addition: &parser.Addition{
+																					Multiplication: &parser.Multiplication{
+																						Unary: &parser.Unary{
+																							Accessor: &parser.Accessor{
+																								Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																							},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
+													},
+													{
+														Condition: &parser.Expression{
+															ListConstruction: &parser.ListConstruction{
+																Disjunction: &parser.Disjunction{
+																	Conjunction: &parser.Conjunction{
+																		Equality: &parser.Equality{
+																			Comparison: &parser.Comparison{
+																				Addition: &parser.Addition{
+																					Multiplication: &parser.Multiplication{
+																						Unary: &parser.Unary{
+																							Accessor: &parser.Accessor{
+																								Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																							},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+														Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewFunctionCall(
+				BitwiseLeftShiftFunctionName,
+				[]expressions.Expression{
+					expressions.NewConditionalExpression([]expressions.ConditionalCase{
+						{
+							Condition: expressions.NewNumber(23),
+							Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
+						},
+						{
+							Condition: expressions.NewNumber(42),
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+						},
+					}),
+					expressions.NewConditionalExpression([]expressions.ConditionalCase{
+						{
+							Condition: expressions.NewNumber(24),
+							Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+						},
+						{
+							Condition: expressions.NewNumber(43),
+							Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
+						},
+					}),
+				},
+			),
+			wantSettedStates: mapset.NewSet("one", "two", "three"),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "Shift/nonempty/error",
+			args: args{
+				shift: &parser.Shift{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(5)}},
+							},
+						},
+					},
+					Operation: "<<",
+					Shift: &parser.Shift{
+						Addition: &parser.Addition{
+							Multiplication: &parser.Multiplication{
+								Unary: &parser.Unary{
+									Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+								},
+							},
+						},
+						Operation: ">>",
+						Shift: &parser.Shift{
+							Addition: &parser.Addition{
+								Multiplication: &parser.Multiplication{
+									Unary: &parser.Unary{
+										Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+									},
+								},
+							},
+							Operation: ">>>",
+							Shift: &parser.Shift{
+								Addition: &parser.Addition{
+									Multiplication: &parser.Multiplication{
+										Unary: &parser.Unary{
+											Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression:   nil,
+			wantSettedStates: nil,
+			wantErr:          assert.Error,
+		},
+		{
+			name: "Shift/empty/success",
+			args: args{
+				shift: &parser.Shift{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression:   expressions.NewNumber(23),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "Shift/empty/success/with setted states",
+			args: args{
+				shift: &parser.Shift{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{
+									Atom: &parser.Atom{
+										ConditionalExpression: &parser.ConditionalExpression{
+											ConditionalCases: []*parser.ConditionalCase{
+												{
+													Condition: &parser.Expression{
+														ListConstruction: &parser.ListConstruction{
+															Disjunction: &parser.Disjunction{
+																Conjunction: &parser.Conjunction{
+																	Equality: &parser.Equality{
+																		Comparison: &parser.Comparison{
+																			Addition: &parser.Addition{
+																				Multiplication: &parser.Multiplication{
+																					Unary: &parser.Unary{
+																						Accessor: &parser.Accessor{
+																							Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
+												},
+												{
+													Condition: &parser.Expression{
+														ListConstruction: &parser.ListConstruction{
+															Disjunction: &parser.Disjunction{
+																Conjunction: &parser.Conjunction{
+																	Equality: &parser.Equality{
+																		Comparison: &parser.Comparison{
+																			Addition: &parser.Addition{
+																				Multiplication: &parser.Multiplication{
+																					Unary: &parser.Unary{
+																						Accessor: &parser.Accessor{
+																							Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+													Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(23),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
+				},
+				{
+					Condition: expressions.NewNumber(42),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+				},
+			}),
+			wantSettedStates: mapset.NewSet("one", "two"),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "Shift/empty/error",
+			args: args{
+				shift: &parser.Shift{
+					Addition: &parser.Addition{
+						Multiplication: &parser.Multiplication{
+							Unary: &parser.Unary{
+								Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression:   nil,
+			wantSettedStates: nil,
+			wantErr:          assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotSettedStates, gotErr :=
+				translateShift(data.args.shift, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateAddition(test *testing.T) {
 	type args struct {
 		addition            *parser.Addition

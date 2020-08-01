@@ -14,22 +14,25 @@ import (
 const (
 	EmptyListConstantName = "__empty_list__"
 
-	ListConstructionFunctionName   = "__cons__"
-	EqualFunctionName              = "__eq__"
-	NotEqualFunctionName           = "__ne__"
-	LessFunctionName               = "__lt__"
-	LessOrEqualFunctionName        = "__le__"
-	GreaterFunctionName            = "__gt__"
-	GreaterOrEqualFunctionName     = "__ge__"
-	AdditionFunctionName           = "__add__"
-	SubtractionFunctionName        = "__sub__"
-	MultiplicationFunctionName     = "__mul__"
-	DivisionFunctionName           = "__div__"
-	ModuloFunctionName             = "__mod__"
-	ArithmeticNegationFunctionName = "__neg__"
-	BitwiseNegationFunctionName    = "__bitwise_not__"
-	LogicalNegationFunctionName    = "__logical_not__"
-	KeyAccessorFunctionName        = "__item__"
+	ListConstructionFunctionName          = "__cons__"
+	EqualFunctionName                     = "__eq__"
+	NotEqualFunctionName                  = "__ne__"
+	LessFunctionName                      = "__lt__"
+	LessOrEqualFunctionName               = "__le__"
+	GreaterFunctionName                   = "__gt__"
+	GreaterOrEqualFunctionName            = "__ge__"
+	BitwiseLeftShiftFunctionName          = "__lshift__"
+	BitwiseRightShiftFunctionName         = "__rshift__"
+	BitwiseUnsignedRightShiftFunctionName = "__urshift__"
+	AdditionFunctionName                  = "__add__"
+	SubtractionFunctionName               = "__sub__"
+	MultiplicationFunctionName            = "__mul__"
+	DivisionFunctionName                  = "__div__"
+	ModuloFunctionName                    = "__mod__"
+	ArithmeticNegationFunctionName        = "__neg__"
+	BitwiseNegationFunctionName           = "__bitwise_not__"
+	LogicalNegationFunctionName           = "__logical_not__"
+	KeyAccessorFunctionName               = "__item__"
 )
 
 func translateExpression(
@@ -205,6 +208,44 @@ func translateComparison(
 		functionName = GreaterFunctionName
 	case ">=":
 		functionName = GreaterOrEqualFunctionName
+	}
+
+	expression =
+		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
+}
+
+func translateShift(
+	shift *parser.Shift,
+	declaredIdentifiers mapset.Set,
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err := translateAddition(shift.Addition, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the addition")
+	}
+	if shift.Shift == nil {
+		return argumentOne, settedStates, nil
+	}
+
+	argumentTwo, settedStates2, err := translateShift(shift.Shift, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the shift")
+	}
+
+	var functionName string
+	switch shift.Operation {
+	case "<<":
+		functionName = BitwiseLeftShiftFunctionName
+	case ">>":
+		functionName = BitwiseRightShiftFunctionName
+	case ">>>":
+		functionName = BitwiseUnsignedRightShiftFunctionName
 	}
 
 	expression =

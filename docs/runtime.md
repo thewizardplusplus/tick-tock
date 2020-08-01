@@ -37,6 +37,9 @@
     - `__mod__(x: num, y: num): num` &mdash; остаток от деления;
     - битовые функции:
       - `__bitwise_not__(x: num): num` &mdash; побитовое отрицание;
+      - `__lshift__(x: num, y: num): num` &mdash; сдвиг влево;
+      - `__rshift__(x: num, y: num): num` &mdash; сдвиг вправо;
+      - `__urshift__(x: num, y: num): num` &mdash; беззнаковый сдвиг вправо;
     - математические функции:
       - `floor(x: num): num`;
       - `ceil(x: num): num`;

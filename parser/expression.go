@@ -60,6 +60,13 @@ type Comparison struct {
 	Comparison *Comparison `parser:"@@ ]"`
 }
 
+// Shift ...
+type Shift struct {
+	Addition  *Addition `parser:"@@"`
+	Operation string    `parser:"[ @( \"<\" \"<\" | \">\" \">\" [ \">\" ] )"`
+	Shift     *Shift    `parser:"@@ ]"`
+}
+
 // Addition ...
 type Addition struct {
 	Multiplication *Multiplication `parser:"@@"`

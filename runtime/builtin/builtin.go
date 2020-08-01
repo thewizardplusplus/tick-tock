@@ -98,6 +98,18 @@ var (
 			booleanResult := compareResult == types.Greater || compareResult == types.Equal
 			return types.NewBooleanFromGoBool(booleanResult), nil
 		},
+		translator.BitwiseLeftShiftFunctionName: func(a float64, b float64) (float64, error) {
+			return float64(int64(a) << uint64(b)), nil
+		},
+		translator.BitwiseRightShiftFunctionName: func(a float64, b float64) (float64, error) {
+			return float64(int64(a) >> uint64(b)), nil
+		},
+		translator.BitwiseUnsignedRightShiftFunctionName: func(a float64, b float64) (float64, error) {
+			if a < 0 {
+				a = a + (1 << 32)
+			}
+			return float64(int64(a) >> uint64(b)), nil
+		},
 		translator.AdditionFunctionName: func(a interface{}, b interface{}) (interface{}, error) {
 			switch typedA := a.(type) {
 			case float64:

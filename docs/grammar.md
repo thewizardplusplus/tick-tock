@@ -44,6 +44,7 @@ disjunction = conjunction, ["||", disjunction];
 conjunction = equality, ["&&", conjunction];
 equality = comparison, [("==" | "!="), equality];
 comparison = addition, [("<=" | "<" | ">=" | ">"), comparison];
+shift = addition, [("<<" | ">>>" | ">>"), shift];
 addition = multiplication, [("+" | "-"), addition];
 multiplication = unary, [("*" | "/" | "%"), multiplication];
 unary = (("-" | "~" | "!"), unary) | accessor;

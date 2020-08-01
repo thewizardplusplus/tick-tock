@@ -297,6 +297,60 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
+			name: "left shift/positive",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseLeftShiftFunctionName,
+				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
+			),
+			wantResult: 16.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "left shift/negative",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseLeftShiftFunctionName,
+				[]expressions.Expression{expressions.NewNumber(-2), expressions.NewNumber(3)},
+			),
+			wantResult: -16.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "right shift/positive",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseRightShiftFunctionName,
+				[]expressions.Expression{expressions.NewNumber(16), expressions.NewNumber(3)},
+			),
+			wantResult: 2.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "right shift/negative",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseRightShiftFunctionName,
+				[]expressions.Expression{expressions.NewNumber(-16), expressions.NewNumber(3)},
+			),
+			wantResult: -2.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "unsigned right shift/positive",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseUnsignedRightShiftFunctionName,
+				[]expressions.Expression{expressions.NewNumber(16), expressions.NewNumber(3)},
+			),
+			wantResult: 2.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "unsigned right shift/negative",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseUnsignedRightShiftFunctionName,
+				[]expressions.Expression{expressions.NewNumber(-16), expressions.NewNumber(3)},
+			),
+			wantResult: 536870910.0,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "addition/success/float64",
 			expression: expressions.NewFunctionCall(
 				translator.AdditionFunctionName,
