@@ -40,6 +40,7 @@
       - `__lshift__(x: num, y: num): num` &mdash; сдвиг влево;
       - `__rshift__(x: num, y: num): num` &mdash; сдвиг вправо;
       - `__urshift__(x: num, y: num): num` &mdash; беззнаковый сдвиг вправо;
+      - `__and__(x: num, y: num): num` &mdash; побитовая конъюнкция;
     - математические функции:
       - `floor(x: num): num`;
       - `ceil(x: num): num`;

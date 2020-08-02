@@ -1021,6 +1021,52 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "BitwiseConjunction/nonempty",
+			args: args{"12 & 23 & 42", new(BitwiseConjunction)},
+			wantAST: &BitwiseConjunction{
+				Shift: &Shift{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+						},
+					},
+				},
+				BitwiseConjunction: &BitwiseConjunction{
+					Shift: &Shift{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							},
+						},
+					},
+					BitwiseConjunction: &BitwiseConjunction{
+						Shift: &Shift{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "BitwiseConjunction/empty",
+			args: args{"23", new(BitwiseConjunction)},
+			wantAST: &BitwiseConjunction{
+				Shift: &Shift{
+					Addition: &Addition{
+						Multiplication: &Multiplication{
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "Comparison/nonempty/less",
 			args: args{"12 < 23 <= 42", new(Comparison)},
 			wantAST: &Comparison{

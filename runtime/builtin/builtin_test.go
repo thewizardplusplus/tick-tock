@@ -297,6 +297,24 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
+			name: "bitwise conjunction/positive",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseConjunctionFunctionName,
+				[]expressions.Expression{expressions.NewNumber(23), expressions.NewNumber(42)},
+			),
+			wantResult: 2.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "bitwise conjunction/negative",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseConjunctionFunctionName,
+				[]expressions.Expression{expressions.NewNumber(-23), expressions.NewNumber(-42)},
+			),
+			wantResult: -64.0,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "left shift/positive",
 			expression: expressions.NewFunctionCall(
 				translator.BitwiseLeftShiftFunctionName,

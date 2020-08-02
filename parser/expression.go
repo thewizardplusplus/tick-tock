@@ -60,6 +60,12 @@ type Comparison struct {
 	Comparison *Comparison `parser:"@@ ]"`
 }
 
+// BitwiseConjunction ...
+type BitwiseConjunction struct {
+	Shift              *Shift              `parser:"@@"`
+	BitwiseConjunction *BitwiseConjunction `parser:"[ \"&\" @@ ]"`
+}
+
 // Shift ...
 type Shift struct {
 	Addition  *Addition `parser:"@@"`

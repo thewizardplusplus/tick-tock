@@ -21,6 +21,7 @@ const (
 	LessOrEqualFunctionName               = "__le__"
 	GreaterFunctionName                   = "__gt__"
 	GreaterOrEqualFunctionName            = "__ge__"
+	BitwiseConjunctionFunctionName        = "__and__"
 	BitwiseLeftShiftFunctionName          = "__lshift__"
 	BitwiseRightShiftFunctionName         = "__rshift__"
 	BitwiseUnsignedRightShiftFunctionName = "__urshift__"
@@ -212,6 +213,37 @@ func translateComparison(
 
 	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
+}
+
+func translateBitwiseConjunction(
+	bitwiseConjunction *parser.BitwiseConjunction,
+	declaredIdentifiers mapset.Set,
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err := translateShift(bitwiseConjunction.Shift, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the shift")
+	}
+	if bitwiseConjunction.BitwiseConjunction == nil {
+		return argumentOne, settedStates, nil
+	}
+
+	argumentTwo, settedStates2, err :=
+		translateBitwiseConjunction(bitwiseConjunction.BitwiseConjunction, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the bitwise conjunction")
+	}
+
+	expression = expressions.NewFunctionCall(
+		BitwiseConjunctionFunctionName,
+		[]expressions.Expression{argumentOne, argumentTwo},
+	)
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil
