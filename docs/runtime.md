@@ -41,6 +41,7 @@
       - `__rshift__(x: num, y: num): num` &mdash; сдвиг вправо;
       - `__urshift__(x: num, y: num): num` &mdash; беззнаковый сдвиг вправо;
       - `__and__(x: num, y: num): num` &mdash; побитовая конъюнкция;
+      - `__xor__(x: num, y: num): num` &mdash; побитовая исключающая дизъюнкция;
     - математические функции:
       - `floor(x: num): num`;
       - `ceil(x: num): num`;

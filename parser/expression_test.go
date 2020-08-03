@@ -1067,6 +1067,60 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "BitwiseExclusiveDisjunction/nonempty",
+			args: args{"12 ^ 23 ^ 42", new(BitwiseExclusiveDisjunction)},
+			wantAST: &BitwiseExclusiveDisjunction{
+				BitwiseConjunction: &BitwiseConjunction{
+					Shift: &Shift{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+							},
+						},
+					},
+				},
+				BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+					BitwiseConjunction: &BitwiseConjunction{
+						Shift: &Shift{
+							Addition: &Addition{
+								Multiplication: &Multiplication{
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								},
+							},
+						},
+					},
+					BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+						BitwiseConjunction: &BitwiseConjunction{
+							Shift: &Shift{
+								Addition: &Addition{
+									Multiplication: &Multiplication{
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "BitwiseExclusiveDisjunction/empty",
+			args: args{"23", new(BitwiseExclusiveDisjunction)},
+			wantAST: &BitwiseExclusiveDisjunction{
+				BitwiseConjunction: &BitwiseConjunction{
+					Shift: &Shift{
+						Addition: &Addition{
+							Multiplication: &Multiplication{
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "Comparison/nonempty/less",
 			args: args{"12 < 23 <= 42", new(Comparison)},
 			wantAST: &Comparison{

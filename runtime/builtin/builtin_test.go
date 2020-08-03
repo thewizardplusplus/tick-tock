@@ -297,6 +297,24 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
+			name: "bitwise exclusive disjunction/positive",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseExclusiveDisjunctionFunctionName,
+				[]expressions.Expression{expressions.NewNumber(23), expressions.NewNumber(42)},
+			),
+			wantResult: 61.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "bitwise exclusive disjunction/negative",
+			expression: expressions.NewFunctionCall(
+				translator.BitwiseExclusiveDisjunctionFunctionName,
+				[]expressions.Expression{expressions.NewNumber(-23), expressions.NewNumber(-42)},
+			),
+			wantResult: 63.0,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "bitwise conjunction/positive",
 			expression: expressions.NewFunctionCall(
 				translator.BitwiseConjunctionFunctionName,

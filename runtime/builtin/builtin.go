@@ -98,6 +98,9 @@ var (
 			booleanResult := compareResult == types.Greater || compareResult == types.Equal
 			return types.NewBooleanFromGoBool(booleanResult), nil
 		},
+		translator.BitwiseExclusiveDisjunctionFunctionName: func(a float64, b float64) (float64, error) {
+			return float64(int64(a) ^ int64(b)), nil
+		},
 		translator.BitwiseConjunctionFunctionName: func(a float64, b float64) (float64, error) {
 			return float64(int64(a) & int64(b)), nil
 		},

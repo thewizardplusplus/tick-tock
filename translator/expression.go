@@ -14,26 +14,27 @@ import (
 const (
 	EmptyListConstantName = "__empty_list__"
 
-	ListConstructionFunctionName          = "__cons__"
-	EqualFunctionName                     = "__eq__"
-	NotEqualFunctionName                  = "__ne__"
-	LessFunctionName                      = "__lt__"
-	LessOrEqualFunctionName               = "__le__"
-	GreaterFunctionName                   = "__gt__"
-	GreaterOrEqualFunctionName            = "__ge__"
-	BitwiseConjunctionFunctionName        = "__and__"
-	BitwiseLeftShiftFunctionName          = "__lshift__"
-	BitwiseRightShiftFunctionName         = "__rshift__"
-	BitwiseUnsignedRightShiftFunctionName = "__urshift__"
-	AdditionFunctionName                  = "__add__"
-	SubtractionFunctionName               = "__sub__"
-	MultiplicationFunctionName            = "__mul__"
-	DivisionFunctionName                  = "__div__"
-	ModuloFunctionName                    = "__mod__"
-	ArithmeticNegationFunctionName        = "__neg__"
-	BitwiseNegationFunctionName           = "__bitwise_not__"
-	LogicalNegationFunctionName           = "__logical_not__"
-	KeyAccessorFunctionName               = "__item__"
+	ListConstructionFunctionName            = "__cons__"
+	EqualFunctionName                       = "__eq__"
+	NotEqualFunctionName                    = "__ne__"
+	LessFunctionName                        = "__lt__"
+	LessOrEqualFunctionName                 = "__le__"
+	GreaterFunctionName                     = "__gt__"
+	GreaterOrEqualFunctionName              = "__ge__"
+	BitwiseExclusiveDisjunctionFunctionName = "__xor__"
+	BitwiseConjunctionFunctionName          = "__and__"
+	BitwiseLeftShiftFunctionName            = "__lshift__"
+	BitwiseRightShiftFunctionName           = "__rshift__"
+	BitwiseUnsignedRightShiftFunctionName   = "__urshift__"
+	AdditionFunctionName                    = "__add__"
+	SubtractionFunctionName                 = "__sub__"
+	MultiplicationFunctionName              = "__mul__"
+	DivisionFunctionName                    = "__div__"
+	ModuloFunctionName                      = "__mod__"
+	ArithmeticNegationFunctionName          = "__neg__"
+	BitwiseNegationFunctionName             = "__bitwise_not__"
+	LogicalNegationFunctionName             = "__logical_not__"
+	KeyAccessorFunctionName                 = "__item__"
 )
 
 func translateExpression(
@@ -213,6 +214,40 @@ func translateComparison(
 
 	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
+}
+
+func translateBitwiseExclusiveDisjunction(
+	bitwiseExclusiveDisjunction *parser.BitwiseExclusiveDisjunction,
+	declaredIdentifiers mapset.Set,
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err :=
+		translateBitwiseConjunction(bitwiseExclusiveDisjunction.BitwiseConjunction, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the bitwise conjunction")
+	}
+	if bitwiseExclusiveDisjunction.BitwiseExclusiveDisjunction == nil {
+		return argumentOne, settedStates, nil
+	}
+
+	argumentTwo, settedStates2, err := translateBitwiseExclusiveDisjunction(
+		bitwiseExclusiveDisjunction.BitwiseExclusiveDisjunction,
+		declaredIdentifiers,
+	)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the bitwise exclusive disjunction")
+	}
+
+	expression = expressions.NewFunctionCall(
+		BitwiseExclusiveDisjunctionFunctionName,
+		[]expressions.Expression{argumentOne, argumentTwo},
+	)
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil

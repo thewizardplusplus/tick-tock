@@ -44,6 +44,7 @@ disjunction = conjunction, ["||", disjunction];
 conjunction = equality, ["&&", conjunction];
 equality = comparison, [("==" | "!="), equality];
 comparison = addition, [("<=" | "<" | ">=" | ">"), comparison];
+bitwise exclusive disjunction = bitwise conjunction, ["^", bitwise exclusive disjunction];
 bitwise conjunction = shift, ["&", bitwise conjunction];
 shift = addition, [("<<" | ">>>" | ">>"), shift];
 addition = multiplication, [("+" | "-"), addition];
