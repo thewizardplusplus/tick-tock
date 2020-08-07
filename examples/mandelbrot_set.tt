@@ -58,7 +58,21 @@ actor Render()
 actor Main()
   state __initialization__()
     message __initialize__()
-      let dimensions = [320, 240]
+      let width = num(env("WIDTH") || "320")
+      when
+        => width == nil
+          errln("Error: unable to parse the width.")
+          return
+      ;
+
+      let height = num(env("HEIGHT") || "240")
+      when
+        => height == nil
+          errln("Error: unable to parse the height.")
+          return
+      ;
+
+      let dimensions = [width, height]
       start PpmSerializer(dimensions, 255)
       send generate_point(dimensions)
     ;
