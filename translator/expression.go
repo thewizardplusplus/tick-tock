@@ -188,9 +188,10 @@ func translateComparison(
 	settedStates mapset.Set,
 	err error,
 ) {
-	argumentOne, settedStates, err := translateAddition(comparison.Addition, declaredIdentifiers)
+	argumentOne, settedStates, err :=
+		translateBitwiseDisjunction(comparison.BitwiseDisjunction, declaredIdentifiers)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the addition")
+		return nil, nil, errors.Wrap(err, "unable to translate the bitwise disjunction")
 	}
 	if comparison.Comparison == nil {
 		return argumentOne, settedStates, nil

@@ -43,7 +43,7 @@ list construction = disjunction, [":", list construction];
 disjunction = conjunction, ["||", disjunction];
 conjunction = equality, ["&&", conjunction];
 equality = comparison, [("==" | "!="), equality];
-comparison = addition, [("<=" | "<" | ">=" | ">"), comparison];
+comparison = bitwise disjunction, [("<=" | "<" | ">=" | ">"), comparison];
 bitwise disjunction = bitwise exclusive disjunction, ["|", bitwise disjunction];
 bitwise exclusive disjunction = bitwise conjunction, ["^", bitwise exclusive disjunction];
 bitwise conjunction = shift, ["&", bitwise conjunction];

@@ -55,9 +55,9 @@ type Equality struct {
 
 // Comparison ...
 type Comparison struct {
-	Addition   *Addition   `parser:"@@"`
-	Operation  string      `parser:"[ @( \"<\" \"=\" | \"<\" | \">\" \"=\" | \">\" )"`
-	Comparison *Comparison `parser:"@@ ]"`
+	BitwiseDisjunction *BitwiseDisjunction `parser:"@@"`
+	Operation          string              `parser:"[ @( \"<\" \"=\" | \"<\" | \">\" \"=\" | \">\" )"`
+	Comparison         *Comparison         `parser:"@@ ]"`
 }
 
 // BitwiseDisjunction ...

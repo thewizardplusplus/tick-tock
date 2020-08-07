@@ -31,9 +31,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 								Conjunction: &Conjunction{
 									Equality: &Equality{
 										Comparison: &Comparison{
-											Addition: &Addition{
-												Multiplication: &Multiplication{
-													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+											BitwiseDisjunction: &BitwiseDisjunction{
+												BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+													BitwiseConjunction: &BitwiseConjunction{
+														Shift: &Shift{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																},
+															},
+														},
+													},
 												},
 											},
 										},
@@ -65,9 +73,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -94,9 +110,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -123,9 +147,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -140,9 +172,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -157,9 +197,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -186,9 +234,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -203,9 +259,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -220,9 +284,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -247,10 +319,18 @@ func TestParseToAST_withProgram(test *testing.T) {
 								Conjunction: &Conjunction{
 									Equality: &Equality{
 										Comparison: &Comparison{
-											Addition: &Addition{
-												Multiplication: &Multiplication{
-													Unary: &Unary{
-														Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+											BitwiseDisjunction: &BitwiseDisjunction{
+												BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+													BitwiseConjunction: &BitwiseConjunction{
+														Shift: &Shift{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{
+																		Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -283,9 +363,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -312,9 +400,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -341,9 +437,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -358,9 +462,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -375,9 +487,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -404,9 +524,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -421,9 +549,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -438,9 +574,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -473,9 +617,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -502,9 +654,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -531,9 +691,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -548,9 +716,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -565,9 +741,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -594,9 +778,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -611,9 +803,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -628,9 +828,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 									Conjunction: &Conjunction{
 										Equality: &Equality{
 											Comparison: &Comparison{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												BitwiseDisjunction: &BitwiseDisjunction{
+													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+														BitwiseConjunction: &BitwiseConjunction{
+															Shift: &Shift{
+																Addition: &Addition{
+																	Multiplication: &Multiplication{
+																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																	},
+																},
+															},
+														},
 													},
 												},
 											},
@@ -660,10 +868,18 @@ func TestParseToAST_withProgram(test *testing.T) {
 							Conjunction: &Conjunction{
 								Equality: &Equality{
 									Comparison: &Comparison{
-										Addition: &Addition{
-											Multiplication: &Multiplication{
-												Unary: &Unary{
-													Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+										BitwiseDisjunction: &BitwiseDisjunction{
+											BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+												BitwiseConjunction: &BitwiseConjunction{
+													Shift: &Shift{
+														Addition: &Addition{
+															Multiplication: &Multiplication{
+																Unary: &Unary{
+																	Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+																},
+															},
+														},
+													},
 												},
 											},
 										},
