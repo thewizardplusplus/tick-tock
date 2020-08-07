@@ -20,14 +20,23 @@ actor PointGenerator()
   ;
 ;
 
+actor Render()
+  state __initialization__()
+    message point_generated(point)
+      let color = [random(), random(), random()]
+      send pixel_generated(point, color)
+    ;
+  ;
+;
+
 actor Main()
   state __initialization__()
     message __initialize__()
       send generate_point([3, 2])
     ;
 
-    message point_generated(point)
-      outln(str(point))
+    message pixel_generated(point, color)
+      outln(str([point, color]))
     ;
   ;
 ;
