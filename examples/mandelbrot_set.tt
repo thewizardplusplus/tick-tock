@@ -1,0 +1,33 @@
+actor PointGenerator()
+  state __initialization__()
+    message generate_point(dimensions, point)
+      let point = point || [0, 0]
+      send point_generated(point)
+
+      let point = when
+        => point[0] != dimensions[0] - 1
+          ([point[0] + 1, point[1]])
+        => true
+          when
+            => point[1] != dimensions[1] - 1
+              ([0, point[1] + 1])
+            => true
+              return
+          ;
+      ;
+      send generate_point(dimensions, point)
+    ;
+  ;
+;
+
+actor Main()
+  state __initialization__()
+    message __initialize__()
+      send generate_point([3, 2])
+    ;
+
+    message point_generated(point)
+      outln(str(point))
+    ;
+  ;
+;
