@@ -26,6 +26,10 @@ actor PointGenerator()
       let point = point || [0, 0]
       send point_generated(point)
 
+      let index = dimensions[0] * point[1] + point[0]
+      let progress = index / (dimensions[0] * dimensions[1])
+      send point_generation_progress(progress)
+
       let point = when
         => point[0] != dimensions[0] - 1
           ([point[0] + 1, point[1]])
@@ -57,6 +61,11 @@ actor Main()
       let dimensions = [320, 240]
       start PpmSerializer(dimensions, 255)
       send generate_point(dimensions)
+    ;
+
+    message point_generation_progress(progress)
+      let progress = round(100 * progress)
+      err("\rdone by " + str(progress) + "%")
     ;
   ;
 ;
