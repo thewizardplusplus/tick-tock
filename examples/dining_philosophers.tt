@@ -1,3 +1,5 @@
+// https://en.wikipedia.org/wiki/Dining_philosophers_problem
+
 class Fork(current_fork)
   state __initialization__()
     message initialize_fork()
