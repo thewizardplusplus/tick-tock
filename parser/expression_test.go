@@ -352,6 +352,363 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name:    "Atom/hash table definition/no items",
+			args:    args{"{}", new(Atom)},
+			wantAST: &Atom{HashTableDefinition: &HashTableDefinition{Entries: nil}},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/hash table definition/identifier/single entry",
+			args: args{"{x: 12}", new(Atom)},
+			wantAST: &Atom{
+				HashTableDefinition: &HashTableDefinition{
+					Entries: []*HashTableEntry{
+						{
+							Name: pointer.ToString("x"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/hash table definition/identifier/single entry/trailing comma",
+			args: args{"{x: 12,}", new(Atom)},
+			wantAST: &Atom{
+				HashTableDefinition: &HashTableDefinition{
+					Entries: []*HashTableEntry{
+						{
+							Name: pointer.ToString("x"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/hash table definition/identifier/few entries",
+			args: args{"{x: 12, y: 23, z: 42}", new(Atom)},
+			wantAST: &Atom{
+				HashTableDefinition: &HashTableDefinition{
+					Entries: []*HashTableEntry{
+						{
+							Name: pointer.ToString("x"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Name: pointer.ToString("y"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Name: pointer.ToString("z"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/hash table definition/identifier/few entries/trailing comma",
+			args: args{"{x: 12, y: 23, z: 42,}", new(Atom)},
+			wantAST: &Atom{
+				HashTableDefinition: &HashTableDefinition{
+					Entries: []*HashTableEntry{
+						{
+							Name: pointer.ToString("x"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Name: pointer.ToString("y"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Name: pointer.ToString("z"),
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/hash table definition/expression",
+			args: args{"{[test()]: 12}", new(Atom)},
+			wantAST: &Atom{
+				HashTableDefinition: &HashTableDefinition{
+					Entries: []*HashTableEntry{
+						{
+							Expression: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Value: &Expression{
+								ListConstruction: &ListConstruction{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Atom/function call/no arguments",
 			args:    args{"test()", new(Atom)},
 			wantAST: &Atom{FunctionCall: &FunctionCall{Name: "test"}},

@@ -119,6 +119,7 @@ type Atom struct {
 	Symbol                *string                `parser:"| @Char"`
 	String                *string                `parser:"| @String | @RawString"`
 	ListDefinition        *ListDefinition        `parser:"| @@"`
+	HashTableDefinition   *HashTableDefinition   `parser:"| @@"`
 	FunctionCall          *FunctionCall          `parser:"| @@"`
 	ConditionalExpression *ConditionalExpression `parser:"| @@"`
 	Identifier            *string                `parser:"| @Ident"`
@@ -128,6 +129,18 @@ type Atom struct {
 // ListDefinition ...
 type ListDefinition struct {
 	Items []*Expression `parser:"\"[\" [ @@ { \",\" @@ } [ \",\" ] ] \"]\""`
+}
+
+// HashTableDefinition ...
+type HashTableDefinition struct {
+	Entries []*HashTableEntry `parser:"\"{\" [ @@ { \",\" @@ } [ \",\" ] ] \"}\""`
+}
+
+// HashTableEntry ...
+type HashTableEntry struct {
+	Name       *string     `parser:"( @Ident"`
+	Expression *Expression `parser:"| \"[\" @@ \"]\" )"`
+	Value      *Expression `parser:"\":\" @@"`
 }
 
 // FunctionCall ...
