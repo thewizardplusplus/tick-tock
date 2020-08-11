@@ -7,6 +7,20 @@ import (
 // HashTable ...
 type HashTable map[interface{}]interface{}
 
+// Get ...
+func (table HashTable) Get(key interface{}) (interface{}, error) {
+	preparedKey, err := prepareKey(key)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to prepare the key for the hash table")
+	}
+
+	value, ok := table[preparedKey]
+	if !ok {
+		value = Nil{}
+	}
+	return value, nil
+}
+
 func prepareKey(key interface{}) (interface{}, error) {
 	switch typedKey := key.(type) {
 	case Nil, float64:
