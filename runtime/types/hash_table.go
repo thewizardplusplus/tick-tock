@@ -4,6 +4,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// HashTable ...
+type HashTable map[interface{}]interface{}
+
 func prepareKey(key interface{}) (interface{}, error) {
 	switch typedKey := key.(type) {
 	case Nil, float64:
