@@ -42,6 +42,19 @@ func (table HashTable) Set(key interface{}, value interface{}) error {
 	return nil
 }
 
+// Merge ...
+func (table HashTable) Merge(anotherTable HashTable) HashTable {
+	unionTable := make(HashTable)
+	for key, value := range table {
+		unionTable[key] = value
+	}
+	for key, value := range anotherTable {
+		unionTable[key] = value
+	}
+
+	return unionTable
+}
+
 func prepareKey(key interface{}) (interface{}, error) {
 	switch typedKey := key.(type) {
 	case Nil, float64:
