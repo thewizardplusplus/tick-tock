@@ -6,6 +6,85 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestHashTableGet(test *testing.T) {
+	type args struct {
+		key interface{}
+	}
+
+	for _, data := range []struct {
+		name      string
+		table     HashTable
+		args      args
+		wantValue interface{}
+		wantErr   assert.ErrorAssertionFunc
+	}{
+		{
+			name:  "success/existing key",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('o'),
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+			},
+			wantValue: "two",
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "success/nonexistent key",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('f'),
+					Tail: &Pair{
+						Head: float64('i'),
+						Tail: &Pair{
+							Head: float64('v'),
+							Tail: &Pair{
+								Head: float64('e'),
+								Tail: nil,
+							},
+						},
+					},
+				},
+			},
+			wantValue: Nil{},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "error",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: -23.0,
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+			},
+			wantValue: nil,
+			wantErr:   assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotValue, gotErr := data.table.Get(data.args.key)
+
+			assert.Equal(test, data.wantValue, gotValue)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestPrepareKey(test *testing.T) {
 	type args struct {
 		key interface{}
