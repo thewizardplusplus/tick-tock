@@ -44,7 +44,25 @@ func TestHashTableGet(test *testing.T) {
 		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
-			name:  "success/existing key",
+			name:  "success/empty",
+			table: nil,
+			args: args{
+				key: &Pair{
+					Head: float64('o'),
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+			},
+			wantValue: Nil{},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "success/nonempty/existing key",
 			table: HashTable{"one": "two", "three": "four"},
 			args: args{
 				key: &Pair{
@@ -62,7 +80,7 @@ func TestHashTableGet(test *testing.T) {
 			wantErr:   assert.NoError,
 		},
 		{
-			name:  "success/nonexistent key",
+			name:  "success/nonempty/nonexistent key",
 			table: HashTable{"one": "two", "three": "four"},
 			args: args{
 				key: &Pair{
