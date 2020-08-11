@@ -7,6 +7,11 @@ import (
 // HashTable ...
 type HashTable map[interface{}]interface{}
 
+// Size ...
+func (table HashTable) Size() int {
+	return len(table)
+}
+
 // Get ...
 func (table HashTable) Get(key interface{}) (interface{}, error) {
 	preparedKey, err := prepareKey(key)
