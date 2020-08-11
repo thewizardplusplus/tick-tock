@@ -230,6 +230,58 @@ func TestHashTableSet(test *testing.T) {
 	}
 }
 
+func TestHashTableMerge(test *testing.T) {
+	type args struct {
+		anotherTable HashTable
+	}
+
+	for _, data := range []struct {
+		name  string
+		table HashTable
+		args  args
+		want  HashTable
+	}{
+		{
+			name:  "both are empty",
+			table: nil,
+			args: args{
+				anotherTable: nil,
+			},
+			want: HashTable{},
+		},
+		{
+			name:  "first is nonempty",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				anotherTable: nil,
+			},
+			want: HashTable{"one": "two", "three": "four"},
+		},
+		{
+			name:  "second is nonempty",
+			table: nil,
+			args: args{
+				anotherTable: HashTable{"five": "six", "seven": "eight"},
+			},
+			want: HashTable{"five": "six", "seven": "eight"},
+		},
+		{
+			name:  "both are nonempty",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				anotherTable: HashTable{"five": "six", "seven": "eight"},
+			},
+			want: HashTable{"one": "two", "three": "four", "five": "six", "seven": "eight"},
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := data.table.Merge(data.args.anotherTable)
+
+			assert.Equal(test, data.want, got)
+		})
+	}
+}
+
 func TestPrepareKey(test *testing.T) {
 	type args struct {
 		key interface{}
