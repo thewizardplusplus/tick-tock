@@ -6,6 +6,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestHashTableSize(test *testing.T) {
+	for _, data := range []struct {
+		name  string
+		table HashTable
+		want  int
+	}{
+		{
+			name:  "empty",
+			table: nil,
+			want:  0,
+		},
+		{
+			name:  "nonempty",
+			table: HashTable{"one": "two", "three": "four"},
+			want:  2,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := data.table.Size()
+
+			assert.Equal(test, data.want, got)
+		})
+	}
+}
+
 func TestHashTableGet(test *testing.T) {
 	type args struct {
 		key interface{}
