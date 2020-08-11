@@ -21,6 +21,22 @@ func (table HashTable) Get(key interface{}) (interface{}, error) {
 	return value, nil
 }
 
+// Set ...
+func (table HashTable) Set(key interface{}, value interface{}) error {
+	preparedKey, err := prepareKey(key)
+	if err != nil {
+		return errors.Wrap(err, "unable to prepare the key for the hash table")
+	}
+
+	if value != (Nil{}) {
+		table[preparedKey] = value
+	} else {
+		delete(table, preparedKey)
+	}
+
+	return nil
+}
+
 func prepareKey(key interface{}) (interface{}, error) {
 	switch typedKey := key.(type) {
 	case Nil, float64:
