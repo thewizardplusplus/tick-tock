@@ -85,6 +85,108 @@ func TestHashTableGet(test *testing.T) {
 	}
 }
 
+func TestHashTableSet(test *testing.T) {
+	type args struct {
+		key   interface{}
+		value interface{}
+	}
+
+	for _, data := range []struct {
+		name      string
+		table     HashTable
+		args      args
+		wantTable HashTable
+		wantErr   assert.ErrorAssertionFunc
+	}{
+		{
+			name:  "success/existing key",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('o'),
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+				value: "five",
+			},
+			wantTable: HashTable{"one": "five", "three": "four"},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "success/nonexistent key",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('f'),
+					Tail: &Pair{
+						Head: float64('i'),
+						Tail: &Pair{
+							Head: float64('v'),
+							Tail: &Pair{
+								Head: float64('e'),
+								Tail: nil,
+							},
+						},
+					},
+				},
+				value: "six",
+			},
+			wantTable: HashTable{"one": "two", "three": "four", "five": "six"},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "success/Nil key",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('o'),
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+				value: Nil{},
+			},
+			wantTable: HashTable{"three": "four"},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "error/incorrect rune",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: -23.0,
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+				value: "five",
+			},
+			wantTable: HashTable{"one": "two", "three": "four"},
+			wantErr:   assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotErr := data.table.Set(data.args.key, data.args.value)
+
+			assert.Equal(test, data.wantTable, data.table)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestPrepareKey(test *testing.T) {
 	type args struct {
 		key interface{}
