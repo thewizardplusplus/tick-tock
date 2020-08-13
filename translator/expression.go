@@ -12,9 +12,11 @@ import (
 
 // ...
 const (
-	EmptyListConstantName = "__empty_list__"
+	EmptyListConstantName      = "__empty_list__"
+	EmptyHashTableConstantName = "__empty_hash__"
 
 	ListConstructionFunctionName            = "__cons__"
+	HashTableConstructionFunctionName       = "__with__"
 	EqualFunctionName                       = "__eq__"
 	NotEqualFunctionName                    = "__ne__"
 	LessFunctionName                        = "__lt__"
@@ -580,6 +582,59 @@ func translateListDefinition(
 	}
 
 	return argumentTwo, settedStates, nil
+}
+
+func translateHashTableDefinition(
+	hashTableDefinition *parser.HashTableDefinition,
+	declaredIdentifiers mapset.Set,
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne := expressions.Expression(expressions.NewIdentifier(EmptyHashTableConstantName))
+	settedStates = mapset.NewSet()
+	for index, entry := range hashTableDefinition.Entries {
+		var argumentTwo expressions.Expression
+		var settedStates2 mapset.Set
+		switch {
+		case entry.Name != nil:
+			identifier := *entry.Name
+			if !declaredIdentifiers.Contains(identifier) {
+				return nil, nil, errors.Errorf("unknown identifier %s", identifier)
+			}
+
+			argumentTwo = expressions.NewIdentifier(identifier)
+			settedStates2 = mapset.NewSet()
+		case entry.Expression != nil:
+			argumentTwo, settedStates2, err = translateExpression(entry.Expression, declaredIdentifiers)
+			if err != nil {
+				return nil, nil, errors.Wrapf(
+					err,
+					"unable to translate the key #%d for the hash table definition",
+					index,
+				)
+			}
+		}
+
+		argumentThree, settedStates3, err := translateExpression(entry.Value, declaredIdentifiers)
+		if err != nil {
+			return nil, nil, errors.Wrapf(
+				err,
+				"unable to translate the value #%d for the hash table definition",
+				index,
+			)
+		}
+
+		argumentOne = expressions.NewFunctionCall(
+			HashTableConstructionFunctionName,
+			[]expressions.Expression{argumentOne, argumentTwo, argumentThree},
+		)
+		settedStates = settedStates.Union(settedStates2)
+		settedStates = settedStates.Union(settedStates3)
+	}
+
+	return argumentOne, settedStates, nil
 }
 
 func translateFunctionCall(
