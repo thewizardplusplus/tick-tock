@@ -26,7 +26,7 @@ func NewStartCommand(
 func (command StartCommand) Run(context context.Context) (result interface{}, err error) {
 	actorFactory, err := command.actorFactory.Evaluate(context)
 	if err != nil {
-		return nil, errors.Wrapf(err, "unable to evaluate the actor class for the start command")
+		return nil, errors.Wrap(err, "unable to evaluate the actor class for the start command")
 	}
 
 	typedActorFactory, ok := actorFactory.(runtime.ConcurrentActorFactory)
