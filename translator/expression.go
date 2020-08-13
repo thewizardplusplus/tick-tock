@@ -532,6 +532,12 @@ func translateAtom(
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to translate the list definition")
 		}
+	case atom.HashTableDefinition != nil:
+		expression, settedStates, err =
+			translateHashTableDefinition(atom.HashTableDefinition, declaredIdentifiers)
+		if err != nil {
+			return nil, nil, errors.Wrap(err, "unable to translate the hash table definition")
+		}
 	case atom.FunctionCall != nil:
 		expression, settedStates, err = translateFunctionCall(atom.FunctionCall, declaredIdentifiers)
 		if err != nil {
