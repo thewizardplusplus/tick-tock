@@ -33,27 +33,24 @@ func TestHashTableSize(test *testing.T) {
 
 func TestHashTableKeys(test *testing.T) {
 	for _, data := range []struct {
-		name     string
-		table    HashTable
-		wantKeys []interface{}
-		wantErr  assert.ErrorAssertionFunc
+		name  string
+		table HashTable
+		want  []interface{}
 	}{
 		{
-			name:     "success/Nil",
-			table:    HashTable{Nil{}: "test"},
-			wantKeys: []interface{}{Nil{}},
-			wantErr:  assert.NoError,
+			name:  "Nil",
+			table: HashTable{Nil{}: "test"},
+			want:  []interface{}{Nil{}},
 		},
 		{
-			name:     "success/float64",
-			table:    HashTable{23.0: "one", 42.0: "two"},
-			wantKeys: []interface{}{23.0, 42.0},
-			wantErr:  assert.NoError,
+			name:  "float64",
+			table: HashTable{23.0: "one", 42.0: "two"},
+			want:  []interface{}{23.0, 42.0},
 		},
 		{
-			name:  "success/string",
+			name:  "string",
 			table: HashTable{"one": "two", "three": "four"},
-			wantKeys: []interface{}{
+			want: []interface{}{
 				&Pair{
 					Head: float64('o'),
 					Tail: &Pair{
@@ -81,20 +78,12 @@ func TestHashTableKeys(test *testing.T) {
 					},
 				},
 			},
-			wantErr: assert.NoError,
-		},
-		{
-			name:     "error",
-			table:    HashTable{nil: "test"},
-			wantKeys: nil,
-			wantErr:  assert.Error,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotKeys, gotErr := data.table.Keys()
+			got := data.table.Keys()
 
-			assert.ElementsMatch(test, data.wantKeys, gotKeys)
-			data.wantErr(test, gotErr)
+			assert.ElementsMatch(test, data.want, got)
 		})
 	}
 }

@@ -13,21 +13,17 @@ func (table HashTable) Size() int {
 }
 
 // Keys ...
-func (table HashTable) Keys() ([]interface{}, error) {
+func (table HashTable) Keys() []interface{} {
 	var keys []interface{}
 	for key := range table {
-		switch typedKey := key.(type) {
-		case Nil, float64:
-		case string:
-			key = NewPairFromText(typedKey)
-		default:
-			return nil, errors.Errorf("unsupported type %T of the key for the hash table", key)
+		if keyAsString, ok := key.(string); ok {
+			key = NewPairFromText(keyAsString)
 		}
 
 		keys = append(keys, key)
 	}
 
-	return keys, nil
+	return keys
 }
 
 // Get ...
