@@ -69,6 +69,23 @@ func (table HashTable) Merge(anotherTable HashTable) HashTable {
 	return unionTable
 }
 
+// DeepMap ...
+func (table HashTable) DeepMap() HashTable {
+	result := make(HashTable)
+	for key, value := range table {
+		switch typedValue := value.(type) {
+		case *Pair:
+			value = typedValue.DeepSlice()
+		case HashTable:
+			value = typedValue.DeepMap()
+		}
+
+		result[key] = value
+	}
+
+	return result
+}
+
 func prepareKey(key interface{}) (interface{}, error) {
 	switch typedKey := key.(type) {
 	case Nil, float64:
