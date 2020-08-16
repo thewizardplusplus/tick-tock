@@ -410,6 +410,11 @@ func TestPair_DeepSlice(test *testing.T) {
 			want: []interface{}{"one", []interface{}{"two", "three"}},
 		},
 		{
+			name: "nonempty pair/with a hash table",
+			pair: &Pair{"one", &Pair{HashTable{"two": "three", "four": "five"}, nil}},
+			want: []interface{}{"one", HashTable{"two": "three", "four": "five"}},
+		},
+		{
 			name: "empty pair",
 			pair: nil,
 			want: nil,
