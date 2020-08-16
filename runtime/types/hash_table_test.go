@@ -339,6 +339,84 @@ func TestHashTableMerge(test *testing.T) {
 	}
 }
 
+func TestHashTableDeepMap(test *testing.T) {
+	for _, data := range []struct {
+		name  string
+		table HashTable
+		want  HashTable
+	}{
+		{
+			name:  "success",
+			table: HashTable{"one": "two", "three": "four"},
+			want:  HashTable{"one": "two", "three": "four"},
+		},
+		{
+			name: "success with a pair",
+			table: HashTable{
+				"test": &Pair{
+					Head: float64('t'),
+					Tail: &Pair{
+						Head: float64('e'),
+						Tail: &Pair{
+							Head: float64('s'),
+							Tail: &Pair{
+								Head: float64('t'),
+								Tail: nil,
+							},
+						},
+					},
+				},
+			},
+			want: HashTable{
+				"test": []interface{}{float64('t'), float64('e'), float64('s'), float64('t')},
+			},
+		},
+		{
+			name: "success with a hash table",
+			table: HashTable{
+				"test": HashTable{"one": "two", "three": "four"},
+			},
+			want: HashTable{
+				"test": HashTable{"one": "two", "three": "four"},
+			},
+		},
+		{
+			name: "success with a hash table that contains a pair",
+			table: HashTable{
+				"one": HashTable{
+					"two": &Pair{
+						Head: float64('t'),
+						Tail: &Pair{
+							Head: float64('h'),
+							Tail: &Pair{
+								Head: float64('r'),
+								Tail: &Pair{
+									Head: float64('e'),
+									Tail: &Pair{
+										Head: float64('e'),
+										Tail: nil,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: HashTable{
+				"one": HashTable{
+					"two": []interface{}{float64('t'), float64('h'), float64('r'), float64('e'), float64('e')},
+				},
+			},
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := data.table.DeepMap()
+
+			assert.Equal(test, data.want, got)
+		})
+	}
+}
+
 func TestPrepareKey(test *testing.T) {
 	type args struct {
 		key interface{}
