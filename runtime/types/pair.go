@@ -120,6 +120,8 @@ func (pair *Pair) DeepSlice() []interface{} {
 	switch typedHead := pair.Head.(type) {
 	case *Pair:
 		head = typedHead.DeepSlice()
+	case HashTable:
+		head = typedHead.DeepMap()
 	default:
 		head = typedHead
 	}
