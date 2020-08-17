@@ -44,12 +44,20 @@ func (pair *Pair) Size() int {
 
 // Equals ...
 func (pair *Pair) Equals(sample *Pair) (bool, error) {
-	result, err := Equals(pair, sample)
-	if err != nil {
-		return false, errors.Wrap(err, "unable to compare pairs for equality")
+	if pair == nil || sample == nil {
+		return pair == nil && sample == nil, nil
 	}
 
-	return result, nil
+	equals, err := Equals(pair.Head, sample.Head)
+	if err != nil {
+		return false, errors.Wrap(err, "unable to compare some items for equality")
+	}
+	if !equals {
+		return false, nil
+	}
+
+	// heads are equal, continue
+	return pair.Tail.Equals(sample.Tail)
 }
 
 // Compare ...

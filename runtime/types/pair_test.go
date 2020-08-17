@@ -130,10 +130,28 @@ func TestPair_Equals(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "error",
+			name: "success/not equal/shorter",
 			pair: &Pair{12.0, &Pair{23.0, nil}},
 			args: args{
-				sample: &Pair{12.0, &Pair{Nil{}, nil}},
+				sample: &Pair{12.0, &Pair{23.0, &Pair{42.0, nil}}},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/not equal/longer",
+			pair: &Pair{12.0, &Pair{23.0, &Pair{42.0, nil}}},
+			args: args{
+				sample: &Pair{12.0, &Pair{23.0, nil}},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "error",
+			pair: &Pair{12.0, &Pair{func() {}, nil}},
+			args: args{
+				sample: &Pair{12.0, &Pair{23.0, nil}},
 			},
 			wantResult: assert.False,
 			wantErr:    assert.Error,
