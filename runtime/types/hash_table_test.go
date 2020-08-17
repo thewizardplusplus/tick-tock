@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHashTableSize(test *testing.T) {
+func TestHashTable_Size(test *testing.T) {
 	for _, data := range []struct {
 		name  string
 		table HashTable
@@ -31,7 +31,7 @@ func TestHashTableSize(test *testing.T) {
 	}
 }
 
-func TestHashTableKeys(test *testing.T) {
+func TestHashTable_Keys(test *testing.T) {
 	for _, data := range []struct {
 		name  string
 		table HashTable
@@ -88,7 +88,7 @@ func TestHashTableKeys(test *testing.T) {
 	}
 }
 
-func TestHashTableGet(test *testing.T) {
+func TestHashTable_Get(test *testing.T) {
 	type args struct {
 		key interface{}
 	}
@@ -185,7 +185,7 @@ func TestHashTableGet(test *testing.T) {
 	}
 }
 
-func TestHashTableSet(test *testing.T) {
+func TestHashTable_Set(test *testing.T) {
 	type args struct {
 		key   interface{}
 		value interface{}
@@ -287,7 +287,7 @@ func TestHashTableSet(test *testing.T) {
 	}
 }
 
-func TestHashTableMerge(test *testing.T) {
+func TestHashTable_Merge(test *testing.T) {
 	type args struct {
 		anotherTable HashTable
 	}
@@ -339,7 +339,7 @@ func TestHashTableMerge(test *testing.T) {
 	}
 }
 
-func TestHashTableDeepMap(test *testing.T) {
+func TestHashTable_DeepMap(test *testing.T) {
 	for _, data := range []struct {
 		name  string
 		table HashTable
@@ -417,7 +417,7 @@ func TestHashTableDeepMap(test *testing.T) {
 	}
 }
 
-func TestPrepareKey(test *testing.T) {
+func Test_prepareKey(test *testing.T) {
 	type args struct {
 		key interface{}
 	}
