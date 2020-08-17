@@ -26,6 +26,30 @@ func (table HashTable) Keys() []interface{} {
 	return keys
 }
 
+// Equals ...
+func (table HashTable) Equals(sample HashTable) (bool, error) {
+	if len(table) != len(sample) {
+		return false, nil
+	}
+
+	for key, tableValue := range table {
+		sampleValue, ok := sample[key]
+		if !ok {
+			return false, nil
+		}
+
+		equals, err := Equals(tableValue, sampleValue)
+		if err != nil {
+			return false, errors.Wrap(err, "unable to compare some values of the hash table for equality")
+		}
+		if !equals {
+			return false, nil
+		}
+	}
+
+	return true, nil
+}
+
 // Get ...
 func (table HashTable) Get(key interface{}) (interface{}, error) {
 	preparedKey, err := prepareKey(key)
