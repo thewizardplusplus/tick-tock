@@ -25,7 +25,7 @@ func Equals(leftValue interface{}, rightValue interface{}) (bool, error) {
 	}
 
 	// if operands have different types, they aren't equal
-	switch leftValue.(type) {
+	switch typedLeftValue := leftValue.(type) {
 	case Nil:
 		if _, ok := rightValue.(Nil); !ok {
 			return false, nil
@@ -38,6 +38,18 @@ func Equals(leftValue interface{}, rightValue interface{}) (bool, error) {
 		if _, ok := rightValue.(*Pair); !ok {
 			return false, nil
 		}
+	case HashTable:
+		typedRightValue, ok := rightValue.(HashTable)
+		if !ok {
+			return false, nil
+		}
+
+		equals, err := typedLeftValue.Equals(typedRightValue)
+		if err != nil {
+			return false, errors.Wrap(err, "unable to compare hash tables for equality")
+		}
+
+		return equals, nil
 	default:
 		return false, errors.Errorf(
 			"unsupported type %T of the left value for comparison for equality",
