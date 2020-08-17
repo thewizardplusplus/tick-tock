@@ -40,7 +40,7 @@ func (table HashTable) Equals(sample HashTable) (bool, error) {
 
 		equals, err := Equals(tableValue, sampleValue)
 		if err != nil {
-			return false, errors.Wrap(err, "unable to compare some values of the hash table for equality")
+			return false, errors.Wrap(err, "unable to compare some values for equality")
 		}
 		if !equals {
 			return false, nil
@@ -54,7 +54,7 @@ func (table HashTable) Equals(sample HashTable) (bool, error) {
 func (table HashTable) Get(key interface{}) (interface{}, error) {
 	preparedKey, err := prepareKey(key)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to prepare the key for the hash table")
+		return nil, errors.Wrap(err, "unable to prepare the key")
 	}
 
 	value, ok := table[preparedKey]
@@ -68,7 +68,7 @@ func (table HashTable) Get(key interface{}) (interface{}, error) {
 func (table HashTable) Set(key interface{}, value interface{}) error {
 	preparedKey, err := prepareKey(key)
 	if err != nil {
-		return errors.Wrap(err, "unable to prepare the key for the hash table")
+		return errors.Wrap(err, "unable to prepare the key")
 	}
 
 	if value != (Nil{}) {
@@ -122,6 +122,6 @@ func prepareKey(key interface{}) (interface{}, error) {
 
 		return keyAsString, nil
 	default:
-		return nil, errors.Errorf("unsupported type %T of the key for the hash table", key)
+		return nil, errors.Errorf("unsupported type %T of the key", key)
 	}
 }
