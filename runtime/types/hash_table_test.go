@@ -88,6 +88,82 @@ func TestHashTable_Keys(test *testing.T) {
 	}
 }
 
+func TestHashTable_Equals(test *testing.T) {
+	type args struct {
+		sample HashTable
+	}
+
+	for _, data := range []struct {
+		name       string
+		table      HashTable
+		args       args
+		wantResult assert.BoolAssertionFunc
+		wantErr    assert.ErrorAssertionFunc
+	}{
+		{
+			name:  "success/equal",
+			table: HashTable{"one": 12.0, "two": 23.0},
+			args: args{
+				sample: HashTable{"one": 12.0, "two": 23.0},
+			},
+			wantResult: assert.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:  "success/not equal/by keys",
+			table: HashTable{"one": 12.0, "two": 23.0},
+			args: args{
+				sample: HashTable{"one": 12.0, "three": 23.0},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:  "success/not equal/by values",
+			table: HashTable{"one": 12.0, "two": 23.0},
+			args: args{
+				sample: HashTable{"one": 12.0, "two": 42.0},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:  "success/not equal/shorter",
+			table: HashTable{"one": 12.0, "two": 23.0},
+			args: args{
+				sample: HashTable{"one": 12.0, "two": 23.0, "three": 42.0},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:  "success/not equal/longer",
+			table: HashTable{"one": 12.0, "two": 23.0, "three": 42.0},
+			args: args{
+				sample: HashTable{"one": 12.0, "two": 23.0},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:  "error",
+			table: HashTable{"one": 12.0, "two": func() {}},
+			args: args{
+				sample: HashTable{"one": 12.0, "two": 23.0},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotResult, gotErr := data.table.Equals(data.args.sample)
+
+			data.wantResult(test, gotResult)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestHashTable_Get(test *testing.T) {
 	type args struct {
 		key interface{}
