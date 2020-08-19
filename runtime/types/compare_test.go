@@ -54,6 +54,15 @@ func TestEquals(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "success/equal/hash table",
+			args: args{
+				leftValue:  types.HashTable{"one": 12.0, "two": 23.0},
+				rightValue: types.HashTable{"one": 12.0, "two": 23.0},
+			},
+			wantResult: assert.True,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "success/not equal/same types",
 			args: args{
 				leftValue:  23.0,
@@ -81,6 +90,15 @@ func TestEquals(test *testing.T) {
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 				}(),
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "success/not equal/same types/hash table",
+			args: args{
+				leftValue:  types.HashTable{"one": 12.0, "two": 23.0},
+				rightValue: types.HashTable{"one": 12.0, "two": 42.0},
 			},
 			wantResult: assert.False,
 			wantErr:    assert.NoError,
@@ -129,6 +147,15 @@ func TestEquals(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "success/not equal/different types/hash table",
+			args: args{
+				leftValue:  types.HashTable{"one": 12.0, "two": 23.0},
+				rightValue: types.Nil{},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "error/unsupported type",
 			args: args{
 				leftValue:  func() {},
@@ -142,6 +169,15 @@ func TestEquals(test *testing.T) {
 			args: args{
 				leftValue:  &types.Pair{Head: 12.0, Tail: &types.Pair{Head: 23.0, Tail: nil}},
 				rightValue: &types.Pair{Head: 12.0, Tail: &types.Pair{Head: types.Nil{}, Tail: nil}},
+			},
+			wantResult: assert.False,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "error/unable to compare/hash table",
+			args: args{
+				leftValue:  types.HashTable{"one": 12.0, "two": func() {}},
+				rightValue: types.HashTable{"one": 12.0, "two": 23.0},
 			},
 			wantResult: assert.False,
 			wantErr:    assert.Error,
