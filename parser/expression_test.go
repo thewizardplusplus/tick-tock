@@ -22,13 +22,19 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Atom/number/integer",
 			args:    args{"23", new(Atom)},
-			wantAST: &Atom{Number: pointer.ToFloat64(23)},
+			wantAST: &Atom{IntegerNumber: pointer.ToInt64(23)},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "Atom/number/integer/hexadecimal",
+			args:    args{"0x23", new(Atom)},
+			wantAST: &Atom{IntegerNumber: pointer.ToInt64(0x23)},
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "Atom/number/floating-point",
 			args:    args{"2.3", new(Atom)},
-			wantAST: &Atom{Number: pointer.ToFloat64(2.3)},
+			wantAST: &Atom{FloatingPointNumber: pointer.ToFloat64(2.3)},
 			wantErr: assert.NoError,
 		},
 		{
@@ -103,7 +109,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -139,7 +147,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -175,7 +185,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -200,7 +212,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																		},
 																	},
 																},
 															},
@@ -225,7 +239,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																		},
 																	},
 																},
 															},
@@ -261,7 +277,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -286,7 +304,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																		},
 																	},
 																},
 															},
@@ -311,7 +331,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																		},
 																	},
 																},
 															},
@@ -354,7 +376,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -391,7 +415,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -428,7 +454,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -453,7 +481,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																		},
 																	},
 																},
 															},
@@ -478,7 +508,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																		},
 																	},
 																},
 															},
@@ -515,7 +547,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																		},
 																	},
 																},
 															},
@@ -540,7 +574,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																		},
 																	},
 																},
 															},
@@ -565,7 +601,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 															Shift: &Shift{
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
-																		Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																		Unary: &Unary{
+																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																		},
 																	},
 																},
 															},
@@ -602,7 +640,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -629,7 +669,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																					},
 																				},
 																			},
 																		},
@@ -656,7 +698,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																					},
 																				},
 																			},
 																		},
@@ -696,7 +740,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -734,7 +780,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -761,7 +809,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																					},
 																				},
 																			},
 																		},
@@ -788,7 +838,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																					},
 																				},
 																			},
 																		},
@@ -817,7 +869,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(13)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(13)}},
+																			},
 																		},
 																	},
 																},
@@ -844,7 +898,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(24)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(24)}},
+																					},
 																				},
 																			},
 																		},
@@ -871,7 +927,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(43)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(43)}},
+																					},
 																				},
 																			},
 																		},
@@ -900,7 +958,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(14)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(14)}},
+																			},
 																		},
 																	},
 																},
@@ -927,7 +987,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(25)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(25)}},
+																					},
 																				},
 																			},
 																		},
@@ -954,7 +1016,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Shift: &Shift{
 																			Addition: &Addition{
 																				Multiplication: &Multiplication{
-																					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(44)}}},
+																					Unary: &Unary{
+																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(44)}},
+																					},
 																				},
 																			},
 																		},
@@ -994,7 +1058,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -1021,7 +1087,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
 																		},
 																	},
 																},
@@ -1048,7 +1116,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																Shift: &Shift{
 																	Addition: &Addition{
 																		Multiplication: &Multiplication{
-																			Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																			},
 																		},
 																	},
 																},
@@ -1089,7 +1159,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 													Shift: &Shift{
 														Addition: &Addition{
 															Multiplication: &Multiplication{
-																Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																Unary: &Unary{
+																	Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																},
 															},
 														},
 													},
@@ -1123,7 +1195,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 														Shift: &Shift{
 															Addition: &Addition{
 																Multiplication: &Multiplication{
-																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+																	Unary: &Unary{
+																		Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																	},
 																},
 															},
 														},
@@ -1148,7 +1222,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 														Shift: &Shift{
 															Addition: &Addition{
 																Multiplication: &Multiplication{
-																	Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+																	Unary: &Unary{
+																		Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																	},
 																},
 															},
 														},
@@ -1168,7 +1244,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Accessor/empty",
 			args:    args{"23", new(Accessor)},
-			wantAST: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}},
+			wantAST: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -1180,7 +1256,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Operation: "~",
 					Unary: &Unary{
 						Operation: "!",
-						Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 					},
 				},
 			},
@@ -1189,23 +1265,23 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Unary/empty",
 			args:    args{"23", new(Unary)},
-			wantAST: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+			wantAST: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Multiplication/nonempty",
 			args: args{"5 * 12 / 23 % 42", new(Multiplication)},
 			wantAST: &Multiplication{
-				Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(5)}}},
+				Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(5)}}},
 				Operation: "*",
 				Multiplication: &Multiplication{
-					Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+					Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 					Operation: "/",
 					Multiplication: &Multiplication{
-						Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						Unary:     &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 						Operation: "%",
 						Multiplication: &Multiplication{
-							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 						},
 					},
 				},
@@ -1216,7 +1292,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "Multiplication/empty",
 			args: args{"23", new(Multiplication)},
 			wantAST: &Multiplication{
-				Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+				Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -1225,17 +1301,17 @@ func TestParseToAST_withExpression(test *testing.T) {
 			args: args{"12 + 23 - 42", new(Addition)},
 			wantAST: &Addition{
 				Multiplication: &Multiplication{
-					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 				},
 				Operation: "+",
 				Addition: &Addition{
 					Multiplication: &Multiplication{
-						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 					},
 					Operation: "-",
 					Addition: &Addition{
 						Multiplication: &Multiplication{
-							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 						},
 					},
 				},
@@ -1247,7 +1323,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			args: args{"23", new(Addition)},
 			wantAST: &Addition{
 				Multiplication: &Multiplication{
-					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+					Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 				},
 			},
 			wantErr: assert.NoError,
@@ -1258,28 +1334,28 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Shift{
 				Addition: &Addition{
 					Multiplication: &Multiplication{
-						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(5)}}},
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(5)}}},
 					},
 				},
 				Operation: "<<",
 				Shift: &Shift{
 					Addition: &Addition{
 						Multiplication: &Multiplication{
-							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 						},
 					},
 					Operation: ">>",
 					Shift: &Shift{
 						Addition: &Addition{
 							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 							},
 						},
 						Operation: ">>>",
 						Shift: &Shift{
 							Addition: &Addition{
 								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 								},
 							},
 						},
@@ -1294,7 +1370,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Shift{
 				Addition: &Addition{
 					Multiplication: &Multiplication{
-						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+						Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 					},
 				},
 			},
@@ -1307,7 +1383,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 				Shift: &Shift{
 					Addition: &Addition{
 						Multiplication: &Multiplication{
-							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 						},
 					},
 				},
@@ -1315,7 +1391,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Shift: &Shift{
 						Addition: &Addition{
 							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 							},
 						},
 					},
@@ -1323,7 +1399,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 						Shift: &Shift{
 							Addition: &Addition{
 								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 								},
 							},
 						},
@@ -1339,7 +1415,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 				Shift: &Shift{
 					Addition: &Addition{
 						Multiplication: &Multiplication{
-							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+							Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 						},
 					},
 				},
@@ -1354,7 +1430,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Shift: &Shift{
 						Addition: &Addition{
 							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 							},
 						},
 					},
@@ -1364,7 +1440,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 						Shift: &Shift{
 							Addition: &Addition{
 								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 								},
 							},
 						},
@@ -1374,7 +1450,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Shift: &Shift{
 								Addition: &Addition{
 									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 									},
 								},
 							},
@@ -1392,7 +1468,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Shift: &Shift{
 						Addition: &Addition{
 							Multiplication: &Multiplication{
-								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+								Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 							},
 						},
 					},
@@ -1409,7 +1485,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 						Shift: &Shift{
 							Addition: &Addition{
 								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 								},
 							},
 						},
@@ -1421,7 +1497,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Shift: &Shift{
 								Addition: &Addition{
 									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 									},
 								},
 							},
@@ -1433,7 +1509,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 								Shift: &Shift{
 									Addition: &Addition{
 										Multiplication: &Multiplication{
-											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 										},
 									},
 								},
@@ -1453,7 +1529,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 						Shift: &Shift{
 							Addition: &Addition{
 								Multiplication: &Multiplication{
-									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+									Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 								},
 							},
 						},
@@ -1472,7 +1548,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Shift: &Shift{
 								Addition: &Addition{
 									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 									},
 								},
 							},
@@ -1487,7 +1563,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 								Shift: &Shift{
 									Addition: &Addition{
 										Multiplication: &Multiplication{
-											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 										},
 									},
 								},
@@ -1502,7 +1578,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 									Shift: &Shift{
 										Addition: &Addition{
 											Multiplication: &Multiplication{
-												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 											},
 										},
 									},
@@ -1524,7 +1600,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Shift: &Shift{
 								Addition: &Addition{
 									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 									},
 								},
 							},
@@ -1539,7 +1615,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 								Shift: &Shift{
 									Addition: &Addition{
 										Multiplication: &Multiplication{
-											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 										},
 									},
 								},
@@ -1554,7 +1630,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 									Shift: &Shift{
 										Addition: &Addition{
 											Multiplication: &Multiplication{
-												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 											},
 										},
 									},
@@ -1576,7 +1652,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Shift: &Shift{
 								Addition: &Addition{
 									Multiplication: &Multiplication{
-										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+										Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 									},
 								},
 							},
@@ -1597,7 +1673,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 								Shift: &Shift{
 									Addition: &Addition{
 										Multiplication: &Multiplication{
-											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 										},
 									},
 								},
@@ -1614,7 +1690,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 									Shift: &Shift{
 										Addition: &Addition{
 											Multiplication: &Multiplication{
-												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 											},
 										},
 									},
@@ -1631,7 +1707,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 										Shift: &Shift{
 											Addition: &Addition{
 												Multiplication: &Multiplication{
-													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 												},
 											},
 										},
@@ -1655,7 +1731,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 								Shift: &Shift{
 									Addition: &Addition{
 										Multiplication: &Multiplication{
-											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+											Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 										},
 									},
 								},
@@ -1678,7 +1754,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 									Shift: &Shift{
 										Addition: &Addition{
 											Multiplication: &Multiplication{
-												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 											},
 										},
 									},
@@ -1696,7 +1772,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 										Shift: &Shift{
 											Addition: &Addition{
 												Multiplication: &Multiplication{
-													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 												},
 											},
 										},
@@ -1714,7 +1790,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 											Shift: &Shift{
 												Addition: &Addition{
 													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 													},
 												},
 											},
@@ -1740,7 +1816,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 									Shift: &Shift{
 										Addition: &Addition{
 											Multiplication: &Multiplication{
-												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+												Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 											},
 										},
 									},
@@ -1765,7 +1841,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 										Shift: &Shift{
 											Addition: &Addition{
 												Multiplication: &Multiplication{
-													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 												},
 											},
 										},
@@ -1785,7 +1861,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 											Shift: &Shift{
 												Addition: &Addition{
 													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 													},
 												},
 											},
@@ -1805,7 +1881,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 												Shift: &Shift{
 													Addition: &Addition{
 														Multiplication: &Multiplication{
-															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}}},
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
 														},
 													},
 												},
@@ -1833,7 +1909,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 										Shift: &Shift{
 											Addition: &Addition{
 												Multiplication: &Multiplication{
-													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+													Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 												},
 											},
 										},
@@ -1860,7 +1936,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 											Shift: &Shift{
 												Addition: &Addition{
 													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(12)}}},
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
 													},
 												},
 											},
@@ -1900,7 +1976,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																														Addition: &Addition{
 																															Multiplication: &Multiplication{
 																																Unary: &Unary{
-																																	Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}},
+																																	Accessor: &Accessor{
+																																		Atom: &Atom{IntegerNumber: pointer.ToInt64(23)},
+																																	},
 																																},
 																															},
 																														},
@@ -1927,7 +2005,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 																														Addition: &Addition{
 																															Multiplication: &Multiplication{
 																																Unary: &Unary{
-																																	Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(42)}},
+																																	Accessor: &Accessor{
+																																		Atom: &Atom{IntegerNumber: pointer.ToInt64(42)},
+																																	},
 																																},
 																															},
 																														},
@@ -1974,7 +2054,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 											Shift: &Shift{
 												Addition: &Addition{
 													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 													},
 												},
 											},
@@ -2003,7 +2083,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 												Shift: &Shift{
 													Addition: &Addition{
 														Multiplication: &Multiplication{
-															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{Number: pointer.ToFloat64(23)}}},
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
 														},
 													},
 												},
