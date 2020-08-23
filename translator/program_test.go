@@ -1816,7 +1816,9 @@ func TestTranslateCommands(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																				},
 																			},
 																		},
 																	},
@@ -1920,7 +1922,7 @@ func TestTranslateCommands(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																					},
 																																				},
 																																			},
@@ -1952,7 +1954,7 @@ func TestTranslateCommands(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																					},
 																																				},
 																																			},
@@ -2020,7 +2022,7 @@ func TestTranslateCommands(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(24)},
 																																					},
 																																				},
 																																			},
@@ -2052,7 +2054,7 @@ func TestTranslateCommands(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(43)},
 																																					},
 																																				},
 																																			},
@@ -2237,7 +2239,9 @@ func TestTranslateCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
@@ -2281,7 +2285,9 @@ func TestTranslateCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
@@ -2344,7 +2350,7 @@ func TestTranslateCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																					},
 																																				},
 																																			},
@@ -2376,7 +2382,7 @@ func TestTranslateCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																					},
 																																				},
 																																			},
@@ -2560,7 +2566,7 @@ func TestTranslateCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																					},
 																																				},
 																																			},
@@ -2592,7 +2598,7 @@ func TestTranslateCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																					},
 																																				},
 																																			},
@@ -2714,7 +2720,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																				},
 																			},
 																		},
 																	},
@@ -2741,7 +2749,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																				},
 																			},
 																		},
 																	},
@@ -2768,7 +2778,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																				},
 																			},
 																		},
 																	},
@@ -2837,7 +2849,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																						},
 																																					},
 																																				},
@@ -2869,7 +2881,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																						},
 																																					},
 																																				},
@@ -2935,7 +2947,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(24)},
 																																						},
 																																					},
 																																				},
@@ -2967,7 +2979,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(43)},
 																																						},
 																																					},
 																																				},
@@ -3054,7 +3066,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																				},
 																			},
 																		},
 																	},
@@ -3081,7 +3095,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																				},
 																			},
 																		},
 																	},
@@ -3156,7 +3172,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																				},
 																			},
 																		},
 																	},
@@ -3183,7 +3201,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																				},
 																			},
 																		},
 																	},
@@ -3210,7 +3230,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																				},
 																			},
 																		},
 																	},
@@ -3279,7 +3301,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																						},
 																																					},
 																																				},
@@ -3311,7 +3333,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																						},
 																																					},
 																																				},
@@ -3377,7 +3399,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(24)},
 																																						},
 																																					},
 																																				},
@@ -3409,7 +3431,7 @@ func TestTranslateCommand(test *testing.T) {
 																																				Multiplication: &parser.Multiplication{
 																																					Unary: &parser.Unary{
 																																						Accessor: &parser.Accessor{
-																																							Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																																							Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(43)},
 																																						},
 																																					},
 																																				},
@@ -3496,7 +3518,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																				},
 																			},
 																		},
 																	},
@@ -3523,7 +3547,9 @@ func TestTranslateCommand(test *testing.T) {
 																	Addition: &parser.Addition{
 																		Multiplication: &parser.Multiplication{
 																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																				},
 																			},
 																		},
 																	},
@@ -3670,7 +3696,7 @@ func TestTranslateCommand(test *testing.T) {
 																																		Multiplication: &parser.Multiplication{
 																																			Unary: &parser.Unary{
 																																				Accessor: &parser.Accessor{
-																																					Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																				},
 																																			},
 																																		},
@@ -3702,7 +3728,7 @@ func TestTranslateCommand(test *testing.T) {
 																																		Multiplication: &parser.Multiplication{
 																																			Unary: &parser.Unary{
 																																				Accessor: &parser.Accessor{
-																																					Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																				},
 																																			},
 																																		},
@@ -3856,7 +3882,9 @@ func TestTranslateStartCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																			},
 																		},
 																	},
 																},
@@ -3883,7 +3911,9 @@ func TestTranslateStartCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
@@ -3910,7 +3940,9 @@ func TestTranslateStartCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																			},
 																		},
 																	},
 																},
@@ -3977,7 +4009,7 @@ func TestTranslateStartCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																					},
 																																				},
 																																			},
@@ -4009,7 +4041,7 @@ func TestTranslateStartCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																					},
 																																				},
 																																			},
@@ -4075,7 +4107,7 @@ func TestTranslateStartCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(24)},
 																																					},
 																																				},
 																																			},
@@ -4107,7 +4139,7 @@ func TestTranslateStartCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(43)},
 																																					},
 																																				},
 																																			},
@@ -4249,7 +4281,7 @@ func TestTranslateStartCommand(test *testing.T) {
 																																		Multiplication: &parser.Multiplication{
 																																			Unary: &parser.Unary{
 																																				Accessor: &parser.Accessor{
-																																					Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																				},
 																																			},
 																																		},
@@ -4281,7 +4313,7 @@ func TestTranslateStartCommand(test *testing.T) {
 																																		Multiplication: &parser.Multiplication{
 																																			Unary: &parser.Unary{
 																																				Accessor: &parser.Accessor{
-																																					Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																				},
 																																			},
 																																		},
@@ -4403,7 +4435,9 @@ func TestTranslateStartCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																			},
 																		},
 																	},
 																},
@@ -4430,7 +4464,9 @@ func TestTranslateStartCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
@@ -4525,7 +4561,9 @@ func TestTranslateSendCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																			},
 																		},
 																	},
 																},
@@ -4552,7 +4590,9 @@ func TestTranslateSendCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
@@ -4579,7 +4619,9 @@ func TestTranslateSendCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																			},
 																		},
 																	},
 																},
@@ -4643,7 +4685,7 @@ func TestTranslateSendCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																					},
 																																				},
 																																			},
@@ -4675,7 +4717,7 @@ func TestTranslateSendCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																					},
 																																				},
 																																			},
@@ -4741,7 +4783,7 @@ func TestTranslateSendCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(24)},
 																																					},
 																																				},
 																																			},
@@ -4773,7 +4815,7 @@ func TestTranslateSendCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(43)},
 																																					},
 																																				},
 																																			},
@@ -4868,7 +4910,9 @@ func TestTranslateSendCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																			},
 																		},
 																	},
 																},
@@ -4895,7 +4939,9 @@ func TestTranslateSendCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
@@ -4989,7 +5035,9 @@ func TestTranslateSetCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																			},
 																		},
 																	},
 																},
@@ -5016,7 +5064,9 @@ func TestTranslateSetCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
@@ -5043,7 +5093,9 @@ func TestTranslateSetCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(42)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																			},
 																		},
 																	},
 																},
@@ -5107,7 +5159,7 @@ func TestTranslateSetCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(23)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
 																																					},
 																																				},
 																																			},
@@ -5139,7 +5191,7 @@ func TestTranslateSetCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(42)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
 																																					},
 																																				},
 																																			},
@@ -5205,7 +5257,7 @@ func TestTranslateSetCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(24)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(24)},
 																																					},
 																																				},
 																																			},
@@ -5237,7 +5289,7 @@ func TestTranslateSetCommand(test *testing.T) {
 																																			Multiplication: &parser.Multiplication{
 																																				Unary: &parser.Unary{
 																																					Accessor: &parser.Accessor{
-																																						Atom: &parser.Atom{Number: pointer.ToFloat64(43)},
+																																						Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(43)},
 																																					},
 																																				},
 																																			},
@@ -5332,7 +5384,9 @@ func TestTranslateSetCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(12)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																			},
 																		},
 																	},
 																},
@@ -5359,7 +5413,9 @@ func TestTranslateSetCommand(test *testing.T) {
 																Addition: &parser.Addition{
 																	Multiplication: &parser.Multiplication{
 																		Unary: &parser.Unary{
-																			Accessor: &parser.Accessor{Atom: &parser.Atom{Number: pointer.ToFloat64(23)}},
+																			Accessor: &parser.Accessor{
+																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																			},
 																		},
 																	},
 																},
