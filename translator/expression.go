@@ -509,8 +509,10 @@ func translateAtom(
 ) {
 	settedStates = mapset.NewSet()
 	switch {
-	case atom.Number != nil:
-		expression = expressions.NewNumber(*atom.Number)
+	case atom.IntegerNumber != nil:
+		expression = expressions.NewNumber(float64(*atom.IntegerNumber))
+	case atom.FloatingPointNumber != nil:
+		expression = expressions.NewNumber(*atom.FloatingPointNumber)
 	case atom.Symbol != nil:
 		symbol, _ := utf8.DecodeRuneInString(*atom.Symbol)
 		expression = expressions.NewNumber(float64(symbol))
