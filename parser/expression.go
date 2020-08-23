@@ -114,7 +114,8 @@ type Accessor struct {
 
 // Atom ...
 type Atom struct {
-	Number                *float64               `parser:"@Int | @Float"`
+	IntegerNumber         *int64                 `parser:"@Int"`
+	FloatingPointNumber   *float64               `parser:"| @Float"`
 	Symbol                *string                `parser:"| @Char"`
 	String                *string                `parser:"| @String | @RawString"`
 	ListDefinition        *ListDefinition        `parser:"| @@"`
