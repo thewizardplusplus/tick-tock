@@ -16,6 +16,8 @@ class PpmSerializer(dimensions, maximal_color)
         round(maximal_color * color[2]),
       ]
       outln(str(color[0]) + " " + str(color[1]) + " " + str(color[2]))
+
+      send point_serialized()
     ;
   ;
 ;
@@ -29,6 +31,14 @@ actor PointGenerator()
       let index = dimensions[0] * point[1] + point[0]
       let progress = index / (dimensions[0] * dimensions[1])
       send point_generation_progress(progress)
+
+      set point_serialization_waiting(dimensions, point)
+    ;
+  ;
+
+  state point_serialization_waiting(dimensions, point)
+    message point_serialized()
+      set __initialization__()
 
       let point = when
         => point[0] != dimensions[0] - 1
