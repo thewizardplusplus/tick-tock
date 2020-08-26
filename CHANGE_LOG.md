@@ -1,5 +1,24 @@
 # Change Log
 
+## [v2.0](https://github.com/thewizardplusplus/tick-tock/tree/v2.0) (2020-08-26)
+
+- support expression evaluation:
+  - support operations:
+    - bitwise operations:
+      - shifts:
+        - left shift (`<<`);
+        - right shift (`>>`);
+        - unsigned right shift (`>>>`);
+      - bitwise conjunction (`&`);
+      - bitwise exclusive disjunction (`^`);
+      - bitwise disjunction (`|`);
+- fix bugs:
+  - fix parsing of hexadecimal integers;
+  - fix synchronous waiting in tests of the runtime package;
+- examples:
+  - add the comment in the example with dining philosophers;
+  - add the new example with the [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister).
+
 ## [v1.6](https://github.com/thewizardplusplus/tick-tock/tree/v1.6) (2020-07-30)
 
 - support actor parameters;
