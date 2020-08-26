@@ -56,14 +56,52 @@ actor StateGenerator()
   ;
 ;
 
+actor NumberGenerator()
+  state __initialization__(state_)
+    message generate_number()
+      let state_ = state_ || []
+      when
+        => state_ == []
+          set state_generation_waiting()
+          send generate_state()
+
+          return
+      ;
+
+      let number = head(state_)
+      let number = number ^ number >> 11
+      let number = number ^ number << 7 & 0x9d2c5680
+      let number = number ^ number << 15 & 0xefc60000
+      let number = number ^ number >> 18
+      send number_generated(number)
+
+      set __initialization__(tail(state_))
+    ;
+  ;
+
+  state state_generation_waiting()
+    message state_generated(state_)
+      set __initialization__(state_)
+      send generate_number()
+    ;
+  ;
+;
+
 actor Main()
   state __initialization__()
     message __initialize__()
-      send generate_state()
+      send generate_number()
     ;
 
     message state_generated(state_)
       outln(str(state_))
+    ;
+
+    message number_generated(number)
+      outln(str(number))
+      sleep(0.01)
+
+      send __initialize__()
     ;
   ;
 ;
