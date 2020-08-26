@@ -1,0 +1,35 @@
+actor InitialStateGenerator()
+  state __initialization__(state_)
+    message generate_initial_state(seed_, previous_item, item_index)
+      when
+        => state_ == nil
+          let first_item = seed_ & 0xffffffff
+          set __initialization__([first_item])
+
+          send generate_initial_state(nil, first_item, 1)
+
+          return
+        => item_index == 624
+          send initial_state_generated(state_)
+          return
+      ;
+
+      let item = 1812433253 * (previous_item ^ previous_item >> 30) + item_index & 0xffffffff
+      set __initialization__(state_ + [item])
+
+      send generate_initial_state(nil, item, item_index + 1)
+    ;
+  ;
+;
+
+actor Main()
+  state __initialization__()
+    message __initialize__()
+      send generate_initial_state(1)
+    ;
+
+    message initial_state_generated(state_)
+      outln(str(state_))
+    ;
+  ;
+;
