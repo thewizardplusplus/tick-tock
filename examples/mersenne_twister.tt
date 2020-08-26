@@ -1,3 +1,5 @@
+// https://en.wikipedia.org/wiki/Mersenne_Twister
+
 actor InitialStateGenerator()
   state __initialization__(state_)
     message generate_initial_state(seed_, previous_item, item_index)
@@ -5,7 +7,6 @@ actor InitialStateGenerator()
         => state_ == nil
           let first_item = seed_ & 0xffffffff
           set __initialization__([first_item])
-
           send generate_initial_state(nil, first_item, 1)
 
           return
@@ -42,8 +43,8 @@ actor StateGenerator()
           return
       ;
 
-      let y = (state_[item_index] & 0x80000000) + (state_[(item_index + 1) % 624] & 0x7fffffff)
-      let item = state_[(item_index + 397) % 624] ^ y >> 1 ^ [0, 0x9908b0df][y & 1]
+      let item = (state_[item_index] & 0x80000000) + (state_[(item_index + 1) % 624] & 0x7fffffff)
+      let item = state_[(item_index + 397) % 624] ^ item >> 1 ^ [0, 0x9908b0df][item & 1]
       send generate_state(state_next + [item], item_index + 1)
     ;
   ;
@@ -93,13 +94,18 @@ actor Main()
       send generate_number()
     ;
 
+    message initial_state_generated(state_)
+      outln("Initial state = " + str(state_) + ".")
+    ;
+
     message state_generated(state_)
-      outln(str(state_))
+      outln("State = " + str(state_) + ".")
     ;
 
     message number_generated(number)
-      outln(str(number))
-      sleep(0.01)
+      let number = number / 0xffffffff
+      outln("Number = " + str(number) + ".")
+      sleep(0.001)
 
       send __initialize__()
     ;
