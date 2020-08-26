@@ -22,13 +22,47 @@ actor InitialStateGenerator()
   ;
 ;
 
+actor StateGenerator()
+  state __initialization__(state_)
+    message generate_state(state_next, item_index)
+      let state_next = state_next || []
+      let item_index = item_index || 0
+      when
+        => state_ == nil
+          set initial_state_generation_waiting()
+
+          let seed_ = time() * 1e9
+          send generate_initial_state(seed_)
+
+          return
+        => item_index == 624
+          set __initialization__(state_next)
+          send state_generated(state_next)
+
+          return
+      ;
+
+      let y = (state_[item_index] & 0x80000000) + (state_[(item_index + 1) % 624] & 0x7fffffff)
+      let item = state_[(item_index + 397) % 624] ^ y >> 1 ^ [0, 0x9908b0df][y & 1]
+      send generate_state(state_next + [item], item_index + 1)
+    ;
+  ;
+
+  state initial_state_generation_waiting()
+    message initial_state_generated(state_)
+      set __initialization__(state_)
+      send generate_state()
+    ;
+  ;
+;
+
 actor Main()
   state __initialization__()
     message __initialize__()
-      send generate_initial_state(1)
+      send generate_state()
     ;
 
-    message initial_state_generated(state_)
+    message state_generated(state_)
       outln(str(state_))
     ;
   ;
