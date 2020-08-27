@@ -131,6 +131,10 @@ var (
 				if typedB, ok := b.(*types.Pair); ok {
 					return typedA.Append(typedB), nil
 				}
+			case types.HashTable:
+				if typedB, ok := b.(types.HashTable); ok {
+					return typedA.Merge(typedB), nil
+				}
 			default:
 				return nil, errors.Errorf(
 					"unsupported type %T of the argument #0 for the function %s",

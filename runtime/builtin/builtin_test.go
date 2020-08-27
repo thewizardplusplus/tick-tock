@@ -489,6 +489,50 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "addition/success/types.HashTable",
+			expression: expressions.NewFunctionCall(
+				translator.AdditionFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(
+						translator.HashTableConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewFunctionCall(
+								translator.HashTableConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+									expressions.NewNumber(12),
+									expressions.NewString("one"),
+								},
+							),
+							expressions.NewNumber(23),
+							expressions.NewString("two"),
+						},
+					),
+					expressions.NewFunctionCall(
+						translator.HashTableConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewFunctionCall(
+								translator.HashTableConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+									expressions.NewNumber(23),
+									expressions.NewString("three"),
+								},
+							),
+							expressions.NewNumber(42),
+							expressions.NewString("four"),
+						},
+					),
+				},
+			),
+			wantResult: types.HashTable{
+				12.0: types.NewPairFromText("one"),
+				23.0: types.NewPairFromText("three"),
+				42.0: types.NewPairFromText("four"),
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "addition/error/argument #0",
 			expression: expressions.NewFunctionCall(
 				translator.AdditionFunctionName,
