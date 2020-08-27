@@ -80,6 +80,27 @@ func (table HashTable) Set(key interface{}, value interface{}) error {
 	return nil
 }
 
+// With ...
+func (table HashTable) With(key interface{}, value interface{}) (HashTable, error) {
+	preparedKey, err := prepareKey(key)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to prepare the key")
+	}
+
+	updatedTable := make(HashTable)
+	for key, value := range table {
+		updatedTable[key] = value
+	}
+
+	if value != (Nil{}) {
+		updatedTable[preparedKey] = value
+	} else {
+		delete(updatedTable, preparedKey)
+	}
+
+	return updatedTable, nil
+}
+
 // Merge ...
 func (table HashTable) Merge(anotherTable HashTable) HashTable {
 	unionTable := make(HashTable)
