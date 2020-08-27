@@ -31,14 +31,15 @@ const (
 // nolint: gochecknoglobals
 var (
 	Values = context.ValueGroup{
-		translator.EmptyListConstantName: (*types.Pair)(nil),
-		"nil":                            types.Nil{},
-		"false":                          types.False,
-		"true":                           types.True,
-		"nan":                            math.NaN(),
-		"inf":                            math.Inf(+1),
-		"pi":                             math.Pi,
-		"e":                              math.E,
+		translator.EmptyListConstantName:      (*types.Pair)(nil),
+		translator.EmptyHashTableConstantName: (types.HashTable)(nil),
+		"nil":                                 types.Nil{},
+		"false":                               types.False,
+		"true":                                types.True,
+		"nan":                                 math.NaN(),
+		"inf":                                 math.Inf(+1),
+		"pi":                                  math.Pi,
+		"e":                                   math.E,
 
 		translator.ListConstructionFunctionName: func(
 			head interface{},

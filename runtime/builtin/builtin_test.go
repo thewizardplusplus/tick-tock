@@ -33,6 +33,12 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name:       "empty hash table",
+			expression: expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+			wantResult: (types.HashTable)(nil),
+			wantErr:    assert.NoError,
+		},
+		{
 			name:       "nil",
 			expression: expressions.NewIdentifier("nil"),
 			wantResult: types.Nil{},
