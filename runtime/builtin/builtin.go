@@ -47,6 +47,7 @@ var (
 		) (*types.Pair, error) {
 			return &types.Pair{Head: head, Tail: tail}, nil
 		},
+		translator.HashTableConstructionFunctionName: types.HashTable.With,
 		translator.EqualFunctionName: func(a interface{}, b interface{}) (types.Boolean, error) {
 			isEqual, err := types.Equals(a, b)
 			if err != nil {
@@ -373,6 +374,7 @@ var (
 			textBytes, _ := json.Marshal(items) // nolint: gosec
 			return types.NewPairFromText(string(textBytes)), nil
 		},
+		"with": types.HashTable.With,
 		"env": func(name *types.Pair) (interface{}, error) {
 			nameText, err := name.Text()
 			if err != nil {

@@ -99,6 +99,66 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "hash table construction/success",
+			expression: expressions.NewFunctionCall(
+				translator.HashTableConstructionFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(
+						translator.HashTableConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewFunctionCall(
+								translator.HashTableConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+									expressions.NewString("x"),
+									expressions.NewNumber(12),
+								},
+							),
+							expressions.NewString("y"),
+							expressions.NewNumber(23),
+						},
+					),
+					expressions.NewString("z"),
+					expressions.NewNumber(42),
+				},
+			),
+			wantResult: types.HashTable{"x": 12.0, "y": 23.0, "z": 42.0},
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "hash table construction/error",
+			expression: expressions.NewFunctionCall(
+				translator.HashTableConstructionFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(
+						translator.HashTableConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewFunctionCall(
+								translator.HashTableConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+									expressions.NewString("x"),
+									expressions.NewNumber(12),
+								},
+							),
+							expressions.NewFunctionCall(
+								translator.ListConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewNumber(-23),
+									expressions.NewIdentifier(translator.EmptyListConstantName),
+								},
+							),
+							expressions.NewNumber(23),
+						},
+					),
+					expressions.NewString("z"),
+					expressions.NewNumber(42),
+				},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
 			name: "equal/success/false/same types",
 			expression: expressions.NewFunctionCall(
 				translator.EqualFunctionName,
@@ -1459,6 +1519,48 @@ func TestValues(test *testing.T) {
 						),
 					},
 				),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "with/success",
+			expression: expressions.NewFunctionCall("with", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+						expressions.NewString("x"),
+						expressions.NewNumber(12),
+					}),
+					expressions.NewString("y"),
+					expressions.NewNumber(23),
+				}),
+				expressions.NewString("z"),
+				expressions.NewNumber(42),
+			}),
+			wantResult: types.HashTable{"x": 12.0, "y": 23.0, "z": 42.0},
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "with/error",
+			expression: expressions.NewFunctionCall("with", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+						expressions.NewString("x"),
+						expressions.NewNumber(12),
+					}),
+					expressions.NewFunctionCall(
+						translator.ListConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewNumber(-23),
+							expressions.NewIdentifier(translator.EmptyListConstantName),
+						},
+					),
+					expressions.NewNumber(23),
+				}),
+				expressions.NewString("z"),
+				expressions.NewNumber(42),
 			}),
 			wantResult: nil,
 			wantErr:    assert.Error,
