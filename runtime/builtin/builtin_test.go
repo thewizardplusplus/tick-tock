@@ -749,6 +749,35 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name: "type/success/types.HashTable",
+			expression: expressions.NewFunctionCall("type", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.HashTableConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewFunctionCall(
+							translator.HashTableConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.HashTableConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+										expressions.NewString("x"),
+										expressions.NewNumber(12),
+									},
+								),
+								expressions.NewString("y"),
+								expressions.NewNumber(23),
+							},
+						),
+						expressions.NewString("z"),
+						expressions.NewNumber(42),
+					},
+				),
+			}),
+			wantResult: types.NewPairFromText("hash"),
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "type/success/actor class",
 			additionalDefinitions: context.ValueGroup{
 				"Test": func() runtime.ConcurrentActorFactory {

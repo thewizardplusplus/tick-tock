@@ -193,6 +193,8 @@ var (
 				name = "num"
 			case *types.Pair:
 				name = "list"
+			case types.HashTable:
+				name = "hash"
 			case runtime.ConcurrentActorFactory:
 				name = "class"
 			default:
