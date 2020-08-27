@@ -363,6 +363,30 @@ func TestHashTable_Set(test *testing.T) {
 	}
 }
 
+func TestHashTable_With(test *testing.T) {
+	type args struct {
+		key   interface{}
+		value interface{}
+	}
+
+	for _, data := range []struct {
+		name      string
+		table     HashTable
+		args      args
+		wantTable HashTable
+		wantErr   assert.ErrorAssertionFunc
+	}{
+		// TODO: Add test cases.
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotTable, gotErr := data.table.With(data.args.key, data.args.value)
+
+			assert.Equal(test, data.wantTable, gotTable)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestHashTable_Merge(test *testing.T) {
 	type args struct {
 		anotherTable HashTable
