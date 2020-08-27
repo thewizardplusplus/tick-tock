@@ -9,6 +9,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
+// it checks that the types.Boolean type is an alias of the float64 type
 func TestBoolean(test *testing.T) {
 	for _, data := range []struct {
 		name  string
