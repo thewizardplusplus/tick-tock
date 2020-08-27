@@ -64,6 +64,16 @@ func (table HashTable) Get(key interface{}) (interface{}, error) {
 	return value, nil
 }
 
+// Copy ...
+func (table HashTable) Copy() HashTable {
+	copiedTable := make(HashTable)
+	for key, value := range table {
+		copiedTable[key] = value
+	}
+
+	return copiedTable
+}
+
 // With ...
 func (table HashTable) With(key interface{}, value interface{}) (HashTable, error) {
 	preparedKey, err := prepareKey(key)
@@ -71,11 +81,7 @@ func (table HashTable) With(key interface{}, value interface{}) (HashTable, erro
 		return nil, errors.Wrap(err, "unable to prepare the key")
 	}
 
-	updatedTable := make(HashTable)
-	for key, value := range table {
-		updatedTable[key] = value
-	}
-
+	updatedTable := table.Copy()
 	if value != (Nil{}) {
 		updatedTable[preparedKey] = value
 	} else {
@@ -87,10 +93,7 @@ func (table HashTable) With(key interface{}, value interface{}) (HashTable, erro
 
 // Merge ...
 func (table HashTable) Merge(anotherTable HashTable) HashTable {
-	unionTable := make(HashTable)
-	for key, value := range table {
-		unionTable[key] = value
-	}
+	unionTable := table.Copy()
 	for key, value := range anotherTable {
 		unionTable[key] = value
 	}
