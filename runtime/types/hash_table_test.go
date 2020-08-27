@@ -376,7 +376,104 @@ func TestHashTable_With(test *testing.T) {
 		wantTable HashTable
 		wantErr   assert.ErrorAssertionFunc
 	}{
-		// TODO: Add test cases.
+		{
+			name:  "success/empty",
+			table: nil,
+			args: args{
+				key: &Pair{
+					Head: float64('o'),
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+				value: "two",
+			},
+			wantTable: HashTable{"one": "two"},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "success/nonempty/existing key",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('o'),
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+				value: "five",
+			},
+			wantTable: HashTable{"one": "five", "three": "four"},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "success/nonempty/nonexistent key",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('f'),
+					Tail: &Pair{
+						Head: float64('i'),
+						Tail: &Pair{
+							Head: float64('v'),
+							Tail: &Pair{
+								Head: float64('e'),
+								Tail: nil,
+							},
+						},
+					},
+				},
+				value: "six",
+			},
+			wantTable: HashTable{"one": "two", "three": "four", "five": "six"},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "success/nonempty/Nil value",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: float64('o'),
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+				value: Nil{},
+			},
+			wantTable: HashTable{"three": "four"},
+			wantErr:   assert.NoError,
+		},
+		{
+			name:  "error",
+			table: HashTable{"one": "two", "three": "four"},
+			args: args{
+				key: &Pair{
+					Head: -23.0,
+					Tail: &Pair{
+						Head: float64('n'),
+						Tail: &Pair{
+							Head: float64('e'),
+							Tail: nil,
+						},
+					},
+				},
+				value: "five",
+			},
+			wantTable: nil,
+			wantErr:   assert.Error,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			gotTable, gotErr := data.table.With(data.args.key, data.args.value)
