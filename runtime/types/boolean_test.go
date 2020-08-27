@@ -78,6 +78,18 @@ func TestNewBoolean(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
+			name:       "success/HashTable/nonempty",
+			args:       args{types.HashTable{"one": "two", "three": "four"}},
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:       "success/HashTable/empty",
+			args:       args{(types.HashTable)(nil)},
+			wantResult: types.False,
+			wantErr:    assert.NoError,
+		},
+		{
 			name: "success/actor class",
 			args: args{
 				value: func() runtime.ConcurrentActorFactory {

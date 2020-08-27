@@ -29,6 +29,8 @@ func NewBoolean(value interface{}) (Boolean, error) {
 		result = NewBooleanFromGoBool(typedValue != 0)
 	case *Pair:
 		result = NewBooleanFromGoBool(typedValue != nil)
+	case HashTable:
+		result = NewBooleanFromGoBool(len(typedValue) != 0)
 	default:
 		return False, errors.Errorf("unsupported type %T for conversion to boolean", value)
 	}
