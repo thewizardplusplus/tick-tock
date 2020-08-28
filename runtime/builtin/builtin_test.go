@@ -822,7 +822,7 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "size",
+			name: "size/success/*types.Pair",
 			expression: expressions.NewFunctionCall("size", []expressions.Expression{
 				expressions.NewFunctionCall(
 					translator.ListConstructionFunctionName,
@@ -846,6 +846,43 @@ func TestValues(test *testing.T) {
 			}),
 			wantResult: 3.0,
 			wantErr:    assert.NoError,
+		},
+		{
+			name: "size/success/types.HashTable",
+			expression: expressions.NewFunctionCall("size", []expressions.Expression{
+				expressions.NewFunctionCall(
+					translator.HashTableConstructionFunctionName,
+					[]expressions.Expression{
+						expressions.NewFunctionCall(
+							translator.HashTableConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewFunctionCall(
+									translator.HashTableConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+										expressions.NewString("x"),
+										expressions.NewNumber(12),
+									},
+								),
+								expressions.NewString("y"),
+								expressions.NewNumber(23),
+							},
+						),
+						expressions.NewString("z"),
+						expressions.NewNumber(42),
+					},
+				),
+			}),
+			wantResult: 3.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "size/error",
+			expression: expressions.NewFunctionCall("size", []expressions.Expression{
+				expressions.NewIdentifier("size"),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "bool/success/false",

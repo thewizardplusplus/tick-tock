@@ -207,8 +207,18 @@ var (
 			name := factory.Name()
 			return types.NewPairFromText(name), nil
 		},
-		"size": func(pair *types.Pair) (float64, error) {
-			return float64(pair.Size()), nil
+		"size": func(value interface{}) (float64, error) {
+			var size float64
+			switch typedValue := value.(type) {
+			case *types.Pair:
+				size = float64(typedValue.Size())
+			case types.HashTable:
+				size = float64(typedValue.Size())
+			default:
+				return 0, errors.Errorf("unsupported type %T of the argument #0 for the function size", value)
+			}
+
+			return size, nil
 		},
 		"bool": types.NewBoolean,
 		"floor": func(a float64) (float64, error) {
