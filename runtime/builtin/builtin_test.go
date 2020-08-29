@@ -1832,6 +1832,76 @@ func TestValues_random(test *testing.T) {
 	assert.InDeltaSlice(test, wantNumbers, numbers, 1e-6)
 }
 
+func TestValues_keys(test *testing.T) {
+	for _, data := range []struct {
+		name       string
+		expression expressions.Expression
+		want       []interface{}
+	}{
+		{
+			name: "empty",
+			expression: expressions.NewFunctionCall("keys", []expressions.Expression{
+				expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+			}),
+			want: nil,
+		},
+		{
+			name: "float64",
+			expression: expressions.NewFunctionCall("keys", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewNumber(12),
+							expressions.NewString("one"),
+						}),
+						expressions.NewNumber(23),
+						expressions.NewString("two"),
+					}),
+					expressions.NewNumber(42),
+					expressions.NewString("three"),
+				}),
+			}),
+			want: []interface{}{12.0, 23.0, 42.0},
+		},
+		{
+			name: "*types.Pair",
+			expression: expressions.NewFunctionCall("keys", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewNumber(12),
+						}),
+						expressions.NewString("two"),
+						expressions.NewNumber(23),
+					}),
+					expressions.NewString("three"),
+					expressions.NewNumber(42),
+				}),
+			}),
+			want: []interface{}{
+				types.NewPairFromText("one"),
+				types.NewPairFromText("two"),
+				types.NewPairFromText("three"),
+			},
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			ctx := context.NewDefaultContext()
+			context.SetValues(ctx, Values)
+
+			got, err := data.expression.Evaluate(ctx)
+
+			if assert.IsType(test, (*types.Pair)(nil), got) {
+				assert.ElementsMatch(test, data.want, got.(*types.Pair).Slice())
+			}
+			assert.NoError(test, err)
+		})
+	}
+}
+
 func TestValues_env(test *testing.T) {
 	type args struct {
 		name expressions.Expression

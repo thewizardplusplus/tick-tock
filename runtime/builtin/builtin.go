@@ -391,6 +391,10 @@ var (
 			return types.NewPairFromText(string(textBytes)), nil
 		},
 		"with": types.HashTable.With,
+		"keys": func(table types.HashTable) (*types.Pair, error) {
+			keys := table.Keys()
+			return types.NewPairFromSlice(keys), nil
+		},
 		"env": func(name *types.Pair) (interface{}, error) {
 			nameText, err := name.Text()
 			if err != nil {
