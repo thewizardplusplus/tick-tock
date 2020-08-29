@@ -390,6 +390,36 @@ var (
 			textBytes, _ := json.Marshal(items) // nolint: gosec
 			return types.NewPairFromText(string(textBytes)), nil
 		},
+		"strhh": func(table types.HashTable) (*types.Pair, error) {
+			pairs := make(map[string]string)
+			for key, value := range table {
+				keyText, ok := key.(string)
+				if !ok {
+					return nil, errors.Errorf(
+						"incorrect type of the key for conversion to a string (%T instead *types.Pair)",
+						key,
+					)
+				}
+
+				valuePair, ok := value.(*types.Pair)
+				if !ok {
+					return nil, errors.Errorf(
+						"incorrect type of the value for conversion to a string (%T instead *types.Pair)",
+						value,
+					)
+				}
+
+				valueText, err := valuePair.Text()
+				if err != nil {
+					return nil, errors.Wrap(err, "unable to convert the value to a string")
+				}
+
+				pairs[keyText] = valueText
+			}
+
+			textBytes, _ := json.Marshal(pairs) // nolint: gosec
+			return types.NewPairFromText(string(textBytes)), nil
+		},
 		"with": types.HashTable.With,
 		"keys": func(table types.HashTable) (*types.Pair, error) {
 			keys := table.Keys()

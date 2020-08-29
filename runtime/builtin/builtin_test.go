@@ -1634,6 +1634,122 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
+			name: "strhh/success",
+			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewString("two"),
+						}),
+						expressions.NewString("three"),
+						expressions.NewString("four"),
+					}),
+					expressions.NewString("five"),
+					expressions.NewString("six"),
+				}),
+			}),
+			wantResult: types.NewPairFromText(`{"five":"six","one":"two","three":"four"}`),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "strhh/error/incorrect key type",
+			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewString("two"),
+						}),
+						expressions.NewNumber(23),
+						expressions.NewString("four"),
+					}),
+					expressions.NewString("five"),
+					expressions.NewString("six"),
+				}),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "strhh/error/incorrect value type",
+			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewString("two"),
+						}),
+						expressions.NewString("three"),
+						expressions.NewNumber(23),
+					}),
+					expressions.NewString("five"),
+					expressions.NewString("six"),
+				}),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "strhh/error/string conversion",
+			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewString("two"),
+						}),
+						expressions.NewString("three"),
+						expressions.NewFunctionCall(
+							translator.ListConstructionFunctionName,
+							[]expressions.Expression{
+								expressions.NewNumber(float64('t')),
+								expressions.NewFunctionCall(
+									translator.ListConstructionFunctionName,
+									[]expressions.Expression{
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('h')),
+												expressions.NewFunctionCall(
+													translator.ListConstructionFunctionName,
+													[]expressions.Expression{
+														expressions.NewNumber(float64('i')),
+														expressions.NewIdentifier(translator.EmptyListConstantName),
+													},
+												),
+											},
+										),
+										expressions.NewFunctionCall(
+											translator.ListConstructionFunctionName,
+											[]expressions.Expression{
+												expressions.NewNumber(float64('s')),
+												expressions.NewFunctionCall(
+													translator.ListConstructionFunctionName,
+													[]expressions.Expression{
+														expressions.NewNumber(float64('t')),
+														expressions.NewIdentifier(translator.EmptyListConstantName),
+													},
+												),
+											},
+										),
+									},
+								),
+							},
+						),
+					}),
+					expressions.NewString("five"),
+					expressions.NewString("six"),
+				}),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
 			name: "with/success",
 			expression: expressions.NewFunctionCall("with", []expressions.Expression{
 				expressions.NewFunctionCall("with", []expressions.Expression{
