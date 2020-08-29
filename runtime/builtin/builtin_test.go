@@ -1634,6 +1634,46 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
+			name: "strh/success",
+			expression: expressions.NewFunctionCall("strh", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewNumber(12),
+						}),
+						expressions.NewString("two"),
+						expressions.NewNumber(23),
+					}),
+					expressions.NewString("three"),
+					expressions.NewNumber(42),
+				}),
+			}),
+			wantResult: types.NewPairFromText(`{"one":12,"three":42,"two":23}`),
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "strh/error",
+			expression: expressions.NewFunctionCall("strh", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewNumber(5),
+						}),
+						expressions.NewNumber(12),
+						expressions.NewNumber(23),
+					}),
+					expressions.NewString("three"),
+					expressions.NewNumber(42),
+				}),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
 			name: "strhh/success",
 			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
 				expressions.NewFunctionCall("with", []expressions.Expression{
