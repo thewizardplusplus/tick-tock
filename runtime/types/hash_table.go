@@ -50,8 +50,8 @@ func (table HashTable) Equals(sample HashTable) (bool, error) {
 	return true, nil
 }
 
-// Get ...
-func (table HashTable) Get(key interface{}) (interface{}, error) {
+// Item ...
+func (table HashTable) Item(key interface{}) (interface{}, error) {
 	preparedKey, err := prepareKey(key)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to prepare the key")

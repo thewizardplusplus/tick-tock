@@ -164,7 +164,7 @@ func TestHashTable_Equals(test *testing.T) {
 	}
 }
 
-func TestHashTable_Get(test *testing.T) {
+func TestHashTable_Item(test *testing.T) {
 	type args struct {
 		key interface{}
 	}
@@ -253,7 +253,7 @@ func TestHashTable_Get(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gotValue, gotErr := data.table.Get(data.args.key)
+			gotValue, gotErr := data.table.Item(data.args.key)
 
 			assert.Equal(test, data.wantValue, gotValue)
 			data.wantErr(test, gotErr)
