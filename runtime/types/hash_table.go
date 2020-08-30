@@ -1,7 +1,14 @@
 package types
 
 import (
+	stderrors "errors"
+
 	"github.com/pkg/errors"
+)
+
+// ...
+var (
+	ErrNotFound = stderrors.New("not found")
 )
 
 // HashTable ...
@@ -59,8 +66,9 @@ func (table HashTable) Item(key interface{}) (interface{}, error) {
 
 	value, ok := table[preparedKey]
 	if !ok {
-		value = Nil{}
+		return nil, ErrNotFound
 	}
+
 	return value, nil
 }
 

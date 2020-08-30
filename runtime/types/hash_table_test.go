@@ -177,7 +177,7 @@ func TestHashTable_Item(test *testing.T) {
 		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
-			name:  "success/empty",
+			name:  "empty",
 			table: nil,
 			args: args{
 				key: &Pair{
@@ -191,11 +191,13 @@ func TestHashTable_Item(test *testing.T) {
 					},
 				},
 			},
-			wantValue: Nil{},
-			wantErr:   assert.NoError,
+			wantValue: nil,
+			wantErr: func(test assert.TestingT, err error, args ...interface{}) bool {
+				return assert.Equal(test, ErrNotFound, err)
+			},
 		},
 		{
-			name:  "success/nonempty/existing key",
+			name:  "nonempty/existing key",
 			table: HashTable{"one": "two", "three": "four"},
 			args: args{
 				key: &Pair{
@@ -213,7 +215,7 @@ func TestHashTable_Item(test *testing.T) {
 			wantErr:   assert.NoError,
 		},
 		{
-			name:  "success/nonempty/nonexistent key",
+			name:  "nonempty/nonexistent key",
 			table: HashTable{"one": "two", "three": "four"},
 			args: args{
 				key: &Pair{
@@ -230,11 +232,13 @@ func TestHashTable_Item(test *testing.T) {
 					},
 				},
 			},
-			wantValue: Nil{},
-			wantErr:   assert.NoError,
+			wantValue: nil,
+			wantErr: func(test assert.TestingT, err error, args ...interface{}) bool {
+				return assert.Equal(test, ErrNotFound, err)
+			},
 		},
 		{
-			name:  "error",
+			name:  "incorrect key",
 			table: HashTable{"one": "two", "three": "four"},
 			args: args{
 				key: &Pair{
