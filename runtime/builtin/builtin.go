@@ -176,10 +176,42 @@ var (
 
 			return types.NegateBoolean(boolean), nil
 		},
-		translator.KeyAccessorFunctionName: func(pair *types.Pair, index float64) (interface{}, error) {
-			item, ok := pair.Item(index)
-			if !ok {
-				return types.Nil{}, nil
+		translator.KeyAccessorFunctionName: func(
+			value interface{},
+			key interface{},
+		) (interface{}, error) {
+			var item interface{}
+			switch typedValue := value.(type) {
+			case *types.Pair:
+				typedKey, ok := key.(float64)
+				if !ok {
+					return nil, errors.Errorf(
+						"incorrect type of the argument #1 for the function %s (%T instead float64)",
+						translator.KeyAccessorFunctionName,
+						key,
+					)
+				}
+
+				item, ok = typedValue.Item(typedKey)
+				if !ok {
+					return types.Nil{}, nil
+				}
+			case types.HashTable:
+				var err error
+				item, err = typedValue.Item(key)
+				switch err {
+				case nil:
+				case types.ErrNotFound:
+					return types.Nil{}, nil
+				default:
+					return nil, errors.Wrap(err, "unable to get an item from the hash table")
+				}
+			default:
+				return nil, errors.Errorf(
+					"unsupported type %T of the argument #0 for the function %s",
+					value,
+					translator.KeyAccessorFunctionName,
+				)
 			}
 
 			return item, nil

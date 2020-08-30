@@ -647,7 +647,7 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.Error,
 		},
 		{
-			name: "key accessor/index in range",
+			name: "key accessor/success/*types.Pair/index in range",
 			expression: expressions.NewFunctionCall(
 				translator.KeyAccessorFunctionName,
 				[]expressions.Expression{
@@ -677,7 +677,7 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "key accessor/index out of range",
+			name: "key accessor/success/*types.Pair/index out of range",
 			expression: expressions.NewFunctionCall(
 				translator.KeyAccessorFunctionName,
 				[]expressions.Expression{
@@ -705,6 +705,153 @@ func TestValues(test *testing.T) {
 			),
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
+		},
+		{
+			name: "key accessor/success/types.HashTable/existing key",
+			expression: expressions.NewFunctionCall(
+				translator.KeyAccessorFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(
+						translator.HashTableConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewFunctionCall(
+								translator.HashTableConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewFunctionCall(
+										translator.HashTableConstructionFunctionName,
+										[]expressions.Expression{
+											expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+											expressions.NewString("x"),
+											expressions.NewNumber(12),
+										},
+									),
+									expressions.NewString("y"),
+									expressions.NewNumber(23),
+								},
+							),
+							expressions.NewString("z"),
+							expressions.NewNumber(42),
+						},
+					),
+					expressions.NewString("y"),
+				},
+			),
+			wantResult: 23.0,
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "key accessor/success/types.HashTable/nonexistent key",
+			expression: expressions.NewFunctionCall(
+				translator.KeyAccessorFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(
+						translator.HashTableConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewFunctionCall(
+								translator.HashTableConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewFunctionCall(
+										translator.HashTableConstructionFunctionName,
+										[]expressions.Expression{
+											expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+											expressions.NewString("x"),
+											expressions.NewNumber(12),
+										},
+									),
+									expressions.NewString("y"),
+									expressions.NewNumber(23),
+								},
+							),
+							expressions.NewString("z"),
+							expressions.NewNumber(42),
+						},
+					),
+					expressions.NewString("nonexistent"),
+				},
+			),
+			wantResult: types.Nil{},
+			wantErr:    assert.NoError,
+		},
+		{
+			name: "key accessor/error/incorrect index for *types.Pair",
+			expression: expressions.NewFunctionCall(
+				translator.KeyAccessorFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(
+						translator.ListConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewNumber(12),
+							expressions.NewFunctionCall(
+								translator.ListConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewNumber(23),
+									expressions.NewFunctionCall(
+										translator.ListConstructionFunctionName,
+										[]expressions.Expression{
+											expressions.NewNumber(42),
+											expressions.NewIdentifier(translator.EmptyListConstantName),
+										},
+									),
+								},
+							),
+						},
+					),
+					expressions.NewString("incorrect"),
+				},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "key accessor/error/incorrect key for types.HashTable",
+			expression: expressions.NewFunctionCall(
+				translator.KeyAccessorFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(
+						translator.HashTableConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewFunctionCall(
+								translator.HashTableConstructionFunctionName,
+								[]expressions.Expression{
+									expressions.NewFunctionCall(
+										translator.HashTableConstructionFunctionName,
+										[]expressions.Expression{
+											expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+											expressions.NewString("x"),
+											expressions.NewNumber(12),
+										},
+									),
+									expressions.NewString("y"),
+									expressions.NewNumber(23),
+								},
+							),
+							expressions.NewString("z"),
+							expressions.NewNumber(42),
+						},
+					),
+					expressions.NewFunctionCall(
+						translator.ListConstructionFunctionName,
+						[]expressions.Expression{
+							expressions.NewNumber(-23),
+							expressions.NewIdentifier(translator.EmptyListConstantName),
+						},
+					),
+				},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "key accessor/error/unsupported type",
+			expression: expressions.NewFunctionCall(
+				translator.KeyAccessorFunctionName,
+				[]expressions.Expression{
+					expressions.NewIdentifier(translator.KeyAccessorFunctionName),
+					expressions.NewNumber(1),
+				},
+			),
+			wantResult: nil,
+			wantErr:    assert.Error,
 		},
 		{
 			name: "type/success/nil",
