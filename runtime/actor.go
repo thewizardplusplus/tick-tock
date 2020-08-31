@@ -56,7 +56,7 @@ func (factory ActorFactory) Name() string {
 	return factory.name
 }
 
-// Name ...
+// String ...
 func (factory ActorFactory) String() string {
 	return fmt.Sprintf("<class %s>", factory.name)
 }
