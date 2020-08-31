@@ -429,7 +429,11 @@ var (
 				pairs[keyText] = value
 			}
 
-			text, _ := marshalToJSON(pairs) // nolint: gosec
+			text, err := marshalToJSON(pairs)
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to marshal the hash table to JSON")
+			}
+
 			return types.NewPairFromText(text), nil
 		},
 		"strhh": func(table types.HashTable) (*types.Pair, error) {

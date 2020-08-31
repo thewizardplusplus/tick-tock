@@ -1801,7 +1801,7 @@ func TestValues(test *testing.T) {
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "strh/error",
+			name: "strh/error/incorrect key",
 			expression: expressions.NewFunctionCall("strh", []expressions.Expression{
 				expressions.NewFunctionCall("with", []expressions.Expression{
 					expressions.NewFunctionCall("with", []expressions.Expression{
@@ -1812,6 +1812,26 @@ func TestValues(test *testing.T) {
 						}),
 						expressions.NewNumber(12),
 						expressions.NewNumber(23),
+					}),
+					expressions.NewString("three"),
+					expressions.NewNumber(42),
+				}),
+			}),
+			wantResult: nil,
+			wantErr:    assert.Error,
+		},
+		{
+			name: "strh/error/incorrect value",
+			expression: expressions.NewFunctionCall("strh", []expressions.Expression{
+				expressions.NewFunctionCall("with", []expressions.Expression{
+					expressions.NewFunctionCall("with", []expressions.Expression{
+						expressions.NewFunctionCall("with", []expressions.Expression{
+							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+							expressions.NewString("one"),
+							expressions.NewNumber(12),
+						}),
+						expressions.NewString("two"),
+						expressions.NewIdentifier("strh"),
 					}),
 					expressions.NewString("three"),
 					expressions.NewNumber(42),
