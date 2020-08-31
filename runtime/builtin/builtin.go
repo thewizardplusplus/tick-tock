@@ -350,19 +350,12 @@ var (
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair:
-				var buffer bytes.Buffer
-				encoder := json.NewEncoder(&buffer)
-				encoder.SetEscapeHTML(false)
-
+				var err error
 				items := typedValue.DeepSlice()
-				if err := encoder.Encode(items); err != nil {
+				text, err = marshalToJSON(items)
+				if err != nil {
 					return nil, errors.Wrap(err, "unable to marshal the list to JSON")
 				}
-
-				textBytes := buffer.Bytes()
-				textBytes = textBytes[:len(textBytes)-1] // remove the line break
-
-				text = string(textBytes)
 			case runtime.ConcurrentActorFactory:
 				text = typedValue.String()
 			default:
@@ -419,8 +412,8 @@ var (
 				items = append(items, itemText)
 			}
 
-			textBytes, _ := json.Marshal(items) // nolint: gosec
-			return types.NewPairFromText(string(textBytes)), nil
+			text, _ := marshalToJSON(items) // nolint: gosec
+			return types.NewPairFromText(text), nil
 		},
 		"strh": func(table types.HashTable) (*types.Pair, error) {
 			pairs := make(map[string]interface{})
@@ -436,8 +429,8 @@ var (
 				pairs[keyText] = value
 			}
 
-			textBytes, _ := json.Marshal(pairs) // nolint: gosec
-			return types.NewPairFromText(string(textBytes)), nil
+			text, _ := marshalToJSON(pairs) // nolint: gosec
+			return types.NewPairFromText(text), nil
 		},
 		"strhh": func(table types.HashTable) (*types.Pair, error) {
 			pairs := make(map[string]string)
@@ -466,8 +459,8 @@ var (
 				pairs[keyText] = valueText
 			}
 
-			textBytes, _ := json.Marshal(pairs) // nolint: gosec
-			return types.NewPairFromText(string(textBytes)), nil
+			text, _ := marshalToJSON(pairs) // nolint: gosec
+			return types.NewPairFromText(text), nil
 		},
 		"with": types.HashTable.With,
 		"keys": func(table types.HashTable) (*types.Pair, error) {
@@ -538,6 +531,20 @@ var (
 		},
 	}
 )
+
+func marshalToJSON(value interface{}) (string, error) {
+	var buffer bytes.Buffer
+	encoder := json.NewEncoder(&buffer)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(value); err != nil {
+		return "", errors.Wrap(err, "unable to marshal the value to JSON")
+	}
+
+	textBytes := buffer.Bytes()
+	textBytes = textBytes[:buffer.Len()-1] // remove the line break
+
+	return string(textBytes), nil
+}
 
 func readChunk(size float64) (interface{}, error) {
 	chunkBytes := make([]byte, int(size))
