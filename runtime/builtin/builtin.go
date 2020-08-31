@@ -240,16 +240,12 @@ var (
 			return types.NewPairFromText(name), nil
 		},
 		"size": func(value interface{}) (float64, error) {
-			var size float64
-			switch typedValue := value.(type) {
-			case *types.Pair:
-				size = float64(typedValue.Size())
-			case types.HashTable:
-				size = float64(typedValue.Size())
-			default:
+			typedValue, ok := value.(interface{ Size() int })
+			if !ok {
 				return 0, errors.Errorf("unsupported type %T of the argument #0 for the function size", value)
 			}
 
+			size := float64(typedValue.Size())
 			return size, nil
 		},
 		"bool": types.NewBoolean,
