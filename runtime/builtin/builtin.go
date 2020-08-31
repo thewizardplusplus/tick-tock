@@ -346,7 +346,7 @@ var (
 			var text string
 			switch typedValue := value.(type) {
 			case types.Nil:
-				text = "nil"
+				text = typedValue.String()
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair:

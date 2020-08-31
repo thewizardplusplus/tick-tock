@@ -3,7 +3,12 @@ package types
 // Nil ...
 type Nil struct{}
 
-// MarshalJSON ...
-func (Nil) MarshalJSON() (text []byte, err error) {
-	return []byte("null"), nil
+// String ...
+func (Nil) String() string {
+	return "<nil>"
+}
+
+// MarshalText ...
+func (nilValue Nil) MarshalText() (text []byte, err error) {
+	return []byte(nilValue.String()), nil
 }
