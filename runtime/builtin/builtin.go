@@ -341,8 +341,6 @@ var (
 		"str": func(value interface{}) (*types.Pair, error) {
 			var text string
 			switch typedValue := value.(type) {
-			case types.Nil:
-				text = typedValue.String()
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair:
@@ -352,7 +350,7 @@ var (
 				if err != nil {
 					return nil, errors.Wrap(err, "unable to marshal the list to JSON")
 				}
-			case runtime.ConcurrentActorFactory:
+			case fmt.Stringer:
 				text = typedValue.String()
 			default:
 				return nil, errors.Errorf(
