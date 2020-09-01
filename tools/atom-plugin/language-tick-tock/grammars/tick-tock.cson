@@ -65,13 +65,13 @@
 
   # built-in constants
   {
-    'match': '\\b(__initialization__|__initialize__|__empty_list__|nil|false|true|nan|inf|pi|e)\\b'
+    'match': '\\b(__initialization__|__initialize__|__empty_list__|__empty_hash__|nil|false|true|nan|inf|pi|e)\\b'
     'name': 'constant.language.ticktock'
   }
 
   # built-in functions
   {
-    'match': '\\b(__cons__|__eq__|__ne__|__lt__|__le__|__gt__|__ge__|__or__|__xor__|__and__|__lshift__|__rshift__|__urshift__|__add__|__sub__|__mul__|__div__|__mod__|__neg__|__bitwise_not__|__logical_not__|__item__|type|name|size|bool|floor|ceil|trunc|round|sin|cos|tn|arcsin|arccos|arctn|angle|pow|sqrt|exp|ln|lg|abs|is_nan|seed|random|head|tail|num|str|strb|strs|strl|env|time|sleep|exit|in|inln|out|outln|err|errln)\\b'
+    'match': '\\b(__cons__|__with__|__eq__|__ne__|__lt__|__le__|__gt__|__ge__|__or__|__xor__|__and__|__lshift__|__rshift__|__urshift__|__add__|__sub__|__mul__|__div__|__mod__|__neg__|__bitwise_not__|__logical_not__|__item__|type|name|size|bool|floor|ceil|trunc|round|sin|cos|tn|arcsin|arccos|arctn|angle|pow|sqrt|exp|ln|lg|abs|is_nan|seed|random|head|tail|num|str|strb|strs|strl|strh|strhh|with|keys|env|time|sleep|exit|in|inln|out|outln|err|errln)\\b'
     'name': 'support.function.builtin.ticktock'
   }
 
@@ -89,7 +89,7 @@
 
   # delimiters
   {
-    'match': '[,;()\\[\\]]'
+    'match': '[,;()\\[\\]\\{\\}]'
     'name': 'punctuation.other.ticktock'
   }
 ]
