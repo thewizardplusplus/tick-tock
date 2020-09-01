@@ -341,8 +341,6 @@ var (
 		"str": func(value interface{}) (*types.Pair, error) {
 			var text string
 			switch typedValue := value.(type) {
-			case types.Nil:
-				text = "nil"
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair:
