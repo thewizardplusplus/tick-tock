@@ -605,12 +605,7 @@ func translateHashTableDefinition(
 		var settedStates2 mapset.Set
 		switch {
 		case entry.Name != nil:
-			identifier := *entry.Name
-			if !declaredIdentifiers.Contains(identifier) {
-				return nil, nil, errors.Errorf("unknown identifier %s", identifier)
-			}
-
-			argumentTwo = expressions.NewIdentifier(identifier)
+			argumentTwo = expressions.NewString(*entry.Name)
 			settedStates2 = mapset.NewSet()
 		case entry.Expression != nil:
 			argumentTwo, settedStates2, err = translateExpression(entry.Expression, declaredIdentifiers)

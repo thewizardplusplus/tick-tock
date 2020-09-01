@@ -7355,7 +7355,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: mapset.NewSet("x", "y", "z"),
+				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
 				HashTableConstructionFunctionName,
@@ -7363,13 +7363,13 @@ func TestTranslateAtom(test *testing.T) {
 					expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
 						expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
 							expressions.NewIdentifier(EmptyHashTableConstantName),
-							expressions.NewIdentifier("x"),
+							expressions.NewString("x"),
 							expressions.NewNumber(12),
 						}),
-						expressions.NewIdentifier("y"),
+						expressions.NewString("y"),
 						expressions.NewNumber(23),
 					}),
-					expressions.NewIdentifier("z"),
+					expressions.NewString("z"),
 					expressions.NewNumber(42),
 				},
 			),
@@ -7587,14 +7587,14 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: mapset.NewSet("x", "y"),
+				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
 				HashTableConstructionFunctionName,
 				[]expressions.Expression{
 					expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
 						expressions.NewIdentifier(EmptyHashTableConstantName),
-						expressions.NewIdentifier("x"),
+						expressions.NewString("x"),
 						expressions.NewConditionalExpression([]expressions.ConditionalCase{
 							{
 								Condition: expressions.NewNumber(23),
@@ -7606,7 +7606,7 @@ func TestTranslateAtom(test *testing.T) {
 							},
 						}),
 					}),
-					expressions.NewIdentifier("y"),
+					expressions.NewString("y"),
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(24),
@@ -7727,7 +7727,7 @@ func TestTranslateAtom(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: mapset.NewSet("x", "y", "z"),
+				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
 			wantSettedStates: nil,
@@ -9502,7 +9502,131 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		wantErr          assert.ErrorAssertionFunc
 	}{
 		{
-			name: "HashTableDefinition/success/name/few entries",
+			name: "HashTableDefinition/success/name/few entries/unknown key identifiers",
+			args: args{
+				hashTableDefinition: &parser.HashTableDefinition{
+					Entries: []*parser.HashTableEntry{
+						{
+							Name: pointer.ToString("x"),
+							Value: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													BitwiseDisjunction: &parser.BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &parser.BitwiseConjunction{
+																Shift: &parser.Shift{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Name: pointer.ToString("y"),
+							Value: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													BitwiseDisjunction: &parser.BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &parser.BitwiseConjunction{
+																Shift: &parser.Shift{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Name: pointer.ToString("z"),
+							Value: &parser.Expression{
+								ListConstruction: &parser.ListConstruction{
+									Disjunction: &parser.Disjunction{
+										Conjunction: &parser.Conjunction{
+											Equality: &parser.Equality{
+												Comparison: &parser.Comparison{
+													BitwiseDisjunction: &parser.BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &parser.BitwiseConjunction{
+																Shift: &parser.Shift{
+																	Addition: &parser.Addition{
+																		Multiplication: &parser.Multiplication{
+																			Unary: &parser.Unary{
+																				Accessor: &parser.Accessor{
+																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewFunctionCall(
+				HashTableConstructionFunctionName,
+				[]expressions.Expression{
+					expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
+						expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
+							expressions.NewIdentifier(EmptyHashTableConstantName),
+							expressions.NewString("x"),
+							expressions.NewNumber(12),
+						}),
+						expressions.NewString("y"),
+						expressions.NewNumber(23),
+					}),
+					expressions.NewString("z"),
+					expressions.NewNumber(42),
+				},
+			),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "HashTableDefinition/success/name/few entries/known key identifiers",
 			args: args{
 				hashTableDefinition: &parser.HashTableDefinition{
 					Entries: []*parser.HashTableEntry{
@@ -9612,13 +9736,13 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 					expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
 						expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
 							expressions.NewIdentifier(EmptyHashTableConstantName),
-							expressions.NewIdentifier("x"),
+							expressions.NewString("x"),
 							expressions.NewNumber(12),
 						}),
-						expressions.NewIdentifier("y"),
+						expressions.NewString("y"),
 						expressions.NewNumber(23),
 					}),
-					expressions.NewIdentifier("z"),
+					expressions.NewString("z"),
 					expressions.NewNumber(42),
 				},
 			),
@@ -9834,14 +9958,14 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: mapset.NewSet("x", "y"),
+				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
 				HashTableConstructionFunctionName,
 				[]expressions.Expression{
 					expressions.NewFunctionCall(HashTableConstructionFunctionName, []expressions.Expression{
 						expressions.NewIdentifier(EmptyHashTableConstantName),
-						expressions.NewIdentifier("x"),
+						expressions.NewString("x"),
 						expressions.NewConditionalExpression([]expressions.ConditionalCase{
 							{
 								Condition: expressions.NewNumber(23),
@@ -9853,7 +9977,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 							},
 						}),
 					}),
-					expressions.NewIdentifier("y"),
+					expressions.NewString("y"),
 					expressions.NewConditionalExpression([]expressions.ConditionalCase{
 						{
 							Condition: expressions.NewNumber(24),
@@ -10120,115 +10244,6 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 			wantErr:          assert.NoError,
 		},
 		{
-			name: "HashTableDefinition/error/unknown identifier in the name",
-			args: args{
-				hashTableDefinition: &parser.HashTableDefinition{
-					Entries: []*parser.HashTableEntry{
-						{
-							Name: pointer.ToString("x"),
-							Value: &parser.Expression{
-								ListConstruction: &parser.ListConstruction{
-									Disjunction: &parser.Disjunction{
-										Conjunction: &parser.Conjunction{
-											Equality: &parser.Equality{
-												Comparison: &parser.Comparison{
-													BitwiseDisjunction: &parser.BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &parser.BitwiseConjunction{
-																Shift: &parser.Shift{
-																	Addition: &parser.Addition{
-																		Multiplication: &parser.Multiplication{
-																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{
-																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							Name: pointer.ToString("y"),
-							Value: &parser.Expression{
-								ListConstruction: &parser.ListConstruction{
-									Disjunction: &parser.Disjunction{
-										Conjunction: &parser.Conjunction{
-											Equality: &parser.Equality{
-												Comparison: &parser.Comparison{
-													BitwiseDisjunction: &parser.BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &parser.BitwiseConjunction{
-																Shift: &parser.Shift{
-																	Addition: &parser.Addition{
-																		Multiplication: &parser.Multiplication{
-																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{
-																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							Name: pointer.ToString("unknown"),
-							Value: &parser.Expression{
-								ListConstruction: &parser.ListConstruction{
-									Disjunction: &parser.Disjunction{
-										Conjunction: &parser.Conjunction{
-											Equality: &parser.Equality{
-												Comparison: &parser.Comparison{
-													BitwiseDisjunction: &parser.BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &parser.BitwiseConjunction{
-																Shift: &parser.Shift{
-																	Addition: &parser.Addition{
-																		Multiplication: &parser.Multiplication{
-																			Unary: &parser.Unary{
-																				Accessor: &parser.Accessor{
-																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				declaredIdentifiers: mapset.NewSet("x", "y", "z"),
-			},
-			wantExpression:   nil,
-			wantSettedStates: nil,
-			wantErr:          assert.Error,
-		},
-		{
 			name: "HashTableDefinition/error/unknown identifier in the expression",
 			args: args{
 				hashTableDefinition: &parser.HashTableDefinition{
@@ -10404,7 +10419,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 						},
 					},
 				},
-				declaredIdentifiers: mapset.NewSet("x", "y", "z"),
+				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
 			wantSettedStates: nil,
