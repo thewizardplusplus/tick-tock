@@ -1281,7 +1281,7 @@ func TestValues(test *testing.T) {
 			expression: expressions.NewFunctionCall("str", []expressions.Expression{
 				expressions.NewIdentifier("nil"),
 			}),
-			wantResult: types.NewPairFromText("<nil>"),
+			wantResult: types.NewPairFromText("nil"),
 			wantErr:    assert.NoError,
 		},
 		{
@@ -1391,7 +1391,7 @@ func TestValues(test *testing.T) {
 					},
 				),
 			}),
-			wantResult: types.NewPairFromText(`[12,"<nil>",42]`),
+			wantResult: types.NewPairFromText("[12,null,42]"),
 			wantErr:    assert.NoError,
 		},
 		{
