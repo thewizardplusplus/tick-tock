@@ -108,8 +108,14 @@ type Unary struct {
 
 // Accessor ...
 type Accessor struct {
-	Atom *Atom         `parser:"@@"`
-	Keys []*Expression `parser:"{ \"[\" @@ \"]\" }"`
+	Atom *Atom          `parser:"@@"`
+	Keys []*AccessorKey `parser:"{ @@ }"`
+}
+
+// AccessorKey ...
+type AccessorKey struct {
+	Name       *string     `parser:"( \".\" @Ident"`
+	Expression *Expression `parser:"| \"[\" @@ \"]\" )"`
 }
 
 // Atom ...
