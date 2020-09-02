@@ -486,9 +486,17 @@ func translateAccessor(
 	}
 
 	for index, key := range accessor.Keys {
-		argumentTwo, settedStates2, err := translateExpression(key, declaredIdentifiers)
-		if err != nil {
-			return nil, nil, errors.Wrapf(err, "unable to translate the key #%d of the accessor", index)
+		var argumentTwo expressions.Expression
+		var settedStates2 mapset.Set
+		switch {
+		case key.Name != nil:
+			argumentTwo = expressions.NewString(*key.Name)
+			settedStates2 = mapset.NewSet()
+		case key.Expression != nil:
+			argumentTwo, settedStates2, err = translateExpression(key.Expression, declaredIdentifiers)
+			if err != nil {
+				return nil, nil, errors.Wrapf(err, "unable to translate the key #%d of the accessor", index)
+			}
 		}
 
 		argumentOne = expressions.NewFunctionCall(
