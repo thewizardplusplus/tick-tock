@@ -1,27 +1,3 @@
-class PpmSerializer(dimensions, maximal_color)
-  state __initialization__(header_outed)
-    message pixel_generated(point, color)
-      when
-        => !header_outed
-          outln("P3")
-          outln(str(dimensions.width) + " " + str(dimensions.height))
-          outln(str(maximal_color))
-
-          set __initialization__(true)
-      ;
-
-      let color = {
-        red: round(maximal_color * color.red),
-        green: round(maximal_color * color.green),
-        blue: round(maximal_color * color.blue),
-      }
-      outln(str(color.red) + " " + str(color.green) + " " + str(color.blue))
-
-      send point_serialized()
-    ;
-  ;
-;
-
 actor PointGenerator()
   state __initialization__()
     message generate_point(dimensions, point)
@@ -61,6 +37,30 @@ actor Render()
     message point_generated(point)
       let color = { red: random(), green: random(), blue: random() }
       send pixel_generated(point, color)
+    ;
+  ;
+;
+
+class PpmSerializer(dimensions, maximal_color)
+  state __initialization__(header_outed)
+    message pixel_generated(point, color)
+      when
+        => !header_outed
+          outln("P3")
+          outln(str(dimensions.width) + " " + str(dimensions.height))
+          outln(str(maximal_color))
+
+          set __initialization__(true)
+      ;
+
+      let color = {
+        red: round(maximal_color * color.red),
+        green: round(maximal_color * color.green),
+        blue: round(maximal_color * color.blue),
+      }
+      outln(str(color.red) + " " + str(color.green) + " " + str(color.blue))
+
+      send point_serialized()
     ;
   ;
 ;
