@@ -418,20 +418,7 @@ var (
 				return nil, errors.Wrap(err, "unable to get the deep hash table")
 			}
 
-			pairs := make(map[string]interface{})
-			for key, value := range deepTable {
-				keyText, ok := key.(string)
-				if !ok {
-					return nil, errors.Errorf(
-						"incorrect type of the key for conversion to a string (%T instead *types.Pair)",
-						key,
-					)
-				}
-
-				pairs[keyText] = value
-			}
-
-			text, err := marshalToJSON(pairs)
+			text, err := marshalToJSON(deepTable)
 			if err != nil {
 				return nil, errors.Wrap(err, "unable to marshal the hash table to JSON")
 			}

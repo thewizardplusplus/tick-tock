@@ -433,7 +433,7 @@ func TestPair_DeepSlice(test *testing.T) {
 		{
 			name:      "nonempty pair/with a hash table",
 			pair:      &Pair{"one", &Pair{HashTable{"two": "three", "four": "five"}, nil}},
-			wantSlice: []interface{}{"one", HashTable{"two": "three", "four": "five"}},
+			wantSlice: []interface{}{"one", map[string]interface{}{"two": "three", "four": "five"}},
 			wantErr:   assert.NoError,
 		},
 		{

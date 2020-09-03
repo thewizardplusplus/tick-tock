@@ -442,13 +442,13 @@ func TestHashTable_DeepMap(test *testing.T) {
 	for _, data := range []struct {
 		name      string
 		table     HashTable
-		wantTable HashTable
+		wantTable map[string]interface{}
 		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
 			name:      "success",
 			table:     HashTable{"one": "two", "three": "four"},
-			wantTable: HashTable{"one": "two", "three": "four"},
+			wantTable: map[string]interface{}{"one": "two", "three": "four"},
 			wantErr:   assert.NoError,
 		},
 		{
@@ -468,7 +468,7 @@ func TestHashTable_DeepMap(test *testing.T) {
 					},
 				},
 			},
-			wantTable: HashTable{
+			wantTable: map[string]interface{}{
 				"test": []interface{}{float64('t'), float64('e'), float64('s'), float64('t')},
 			},
 			wantErr: assert.NoError,
@@ -478,8 +478,8 @@ func TestHashTable_DeepMap(test *testing.T) {
 			table: HashTable{
 				"test": HashTable{"one": "two", "three": "four"},
 			},
-			wantTable: HashTable{
-				"test": HashTable{"one": "two", "three": "four"},
+			wantTable: map[string]interface{}{
+				"test": map[string]interface{}{"one": "two", "three": "four"},
 			},
 			wantErr: assert.NoError,
 		},
@@ -505,8 +505,8 @@ func TestHashTable_DeepMap(test *testing.T) {
 					},
 				},
 			},
-			wantTable: HashTable{
-				"one": HashTable{
+			wantTable: map[string]interface{}{
+				"one": map[string]interface{}{
 					"two": []interface{}{float64('t'), float64('h'), float64('r'), float64('e'), float64('e')},
 				},
 			},

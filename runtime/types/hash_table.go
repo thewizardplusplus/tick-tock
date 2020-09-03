@@ -110,9 +110,14 @@ func (table HashTable) Merge(anotherTable HashTable) HashTable {
 }
 
 // DeepMap ...
-func (table HashTable) DeepMap() (HashTable, error) {
-	result := make(HashTable)
+func (table HashTable) DeepMap() (map[string]interface{}, error) {
+	result := make(map[string]interface{})
 	for key, value := range table {
+		keyAsString, ok := key.(string)
+		if !ok {
+			return nil, errors.New("not string key")
+		}
+
 		var err error
 		switch typedValue := value.(type) {
 		case *Pair:
@@ -127,7 +132,7 @@ func (table HashTable) DeepMap() (HashTable, error) {
 			}
 		}
 
-		result[key] = value
+		result[keyAsString] = value
 	}
 
 	return result, nil
