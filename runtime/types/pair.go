@@ -119,25 +119,37 @@ func (pair *Pair) Slice() []interface{} {
 }
 
 // DeepSlice ...
-func (pair *Pair) DeepSlice() []interface{} {
+func (pair *Pair) DeepSlice() ([]interface{}, error) {
 	if pair == nil {
-		return nil
+		return nil, nil
 	}
 
 	var head interface{}
+	var err error
 	switch typedHead := pair.Head.(type) {
 	case *Pair:
-		head = typedHead.DeepSlice()
+		head, err = typedHead.DeepSlice()
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to get the deep list")
+		}
 	case HashTable:
-		head = typedHead.DeepMap()
+		head, err = typedHead.DeepMap()
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to get the deep hash table")
+		}
 	default:
 		head = typedHead
 	}
 
-	items := []interface{}{head}
-	items = append(items, pair.Tail.DeepSlice()...)
+	tail, err := pair.Tail.DeepSlice()
+	if err != nil {
+		return nil, err
+	}
 
-	return items
+	items := []interface{}{head}
+	items = append(items, tail...)
+
+	return items, nil
 }
 
 // Text ...

@@ -110,20 +110,27 @@ func (table HashTable) Merge(anotherTable HashTable) HashTable {
 }
 
 // DeepMap ...
-func (table HashTable) DeepMap() HashTable {
+func (table HashTable) DeepMap() (HashTable, error) {
 	result := make(HashTable)
 	for key, value := range table {
+		var err error
 		switch typedValue := value.(type) {
 		case *Pair:
-			value = typedValue.DeepSlice()
+			value, err = typedValue.DeepSlice()
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to get the deep list")
+			}
 		case HashTable:
-			value = typedValue.DeepMap()
+			value, err = typedValue.DeepMap()
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to get the deep hash table")
+			}
 		}
 
 		result[key] = value
 	}
 
-	return result
+	return result, nil
 }
 
 func prepareKey(key interface{}) (interface{}, error) {

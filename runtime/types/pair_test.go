@@ -413,35 +413,41 @@ func TestPair_Slice(test *testing.T) {
 
 func TestPair_DeepSlice(test *testing.T) {
 	for _, data := range []struct {
-		name string
-		pair *Pair
-		want []interface{}
+		name      string
+		pair      *Pair
+		wantSlice []interface{}
+		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
-			name: "nonempty pair/tree in the head",
-			pair: &Pair{&Pair{"one", &Pair{"two", nil}}, &Pair{"three", nil}},
-			want: []interface{}{[]interface{}{"one", "two"}, "three"},
+			name:      "nonempty pair/tree in the head",
+			pair:      &Pair{&Pair{"one", &Pair{"two", nil}}, &Pair{"three", nil}},
+			wantSlice: []interface{}{[]interface{}{"one", "two"}, "three"},
+			wantErr:   assert.NoError,
 		},
 		{
-			name: "nonempty pair/tree in the tail",
-			pair: &Pair{"one", &Pair{&Pair{"two", &Pair{"three", nil}}, nil}},
-			want: []interface{}{"one", []interface{}{"two", "three"}},
+			name:      "nonempty pair/tree in the tail",
+			pair:      &Pair{"one", &Pair{&Pair{"two", &Pair{"three", nil}}, nil}},
+			wantSlice: []interface{}{"one", []interface{}{"two", "three"}},
+			wantErr:   assert.NoError,
 		},
 		{
-			name: "nonempty pair/with a hash table",
-			pair: &Pair{"one", &Pair{HashTable{"two": "three", "four": "five"}, nil}},
-			want: []interface{}{"one", HashTable{"two": "three", "four": "five"}},
+			name:      "nonempty pair/with a hash table",
+			pair:      &Pair{"one", &Pair{HashTable{"two": "three", "four": "five"}, nil}},
+			wantSlice: []interface{}{"one", HashTable{"two": "three", "four": "five"}},
+			wantErr:   assert.NoError,
 		},
 		{
-			name: "empty pair",
-			pair: nil,
-			want: nil,
+			name:      "empty pair",
+			pair:      nil,
+			wantSlice: nil,
+			wantErr:   assert.NoError,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			got := data.pair.DeepSlice()
+			gotSlice, gotErr := data.pair.DeepSlice()
 
-			assert.Equal(test, data.want, got)
+			assert.Equal(test, data.wantSlice, gotSlice)
+			data.wantErr(test, gotErr)
 		})
 	}
 }

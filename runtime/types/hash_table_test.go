@@ -440,14 +440,16 @@ func TestHashTable_Merge(test *testing.T) {
 
 func TestHashTable_DeepMap(test *testing.T) {
 	for _, data := range []struct {
-		name  string
-		table HashTable
-		want  HashTable
+		name      string
+		table     HashTable
+		wantTable HashTable
+		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
-			name:  "success",
-			table: HashTable{"one": "two", "three": "four"},
-			want:  HashTable{"one": "two", "three": "four"},
+			name:      "success",
+			table:     HashTable{"one": "two", "three": "four"},
+			wantTable: HashTable{"one": "two", "three": "four"},
+			wantErr:   assert.NoError,
 		},
 		{
 			name: "success with a pair",
@@ -466,18 +468,20 @@ func TestHashTable_DeepMap(test *testing.T) {
 					},
 				},
 			},
-			want: HashTable{
+			wantTable: HashTable{
 				"test": []interface{}{float64('t'), float64('e'), float64('s'), float64('t')},
 			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "success with a hash table",
 			table: HashTable{
 				"test": HashTable{"one": "two", "three": "four"},
 			},
-			want: HashTable{
+			wantTable: HashTable{
 				"test": HashTable{"one": "two", "three": "four"},
 			},
+			wantErr: assert.NoError,
 		},
 		{
 			name: "success with a hash table that contains a pair",
@@ -501,17 +505,19 @@ func TestHashTable_DeepMap(test *testing.T) {
 					},
 				},
 			},
-			want: HashTable{
+			wantTable: HashTable{
 				"one": HashTable{
 					"two": []interface{}{float64('t'), float64('h'), float64('r'), float64('e'), float64('e')},
 				},
 			},
+			wantErr: assert.NoError,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			got := data.table.DeepMap()
+			gotTable, gotErr := data.table.DeepMap()
 
-			assert.Equal(test, data.want, got)
+			assert.Equal(test, data.wantTable, gotTable)
+			data.wantErr(test, gotErr)
 		})
 	}
 }

@@ -344,8 +344,11 @@ var (
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair:
-				var err error
-				items := typedValue.DeepSlice()
+				items, err := typedValue.DeepSlice()
+				if err != nil {
+					return nil, errors.Wrap(err, "unable to get the deep list")
+				}
+
 				text, err = marshalToJSON(items)
 				if err != nil {
 					return nil, errors.Wrap(err, "unable to marshal the list to JSON")
@@ -410,8 +413,13 @@ var (
 			return types.NewPairFromText(text), nil
 		},
 		"strh": func(table types.HashTable) (*types.Pair, error) {
+			deepTable, err := table.DeepMap()
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to get the deep hash table")
+			}
+
 			pairs := make(map[string]interface{})
-			for key, value := range table.DeepMap() {
+			for key, value := range deepTable {
 				keyText, ok := key.(string)
 				if !ok {
 					return nil, errors.Errorf(
