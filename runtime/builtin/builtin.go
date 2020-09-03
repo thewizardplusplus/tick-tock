@@ -353,6 +353,16 @@ var (
 				if err != nil {
 					return nil, errors.Wrap(err, "unable to marshal the list to JSON")
 				}
+			case types.HashTable:
+				deepTable, err := typedValue.DeepMap()
+				if err != nil {
+					return nil, errors.Wrap(err, "unable to get the deep hash table")
+				}
+
+				text, err = marshalToJSON(deepTable)
+				if err != nil {
+					return nil, errors.Wrap(err, "unable to marshal the hash table to JSON")
+				}
 			case fmt.Stringer:
 				text = typedValue.String()
 			default:
