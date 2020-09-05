@@ -419,28 +419,46 @@ func TestPair_DeepSlice(test *testing.T) {
 		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
-			name:      "nonempty pair/tree in the head",
+			name:      "success/nonempty pair/tree in the head",
 			pair:      &Pair{&Pair{"one", &Pair{"two", nil}}, &Pair{"three", nil}},
 			wantSlice: []interface{}{[]interface{}{"one", "two"}, "three"},
 			wantErr:   assert.NoError,
 		},
 		{
-			name:      "nonempty pair/tree in the tail",
+			name:      "success/nonempty pair/tree in the tail",
 			pair:      &Pair{"one", &Pair{&Pair{"two", &Pair{"three", nil}}, nil}},
 			wantSlice: []interface{}{"one", []interface{}{"two", "three"}},
 			wantErr:   assert.NoError,
 		},
 		{
-			name:      "nonempty pair/with a hash table",
+			name:      "success/nonempty pair/with a hash table",
 			pair:      &Pair{"one", &Pair{HashTable{"two": "three", "four": "five"}, nil}},
 			wantSlice: []interface{}{"one", map[string]interface{}{"two": "three", "four": "five"}},
 			wantErr:   assert.NoError,
 		},
 		{
-			name:      "empty pair",
+			name:      "success/empty pair",
 			pair:      nil,
 			wantSlice: nil,
 			wantErr:   assert.NoError,
+		},
+		{
+			name: "error/list",
+			pair: &Pair{
+				Head: "one",
+				Tail: &Pair{
+					Head: &Pair{"two", &Pair{HashTable{23.0: "three", 42.0: "four"}, nil}},
+					Tail: nil,
+				},
+			},
+			wantSlice: nil,
+			wantErr:   assert.Error,
+		},
+		{
+			name:      "error/hash table",
+			pair:      &Pair{"one", &Pair{HashTable{23.0: "two", 42.0: "three"}, nil}},
+			wantSlice: nil,
+			wantErr:   assert.Error,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
