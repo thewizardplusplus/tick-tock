@@ -512,6 +512,27 @@ func TestHashTable_DeepMap(test *testing.T) {
 			},
 			wantErr: assert.NoError,
 		},
+		{
+			name:      "error with a key",
+			table:     HashTable{23.0: "one", 42.0: "two"},
+			wantTable: nil,
+			wantErr:   assert.Error,
+		},
+		{
+			name: "error with a value (list)",
+			table: HashTable{
+				"one":   "two",
+				"three": &Pair{"four", &Pair{HashTable{23.0: "five", 42.0: "six"}, nil}},
+			},
+			wantTable: nil,
+			wantErr:   assert.Error,
+		},
+		{
+			name:      "error with a value (hash table)",
+			table:     HashTable{"one": "two", "three": HashTable{23.0: "four", 42.0: "five"}},
+			wantTable: nil,
+			wantErr:   assert.Error,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			gotTable, gotErr := data.table.DeepMap()
