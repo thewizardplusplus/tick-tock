@@ -344,14 +344,10 @@ var (
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
 			case *types.Pair, types.HashTable:
-				deepValue, err := types.GetDeepValue(value)
+				var err error
+				text, err = marshalToJSON(value)
 				if err != nil {
 					return nil, err
-				}
-
-				text, err = marshalToJSON(deepValue)
-				if err != nil {
-					return nil, errors.Wrap(err, "unable to marshal the deep value to JSON")
 				}
 			case fmt.Stringer:
 				text = typedValue.String()
@@ -413,14 +409,9 @@ var (
 			return types.NewPairFromText(text), nil
 		},
 		"strh": func(table types.HashTable) (*types.Pair, error) {
-			deepTable, err := table.DeepMap()
+			text, err := marshalToJSON(table)
 			if err != nil {
-				return nil, errors.Wrap(err, "unable to get the deep hash table")
-			}
-
-			text, err := marshalToJSON(deepTable)
-			if err != nil {
-				return nil, errors.Wrap(err, "unable to marshal the hash table to JSON")
+				return nil, err
 			}
 
 			return types.NewPairFromText(text), nil
@@ -526,9 +517,16 @@ var (
 )
 
 func marshalToJSON(value interface{}) (string, error) {
+	var err error
+	value, err = types.GetDeepValue(value)
+	if err != nil {
+		return "", err
+	}
+
 	var buffer bytes.Buffer
 	encoder := json.NewEncoder(&buffer)
 	encoder.SetEscapeHTML(false)
+
 	if err := encoder.Encode(value); err != nil {
 		return "", errors.Wrap(err, "unable to marshal the value to JSON")
 	}
