@@ -2,7 +2,7 @@ actor PointGenerator()
   state __initialization__()
     message generate_point(dimensions, point)
       let point = point || { x: 0, y: 0 }
-      send point_generated(point)
+      send point_generated(dimensions, point)
 
       let index = dimensions.width * point.y + point.x
       let progress = index / (dimensions.width * dimensions.height)
@@ -34,16 +34,17 @@ actor PointGenerator()
 
 actor Render()
   state __initialization__()
-    message point_generated(point)
+    message point_generated(dimensions, point)
       let color = { red: random(), green: random(), blue: random() }
-      send pixel_generated(point, color)
+      send pixel_generated(dimensions, point, color)
     ;
   ;
 ;
 
-class PpmSerializer(dimensions, maximal_color)
+actor PpmSerializer()
   state __initialization__(header_outed)
-    message pixel_generated(point, color)
+    message pixel_generated(dimensions, point, color)
+      let maximal_color = 255
       when
         => !header_outed
           outln("P3")
@@ -83,7 +84,6 @@ actor Main()
       ;
 
       let dimensions = { width: width, height: height }
-      start PpmSerializer(dimensions, 255)
       send generate_point(dimensions)
     ;
 
