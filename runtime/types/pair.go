@@ -124,21 +124,9 @@ func (pair *Pair) DeepSlice() ([]interface{}, error) {
 		return nil, nil
 	}
 
-	var head interface{}
-	var err error
-	switch typedHead := pair.Head.(type) {
-	case *Pair:
-		head, err = typedHead.DeepSlice()
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to get the deep list")
-		}
-	case HashTable:
-		head, err = typedHead.DeepMap()
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to get the deep hash table")
-		}
-	default:
-		head = typedHead
+	head, err := GetDeepValue(pair.Head)
+	if err != nil {
+		return nil, err
 	}
 
 	tail, err := pair.Tail.DeepSlice()

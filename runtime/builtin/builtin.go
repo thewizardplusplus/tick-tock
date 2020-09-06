@@ -343,25 +343,15 @@ var (
 			switch typedValue := value.(type) {
 			case float64:
 				text = strconv.FormatFloat(typedValue, 'g', -1, 64)
-			case *types.Pair:
-				items, err := typedValue.DeepSlice()
+			case *types.Pair, types.HashTable:
+				deepValue, err := types.GetDeepValue(value)
 				if err != nil {
-					return nil, errors.Wrap(err, "unable to get the deep list")
+					return nil, err
 				}
 
-				text, err = marshalToJSON(items)
+				text, err = marshalToJSON(deepValue)
 				if err != nil {
-					return nil, errors.Wrap(err, "unable to marshal the list to JSON")
-				}
-			case types.HashTable:
-				deepTable, err := typedValue.DeepMap()
-				if err != nil {
-					return nil, errors.Wrap(err, "unable to get the deep hash table")
-				}
-
-				text, err = marshalToJSON(deepTable)
-				if err != nil {
-					return nil, errors.Wrap(err, "unable to marshal the hash table to JSON")
+					return nil, errors.Wrap(err, "unable to marshal the deep value to JSON")
 				}
 			case fmt.Stringer:
 				text = typedValue.String()
