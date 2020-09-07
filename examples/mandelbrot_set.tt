@@ -1,3 +1,5 @@
+// https://en.wikipedia.org/wiki/Mandelbrot_set
+
 actor PointGenerator()
   state __initialization__()
     message generate_point(settings, generated_point)
@@ -30,7 +32,7 @@ actor PointGenerator()
   ;
 ;
 
-actor Render()
+actor MandelbrotSetRender()
   state __initialization__()
     message point_generated(settings, point)
       let x_step = (settings.real_range.maximum - settings.real_range.minimum)
