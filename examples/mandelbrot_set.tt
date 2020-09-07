@@ -107,11 +107,46 @@ actor Main()
           return
       ;
 
+      let minimum_real = num(env("MINIMUM_REAL") || "-2")
+      when
+        => minimum_real == nil
+          errln("Error: unable to parse the minimum real.")
+          return
+      ;
+
+      let maximum_real = num(env("MAXIMUM_REAL") || "1")
+      when
+        => maximum_real == nil
+          errln("Error: unable to parse the maximum real.")
+          return
+      ;
+
+      let minimum_imaginary = num(env("MINIMUM_IMAGINARY") || "-1")
+      when
+        => minimum_imaginary == nil
+          errln("Error: unable to parse the minimum imaginary.")
+          return
+      ;
+
+      let maximum_imaginary = num(env("MAXIMUM_IMAGINARY") || "1")
+      when
+        => maximum_imaginary == nil
+          errln("Error: unable to parse the maximum imaginary.")
+          return
+      ;
+
+      let maximal_iteration = num(env("MAXIMAL_ITERATION") || "100")
+      when
+        => maximal_iteration == nil
+          errln("Error: unable to parse the maximal iteration.")
+          return
+      ;
+
       send generate_point({
         dimensions: { width: width, height: height },
-        real_range: { minimum: -2, maximum: 1 },
-        imaginary_range: { minimum: -1, maximum: 1 },
-        maximal_iteration: 100,
+        real_range: { minimum: minimum_real, maximum: maximum_real },
+        imaginary_range: { minimum: minimum_imaginary, maximum: maximum_imaginary },
+        maximal_iteration: maximal_iteration,
       })
     ;
 
