@@ -35,8 +35,32 @@ actor PointGenerator()
 actor Render()
   state __initialization__()
     message point_generated(dimensions, point)
-      let color = { red: random(), green: random(), blue: random() }
-      send pixel_generated(dimensions, point, color)
+      let real_range = { minimum: -2, maximum: 1 }
+      let imaginary_range = { minimum: -1, maximum: 1 }
+      let x_step = (real_range.maximum - real_range.minimum) / dimensions.width
+      let y_step = (imaginary_range.maximum - imaginary_range.minimum) / dimensions.height
+      let origin_point = {
+        x: point.x * x_step + real_range.minimum,
+        y: point.y * y_step + imaginary_range.minimum,
+      }
+      send search_escape(dimensions, 100, origin_point, origin_point, 0)
+    ;
+
+    message search_escape(dimensions, maximal_iteration, origin_point, point, iteration)
+      when
+        => pow(point.x, 2) + pow(point.y, 2) > 4 || iteration == maximal_iteration
+          let color_channel = 1 - iteration / maximal_iteration
+          let color = { red: color_channel, green: color_channel, blue: color_channel }
+          send pixel_generated(dimensions, point, color)
+
+          return
+      ;
+
+      let point = {
+        x: pow(point.x, 2) - pow(point.y, 2) + origin_point.x,
+        y: 2 * point.x * point.y + origin_point.y,
+      }
+      send search_escape(dimensions, maximal_iteration, origin_point, point, iteration + 1)
     ;
   ;
 ;
