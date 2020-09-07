@@ -1,78 +1,78 @@
 actor PointGenerator()
   state __initialization__()
-    message generate_point(dimensions, point)
+    message generate_point(settings, point)
       let point = point || { x: 0, y: 0 }
-      send point_generated(dimensions, point)
+      send point_generated(settings, point)
 
-      let index = dimensions.width * point.y + point.x
-      let progress = index / (dimensions.width * dimensions.height)
+      let index = settings.dimensions.width * point.y + point.x
+      let progress = index / (settings.dimensions.width * settings.dimensions.height)
       send point_generation_progress(progress)
 
-      set point_serialization_waiting(dimensions, point)
+      set point_serialization_waiting(settings, point)
     ;
   ;
 
-  state point_serialization_waiting(dimensions, point)
+  state point_serialization_waiting(settings, point)
     message point_serialized()
       set __initialization__()
 
       let point = when
-        => point.x != dimensions.width - 1
+        => point.x != settings.dimensions.width - 1
           { x: point.x + 1, y: point.y }
         => true
           when
-            => point.y != dimensions.height - 1
+            => point.y != settings.dimensions.height - 1
               { x: 0, y: point.y + 1 }
             => true
               return
           ;
       ;
-      send generate_point(dimensions, point)
+      send generate_point(settings, point)
     ;
   ;
 ;
 
 actor Render()
   state __initialization__()
-    message point_generated(dimensions, point)
-      let real_range = { minimum: -2, maximum: 1 }
-      let imaginary_range = { minimum: -1, maximum: 1 }
-      let x_step = (real_range.maximum - real_range.minimum) / dimensions.width
-      let y_step = (imaginary_range.maximum - imaginary_range.minimum) / dimensions.height
-      let origin_point = {
-        x: point.x * x_step + real_range.minimum,
-        y: point.y * y_step + imaginary_range.minimum,
-      }
-      send search_escape(dimensions, 100, origin_point, origin_point, 0)
+    message point_generated(settings, point)
+      let x_step = (settings.real_range.maximum - settings.real_range.minimum)
+        / settings.dimensions.width
+      let y_step = (settings.imaginary_range.maximum - settings.imaginary_range.minimum)
+        / settings.dimensions.height
+      let settings = with(settings, "origin_point", {
+        x: point.x * x_step + settings.real_range.minimum,
+        y: point.y * y_step + settings.imaginary_range.minimum,
+      })
+      send search_escape(settings, settings.origin_point, 0)
     ;
 
-    message search_escape(dimensions, maximal_iteration, origin_point, point, iteration)
+    message search_escape(settings, point, iteration)
       when
-        => pow(point.x, 2) + pow(point.y, 2) > 4 || iteration == maximal_iteration
-          let color_channel = 1 - iteration / maximal_iteration
+        => pow(point.x, 2) + pow(point.y, 2) > 4 || iteration == settings.maximal_iteration
+          let color_channel = 1 - iteration / settings.maximal_iteration
           let color = { red: color_channel, green: color_channel, blue: color_channel }
-          send pixel_generated(dimensions, point, color)
+          send pixel_generated(settings, point, color)
 
           return
       ;
 
       let point = {
-        x: pow(point.x, 2) - pow(point.y, 2) + origin_point.x,
-        y: 2 * point.x * point.y + origin_point.y,
+        x: pow(point.x, 2) - pow(point.y, 2) + settings.origin_point.x,
+        y: 2 * point.x * point.y + settings.origin_point.y,
       }
-      send search_escape(dimensions, maximal_iteration, origin_point, point, iteration + 1)
+      send search_escape(settings, point, iteration + 1)
     ;
   ;
 ;
 
 actor PpmSerializer()
   state __initialization__(header_outed)
-    message pixel_generated(dimensions, point, color)
+    message pixel_generated(settings, point, color)
       let maximal_color = 255
       when
         => !header_outed
           outln("P3")
-          outln(str(dimensions.width) + " " + str(dimensions.height))
+          outln(str(settings.dimensions.width) + " " + str(settings.dimensions.height))
           outln(str(maximal_color))
 
           set __initialization__(true)
@@ -107,8 +107,12 @@ actor Main()
           return
       ;
 
-      let dimensions = { width: width, height: height }
-      send generate_point(dimensions)
+      send generate_point({
+        dimensions: { width: width, height: height },
+        real_range: { minimum: -2, maximum: 1 },
+        imaginary_range: { minimum: -1, maximum: 1 },
+        maximal_iteration: 100,
+      })
     ;
 
     message point_generation_progress(progress)
