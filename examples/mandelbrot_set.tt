@@ -1,33 +1,31 @@
 actor PointGenerator()
   state __initialization__()
-    message generate_point(settings, point)
-      let point = point || { x: 0, y: 0 }
-      send point_generated(settings, point)
+    message generate_point(settings, generated_point)
+      let generated_point = generated_point || { x: 0, y: 0 }
+      send point_generated(settings, generated_point)
 
-      let index = settings.dimensions.width * point.y + point.x
+      let index = settings.dimensions.width * generated_point.y + generated_point.x
       let progress = index / (settings.dimensions.width * settings.dimensions.height)
       send point_generation_progress(progress)
 
-      set point_serialization_waiting(settings, point)
+      set point_serialization_waiting(settings, generated_point)
     ;
   ;
 
-  state point_serialization_waiting(settings, point)
+  state point_serialization_waiting(settings, serialized_point)
     message point_serialized()
       set __initialization__()
-
-      let point = when
-        => point.x != settings.dimensions.width - 1
-          { x: point.x + 1, y: point.y }
+      send generate_point(settings, when
+        => serialized_point.x != settings.dimensions.width - 1
+          { x: serialized_point.x + 1, y: serialized_point.y }
         => true
           when
-            => point.y != settings.dimensions.height - 1
-              { x: 0, y: point.y + 1 }
+            => serialized_point.y != settings.dimensions.height - 1
+              { x: 0, y: serialized_point.y + 1 }
             => true
               return
           ;
-      ;
-      send generate_point(settings, point)
+      ;)
     ;
   ;
 ;
@@ -51,7 +49,7 @@ actor Render()
         => pow(point.x, 2) + pow(point.y, 2) > 4 || iteration == settings.maximal_iteration
           let color_channel = 1 - iteration / settings.maximal_iteration
           let color = { red: color_channel, green: color_channel, blue: color_channel }
-          send pixel_generated(settings, point, color)
+          send pixel_generated(settings, color)
 
           return
       ;
@@ -67,7 +65,7 @@ actor Render()
 
 actor PpmSerializer()
   state __initialization__(header_outed)
-    message pixel_generated(settings, point, color)
+    message pixel_generated(settings, color)
       let maximal_color = 255
       when
         => !header_outed
@@ -78,12 +76,10 @@ actor PpmSerializer()
           set __initialization__(true)
       ;
 
-      let color = {
-        red: round(maximal_color * color.red),
-        green: round(maximal_color * color.green),
-        blue: round(maximal_color * color.blue),
-      }
-      outln(str(color.red) + " " + str(color.green) + " " + str(color.blue))
+      let red_channel = round(maximal_color * color.red)
+      let green_channel = round(maximal_color * color.green)
+      let blue_channel = round(maximal_color * color.blue)
+      outln(str(red_channel) + " " + str(green_channel) + " " + str(blue_channel))
 
       send point_serialized()
     ;
