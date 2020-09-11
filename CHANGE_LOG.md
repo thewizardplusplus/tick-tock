@@ -1,5 +1,37 @@
 # Change Log
 
+## [v2.1](https://github.com/thewizardplusplus/tick-tock/tree/v2.1) (2020-09-11)
+
+- support expression evaluation:
+  - support types:
+    - hash table:
+      - support for using identifiers as string keys:
+        - on definition;
+        - on indexing;
+  - support operations:
+    - for hash tables:
+      - in-place definition (`{...: ..., ...: ...}`);
+      - merging (`+`);
+      - indexing (`(...).identifier` and `...[...]`);
+- refactoring:
+  - fix error handling:
+    - in the `translator` package;
+    - in the `runtime` package;
+  - of the `types` package:
+    - fix string representation of the `types.Nil` type;
+    - add the comment for the `types.TestBoolean()` test;
+- рантайм:
+  - функции:
+    - функции для работы со строками:
+      - `strh(hash: hash<str, any>): str` &mdash; преобразует хеш-таблицу `hash`, у которой ключи имеют строковый тип, в строку, отображая при этом ключи как строки;
+      - `strhh(hash: hash<str, str>): str` &mdash; преобразует хеш-таблицу `hash`, у которой и ключи, и значения имеют строковый тип, в строку, отображая при этом и ключи, и значения как строки;
+    - функции для работы с хеш-таблицами:
+      - `__with__(hash: hash<any, any>, key: any, value: any): hash<any, any>` &mdash; если `value` не равно `nil`, то возвращает новую хеш-таблицу, в которую было добавлено значение `value` с ключом `key`; если `value` равно `nil`, то возврашает новую хеш-таблицу, из которой было удалено значение с ключом `key`;
+      - `with(hash: hash<any, any>, key: any, value: any): hash<any, any>` &mdash; алиас функции `__with__` (см. выше);
+      - `keys(hash: hash<any, any>): list<any>` &mdash; возвращает список ключей хеш-таблицы `hash`;
+- fix the bug with an indent after a bracket in the Atom plugin;
+- add the new example with the [Mandelbrot set](https://en.wikipedia.org/wiki/Mandelbrot_set).
+
 ## [v2.0](https://github.com/thewizardplusplus/tick-tock/tree/v2.0) (2020-08-26)
 
 - support expression evaluation:
