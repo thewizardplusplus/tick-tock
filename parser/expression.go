@@ -114,8 +114,8 @@ type Accessor struct {
 
 // AccessorKey ...
 type AccessorKey struct {
-	Name       *string     `parser:"( \".\" @Ident"`
-	Expression *Expression `parser:"| \"[\" @@ \"]\" )"`
+	Name       *string     `parser:"\".\" @Ident"`
+	Expression *Expression `parser:"| \"[\" @@ \"]\""`
 }
 
 // Atom ...
