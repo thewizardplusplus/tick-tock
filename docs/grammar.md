@@ -52,23 +52,28 @@ addition = multiplication, [("+" | "-"), addition];
 multiplication = unary, [("*" | "/" | "%"), multiplication];
 unary = (("-" | "~" | "!"), unary) | accessor;
 
-accessor = atom, {list item access};
-list item access = "[", expression, "]";
+accessor = atom, {accessor key};
+accessor key =
+  ".", identifier
+  | "[", expression, "]";
 
 atom =
   number
   | string
   | list definition
+  | hash table definition
   | function call
   | conditional expression
   | identifier
-  | ("(", expression, ")");
+  | "(", expression, ")";
 number = INTEGER NUMBER | FLOATING-POINT NUMBER | SYMBOL;
 string =
   SINGLE-QUOTED INTERPRETED STRING
   | DOUBLE-QUOTED INTERPRETED STRING
   | RAW STRING;
 list definition = "[", [expression, {",", expression}, [","]], "]";
+hash table definition = "{", [hash table entry, {",", hash table entry}, [","]], "}";
+hash table entry = (identifier | "[", expression, "]"), ":", expression;
 function call = identifier, "(", [expression, {",", expression}, [","]], ")";
 conditional expression = "when", {conditional case}, ";";
 conditional case = "=>", expression, {command};
