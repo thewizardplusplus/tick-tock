@@ -57,7 +57,7 @@ actor Render()
       ;
 
       let point = {
-        x: pow(point.x, 2) - pow(point.y, 2) + settings.origin_point.x,
+        x: (pow(point.x, 2) - pow(point.y, 2)) + settings.origin_point.x,
         y: 2 * point.x * point.y + settings.origin_point.y,
       }
       send search_escape(settings, point, iteration + 1)
