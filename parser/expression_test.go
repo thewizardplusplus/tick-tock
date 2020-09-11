@@ -99,18 +99,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -137,18 +139,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -175,18 +179,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -202,18 +208,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
 																		},
 																	},
 																},
@@ -229,18 +237,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																			},
 																		},
 																	},
 																},
@@ -267,18 +277,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Items: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -294,18 +306,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
 																		},
 																	},
 																},
@@ -321,18 +335,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 						},
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																			},
 																		},
 																	},
 																},
@@ -367,18 +383,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("x"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
 																			},
 																		},
 																	},
@@ -408,18 +426,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("x"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
 																			},
 																		},
 																	},
@@ -449,18 +469,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("x"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
 																			},
 																		},
 																	},
@@ -479,18 +501,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("y"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																				},
 																			},
 																		},
 																	},
@@ -509,18 +533,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("z"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																				},
 																			},
 																		},
 																	},
@@ -550,18 +576,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("x"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
 																			},
 																		},
 																	},
@@ -580,18 +608,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("y"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																				},
 																			},
 																		},
 																	},
@@ -610,18 +640,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							Name: pointer.ToString("z"),
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																				},
 																			},
 																		},
 																	},
@@ -650,18 +682,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 						{
 							Expression: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+																				},
 																			},
 																		},
 																	},
@@ -677,18 +711,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 							},
 							Value: &Expression{
 								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
 																			},
 																		},
 																	},
@@ -723,18 +759,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Arguments: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -762,18 +800,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Arguments: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -801,610 +841,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Arguments: []*Expression{
 						{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Atom/function call/few arguments/trailing comma",
-			args: args{"test(12, 23, 42,)", new(Atom)},
-			wantAST: &Atom{
-				FunctionCall: &FunctionCall{
-					Name: "test",
-					Arguments: []*Expression{
-						{
-							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Atom/conditional expression/single conditional case/nonempty",
-			args: args{"when => 12 23 42;", new(Atom)},
-			wantAST: &Atom{
-				ConditionalExpression: &ConditionalExpression{
-					ConditionalCases: []*ConditionalCase{
-						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-							Commands: []*Command{
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Atom/conditional expression/single conditional case/empty",
-			args: args{"when => 12;", new(Atom)},
-			wantAST: &Atom{
-				ConditionalExpression: &ConditionalExpression{
-					ConditionalCases: []*ConditionalCase{
-						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Atom/conditional expression/few conditional cases/nonempty",
-			args: args{"when => 12 23 42 => 13 24 43 => 14 25 44;", new(Atom)},
-			wantAST: &Atom{
-				ConditionalExpression: &ConditionalExpression{
-					ConditionalCases: []*ConditionalCase{
-						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-							Commands: []*Command{
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(13)}},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-							Commands: []*Command{
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(24)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(43)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
-									Disjunction: &Disjunction{
-										Conjunction: &Conjunction{
-											Equality: &Equality{
-												Comparison: &Comparison{
-													BitwiseDisjunction: &BitwiseDisjunction{
-														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-															BitwiseConjunction: &BitwiseConjunction{
-																Shift: &Shift{
-																	Addition: &Addition{
-																		Multiplication: &Multiplication{
-																			Unary: &Unary{
-																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(14)}},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-							Commands: []*Command{
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(25)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-								{
-									Expression: &Expression{
-										ListConstruction: &ListConstruction{
-											Disjunction: &Disjunction{
-												Conjunction: &Conjunction{
-													Equality: &Equality{
-														Comparison: &Comparison{
-															BitwiseDisjunction: &BitwiseDisjunction{
-																BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																	BitwiseConjunction: &BitwiseConjunction{
-																		Shift: &Shift{
-																			Addition: &Addition{
-																				Multiplication: &Multiplication{
-																					Unary: &Unary{
-																						Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(44)}},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Atom/conditional expression/few conditional cases/empty",
-			args: args{"when => 12 => 23 => 42;", new(Atom)},
-			wantAST: &Atom{
-				ConditionalExpression: &ConditionalExpression{
-					ConditionalCases: []*ConditionalCase{
-						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
+								NilCoalescing: &NilCoalescing{
 									Disjunction: &Disjunction{
 										Conjunction: &Conjunction{
 											Equality: &Equality{
@@ -1432,8 +869,8 @@ func TestParseToAST_withExpression(test *testing.T) {
 							},
 						},
 						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
+							ListConstruction: &ListConstruction{
+								NilCoalescing: &NilCoalescing{
 									Disjunction: &Disjunction{
 										Conjunction: &Conjunction{
 											Equality: &Equality{
@@ -1461,8 +898,8 @@ func TestParseToAST_withExpression(test *testing.T) {
 							},
 						},
 						{
-							Condition: &Expression{
-								ListConstruction: &ListConstruction{
+							ListConstruction: &ListConstruction{
+								NilCoalescing: &NilCoalescing{
 									Disjunction: &Disjunction{
 										Conjunction: &Conjunction{
 											Equality: &Equality{
@@ -1495,6 +932,653 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "Atom/function call/few arguments/trailing comma",
+			args: args{"test(12, 23, 42,)", new(Atom)},
+			wantAST: &Atom{
+				FunctionCall: &FunctionCall{
+					Name: "test",
+					Arguments: []*Expression{
+						{
+							ListConstruction: &ListConstruction{
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							ListConstruction: &ListConstruction{
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/conditional expression/single conditional case/nonempty",
+			args: args{"when => 12 23 42;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/conditional expression/single conditional case/empty",
+			args: args{"when => 12;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/conditional expression/few conditional cases/nonempty",
+			args: args{"when => 12 23 42 => 13 24 43 => 14 25 44;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(13)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(24)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(43)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(14)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							Commands: []*Command{
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(25)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Expression: &Expression{
+										ListConstruction: &ListConstruction{
+											NilCoalescing: &NilCoalescing{
+												Disjunction: &Disjunction{
+													Conjunction: &Conjunction{
+														Equality: &Equality{
+															Comparison: &Comparison{
+																BitwiseDisjunction: &BitwiseDisjunction{
+																	BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																		BitwiseConjunction: &BitwiseConjunction{
+																			Shift: &Shift{
+																				Addition: &Addition{
+																					Multiplication: &Multiplication{
+																						Unary: &Unary{
+																							Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(44)}},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "Atom/conditional expression/few conditional cases/empty",
+			args: args{"when => 12 => 23 => 42;", new(Atom)},
+			wantAST: &Atom{
+				ConditionalExpression: &ConditionalExpression{
+					ConditionalCases: []*ConditionalCase{
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Condition: &Expression{
+								ListConstruction: &ListConstruction{
+									NilCoalescing: &NilCoalescing{
+										Disjunction: &Disjunction{
+											Conjunction: &Conjunction{
+												Equality: &Equality{
+													Comparison: &Comparison{
+														BitwiseDisjunction: &BitwiseDisjunction{
+															BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																BitwiseConjunction: &BitwiseConjunction{
+																	Shift: &Shift{
+																		Addition: &Addition{
+																			Multiplication: &Multiplication{
+																				Unary: &Unary{
+																					Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "Atom/conditional expression/without conditional cases",
 			args:    args{"when;", new(Atom)},
 			wantAST: &Atom{ConditionalExpression: &ConditionalExpression{}},
@@ -1506,18 +1590,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Atom{
 				Expression: &Expression{
 					ListConstruction: &ListConstruction{
-						Disjunction: &Disjunction{
-							Conjunction: &Conjunction{
-								Equality: &Equality{
-									Comparison: &Comparison{
-										BitwiseDisjunction: &BitwiseDisjunction{
-											BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-												BitwiseConjunction: &BitwiseConjunction{
-													Shift: &Shift{
-														Addition: &Addition{
-															Multiplication: &Multiplication{
-																Unary: &Unary{
-																	Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+						NilCoalescing: &NilCoalescing{
+							Disjunction: &Disjunction{
+								Conjunction: &Conjunction{
+									Equality: &Equality{
+										Comparison: &Comparison{
+											BitwiseDisjunction: &BitwiseDisjunction{
+												BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+													BitwiseConjunction: &BitwiseConjunction{
+														Shift: &Shift{
+															Addition: &Addition{
+																Multiplication: &Multiplication{
+																	Unary: &Unary{
+																		Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																	},
 																},
 															},
 														},
@@ -1543,18 +1629,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					{
 						Expression: &Expression{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -1572,18 +1660,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					{
 						Expression: &Expression{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
 																		},
 																	},
 																},
@@ -1621,18 +1711,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					{
 						Expression: &Expression{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}},
+																			},
 																		},
 																	},
 																},
@@ -1651,18 +1743,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 					{
 						Expression: &Expression{
 							ListConstruction: &ListConstruction{
-								Disjunction: &Disjunction{
-									Conjunction: &Conjunction{
-										Equality: &Equality{
-											Comparison: &Comparison{
-												BitwiseDisjunction: &BitwiseDisjunction{
-													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-														BitwiseConjunction: &BitwiseConjunction{
-															Shift: &Shift{
-																Addition: &Addition{
-																	Multiplication: &Multiplication{
-																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+								NilCoalescing: &NilCoalescing{
+									Disjunction: &Disjunction{
+										Conjunction: &Conjunction{
+											Equality: &Equality{
+												Comparison: &Comparison{
+													BitwiseDisjunction: &BitwiseDisjunction{
+														BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+															BitwiseConjunction: &BitwiseConjunction{
+																Shift: &Shift{
+																	Addition: &Addition{
+																		Multiplication: &Multiplication{
+																			Unary: &Unary{
+																				Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}},
+																			},
 																		},
 																	},
 																},
@@ -2366,17 +2460,19 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "ListConstruction/nonempty",
 			args: args{"12 : [23, 42]", new(ListConstruction)},
 			wantAST: &ListConstruction{
-				Disjunction: &Disjunction{
-					Conjunction: &Conjunction{
-						Equality: &Equality{
-							Comparison: &Comparison{
-								BitwiseDisjunction: &BitwiseDisjunction{
-									BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-										BitwiseConjunction: &BitwiseConjunction{
-											Shift: &Shift{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
+				NilCoalescing: &NilCoalescing{
+					Disjunction: &Disjunction{
+						Conjunction: &Conjunction{
+							Equality: &Equality{
+								Comparison: &Comparison{
+									BitwiseDisjunction: &BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &BitwiseConjunction{
+												Shift: &Shift{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
+														},
 													},
 												},
 											},
@@ -2388,36 +2484,40 @@ func TestParseToAST_withExpression(test *testing.T) {
 					},
 				},
 				ListConstruction: &ListConstruction{
-					Disjunction: &Disjunction{
-						Conjunction: &Conjunction{
-							Equality: &Equality{
-								Comparison: &Comparison{
-									BitwiseDisjunction: &BitwiseDisjunction{
-										BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-											BitwiseConjunction: &BitwiseConjunction{
-												Shift: &Shift{
-													Addition: &Addition{
-														Multiplication: &Multiplication{
-															Unary: &Unary{
-																Accessor: &Accessor{
-																	Atom: &Atom{
-																		ListDefinition: &ListDefinition{
-																			Items: []*Expression{
-																				{
-																					ListConstruction: &ListConstruction{
-																						Disjunction: &Disjunction{
-																							Conjunction: &Conjunction{
-																								Equality: &Equality{
-																									Comparison: &Comparison{
-																										BitwiseDisjunction: &BitwiseDisjunction{
-																											BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																												BitwiseConjunction: &BitwiseConjunction{
-																													Shift: &Shift{
-																														Addition: &Addition{
-																															Multiplication: &Multiplication{
-																																Unary: &Unary{
-																																	Accessor: &Accessor{
-																																		Atom: &Atom{IntegerNumber: pointer.ToInt64(23)},
+					NilCoalescing: &NilCoalescing{
+						Disjunction: &Disjunction{
+							Conjunction: &Conjunction{
+								Equality: &Equality{
+									Comparison: &Comparison{
+										BitwiseDisjunction: &BitwiseDisjunction{
+											BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+												BitwiseConjunction: &BitwiseConjunction{
+													Shift: &Shift{
+														Addition: &Addition{
+															Multiplication: &Multiplication{
+																Unary: &Unary{
+																	Accessor: &Accessor{
+																		Atom: &Atom{
+																			ListDefinition: &ListDefinition{
+																				Items: []*Expression{
+																					{
+																						ListConstruction: &ListConstruction{
+																							NilCoalescing: &NilCoalescing{
+																								Disjunction: &Disjunction{
+																									Conjunction: &Conjunction{
+																										Equality: &Equality{
+																											Comparison: &Comparison{
+																												BitwiseDisjunction: &BitwiseDisjunction{
+																													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																														BitwiseConjunction: &BitwiseConjunction{
+																															Shift: &Shift{
+																																Addition: &Addition{
+																																	Multiplication: &Multiplication{
+																																		Unary: &Unary{
+																																			Accessor: &Accessor{
+																																				Atom: &Atom{IntegerNumber: pointer.ToInt64(23)},
+																																			},
+																																		},
 																																	},
 																																},
 																															},
@@ -2431,22 +2531,24 @@ func TestParseToAST_withExpression(test *testing.T) {
 																							},
 																						},
 																					},
-																				},
-																				{
-																					ListConstruction: &ListConstruction{
-																						Disjunction: &Disjunction{
-																							Conjunction: &Conjunction{
-																								Equality: &Equality{
-																									Comparison: &Comparison{
-																										BitwiseDisjunction: &BitwiseDisjunction{
-																											BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-																												BitwiseConjunction: &BitwiseConjunction{
-																													Shift: &Shift{
-																														Addition: &Addition{
-																															Multiplication: &Multiplication{
-																																Unary: &Unary{
-																																	Accessor: &Accessor{
-																																		Atom: &Atom{IntegerNumber: pointer.ToInt64(42)},
+																					{
+																						ListConstruction: &ListConstruction{
+																							NilCoalescing: &NilCoalescing{
+																								Disjunction: &Disjunction{
+																									Conjunction: &Conjunction{
+																										Equality: &Equality{
+																											Comparison: &Comparison{
+																												BitwiseDisjunction: &BitwiseDisjunction{
+																													BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+																														BitwiseConjunction: &BitwiseConjunction{
+																															Shift: &Shift{
+																																Addition: &Addition{
+																																	Multiplication: &Multiplication{
+																																		Unary: &Unary{
+																																			Accessor: &Accessor{
+																																				Atom: &Atom{IntegerNumber: pointer.ToInt64(42)},
+																																			},
+																																		},
 																																	},
 																																},
 																															},
@@ -2484,17 +2586,19 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "ListConstruction/empty",
 			args: args{"23", new(ListConstruction)},
 			wantAST: &ListConstruction{
-				Disjunction: &Disjunction{
-					Conjunction: &Conjunction{
-						Equality: &Equality{
-							Comparison: &Comparison{
-								BitwiseDisjunction: &BitwiseDisjunction{
-									BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-										BitwiseConjunction: &BitwiseConjunction{
-											Shift: &Shift{
-												Addition: &Addition{
-													Multiplication: &Multiplication{
-														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
+				NilCoalescing: &NilCoalescing{
+					Disjunction: &Disjunction{
+						Conjunction: &Conjunction{
+							Equality: &Equality{
+								Comparison: &Comparison{
+									BitwiseDisjunction: &BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &BitwiseConjunction{
+												Shift: &Shift{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
+														},
 													},
 												},
 											},
@@ -2513,17 +2617,19 @@ func TestParseToAST_withExpression(test *testing.T) {
 			args: args{"23", new(Expression)},
 			wantAST: &Expression{
 				ListConstruction: &ListConstruction{
-					Disjunction: &Disjunction{
-						Conjunction: &Conjunction{
-							Equality: &Equality{
-								Comparison: &Comparison{
-									BitwiseDisjunction: &BitwiseDisjunction{
-										BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-											BitwiseConjunction: &BitwiseConjunction{
-												Shift: &Shift{
-													Addition: &Addition{
-														Multiplication: &Multiplication{
-															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
+					NilCoalescing: &NilCoalescing{
+						Disjunction: &Disjunction{
+							Conjunction: &Conjunction{
+								Equality: &Equality{
+									Comparison: &Comparison{
+										BitwiseDisjunction: &BitwiseDisjunction{
+											BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+												BitwiseConjunction: &BitwiseConjunction{
+													Shift: &Shift{
+														Addition: &Addition{
+															Multiplication: &Multiplication{
+																Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
+															},
 														},
 													},
 												},

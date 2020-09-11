@@ -30,8 +30,14 @@ type Expression struct {
 
 // ListConstruction ...
 type ListConstruction struct {
-	Disjunction      *Disjunction      `parser:"@@"`
+	NilCoalescing    *NilCoalescing    `parser:"@@"`
 	ListConstruction *ListConstruction `parser:"[ \":\" @@ ]"`
+}
+
+// NilCoalescing ...
+type NilCoalescing struct {
+	Disjunction   *Disjunction   `parser:"@@"`
+	NilCoalescing *NilCoalescing `parser:"[ \"?\" \"?\" @@ ]"`
 }
 
 // Disjunction ...
