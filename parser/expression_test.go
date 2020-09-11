@@ -2457,6 +2457,108 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "NilCoalescing/nonempty",
+			args: args{"12 ?? 23 ?? 42", new(NilCoalescing)},
+			wantAST: &NilCoalescing{
+				Disjunction: &Disjunction{
+					Conjunction: &Conjunction{
+						Equality: &Equality{
+							Comparison: &Comparison{
+								BitwiseDisjunction: &BitwiseDisjunction{
+									BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+										BitwiseConjunction: &BitwiseConjunction{
+											Shift: &Shift{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(12)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				NilCoalescing: &NilCoalescing{
+					Disjunction: &Disjunction{
+						Conjunction: &Conjunction{
+							Equality: &Equality{
+								Comparison: &Comparison{
+									BitwiseDisjunction: &BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &BitwiseConjunction{
+												Shift: &Shift{
+													Addition: &Addition{
+														Multiplication: &Multiplication{
+															Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					NilCoalescing: &NilCoalescing{
+						Disjunction: &Disjunction{
+							Conjunction: &Conjunction{
+								Equality: &Equality{
+									Comparison: &Comparison{
+										BitwiseDisjunction: &BitwiseDisjunction{
+											BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+												BitwiseConjunction: &BitwiseConjunction{
+													Shift: &Shift{
+														Addition: &Addition{
+															Multiplication: &Multiplication{
+																Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(42)}}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "NilCoalescing/empty",
+			args: args{"23", new(NilCoalescing)},
+			wantAST: &NilCoalescing{
+				Disjunction: &Disjunction{
+					Conjunction: &Conjunction{
+						Equality: &Equality{
+							Comparison: &Comparison{
+								BitwiseDisjunction: &BitwiseDisjunction{
+									BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
+										BitwiseConjunction: &BitwiseConjunction{
+											Shift: &Shift{
+												Addition: &Addition{
+													Multiplication: &Multiplication{
+														Unary: &Unary{Accessor: &Accessor{Atom: &Atom{IntegerNumber: pointer.ToInt64(23)}}},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "ListConstruction/nonempty",
 			args: args{"12 : [23, 42]", new(ListConstruction)},
 			wantAST: &ListConstruction{
