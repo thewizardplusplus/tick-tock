@@ -66,9 +66,9 @@ func translateListConstruction(
 	err error,
 ) {
 	argumentOne, settedStates, err :=
-		translateDisjunction(listConstruction.NilCoalescing.Disjunction, declaredIdentifiers)
+		translateNilCoalescing(listConstruction.NilCoalescing, declaredIdentifiers)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the disjunction")
+		return nil, nil, errors.Wrap(err, "unable to translate the nil coalescing")
 	}
 	if listConstruction.ListConstruction == nil {
 		return argumentOne, settedStates, nil
@@ -84,6 +84,35 @@ func translateListConstruction(
 		ListConstructionFunctionName,
 		[]expressions.Expression{argumentOne, argumentTwo},
 	)
+	settedStates = settedStates.Union(settedStates2)
+
+	return expression, settedStates, nil
+}
+
+func translateNilCoalescing(
+	nilCoalescing *parser.NilCoalescing,
+	declaredIdentifiers mapset.Set,
+) (
+	expression expressions.Expression,
+	settedStates mapset.Set,
+	err error,
+) {
+	argumentOne, settedStates, err :=
+		translateDisjunction(nilCoalescing.Disjunction, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the disjunction")
+	}
+	if nilCoalescing.NilCoalescing == nil {
+		return argumentOne, settedStates, nil
+	}
+
+	argumentTwo, settedStates2, err :=
+		translateNilCoalescing(nilCoalescing.NilCoalescing, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "unable to translate the nil coalescing")
+	}
+
+	expression = expressions.NewNilCoalescingOperator(argumentOne, argumentTwo)
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil
