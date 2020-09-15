@@ -66,7 +66,7 @@ func translateListConstruction(
 	err error,
 ) {
 	argumentOne, settedStates, err :=
-		translateDisjunction(listConstruction.Disjunction, declaredIdentifiers)
+		translateDisjunction(listConstruction.NilCoalescing.Disjunction, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the disjunction")
 	}
