@@ -39,7 +39,8 @@ set command = "set", identifier, "(", [expression, {",", expression}, [","]], ")
 return command = "return";
 
 expression = list construction;
-list construction = disjunction, [":", list construction];
+list construction = nil coalescing, [":", list construction];
+nil coalescing = disjunction, ["??", nil coalescing];
 disjunction = conjunction, ["||", disjunction];
 conjunction = equality, ["&&", conjunction];
 equality = comparison, [("==" | "!="), equality];
