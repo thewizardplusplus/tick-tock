@@ -3,7 +3,7 @@
 actor PointGenerator()
   state __initialization__()
     message generate_point(settings, generated_point)
-      let generated_point = generated_point || { x: 0, y: 0 }
+      let generated_point = generated_point ?? { x: 0, y: 0 }
       send point_generated(settings, generated_point)
 
       let index = settings.dimensions.width * generated_point.y + generated_point.x
@@ -91,49 +91,49 @@ actor PpmSerializer()
 actor Main()
   state __initialization__()
     message __initialize__()
-      let width = num(env("WIDTH") || "320")
+      let width = num(env("WIDTH") ?? "320")
       when
         => width == nil
           errln("Error: unable to parse the width.")
           return
       ;
 
-      let height = num(env("HEIGHT") || "240")
+      let height = num(env("HEIGHT") ?? "240")
       when
         => height == nil
           errln("Error: unable to parse the height.")
           return
       ;
 
-      let minimum_real = num(env("MINIMUM_REAL") || "-2")
+      let minimum_real = num(env("MINIMUM_REAL") ?? "-2")
       when
         => minimum_real == nil
           errln("Error: unable to parse the minimum real.")
           return
       ;
 
-      let maximum_real = num(env("MAXIMUM_REAL") || "1")
+      let maximum_real = num(env("MAXIMUM_REAL") ?? "1")
       when
         => maximum_real == nil
           errln("Error: unable to parse the maximum real.")
           return
       ;
 
-      let minimum_imaginary = num(env("MINIMUM_IMAGINARY") || "-1")
+      let minimum_imaginary = num(env("MINIMUM_IMAGINARY") ?? "-1")
       when
         => minimum_imaginary == nil
           errln("Error: unable to parse the minimum imaginary.")
           return
       ;
 
-      let maximum_imaginary = num(env("MAXIMUM_IMAGINARY") || "1")
+      let maximum_imaginary = num(env("MAXIMUM_IMAGINARY") ?? "1")
       when
         => maximum_imaginary == nil
           errln("Error: unable to parse the maximum imaginary.")
           return
       ;
 
-      let maximal_iteration = num(env("MAXIMAL_ITERATION") || "100")
+      let maximal_iteration = num(env("MAXIMAL_ITERATION") ?? "100")
       when
         => maximal_iteration == nil
           errln("Error: unable to parse the maximal iteration.")

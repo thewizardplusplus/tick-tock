@@ -26,8 +26,8 @@ actor InitialStateGenerator()
 actor StateGenerator()
   state __initialization__(state_)
     message generate_state(state_next, item_index)
-      let state_next = state_next || []
-      let item_index = item_index || 0
+      let state_next = state_next ?? []
+      let item_index = item_index ?? 0
       when
         => state_ == nil
           set initial_state_generation_waiting()
@@ -60,7 +60,7 @@ actor StateGenerator()
 actor NumberGenerator()
   state __initialization__(state_)
     message generate_number()
-      let state_ = state_ || []
+      let state_ = state_ ?? []
       when
         => state_ == []
           set state_generation_waiting()

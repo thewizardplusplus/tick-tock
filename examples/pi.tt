@@ -6,10 +6,10 @@ actor Main()
     ;
 
     message evaluate_pi(epsilon, a, b, t, p)
-      let a = a || 1
-      let b = b || 1 / sqrt(2)
-      let t = t || 1 / 4
-      let p = p || 1
+      let a = a ?? 1
+      let b = b ?? 1 / sqrt(2)
+      let t = t ?? 1 / 4
+      let p = p ?? 1
 
       let a_next = (a + b) / 2
       let b_next = sqrt(a * b)

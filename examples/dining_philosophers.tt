@@ -115,7 +115,7 @@ class Philosopher(current_philosopher, left_fork, right_fork)
 actor Main()
   state __initialization__(started_actors)
     message __initialize__()
-      let started_actors = started_actors || 0
+      let started_actors = started_actors ?? 0
       when
         => started_actors == 0
           start Fork("left")
