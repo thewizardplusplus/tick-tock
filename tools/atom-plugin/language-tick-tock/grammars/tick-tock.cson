@@ -83,7 +83,7 @@
 
   # operators
   {
-    'match': '[:|&=<>+\\-*/%!~\\^]'
+    'match': '[:|&=<>+\\-*/%!~\\^?]'
     'name': 'keyword.operator.ticktock'
   }
 
