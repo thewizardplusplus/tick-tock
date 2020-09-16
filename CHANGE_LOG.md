@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.2](https://github.com/thewizardplusplus/tick-tock/tree/v2.2) (2020-09-11)
+
+- support expression evaluation:
+  - support operations:
+    - lazy nil coalescing (`??`);
+- update examples for using the nil coalescing operation.
+
 ## [v2.1](https://github.com/thewizardplusplus/tick-tock/tree/v2.1) (2020-09-11)
 
 - support expression evaluation:
