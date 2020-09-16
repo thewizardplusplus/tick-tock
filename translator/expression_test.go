@@ -826,6 +826,625 @@ func TestTranslateListConstruction(test *testing.T) {
 	}
 }
 
+func TestTranslateNilCoalescing(test *testing.T) {
+	type args struct {
+		nilCoalescing       *parser.NilCoalescing
+		declaredIdentifiers mapset.Set
+	}
+
+	for _, data := range []struct {
+		name             string
+		args             args
+		wantExpression   expressions.Expression
+		wantSettedStates mapset.Set
+		wantErr          assert.ErrorAssertionFunc
+	}{
+		{
+			name: "NilCoalescing/nonempty/success",
+			args: args{
+				nilCoalescing: &parser.NilCoalescing{
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									BitwiseDisjunction: &parser.BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &parser.BitwiseConjunction{
+												Shift: &parser.Shift{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					NilCoalescing: &parser.NilCoalescing{
+						Disjunction: &parser.Disjunction{
+							Conjunction: &parser.Conjunction{
+								Equality: &parser.Equality{
+									Comparison: &parser.Comparison{
+										BitwiseDisjunction: &parser.BitwiseDisjunction{
+											BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+												BitwiseConjunction: &parser.BitwiseConjunction{
+													Shift: &parser.Shift{
+														Addition: &parser.Addition{
+															Multiplication: &parser.Multiplication{
+																Unary: &parser.Unary{
+																	Accessor: &parser.Accessor{Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						NilCoalescing: &parser.NilCoalescing{
+							Disjunction: &parser.Disjunction{
+								Conjunction: &parser.Conjunction{
+									Equality: &parser.Equality{
+										Comparison: &parser.Comparison{
+											BitwiseDisjunction: &parser.BitwiseDisjunction{
+												BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+													BitwiseConjunction: &parser.BitwiseConjunction{
+														Shift: &parser.Shift{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{
+																			Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewNilCoalescingOperator(
+				expressions.NewNumber(12),
+				expressions.NewNilCoalescingOperator(
+					expressions.NewNumber(23),
+					expressions.NewNumber(42),
+				),
+			),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "NilCoalescing/nonempty/success/with setted states",
+			args: args{
+				nilCoalescing: &parser.NilCoalescing{
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									BitwiseDisjunction: &parser.BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &parser.BitwiseConjunction{
+												Shift: &parser.Shift{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{
+																	Atom: &parser.Atom{
+																		ConditionalExpression: &parser.ConditionalExpression{
+																			ConditionalCases: []*parser.ConditionalCase{
+																				{
+																					Condition: &parser.Expression{
+																						ListConstruction: &parser.ListConstruction{
+																							NilCoalescing: &parser.NilCoalescing{
+																								Disjunction: &parser.Disjunction{
+																									Conjunction: &parser.Conjunction{
+																										Equality: &parser.Equality{
+																											Comparison: &parser.Comparison{
+																												BitwiseDisjunction: &parser.BitwiseDisjunction{
+																													BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+																														BitwiseConjunction: &parser.BitwiseConjunction{
+																															Shift: &parser.Shift{
+																																Addition: &parser.Addition{
+																																	Multiplication: &parser.Multiplication{
+																																		Unary: &parser.Unary{
+																																			Accessor: &parser.Accessor{
+																																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																																			},
+																																		},
+																																	},
+																																},
+																															},
+																														},
+																													},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
+																				},
+																				{
+																					Condition: &parser.Expression{
+																						ListConstruction: &parser.ListConstruction{
+																							NilCoalescing: &parser.NilCoalescing{
+																								Disjunction: &parser.Disjunction{
+																									Conjunction: &parser.Conjunction{
+																										Equality: &parser.Equality{
+																											Comparison: &parser.Comparison{
+																												BitwiseDisjunction: &parser.BitwiseDisjunction{
+																													BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+																														BitwiseConjunction: &parser.BitwiseConjunction{
+																															Shift: &parser.Shift{
+																																Addition: &parser.Addition{
+																																	Multiplication: &parser.Multiplication{
+																																		Unary: &parser.Unary{
+																																			Accessor: &parser.Accessor{
+																																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																																			},
+																																		},
+																																	},
+																																},
+																															},
+																														},
+																													},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					NilCoalescing: &parser.NilCoalescing{
+						Disjunction: &parser.Disjunction{
+							Conjunction: &parser.Conjunction{
+								Equality: &parser.Equality{
+									Comparison: &parser.Comparison{
+										BitwiseDisjunction: &parser.BitwiseDisjunction{
+											BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+												BitwiseConjunction: &parser.BitwiseConjunction{
+													Shift: &parser.Shift{
+														Addition: &parser.Addition{
+															Multiplication: &parser.Multiplication{
+																Unary: &parser.Unary{
+																	Accessor: &parser.Accessor{
+																		Atom: &parser.Atom{
+																			ConditionalExpression: &parser.ConditionalExpression{
+																				ConditionalCases: []*parser.ConditionalCase{
+																					{
+																						Condition: &parser.Expression{
+																							ListConstruction: &parser.ListConstruction{
+																								NilCoalescing: &parser.NilCoalescing{
+																									Disjunction: &parser.Disjunction{
+																										Conjunction: &parser.Conjunction{
+																											Equality: &parser.Equality{
+																												Comparison: &parser.Comparison{
+																													BitwiseDisjunction: &parser.BitwiseDisjunction{
+																														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+																															BitwiseConjunction: &parser.BitwiseConjunction{
+																																Shift: &parser.Shift{
+																																	Addition: &parser.Addition{
+																																		Multiplication: &parser.Multiplication{
+																																			Unary: &parser.Unary{
+																																				Accessor: &parser.Accessor{
+																																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(24)},
+																																				},
+																																			},
+																																		},
+																																	},
+																																},
+																															},
+																														},
+																													},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																						Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
+																					},
+																					{
+																						Condition: &parser.Expression{
+																							ListConstruction: &parser.ListConstruction{
+																								NilCoalescing: &parser.NilCoalescing{
+																									Disjunction: &parser.Disjunction{
+																										Conjunction: &parser.Conjunction{
+																											Equality: &parser.Equality{
+																												Comparison: &parser.Comparison{
+																													BitwiseDisjunction: &parser.BitwiseDisjunction{
+																														BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+																															BitwiseConjunction: &parser.BitwiseConjunction{
+																																Shift: &parser.Shift{
+																																	Addition: &parser.Addition{
+																																		Multiplication: &parser.Multiplication{
+																																			Unary: &parser.Unary{
+																																				Accessor: &parser.Accessor{
+																																					Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(43)},
+																																				},
+																																			},
+																																		},
+																																	},
+																																},
+																															},
+																														},
+																													},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																						Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "three"}}},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewNilCoalescingOperator(
+				expressions.NewConditionalExpression([]expressions.ConditionalCase{
+					{
+						Condition: expressions.NewNumber(23),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
+					},
+					{
+						Condition: expressions.NewNumber(42),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+					},
+				}),
+				expressions.NewConditionalExpression([]expressions.ConditionalCase{
+					{
+						Condition: expressions.NewNumber(24),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+					},
+					{
+						Condition: expressions.NewNumber(43),
+						Command:   runtime.CommandGroup{commands.NewSetCommand("three", nil)},
+					},
+				}),
+			),
+			wantSettedStates: mapset.NewSet("one", "two", "three"),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "NilCoalescing/nonempty/error",
+			args: args{
+				nilCoalescing: &parser.NilCoalescing{
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									BitwiseDisjunction: &parser.BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &parser.BitwiseConjunction{
+												Shift: &parser.Shift{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(12)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					NilCoalescing: &parser.NilCoalescing{
+						Disjunction: &parser.Disjunction{
+							Conjunction: &parser.Conjunction{
+								Equality: &parser.Equality{
+									Comparison: &parser.Comparison{
+										BitwiseDisjunction: &parser.BitwiseDisjunction{
+											BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+												BitwiseConjunction: &parser.BitwiseConjunction{
+													Shift: &parser.Shift{
+														Addition: &parser.Addition{
+															Multiplication: &parser.Multiplication{
+																Unary: &parser.Unary{
+																	Accessor: &parser.Accessor{Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)}},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						NilCoalescing: &parser.NilCoalescing{
+							Disjunction: &parser.Disjunction{
+								Conjunction: &parser.Conjunction{
+									Equality: &parser.Equality{
+										Comparison: &parser.Comparison{
+											BitwiseDisjunction: &parser.BitwiseDisjunction{
+												BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+													BitwiseConjunction: &parser.BitwiseConjunction{
+														Shift: &parser.Shift{
+															Addition: &parser.Addition{
+																Multiplication: &parser.Multiplication{
+																	Unary: &parser.Unary{
+																		Accessor: &parser.Accessor{
+																			Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+		{
+			name: "NilCoalescing/empty/success",
+			args: args{
+				nilCoalescing: &parser.NilCoalescing{
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									BitwiseDisjunction: &parser.BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &parser.BitwiseConjunction{
+												Shift: &parser.Shift{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)}},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression:   expressions.NewNumber(23),
+			wantSettedStates: mapset.NewSet(),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "NilCoalescing/empty/success/with setted states",
+			args: args{
+				nilCoalescing: &parser.NilCoalescing{
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									BitwiseDisjunction: &parser.BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &parser.BitwiseConjunction{
+												Shift: &parser.Shift{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{
+																	Atom: &parser.Atom{
+																		ConditionalExpression: &parser.ConditionalExpression{
+																			ConditionalCases: []*parser.ConditionalCase{
+																				{
+																					Condition: &parser.Expression{
+																						ListConstruction: &parser.ListConstruction{
+																							NilCoalescing: &parser.NilCoalescing{
+																								Disjunction: &parser.Disjunction{
+																									Conjunction: &parser.Conjunction{
+																										Equality: &parser.Equality{
+																											Comparison: &parser.Comparison{
+																												BitwiseDisjunction: &parser.BitwiseDisjunction{
+																													BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+																														BitwiseConjunction: &parser.BitwiseConjunction{
+																															Shift: &parser.Shift{
+																																Addition: &parser.Addition{
+																																	Multiplication: &parser.Multiplication{
+																																		Unary: &parser.Unary{
+																																			Accessor: &parser.Accessor{
+																																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
+																																			},
+																																		},
+																																	},
+																																},
+																															},
+																														},
+																													},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
+																				},
+																				{
+																					Condition: &parser.Expression{
+																						ListConstruction: &parser.ListConstruction{
+																							NilCoalescing: &parser.NilCoalescing{
+																								Disjunction: &parser.Disjunction{
+																									Conjunction: &parser.Conjunction{
+																										Equality: &parser.Equality{
+																											Comparison: &parser.Comparison{
+																												BitwiseDisjunction: &parser.BitwiseDisjunction{
+																													BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+																														BitwiseConjunction: &parser.BitwiseConjunction{
+																															Shift: &parser.Shift{
+																																Addition: &parser.Addition{
+																																	Multiplication: &parser.Multiplication{
+																																		Unary: &parser.Unary{
+																																			Accessor: &parser.Accessor{
+																																				Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
+																																			},
+																																		},
+																																	},
+																																},
+																															},
+																														},
+																													},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																					Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
+				{
+					Condition: expressions.NewNumber(23),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
+				},
+				{
+					Condition: expressions.NewNumber(42),
+					Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+				},
+			}),
+			wantSettedStates: mapset.NewSet("one", "two"),
+			wantErr:          assert.NoError,
+		},
+		{
+			name: "NilCoalescing/empty/error",
+			args: args{
+				nilCoalescing: &parser.NilCoalescing{
+					Disjunction: &parser.Disjunction{
+						Conjunction: &parser.Conjunction{
+							Equality: &parser.Equality{
+								Comparison: &parser.Comparison{
+									BitwiseDisjunction: &parser.BitwiseDisjunction{
+										BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
+											BitwiseConjunction: &parser.BitwiseConjunction{
+												Shift: &parser.Shift{
+													Addition: &parser.Addition{
+														Multiplication: &parser.Multiplication{
+															Unary: &parser.Unary{
+																Accessor: &parser.Accessor{
+																	Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				declaredIdentifiers: mapset.NewSet("test"),
+			},
+			wantExpression: nil,
+			wantErr:        assert.Error,
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gotExpression, gotSettedStates, gotErr :=
+				translateNilCoalescing(data.args.nilCoalescing, data.args.declaredIdentifiers)
+
+			assert.Equal(test, data.wantExpression, gotExpression)
+			assert.Equal(test, data.wantSettedStates, gotSettedStates)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestTranslateDisjunction(test *testing.T) {
 	type args struct {
 		disjunction         *parser.Disjunction
