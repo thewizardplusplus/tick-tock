@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"go/types"
 	"io"
+	"sync"
 	"testing"
 	"testing/iotest"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
+	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	testutilsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
@@ -162,19 +163,21 @@ func TestInterpret(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			waiter := new(waitermocks.Waiter)
+			waiter.On("Wait").Times(1)
+
 			options := Options{
 				InboxSize:      0,
 				InitialState:   "__initialization__",
 				InitialMessage: "__initialize__",
 			}
 			context := new(contextmocks.Context)
-			waiter := new(waitermocks.Waiter)
 			defaultReader := new(testutilsmocks.Reader)
 			fileSystem := new(testutilsmocks.FileSystem)
 			errorHandler := new(runtimemocks.ErrorHandler)
 			testData.initializeDependencies(options, context, waiter, defaultReader)
 
-			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
+			synchronousWaiter := syncutils.MultiWaitGroup{waiter, new(sync.WaitGroup)}
 			dependencies := Dependencies{
 				Reader:  ReaderDependencies{defaultReader, fileSystem},
 				Runtime: runtime.Dependencies{WaitGroup: synchronousWaiter, ErrorHandler: errorHandler},

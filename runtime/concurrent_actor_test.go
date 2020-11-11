@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	testutils "github.com/thewizardplusplus/tick-tock/internal/test-utils"
+	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
@@ -218,7 +218,9 @@ func TestConcurrentActor(test *testing.T) {
 			initializationWaiter.Add(1)
 
 			processingWaiter := new(waitermocks.Waiter)
-			synchronousProcessingWaiter := testutils.NewSynchronousWaiter(processingWaiter)
+			processingWaiter.On("Wait").Times(1)
+
+			synchronousProcessingWaiter := syncutils.MultiWaitGroup{processingWaiter, new(sync.WaitGroup)}
 			if messageCount := len(testData.args.messages); messageCount != 0 {
 				processingWaiter.On("Add", 1).Times(messageCount)
 				processingWaiter.On("Done").Times(messageCount)
@@ -364,6 +366,8 @@ func TestConcurrentActorGroup(test *testing.T) {
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			waiter := new(waitermocks.Waiter)
+			waiter.On("Wait").Times(1)
+
 			messageCount := len(testData.fields) * len(testData.messages)
 			if messageCount != 0 {
 				waiter.On("Add", 1).Times(messageCount)
@@ -382,7 +386,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 			}
 
 			var log commandLog
-			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
+			synchronousWaiter := syncutils.MultiWaitGroup{waiter, new(sync.WaitGroup)}
 			errorHandler := new(runtimemocks.ErrorHandler)
 			concurrentActors := &ConcurrentActorGroup{context: contextOriginal}
 			for _, args := range testData.fields {
@@ -539,6 +543,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			waiter := new(waitermocks.Waiter)
 			waiter.On("Add", 1).Times(1)
 			waiter.On("Done").Times(1)
+			waiter.On("Wait").Times(1)
 
 			contextFirstCopy := new(contextmocks.Context)
 			contextFirstCopy.On("Copy").Return(testData.args.contextSecondCopy)
@@ -551,7 +556,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			actor := &Actor{states, testData.fields.currentState}
 			contextFirstCopy.On("SetStateHolder", actor).Return()
 
-			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
+			synchronousWaiter := syncutils.MultiWaitGroup{waiter, new(sync.WaitGroup)}
 			errorHandler := new(runtimemocks.ErrorHandler)
 			concurrentActor := ConcurrentActor{
 				innerActor: actor,
