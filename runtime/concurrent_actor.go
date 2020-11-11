@@ -42,8 +42,8 @@ func (actor ConcurrentActor) SendMessage(message context.Message) {
 	// otherwise the program may end before all messages are processed
 	actor.dependencies.WaitGroup.Add(1)
 
-	// simulate an unbounded channel
-	go func() { actor.inbox <- message }()
+	// use unbounded sending to avoid a deadlock
+	syncutils.UnboundedSend(actor.inbox, message)
 }
 
 // ConcurrentActorFactory ...
