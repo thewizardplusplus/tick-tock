@@ -158,6 +158,14 @@
   version = "v1.4.0"
 
 [[projects]]
+  digest = "1:17bdda8989d1457dd9822247c7d7790c51deb396449507e6531a4906c6d68a03"
+  name = "github.com/thewizardplusplus/go-sync-utils"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "74f86728f3e59b7dd74ac4d7fb53a23f29ef5e23"
+  version = "v1.1"
+
+[[projects]]
   branch = "master"
   digest = "1:5ed88c68e8ff11e085ec406c214dbbd94ca2dd52143e00c8e86c78d880576188"
   name = "github.com/vektra/mockery"
@@ -242,6 +250,7 @@
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
+    "github.com/thewizardplusplus/go-sync-utils",
     "github.com/vektra/mockery/cmd/mockery",
     "gopkg.in/alecthomas/kingpin.v2",
   ]
