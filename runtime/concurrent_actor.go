@@ -3,15 +3,15 @@ package runtime
 import (
 	"sync"
 
+	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/waiter"
 )
 
 type inbox chan context.Message
 
 // Dependencies ...
 type Dependencies struct {
-	waiter.Waiter
+	syncutils.WaitGroup
 	ErrorHandler
 }
 
@@ -32,7 +32,7 @@ func (actor ConcurrentActor) Start(context context.Context, arguments []interfac
 			actor.dependencies.ErrorHandler.HandleError(err)
 		}
 
-		actor.dependencies.Waiter.Done()
+		actor.dependencies.WaitGroup.Done()
 	}
 }
 
@@ -40,7 +40,7 @@ func (actor ConcurrentActor) Start(context context.Context, arguments []interfac
 func (actor ConcurrentActor) SendMessage(message context.Message) {
 	// waiter increment should call synchronously
 	// otherwise the program may end before all messages are processed
-	actor.dependencies.Waiter.Add(1)
+	actor.dependencies.WaitGroup.Add(1)
 
 	// simulate an unbounded channel
 	go func() { actor.inbox <- message }()

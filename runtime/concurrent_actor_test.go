@@ -249,7 +249,7 @@ func TestConcurrentActor(test *testing.T) {
 				innerActor: actor,
 				inbox:      testData.fields.inbox,
 				dependencies: Dependencies{
-					Waiter:       synchronousProcessingWaiter,
+					WaitGroup:    synchronousProcessingWaiter,
 					ErrorHandler: errorHandler,
 				},
 			}
@@ -282,13 +282,13 @@ func TestConcurrentActorFactory(test *testing.T) {
 		initialState: context.State{Name: "state_0"},
 	}
 	dependencies := Dependencies{
-		Waiter:       new(waitermocks.Waiter),
+		WaitGroup:    new(waitermocks.Waiter),
 		ErrorHandler: new(runtimemocks.ErrorHandler),
 	}
 	factory := NewConcurrentActorFactory(actorFactory, 23, dependencies)
 	got := factory.CreateActor()
 
-	mock.AssertExpectationsForObjects(test, dependencies.Waiter, dependencies.ErrorHandler)
+	mock.AssertExpectationsForObjects(test, dependencies.WaitGroup, dependencies.ErrorHandler)
 
 	assert.Equal(test, 23, cap(got.inbox))
 	got.inbox = nil
@@ -396,7 +396,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 					innerActor: actor,
 					inbox:      make(inbox),
 					dependencies: Dependencies{
-						Waiter:       synchronousWaiter,
+						WaitGroup:    synchronousWaiter,
 						ErrorHandler: errorHandler,
 					},
 				}
@@ -557,7 +557,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 				innerActor: actor,
 				inbox:      make(inbox),
 				dependencies: Dependencies{
-					Waiter:       synchronousWaiter,
+					WaitGroup:    synchronousWaiter,
 					ErrorHandler: errorHandler,
 				},
 			}

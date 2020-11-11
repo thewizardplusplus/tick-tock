@@ -177,7 +177,7 @@ func TestInterpret(test *testing.T) {
 			synchronousWaiter := testutils.NewSynchronousWaiter(waiter)
 			dependencies := Dependencies{
 				Reader:  ReaderDependencies{defaultReader, fileSystem},
-				Runtime: runtime.Dependencies{Waiter: synchronousWaiter, ErrorHandler: errorHandler},
+				Runtime: runtime.Dependencies{WaitGroup: synchronousWaiter, ErrorHandler: errorHandler},
 			}
 			err := Interpret(context, options, dependencies)
 			synchronousWaiter.Wait()

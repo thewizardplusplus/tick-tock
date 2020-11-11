@@ -33,7 +33,7 @@ func main() {
 	var waiter sync.WaitGroup
 	if err := interpreter.Interpret(ctx, options, interpreter.Dependencies{
 		Reader:  interpreter.ReaderDependencies{DefaultReader: os.Stdin, FileSystem: afero.NewOsFs()},
-		Runtime: runtime.Dependencies{Waiter: &waiter, ErrorHandler: errorHandler},
+		Runtime: runtime.Dependencies{WaitGroup: &waiter, ErrorHandler: errorHandler},
 	}); err != nil {
 		errorHandler.HandleError(err)
 	}
