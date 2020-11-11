@@ -54,7 +54,9 @@ func TestLetCommand(test *testing.T) {
 				identifier: "test",
 				expression: func() expressions.Expression {
 					expression := new(MockExpression)
-					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(nil, iotest.ErrTimeout)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
+						Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),

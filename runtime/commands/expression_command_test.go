@@ -38,7 +38,9 @@ func TestExpressionCommand(test *testing.T) {
 			fields: fields{
 				expression: func() expressions.Expression {
 					expression := new(MockExpression)
-					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(nil, iotest.ErrTimeout)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
+						Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),

@@ -102,10 +102,14 @@ func TestStartCommand(test *testing.T) {
 				}(),
 				arguments: func() []expressions.Expression {
 					expressionOne := new(MockExpression)
-					expressionOne.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
+					expressionOne.
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
+						Return(2.3, nil)
 
 					expressionTwo := new(MockExpression)
-					expressionTwo.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(4.2, nil)
+					expressionTwo.
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
+						Return(4.2, nil)
 
 					return []expressions.Expression{expressionOne, expressionTwo}
 				}(),
@@ -145,7 +149,9 @@ func TestStartCommand(test *testing.T) {
 			fields: fields{
 				actorFactory: func() expressions.Expression {
 					expression := new(MockExpression)
-					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(nil, iotest.ErrTimeout)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
+						Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),
