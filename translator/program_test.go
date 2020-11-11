@@ -13,7 +13,6 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
-	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
 func TestTranslate(test *testing.T) {
@@ -40,7 +39,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -70,7 +69,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -87,7 +86,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -103,7 +102,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -121,7 +120,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -137,7 +136,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -166,7 +165,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -183,7 +182,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -199,7 +198,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -241,7 +240,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -258,7 +257,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -274,7 +273,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -290,7 +289,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -306,7 +305,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -324,7 +323,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -340,7 +339,7 @@ func TestTranslate(test *testing.T) {
 						context.State{Name: "state_0"},
 					)
 					return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-						WaitGroup:    new(waitermocks.Waiter),
+						WaitGroup:    new(MockWaiter),
 						ErrorHandler: new(runtimemocks.ErrorHandler),
 					})
 				}(),
@@ -369,7 +368,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -399,7 +398,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -429,7 +428,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -459,7 +458,7 @@ func TestTranslate(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -519,7 +518,7 @@ func TestTranslateDefinition(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -536,7 +535,7 @@ func TestTranslateDefinition(test *testing.T) {
 					context.State{Name: "state_0"},
 				)
 				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				})
 			}(),
@@ -555,7 +554,7 @@ func TestTranslateDefinition(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -576,7 +575,7 @@ func TestTranslateDefinition(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -593,7 +592,7 @@ func TestTranslateDefinition(test *testing.T) {
 					context.State{Name: "state_0"},
 				)
 				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				})
 			}(),
@@ -612,7 +611,7 @@ func TestTranslateDefinition(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -667,7 +666,7 @@ func TestTranslateActorClass(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -683,7 +682,7 @@ func TestTranslateActorClass(test *testing.T) {
 					context.State{Name: "state_0"},
 				)
 				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				})
 			}(),
@@ -743,7 +742,7 @@ func TestTranslateActorClass(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -762,7 +761,7 @@ func TestTranslateActorClass(test *testing.T) {
 					context.State{Name: "state_0"},
 				)
 				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				})
 			}(),
@@ -856,7 +855,7 @@ func TestTranslateActorClass(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -874,7 +873,7 @@ func TestTranslateActorClass(test *testing.T) {
 					context.State{Name: "state_0"},
 				)
 				return runtime.NewConcurrentActorFactory(actorFactory, 23, runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				})
 			}(),
@@ -890,7 +889,7 @@ func TestTranslateActorClass(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -907,7 +906,7 @@ func TestTranslateActorClass(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
@@ -968,7 +967,7 @@ func TestTranslateActorClass(test *testing.T) {
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
-					WaitGroup:    new(waitermocks.Waiter),
+					WaitGroup:    new(MockWaiter),
 					ErrorHandler: new(runtimemocks.ErrorHandler),
 				},
 			},
