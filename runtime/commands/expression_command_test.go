@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 )
@@ -27,7 +26,7 @@ func TestExpressionCommand(test *testing.T) {
 			fields: fields{
 				expression: func() expressions.Expression {
 					expression := new(expressionsmocks.Expression)
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
 
 					return expression
 				}(),
@@ -40,7 +39,7 @@ func TestExpressionCommand(test *testing.T) {
 			fields: fields{
 				expression: func() expressions.Expression {
 					expression := new(expressionsmocks.Expression)
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(nil, iotest.ErrTimeout)
+					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),
@@ -50,7 +49,7 @@ func TestExpressionCommand(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			context := new(contextmocks.Context)
+			context := new(MockContext)
 			gotResult, gotErr := NewExpressionCommand(testData.fields.expression).Run(context)
 
 			mock.AssertExpectationsForObjects(test, testData.fields.expression, context)

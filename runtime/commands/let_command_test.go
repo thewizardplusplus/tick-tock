@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 )
@@ -34,14 +33,14 @@ func TestLetCommand(test *testing.T) {
 				identifier: "test",
 				expression: func() expressions.Expression {
 					expression := new(expressionsmocks.Expression)
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
 
 					return expression
 				}(),
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "test", 2.3).Return()
 
 					return context
@@ -56,13 +55,13 @@ func TestLetCommand(test *testing.T) {
 				identifier: "test",
 				expression: func() expressions.Expression {
 					expression := new(expressionsmocks.Expression)
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(nil, iotest.ErrTimeout)
+					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,

@@ -6,11 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestReturnCommand(test *testing.T) {
-	context := new(mocks.Context)
+	context := new(MockContext)
 	gotResult, gotErr := ReturnCommand{}.Run(context)
 
 	mock.AssertExpectationsForObjects(test, context)

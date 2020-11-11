@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
@@ -39,7 +38,7 @@ func TestSendCommand(test *testing.T) {
 				context: func() context.Context {
 					message := context.Message{Name: "test"}
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SendMessage", message).Return()
 
 					return context
@@ -54,10 +53,10 @@ func TestSendCommand(test *testing.T) {
 				name: "test",
 				arguments: func() []expressions.Expression {
 					expressionOne := new(expressionsmocks.Expression)
-					expressionOne.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+					expressionOne.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
 
 					expressionTwo := new(expressionsmocks.Expression)
-					expressionTwo.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
+					expressionTwo.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(4.2, nil)
 
 					return []expressions.Expression{expressionOne, expressionTwo}
 				}(),
@@ -69,7 +68,7 @@ func TestSendCommand(test *testing.T) {
 						Arguments: []interface{}{2.3, 4.2},
 					}
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SendMessage", message).Return()
 
 					return context
@@ -85,7 +84,7 @@ func TestSendCommand(test *testing.T) {
 				arguments: func() []expressions.Expression {
 					expressionOne := new(expressionsmocks.Expression)
 					expressionOne.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(nil, iotest.ErrTimeout)
 
 					expressionTwo := new(expressionsmocks.Expression)
@@ -94,7 +93,7 @@ func TestSendCommand(test *testing.T) {
 				}(),
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,

@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
@@ -46,7 +45,7 @@ func TestStartCommand(test *testing.T) {
 
 					expression := new(expressionsmocks.Expression)
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(concurrentActorFactory, nil)
 
 					return expression
@@ -65,7 +64,7 @@ func TestStartCommand(test *testing.T) {
 					wantActor := concurrentActorFactory.CreateActor()
 					cleanInbox(&wantActor)
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.
 						On(
 							"RegisterActor",
@@ -97,17 +96,17 @@ func TestStartCommand(test *testing.T) {
 
 					expression := new(expressionsmocks.Expression)
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(concurrentActorFactory, nil)
 
 					return expression
 				}(),
 				arguments: func() []expressions.Expression {
 					expressionOne := new(expressionsmocks.Expression)
-					expressionOne.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+					expressionOne.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
 
 					expressionTwo := new(expressionsmocks.Expression)
-					expressionTwo.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
+					expressionTwo.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(4.2, nil)
 
 					return []expressions.Expression{expressionOne, expressionTwo}
 				}(),
@@ -124,7 +123,7 @@ func TestStartCommand(test *testing.T) {
 					wantActor := concurrentActorFactory.CreateActor()
 					cleanInbox(&wantActor)
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.
 						On(
 							"RegisterActor",
@@ -147,14 +146,14 @@ func TestStartCommand(test *testing.T) {
 			fields: fields{
 				actorFactory: func() expressions.Expression {
 					expression := new(expressionsmocks.Expression)
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(nil, iotest.ErrTimeout)
+					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),
 				arguments: nil,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -164,14 +163,14 @@ func TestStartCommand(test *testing.T) {
 			fields: fields{
 				actorFactory: func() expressions.Expression {
 					expression := new(expressionsmocks.Expression)
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
 
 					return expression
 				}(),
 				arguments: nil,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -190,7 +189,7 @@ func TestStartCommand(test *testing.T) {
 
 					expression := new(expressionsmocks.Expression)
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(concurrentActorFactory, nil)
 
 					return expression
@@ -198,7 +197,7 @@ func TestStartCommand(test *testing.T) {
 				arguments: func() []expressions.Expression {
 					expressionOne := new(expressionsmocks.Expression)
 					expressionOne.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(nil, iotest.ErrTimeout)
 
 					expressionTwo := new(expressionsmocks.Expression)
@@ -207,7 +206,7 @@ func TestStartCommand(test *testing.T) {
 				}(),
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
