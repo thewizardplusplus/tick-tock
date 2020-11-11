@@ -11,7 +11,6 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
-	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -43,7 +42,7 @@ func TestStartCommand(test *testing.T) {
 					concurrentActorFactory :=
 						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 
-					expression := new(expressionsmocks.Expression)
+					expression := new(MockExpression)
 					expression.
 						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(concurrentActorFactory, nil)
@@ -94,7 +93,7 @@ func TestStartCommand(test *testing.T) {
 					concurrentActorFactory :=
 						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 
-					expression := new(expressionsmocks.Expression)
+					expression := new(MockExpression)
 					expression.
 						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(concurrentActorFactory, nil)
@@ -102,10 +101,10 @@ func TestStartCommand(test *testing.T) {
 					return expression
 				}(),
 				arguments: func() []expressions.Expression {
-					expressionOne := new(expressionsmocks.Expression)
+					expressionOne := new(MockExpression)
 					expressionOne.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
 
-					expressionTwo := new(expressionsmocks.Expression)
+					expressionTwo := new(MockExpression)
 					expressionTwo.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(4.2, nil)
 
 					return []expressions.Expression{expressionOne, expressionTwo}
@@ -145,7 +144,7 @@ func TestStartCommand(test *testing.T) {
 			name: "error with actor class evaluation",
 			fields: fields{
 				actorFactory: func() expressions.Expression {
-					expression := new(expressionsmocks.Expression)
+					expression := new(MockExpression)
 					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(nil, iotest.ErrTimeout)
 
 					return expression
@@ -162,7 +161,7 @@ func TestStartCommand(test *testing.T) {
 			name: "error with an incorrect actor class type",
 			fields: fields{
 				actorFactory: func() expressions.Expression {
-					expression := new(expressionsmocks.Expression)
+					expression := new(MockExpression)
 					expression.On("Evaluate", mock.AnythingOfType("*commands.MockContext")).Return(2.3, nil)
 
 					return expression
@@ -187,7 +186,7 @@ func TestStartCommand(test *testing.T) {
 					concurrentActorFactory :=
 						runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 
-					expression := new(expressionsmocks.Expression)
+					expression := new(MockExpression)
 					expression.
 						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(concurrentActorFactory, nil)
@@ -195,12 +194,12 @@ func TestStartCommand(test *testing.T) {
 					return expression
 				}(),
 				arguments: func() []expressions.Expression {
-					expressionOne := new(expressionsmocks.Expression)
+					expressionOne := new(MockExpression)
 					expressionOne.
 						On("Evaluate", mock.AnythingOfType("*commands.MockContext")).
 						Return(nil, iotest.ErrTimeout)
 
-					expressionTwo := new(expressionsmocks.Expression)
+					expressionTwo := new(MockExpression)
 
 					return []expressions.Expression{expressionOne, expressionTwo}
 				}(),
