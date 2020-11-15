@@ -12,8 +12,9 @@ type ValueStore interface {
 	Value(name string) (value interface{}, ok bool)
 }
 
+//go:generate mockery -name=CopyableValueStore -inpkg -case=underscore -testonly
+
 // CopyableValueStore ...
-//go:generate mockery -name=CopyableValueStore -case=underscore
 type CopyableValueStore interface {
 	ValueStore
 
