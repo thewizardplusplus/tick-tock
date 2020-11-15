@@ -7,17 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 )
 
 type SignedExpression struct {
-	*expressionsmocks.Expression
+	*MockExpression
 
 	Sign string
 }
 
 func NewSignedExpression(sign string) SignedExpression {
-	return SignedExpression{new(expressionsmocks.Expression), sign}
+	return SignedExpression{new(MockExpression), sign}
 }
 
 func TestNewFunctionCall(test *testing.T) {
