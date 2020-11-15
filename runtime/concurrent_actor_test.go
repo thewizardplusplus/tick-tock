@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
 func TestConcurrentActor(test *testing.T) {
@@ -215,7 +214,7 @@ func TestConcurrentActor(test *testing.T) {
 			var initializationWaiterOnce sync.Once
 			initializationWaiter.Add(1)
 
-			processingWaiter := new(waitermocks.Waiter)
+			processingWaiter := new(MockWaitGroup)
 			processingWaiter.On("Wait").Times(1)
 
 			synchronousProcessingWaiter := syncutils.MultiWaitGroup{processingWaiter, new(sync.WaitGroup)}
@@ -282,7 +281,7 @@ func TestConcurrentActorFactory(test *testing.T) {
 		initialState: context.State{Name: "state_0"},
 	}
 	dependencies := Dependencies{
-		WaitGroup:    new(waitermocks.Waiter),
+		WaitGroup:    new(MockWaitGroup),
 		ErrorHandler: new(MockErrorHandler),
 	}
 	factory := NewConcurrentActorFactory(actorFactory, 23, dependencies)
@@ -363,7 +362,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			waiter := new(waitermocks.Waiter)
+			waiter := new(MockWaitGroup)
 			waiter.On("Wait").Times(1)
 
 			messageCount := len(testData.fields) * len(testData.messages)
@@ -538,7 +537,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			waiter := new(waitermocks.Waiter)
+			waiter := new(MockWaitGroup)
 			waiter.On("Add", 1).Times(1)
 			waiter.On("Done").Times(1)
 			waiter.On("Wait").Times(1)
