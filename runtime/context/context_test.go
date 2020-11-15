@@ -1,4 +1,4 @@
-package context_test
+package context
 
 import (
 	"testing"
@@ -6,62 +6,60 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestNewDefaultContext(test *testing.T) {
-	got := context.NewDefaultContext()
+	got := NewDefaultContext()
 
 	assert.Nil(test, got.MessageSender)
 	assert.Nil(test, got.StateHolder)
-	assert.Equal(test, context.DefaultValueStore{}, got.CopyableValueStore)
+	assert.Equal(test, DefaultValueStore{}, got.CopyableValueStore)
 }
 
 func TestDefaultContext_SetMessageSender(test *testing.T) {
-	sender := new(mocks.MessageSender)
-	defaultContext := context.DefaultContext{}
+	sender := new(MockMessageSender)
+	defaultContext := DefaultContext{}
 	defaultContext.SetMessageSender(sender)
 
 	mock.AssertExpectationsForObjects(test, sender)
-	assert.Equal(test, context.DefaultContext{MessageSender: sender}, defaultContext)
+	assert.Equal(test, DefaultContext{MessageSender: sender}, defaultContext)
 }
 
 func TestDefaultContext_SetStateHolder(test *testing.T) {
-	holder := new(mocks.StateHolder)
-	defaultContext := context.DefaultContext{}
+	holder := new(MockStateHolder)
+	defaultContext := DefaultContext{}
 	defaultContext.SetStateHolder(holder)
 
 	mock.AssertExpectationsForObjects(test, holder)
-	assert.Equal(test, context.DefaultContext{StateHolder: holder}, defaultContext)
+	assert.Equal(test, DefaultContext{StateHolder: holder}, defaultContext)
 }
 
 func TestDefaultContext_SetActorRegister(test *testing.T) {
-	register := new(mocks.ActorRegister)
-	defaultContext := context.DefaultContext{}
+	register := new(MockActorRegister)
+	defaultContext := DefaultContext{}
 	defaultContext.SetActorRegister(register)
 
 	mock.AssertExpectationsForObjects(test, register)
-	assert.Equal(test, context.DefaultContext{ActorRegister: register}, defaultContext)
+	assert.Equal(test, DefaultContext{ActorRegister: register}, defaultContext)
 }
 
 func TestDefaultContext_SetValueStore(test *testing.T) {
-	store := new(mocks.CopyableValueStore)
-	defaultContext := context.DefaultContext{}
+	store := new(MockCopyableValueStore)
+	defaultContext := DefaultContext{}
 	defaultContext.SetValueStore(store)
 
 	mock.AssertExpectationsForObjects(test, store)
-	assert.Equal(test, context.DefaultContext{CopyableValueStore: store}, defaultContext)
+	assert.Equal(test, DefaultContext{CopyableValueStore: store}, defaultContext)
 }
 
 func TestDefaultContext_Copy(test *testing.T) {
-	store := new(mocks.CopyableValueStore)
+	store := new(MockCopyableValueStore)
 	store.On("Copy").Return(store)
 
-	sender := new(mocks.MessageSender)
-	holder := new(mocks.StateHolder)
-	register := new(mocks.ActorRegister)
-	defaultContext := &context.DefaultContext{
+	sender := new(MockMessageSender)
+	holder := new(MockStateHolder)
+	register := new(MockActorRegister)
+	defaultContext := &DefaultContext{
 		MessageSender:      sender,
 		StateHolder:        holder,
 		ActorRegister:      register,
@@ -71,11 +69,11 @@ func TestDefaultContext_Copy(test *testing.T) {
 
 	mock.AssertExpectationsForObjects(test, sender, holder, store)
 	assert.Equal(test, defaultContext, defaultContextCopy)
-	if assert.IsType(test, &context.DefaultContext{}, defaultContextCopy) {
+	if assert.IsType(test, &DefaultContext{}, defaultContextCopy) {
 		assert.NotEqual(
 			test,
 			unsafe.Pointer(defaultContext),
-			unsafe.Pointer(defaultContextCopy.(*context.DefaultContext)),
+			unsafe.Pointer(defaultContextCopy.(*DefaultContext)),
 		)
 	}
 }
