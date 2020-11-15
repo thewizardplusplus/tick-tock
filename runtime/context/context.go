@@ -6,8 +6,9 @@ type Message struct {
 	Arguments []interface{}
 }
 
+//go:generate mockery -name=MessageSender -inpkg -case=underscore -testonly
+
 // MessageSender ...
-//go:generate mockery -name=MessageSender -case=underscore
 type MessageSender interface {
 	SendMessage(message Message)
 }
