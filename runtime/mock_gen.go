@@ -25,3 +25,13 @@ type Writer interface {
 type Context interface {
 	context.Context
 }
+
+//go:generate mockery -name=ExiterInterface -inpkg -case=underscore -testonly
+
+// ExiterInterface ...
+//
+// It's used only for mock generating.
+//
+type ExiterInterface interface {
+	Exit(code int)
+}
