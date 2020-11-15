@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestNewNumber(test *testing.T) {
@@ -15,7 +14,7 @@ func TestNewNumber(test *testing.T) {
 }
 
 func TestNumber_Evaluate(test *testing.T) {
-	context := new(mocks.Context)
+	context := new(MockContext)
 	number := Number{2.3}
 	gotResult, gotErr := number.Evaluate(context)
 

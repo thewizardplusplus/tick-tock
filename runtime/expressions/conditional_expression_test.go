@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
@@ -55,7 +54,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 				conditionalCases: nil,
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
@@ -68,7 +67,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("one-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.False, nil)
 
 							return expression
@@ -79,14 +78,14 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("two-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.True, nil)
 
 							return expression
 						}(),
 						Command: func() runtime.Command {
 							command := NewSignedCommand("two-command")
-							command.On("Run", mock.AnythingOfType("*mocks.Context")).Return(23.0, nil)
+							command.On("Run", mock.AnythingOfType("*expressions.MockContext")).Return(23.0, nil)
 
 							return command
 						}(),
@@ -99,7 +98,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Copy").Return(context)
 
 					return context
@@ -116,7 +115,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("one-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.False, nil)
 
 							return expression
@@ -127,7 +126,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("two-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.False, nil)
 
 							return expression
@@ -138,7 +137,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("three-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.False, nil)
 
 							return expression
@@ -148,7 +147,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 				},
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
@@ -161,7 +160,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("one-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.False, nil)
 
 							return expression
@@ -172,7 +171,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("two-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(nil, iotest.ErrTimeout)
 
 							return expression
@@ -186,7 +185,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 				},
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -199,7 +198,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("one-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.False, nil)
 
 							return expression
@@ -210,7 +209,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("two-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(func() {}, nil)
 
 							return expression
@@ -224,7 +223,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 				},
 			},
 			args: args{
-				context: new(contextmocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -237,7 +236,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("one-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.False, nil)
 
 							return expression
@@ -248,14 +247,16 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 						Condition: func() Expression {
 							expression := NewSignedExpression("two-condition")
 							expression.
-								On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+								On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 								Return(types.True, nil)
 
 							return expression
 						}(),
 						Command: func() runtime.Command {
 							command := NewSignedCommand("two-command")
-							command.On("Run", mock.AnythingOfType("*mocks.Context")).Return(nil, iotest.ErrTimeout)
+							command.
+								On("Run", mock.AnythingOfType("*expressions.MockContext")).
+								Return(nil, iotest.ErrTimeout)
 
 							return command
 						}(),
@@ -268,7 +269,7 @@ func TestConditionalExpression_Evaluate(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Copy").Return(context)
 
 					return context

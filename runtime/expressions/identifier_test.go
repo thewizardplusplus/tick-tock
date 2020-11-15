@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestNewIdentifier(test *testing.T) {
@@ -35,7 +34,7 @@ func TestIdentifier_Evaluate(test *testing.T) {
 			fields: fields{"test"},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("Value", "test").Return(2.3, true)
 
 					return context
@@ -49,7 +48,7 @@ func TestIdentifier_Evaluate(test *testing.T) {
 			fields: fields{"test"},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("Value", "test").Return(nil, false)
 
 					return context

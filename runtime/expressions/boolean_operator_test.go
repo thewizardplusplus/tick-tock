@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -45,7 +44,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				leftOperand: func() Expression {
 					expression := NewSignedExpression("one")
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 						Return(&types.Pair{Head: "one", Tail: &types.Pair{Head: "two", Tail: nil}}, nil)
 
 					return expression
@@ -54,7 +53,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: &types.Pair{Head: "one", Tail: &types.Pair{Head: "two", Tail: nil}},
 			wantErr:    assert.NoError,
@@ -65,7 +64,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				leftOperand: func() Expression {
 					expression := NewSignedExpression("one")
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 						Return((*types.Pair)(nil), nil)
 
 					return expression
@@ -73,7 +72,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				rightOperand: func() Expression {
 					expression := NewSignedExpression("two")
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 						Return(&types.Pair{Head: "three", Tail: &types.Pair{Head: "four", Tail: nil}}, nil)
 
 					return expression
@@ -81,7 +80,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: &types.Pair{Head: "three", Tail: &types.Pair{Head: "four", Tail: nil}},
 			wantErr:    assert.NoError,
@@ -92,7 +91,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				leftOperand: func() Expression {
 					expression := NewSignedExpression("one")
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 						Return(&types.Pair{Head: "one", Tail: &types.Pair{Head: "two", Tail: nil}}, nil)
 
 					return expression
@@ -100,7 +99,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				rightOperand: func() Expression {
 					expression := NewSignedExpression("two")
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 						Return(&types.Pair{Head: "three", Tail: &types.Pair{Head: "four", Tail: nil}}, nil)
 
 					return expression
@@ -108,7 +107,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.False,
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: &types.Pair{Head: "three", Tail: &types.Pair{Head: "four", Tail: nil}},
 			wantErr:    assert.NoError,
@@ -119,7 +118,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				leftOperand: func() Expression {
 					expression := NewSignedExpression("one")
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 						Return((*types.Pair)(nil), nil)
 
 					return expression
@@ -128,7 +127,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.False,
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: (*types.Pair)(nil),
 			wantErr:    assert.NoError,
@@ -138,7 +137,9 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 			fields: fields{
 				leftOperand: func() Expression {
 					expression := NewSignedExpression("one")
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(nil, iotest.ErrTimeout)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
+						Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),
@@ -146,7 +147,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -156,7 +157,9 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 			fields: fields{
 				leftOperand: func() Expression {
 					expression := NewSignedExpression("one")
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(func() {}, nil)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
+						Return(func() {}, nil)
 
 					return expression
 				}(),
@@ -164,7 +167,7 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,
@@ -175,21 +178,23 @@ func TestBooleanOperator_Evaluate(test *testing.T) {
 				leftOperand: func() Expression {
 					expression := NewSignedExpression("one")
 					expression.
-						On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 						Return((*types.Pair)(nil), nil)
 
 					return expression
 				}(),
 				rightOperand: func() Expression {
 					expression := NewSignedExpression("two")
-					expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(nil, iotest.ErrTimeout)
+					expression.
+						On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
+						Return(nil, iotest.ErrTimeout)
 
 					return expression
 				}(),
 				valueForEarlyExit: types.True,
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 			},
 			wantResult: nil,
 			wantErr:    assert.Error,

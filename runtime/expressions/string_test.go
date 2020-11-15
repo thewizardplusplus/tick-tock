@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -17,7 +16,7 @@ func TestNewString(test *testing.T) {
 }
 
 func TestString_Evaluate(test *testing.T) {
-	context := new(mocks.Context)
+	context := new(MockContext)
 	string := String{
 		value: &types.Pair{Head: float64('h'), Tail: &types.Pair{Head: float64('i'), Tail: nil}},
 	}

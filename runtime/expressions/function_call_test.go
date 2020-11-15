@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	expressionsmocks "github.com/thewizardplusplus/tick-tock/runtime/expressions/mocks"
 )
 
@@ -55,13 +54,13 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				arguments: []Expression{
 					func() Expression {
 						expression := NewSignedExpression("one")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+						expression.On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).Return(2.3, nil)
 
 						return expression
 					}(),
 					func() Expression {
 						expression := NewSignedExpression("two")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
+						expression.On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).Return(4.2, nil)
 
 						return expression
 					}(),
@@ -71,7 +70,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				context: func() context.Context {
 					add := func(a float64, b float64) (float64, error) { return a + b, nil }
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
@@ -87,13 +86,13 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				arguments: []Expression{
 					func() Expression {
 						expression := NewSignedExpression("one")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+						expression.On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).Return(2.3, nil)
 
 						return expression
 					}(),
 					func() Expression {
 						expression := NewSignedExpression("two")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
+						expression.On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).Return(4.2, nil)
 
 						return expression
 					}(),
@@ -105,7 +104,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 						return a.(float64) + b.(float64), nil
 					}
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
@@ -122,7 +121,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(nil, false)
 
 					return context
@@ -139,7 +138,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return("incorrect", true)
 
 					return context
@@ -158,7 +157,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				context: func() context.Context {
 					add := func(a float64, b float64, c float64) (float64, error) { return a + b + c, nil }
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
@@ -177,7 +176,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				context: func() context.Context {
 					add := func(a float64, b float64) float64 { return a + b }
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
@@ -196,7 +195,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				context: func() context.Context {
 					add := func(a float64, b float64) (float64, bool) { return a + b, true }
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
@@ -213,7 +212,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 					func() Expression {
 						expression := NewSignedExpression("one")
 						expression.
-							On("Evaluate", mock.AnythingOfType("*mocks.Context")).
+							On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).
 							Return(nil, iotest.ErrTimeout)
 
 						return expression
@@ -225,7 +224,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				context: func() context.Context {
 					add := func(a float64, b float64) (float64, error) { return a + b, nil }
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
@@ -241,7 +240,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				arguments: []Expression{
 					func() Expression {
 						expression := NewSignedExpression("one")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2, nil)
+						expression.On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).Return(2, nil)
 
 						return expression
 					}(),
@@ -252,7 +251,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				context: func() context.Context {
 					add := func(a float64, b float64) (float64, error) { return a + b, nil }
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
@@ -268,13 +267,13 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				arguments: []Expression{
 					func() Expression {
 						expression := NewSignedExpression("one")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(2.3, nil)
+						expression.On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).Return(2.3, nil)
 
 						return expression
 					}(),
 					func() Expression {
 						expression := NewSignedExpression("two")
-						expression.On("Evaluate", mock.AnythingOfType("*mocks.Context")).Return(4.2, nil)
+						expression.On("Evaluate", mock.AnythingOfType("*expressions.MockContext")).Return(4.2, nil)
 
 						return expression
 					}(),
@@ -284,7 +283,7 @@ func TestFunctionCall_Evaluate(test *testing.T) {
 				context: func() context.Context {
 					add := func(a float64, b float64) (float64, error) { return 0, iotest.ErrTimeout }
 
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("Value", "add").Return(add, true)
 
 					return context
