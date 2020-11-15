@@ -11,8 +11,9 @@ import (
 // ErrReturn ...
 var ErrReturn = errors.New("return")
 
+//go:generate mockery -name=ErrorHandler -inpkg -case=underscore -testonly
+
 // ErrorHandler ...
-//go:generate mockery -name=ErrorHandler -case=underscore
 type ErrorHandler interface {
 	HandleError(err error)
 }
