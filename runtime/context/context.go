@@ -19,8 +19,9 @@ type State struct {
 	Arguments []interface{}
 }
 
+//go:generate mockery -name=StateHolder -inpkg -case=underscore -testonly
+
 // StateHolder ...
-//go:generate mockery -name=StateHolder -case=underscore
 type StateHolder interface {
 	SetState(state State) error
 }
