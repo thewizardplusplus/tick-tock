@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
@@ -225,7 +224,7 @@ func TestConcurrentActor(test *testing.T) {
 				processingWaiter.On("Done").Times(messageCount)
 			}
 
-			errorHandler := new(runtimemocks.ErrorHandler)
+			errorHandler := new(MockErrorHandler)
 			if testData.errCount != 0 {
 				errorHandler.
 					On("HandleError", mock.MatchedBy(func(error) bool { return true })).
@@ -284,7 +283,7 @@ func TestConcurrentActorFactory(test *testing.T) {
 	}
 	dependencies := Dependencies{
 		WaitGroup:    new(waitermocks.Waiter),
-		ErrorHandler: new(runtimemocks.ErrorHandler),
+		ErrorHandler: new(MockErrorHandler),
 	}
 	factory := NewConcurrentActorFactory(actorFactory, 23, dependencies)
 	got := factory.CreateActor()
@@ -386,7 +385,7 @@ func TestConcurrentActorGroup(test *testing.T) {
 
 			var log commandLog
 			synchronousWaiter := syncutils.MultiWaitGroup{waiter, new(sync.WaitGroup)}
-			errorHandler := new(runtimemocks.ErrorHandler)
+			errorHandler := new(MockErrorHandler)
 			concurrentActors := &ConcurrentActorGroup{context: contextOriginal}
 			for _, args := range testData.fields {
 				states := args.makeStates(contextSecondCopy, &log)
@@ -556,7 +555,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			contextFirstCopy.On("SetStateHolder", actor).Return()
 
 			synchronousWaiter := syncutils.MultiWaitGroup{waiter, new(sync.WaitGroup)}
-			errorHandler := new(runtimemocks.ErrorHandler)
+			errorHandler := new(MockErrorHandler)
 			concurrentActor := ConcurrentActor{
 				innerActor: actor,
 				inbox:      make(inbox),
