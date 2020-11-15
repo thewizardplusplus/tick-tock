@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
@@ -15,7 +14,7 @@ func TestDefaultErrorHandler(test *testing.T) {
 	writer := new(MockWriter)
 	writer.On("Write", []byte(message)).Return(len(message), nil)
 
-	exiter := new(mocks.Exiter)
+	exiter := new(MockExiterInterface)
 	exiter.On("Exit", 1).Return()
 
 	NewDefaultErrorHandler(writer, exiter.Exit).HandleError(iotest.ErrTimeout)
