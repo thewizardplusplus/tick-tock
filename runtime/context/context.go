@@ -33,8 +33,9 @@ type Actor interface {
 	Start(context Context, arguments []interface{})
 }
 
+//go:generate mockery -name=ActorRegister -inpkg -case=underscore -testonly
+
 // ActorRegister ...
-//go:generate mockery -name=ActorRegister -case=underscore
 type ActorRegister interface {
 	RegisterActor(actor Actor, arguments []interface{})
 }
