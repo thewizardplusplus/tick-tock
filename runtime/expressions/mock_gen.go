@@ -1,6 +1,7 @@
 package expressions
 
 import (
+	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
@@ -12,4 +13,14 @@ import (
 //
 type Context interface {
 	context.Context
+}
+
+//go:generate mockery -name=Command -inpkg -case=underscore -testonly
+
+// Command ...
+//
+// It's used only for mock generating.
+//
+type Command interface {
+	runtime.Command
 }
