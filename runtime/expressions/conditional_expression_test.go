@@ -8,18 +8,17 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 type SignedCommand struct {
-	*runtimemocks.Command
+	*MockCommand
 
 	Sign string
 }
 
 func NewSignedCommand(sign string) SignedCommand {
-	return SignedCommand{new(runtimemocks.Command), sign}
+	return SignedCommand{new(MockCommand), sign}
 }
 
 func TestNewConditionalExpression(test *testing.T) {
