@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestActor_SetState(test *testing.T) {
@@ -101,7 +100,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: context.State{Name: "state_1"},
 			},
 			args: args{
-				context:   new(mocks.Context),
+				context:   new(MockContext),
 				arguments: nil,
 				message:   context.Message{Name: "message_3"},
 			},
@@ -120,7 +119,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 
@@ -152,7 +151,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
@@ -188,7 +187,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
@@ -217,7 +216,7 @@ func TestActor_ProcessMessage(test *testing.T) {
 				currentState: context.State{Name: "state_1"},
 			},
 			args: args{
-				context:   new(mocks.Context),
+				context:   new(MockContext),
 				arguments: nil,
 				message:   context.Message{Name: "message_3"},
 			},

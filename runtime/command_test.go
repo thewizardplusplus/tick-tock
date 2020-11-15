@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -45,7 +44,7 @@ func TestCommandGroup(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			context := new(mocks.Context)
+			context := new(MockContext)
 			var log commandLog
 			commands := testData.makeCommands(context, &log)
 			gotResult, gotErr := commands.Run(context)
@@ -87,7 +86,7 @@ func TestParameterizedCommandGroup(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 23).Return()
 					context.On("SetValue", "two", 42).Return()
 
@@ -109,7 +108,7 @@ func TestParameterizedCommandGroup(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 23).Return()
 					context.On("SetValue", "two", 42).Return()
 

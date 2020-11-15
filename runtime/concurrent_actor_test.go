@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
@@ -43,7 +42,7 @@ func TestConcurrentActor(test *testing.T) {
 				inbox:        make(inbox),
 			},
 			args: args{
-				contextSecondCopy: new(contextmocks.Context),
+				contextSecondCopy: new(MockContext),
 				arguments:         nil,
 				messages:          []context.Message{{Name: "message_2"}, {Name: "message_3"}},
 			},
@@ -61,7 +60,7 @@ func TestConcurrentActor(test *testing.T) {
 				inbox:        make(inbox, 23),
 			},
 			args: args{
-				contextSecondCopy: new(contextmocks.Context),
+				contextSecondCopy: new(MockContext),
 				arguments:         nil,
 				messages:          []context.Message{{Name: "message_2"}, {Name: "message_3"}},
 			},
@@ -81,7 +80,7 @@ func TestConcurrentActor(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 
@@ -114,7 +113,7 @@ func TestConcurrentActor(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
@@ -151,7 +150,7 @@ func TestConcurrentActor(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
@@ -182,7 +181,7 @@ func TestConcurrentActor(test *testing.T) {
 				inbox:        make(inbox),
 			},
 			args: args{
-				contextSecondCopy: new(contextmocks.Context),
+				contextSecondCopy: new(MockContext),
 				arguments:         nil,
 				messages:          nil,
 			},
@@ -200,7 +199,7 @@ func TestConcurrentActor(test *testing.T) {
 				inbox:        make(inbox),
 			},
 			args: args{
-				contextSecondCopy: new(contextmocks.Context),
+				contextSecondCopy: new(MockContext),
 				arguments:         nil,
 				messages:          []context.Message{{Name: "message_2"}, {Name: "message_3"}},
 			},
@@ -233,7 +232,7 @@ func TestConcurrentActor(test *testing.T) {
 					Times(testData.errCount)
 			}
 
-			contextFirstCopy := new(contextmocks.Context)
+			contextFirstCopy := new(MockContext)
 			contextFirstCopy.
 				On("SetStateHolder", mock.MatchedBy(func(settedActor *Actor) bool {
 					defer initializationWaiterOnce.Do(initializationWaiter.Done)
@@ -244,7 +243,7 @@ func TestConcurrentActor(test *testing.T) {
 				contextFirstCopy.On("Copy").Return(testData.args.contextSecondCopy)
 			}
 
-			contextOriginal := new(contextmocks.Context)
+			contextOriginal := new(MockContext)
 			contextOriginal.On("Copy").Return(contextFirstCopy)
 
 			concurrentActor := ConcurrentActor{
@@ -306,7 +305,7 @@ func TestConcurrentActorFactory(test *testing.T) {
 }
 
 func TestNewConcurrentActorGroup(test *testing.T) {
-	contextFirstCopy := new(contextmocks.Context)
+	contextFirstCopy := new(MockContext)
 	contextFirstCopy.
 		On("SetMessageSender", mock.AnythingOfType("*runtime.ConcurrentActorGroup")).
 		Return()
@@ -314,7 +313,7 @@ func TestNewConcurrentActorGroup(test *testing.T) {
 		On("SetActorRegister", mock.AnythingOfType("*runtime.ConcurrentActorGroup")).
 		Return()
 
-	contextOriginal := new(contextmocks.Context)
+	contextOriginal := new(MockContext)
 	contextOriginal.On("Copy").Return(contextFirstCopy)
 
 	got := NewConcurrentActorGroup(contextOriginal)
@@ -374,13 +373,13 @@ func TestConcurrentActorGroup(test *testing.T) {
 				waiter.On("Done").Times(messageCount)
 			}
 
-			contextSecondCopy := new(contextmocks.Context)
-			contextFirstCopy := new(contextmocks.Context)
+			contextSecondCopy := new(MockContext)
+			contextFirstCopy := new(MockContext)
 			if messageCount != 0 {
 				contextFirstCopy.On("Copy").Return(contextSecondCopy)
 			}
 
-			contextOriginal := new(contextmocks.Context)
+			contextOriginal := new(MockContext)
 			if len(testData.fields) != 0 {
 				contextOriginal.On("Copy").Return(contextFirstCopy)
 			}
@@ -454,7 +453,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 
@@ -485,7 +484,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
@@ -520,7 +519,7 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			},
 			args: args{
 				contextSecondCopy: func() context.Context {
-					context := new(contextmocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
@@ -545,10 +544,10 @@ func TestConcurrentActorGroup_withArguments(test *testing.T) {
 			waiter.On("Done").Times(1)
 			waiter.On("Wait").Times(1)
 
-			contextFirstCopy := new(contextmocks.Context)
+			contextFirstCopy := new(MockContext)
 			contextFirstCopy.On("Copy").Return(testData.args.contextSecondCopy)
 
-			contextOriginal := new(contextmocks.Context)
+			contextOriginal := new(MockContext)
 			contextOriginal.On("Copy").Return(contextFirstCopy)
 
 			var log commandLog

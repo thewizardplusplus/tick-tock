@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 )
 
 func TestMessageGroup(test *testing.T) {
@@ -27,7 +26,7 @@ func TestMessageGroup(test *testing.T) {
 			name:         "success with an empty group",
 			makeMessages: func(context context.Context, log *commandLog) MessageGroup { return nil },
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 				message: context.Message{Name: "unknown"},
 			},
 			wantErr: assert.NoError,
@@ -38,7 +37,7 @@ func TestMessageGroup(test *testing.T) {
 				return newLoggableMessages(context, log, group(2), group(5), nil)
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 				message: context.Message{Name: "unknown"},
 			},
 			wantErr: assert.NoError,
@@ -51,7 +50,7 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 				message: context.Message{Name: "message_1"},
 			},
 			wantLog: []int{5, 6, 7, 8, 9},
@@ -66,7 +65,7 @@ func TestMessageGroup(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 23).Return()
 					context.On("SetValue", "two", 42).Return()
 
@@ -88,7 +87,7 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 				message: context.Message{Name: "message_1"},
 			},
 			wantLog: []int{5, 6, 7},
@@ -102,7 +101,7 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 				message: context.Message{Name: "message_1"},
 			},
 			wantLog: []int{5, 6, 7},
@@ -116,7 +115,7 @@ func TestMessageGroup(test *testing.T) {
 				})
 			},
 			args: args{
-				context: new(mocks.Context),
+				context: new(MockContext),
 				message: context.Message{Name: "message_1"},
 			},
 			wantLog: []int{5, 6, 7},
@@ -166,7 +165,7 @@ func TestParameterizedMessageGroup(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 23).Return()
 					context.On("SetValue", "two", 42).Return()
 
@@ -190,7 +189,7 @@ func TestParameterizedMessageGroup(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 5).Return()
 					context.On("SetValue", "two", 12).Return()
 					context.On("SetValue", "two", 23).Return()
@@ -219,7 +218,7 @@ func TestParameterizedMessageGroup(test *testing.T) {
 			},
 			args: args{
 				context: func() context.Context {
-					context := new(mocks.Context)
+					context := new(MockContext)
 					context.On("SetValue", "one", 23).Return()
 					context.On("SetValue", "two", 42).Return()
 
