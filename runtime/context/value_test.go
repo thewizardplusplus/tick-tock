@@ -1,12 +1,10 @@
-package context_test
+package context
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
@@ -19,7 +17,7 @@ func TestZipValues(test *testing.T) {
 	for _, data := range []struct {
 		name string
 		args args
-		want context.ValueGroup
+		want ValueGroup
 	}{
 		{
 			name: "lengths of both lists are equal",
@@ -27,7 +25,7 @@ func TestZipValues(test *testing.T) {
 				parameters: []string{"one", "two"},
 				arguments:  []interface{}{23, 42},
 			},
-			want: context.ValueGroup{"one": 23, "two": 42},
+			want: ValueGroup{"one": 23, "two": 42},
 		},
 		{
 			name: "lengths of both lists are equal/both lists are empty",
@@ -35,7 +33,7 @@ func TestZipValues(test *testing.T) {
 				parameters: nil,
 				arguments:  nil,
 			},
-			want: context.ValueGroup{},
+			want: ValueGroup{},
 		},
 		{
 			name: "argument list is longer",
@@ -43,7 +41,7 @@ func TestZipValues(test *testing.T) {
 				parameters: []string{"one", "two"},
 				arguments:  []interface{}{12, 23, 42},
 			},
-			want: context.ValueGroup{"one": 12, "two": 23},
+			want: ValueGroup{"one": 12, "two": 23},
 		},
 		{
 			name: "argument list is longer/without parameters",
@@ -51,7 +49,7 @@ func TestZipValues(test *testing.T) {
 				parameters: nil,
 				arguments:  []interface{}{23, 42},
 			},
-			want: context.ValueGroup{},
+			want: ValueGroup{},
 		},
 		{
 			name: "parameter list is longer",
@@ -59,7 +57,7 @@ func TestZipValues(test *testing.T) {
 				parameters: []string{"one", "two", "three"},
 				arguments:  []interface{}{23, 42},
 			},
-			want: context.ValueGroup{"one": 23, "two": 42, "three": types.Nil{}},
+			want: ValueGroup{"one": 23, "two": 42, "three": types.Nil{}},
 		},
 		{
 			name: "parameter list is longer/without arguments",
@@ -67,11 +65,11 @@ func TestZipValues(test *testing.T) {
 				parameters: []string{"one", "two"},
 				arguments:  nil,
 			},
-			want: context.ValueGroup{"one": types.Nil{}, "two": types.Nil{}},
+			want: ValueGroup{"one": types.Nil{}, "two": types.Nil{}},
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			got := context.ZipValues(data.args.parameters, data.args.arguments)
+			got := ZipValues(data.args.parameters, data.args.arguments)
 
 			assert.Equal(test, data.want, got)
 		})
@@ -80,8 +78,8 @@ func TestZipValues(test *testing.T) {
 
 func TestSetValues(test *testing.T) {
 	type args struct {
-		holder context.ValueHolder
-		values context.ValueGroup
+		holder ValueHolder
+		values ValueGroup
 	}
 
 	for _, data := range []struct {
@@ -91,26 +89,26 @@ func TestSetValues(test *testing.T) {
 		{
 			name: "with values",
 			args: args{
-				holder: func() context.ValueHolder {
-					holder := new(mocks.ValueHolder)
+				holder: func() ValueHolder {
+					holder := new(MockValueHolder)
 					holder.On("SetValue", "one", 1)
 					holder.On("SetValue", "two", 2)
 
 					return holder
 				}(),
-				values: context.ValueGroup{"one": 1, "two": 2},
+				values: ValueGroup{"one": 1, "two": 2},
 			},
 		},
 		{
 			name: "without values",
 			args: args{
-				holder: new(mocks.ValueHolder),
+				holder: new(MockValueHolder),
 				values: nil,
 			},
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			context.SetValues(data.args.holder, data.args.values)
+			SetValues(data.args.holder, data.args.values)
 
 			mock.AssertExpectationsForObjects(test, data.args.holder)
 		})
