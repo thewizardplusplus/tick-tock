@@ -40,8 +40,9 @@ type ActorRegister interface {
 	RegisterActor(actor Actor, arguments []interface{})
 }
 
+//go:generate mockery -name=Context -inpkg -case=underscore -testonly
+
 // Context ...
-//go:generate mockery -name=Context -case=underscore
 type Context interface {
 	MessageSender
 	StateHolder
