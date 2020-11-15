@@ -6,8 +6,9 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
+//go:generate mockery -name=Command -inpkg -case=underscore -testonly
+
 // Command ...
-//go:generate mockery -name=Command -case=underscore
 type Command interface {
 	Run(context context.Context) (result interface{}, err error)
 }
