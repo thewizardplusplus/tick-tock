@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
-	"github.com/thewizardplusplus/tick-tock/runtime/mocks"
 )
 
 type commandLog struct {
@@ -25,13 +24,13 @@ func (log *commandLog) registerCommand(command int) {
 }
 
 type loggableCommand struct {
-	mock *mocks.Command
+	mock *MockCommand
 	log  *commandLog
 	id   int
 }
 
 func newLoggableCommand(log *commandLog, id int) loggableCommand {
-	return loggableCommand{new(mocks.Command), log, id}
+	return loggableCommand{new(MockCommand), log, id}
 }
 
 func (command loggableCommand) Run(context context.Context) (result interface{}, err error) {
