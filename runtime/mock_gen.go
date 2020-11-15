@@ -3,6 +3,7 @@ package runtime
 import (
 	"io"
 
+	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
@@ -24,6 +25,16 @@ type Writer interface {
 //
 type Context interface {
 	context.Context
+}
+
+//go:generate mockery -name=WaitGroup -inpkg -case=underscore -testonly
+
+// WaitGroup ...
+//
+// It's used only for mock generating.
+//
+type WaitGroup interface {
+	syncutils.WaitGroup
 }
 
 //go:generate mockery -name=ExiterInterface -inpkg -case=underscore -testonly
