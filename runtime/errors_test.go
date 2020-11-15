@@ -12,7 +12,7 @@ import (
 
 func TestDefaultErrorHandler(test *testing.T) {
 	const message = "error: timeout\n"
-	writer := new(mocks.Writer)
+	writer := new(MockWriter)
 	writer.On("Write", []byte(message)).Return(len(message), nil)
 
 	exiter := new(mocks.Exiter)
