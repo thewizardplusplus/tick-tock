@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
-	testutilsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 )
 
@@ -170,7 +169,7 @@ func TestInterpret(test *testing.T) {
 			}
 			context := new(MockContext)
 			defaultReader := new(MockReader)
-			fileSystem := new(testutilsmocks.FileSystem)
+			fileSystem := new(MockFileSystem)
 			errorHandler := new(MockErrorHandler)
 			testData.initializeDependencies(options, context, waiter, defaultReader)
 
