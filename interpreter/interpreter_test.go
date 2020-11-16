@@ -14,7 +14,6 @@ import (
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	testutilsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
-	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
@@ -173,7 +172,7 @@ func TestInterpret(test *testing.T) {
 			context := new(MockContext)
 			defaultReader := new(testutilsmocks.Reader)
 			fileSystem := new(testutilsmocks.FileSystem)
-			errorHandler := new(runtimemocks.ErrorHandler)
+			errorHandler := new(MockErrorHandler)
 			testData.initializeDependencies(options, context, waiter, defaultReader)
 
 			synchronousWaiter := syncutils.MultiWaitGroup{waiter, new(sync.WaitGroup)}
