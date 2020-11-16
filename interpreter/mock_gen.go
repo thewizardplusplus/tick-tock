@@ -1,10 +1,22 @@
 package interpreter
 
 import (
+	"io"
+
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
+
+//go:generate mockery -name=Reader -inpkg -case=underscore -testonly
+
+// Reader ...
+//
+// It's used only for mock generating.
+//
+type Reader interface {
+	io.Reader
+}
 
 //go:generate mockery -name=Context -inpkg -case=underscore -testonly
 
