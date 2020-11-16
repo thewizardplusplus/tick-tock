@@ -42,7 +42,7 @@ Args:
 	for _, testData := range []struct {
 		name                   string
 		args                   args
-		initializeDependencies func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter)
+		initializeDependencies func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter)
 		wantUsage              []byte
 		want                   interpreter.Options
 		wantErr                assert.ErrorAssertionFunc
@@ -50,7 +50,7 @@ Args:
 		{
 			name:                   "success without flags and arguments",
 			args:                   args{[]string{executablePath}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   defaultOptions,
 			wantErr:                assert.NoError,
 		},
@@ -89,99 +89,99 @@ Args:
 		{
 			name:                   "success with the -i flag",
 			args:                   args{[]string{executablePath, "-i", "1000"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   setOption(defaultOptions, "InboxSize", 1000),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the --inbox flag",
 			args:                   args{[]string{executablePath, "--inbox", "1000"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   setOption(defaultOptions, "InboxSize", 1000),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the -s flag",
 			args:                   args{[]string{executablePath, "-s", "test"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   setOption(defaultOptions, "InitialState", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the --state flag",
 			args:                   args{[]string{executablePath, "--state", "test"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   setOption(defaultOptions, "InitialState", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the -m flag",
 			args:                   args{[]string{executablePath, "-m", "test"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   setOption(defaultOptions, "InitialMessage", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the --message flag",
 			args:                   args{[]string{executablePath, "--message", "test"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   setOption(defaultOptions, "InitialMessage", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "success with the filename argument",
 			args:                   args{[]string{executablePath, "test"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   setOption(defaultOptions, "Filename", "test"),
 			wantErr:                assert.NoError,
 		},
 		{
 			name:                   "error with an unknown flag",
 			args:                   args{[]string{executablePath, "--unknown"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   interpreter.Options{},
 			wantErr:                assert.Error,
 		},
 		{
 			name:                   "error with the --inbox flag (missed argument)",
 			args:                   args{[]string{executablePath, "--inbox"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   interpreter.Options{},
 			wantErr:                assert.Error,
 		},
 		{
 			name:                   "error with the --inbox flag (incorrect type)",
 			args:                   args{[]string{executablePath, "--inbox", "test"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   interpreter.Options{},
 			wantErr:                assert.Error,
 		},
 		{
 			name:                   "error with the --state flag (missed argument)",
 			args:                   args{[]string{executablePath, "--state"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   interpreter.Options{},
 			wantErr:                assert.Error,
 		},
 		{
 			name:                   "error with the --message flag (missed argument)",
 			args:                   args{[]string{executablePath, "--message"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   interpreter.Options{},
 			wantErr:                assert.Error,
 		},
 		{
 			name:                   "error with an extra argument",
 			args:                   args{[]string{executablePath, "one", "two"}},
-			initializeDependencies: func(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {},
+			initializeDependencies: func(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {},
 			want:                   interpreter.Options{},
 			wantErr:                assert.Error,
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
 			var usage []byte
-			usageWriter := new(mocks.Writer)
-			errorWriter := new(mocks.Writer)
+			usageWriter := new(MockWriter)
+			errorWriter := new(MockWriter)
 			exiter := new(mocks.Exiter)
 			testData.initializeDependencies(&usage, usageWriter, exiter)
 
@@ -196,7 +196,7 @@ Args:
 	}
 }
 
-func initializeForUsage(usage *[]byte, writer *mocks.Writer, exiter *mocks.Exiter) {
+func initializeForUsage(usage *[]byte, writer *MockWriter, exiter *mocks.Exiter) {
 	writer.On("Write", mock.AnythingOfType("[]uint8")).Return(func(buffer []byte) int {
 		*usage = append(*usage, buffer...)
 		return len(buffer)
