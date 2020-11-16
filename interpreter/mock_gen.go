@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
@@ -12,4 +13,14 @@ import (
 //
 type Context interface {
 	context.Context
+}
+
+//go:generate mockery -name=ErrorHandler -inpkg -case=underscore -testonly
+
+// ErrorHandler ...
+//
+// It's used only for mock generating.
+//
+type ErrorHandler interface {
+	runtime.ErrorHandler
 }
