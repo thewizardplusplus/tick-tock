@@ -3,6 +3,7 @@ package interpreter
 import (
 	"io"
 
+	"github.com/spf13/afero"
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
@@ -46,4 +47,14 @@ type ErrorHandler interface {
 //
 type WaitGroup interface {
 	syncutils.WaitGroup
+}
+
+//go:generate mockery -name=File -inpkg -case=underscore -testonly
+
+// File ...
+//
+// It's used only for mock generating.
+//
+type File interface {
+	afero.File
 }
