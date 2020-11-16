@@ -19,7 +19,7 @@ func TestReadCode(test *testing.T) {
 		name                   string
 		args                   args
 		initializeDependencies func(
-			defaultReader *mocks.Reader,
+			defaultReader *MockReader,
 			fileSystem *mocks.FileSystem,
 			file *mocks.File,
 		)
@@ -28,7 +28,7 @@ func TestReadCode(test *testing.T) {
 	}{
 		{
 			name: "success with a default source",
-			initializeDependencies: func(defaultReader *mocks.Reader, _ *mocks.FileSystem, _ *mocks.File) {
+			initializeDependencies: func(defaultReader *MockReader, _ *mocks.FileSystem, _ *mocks.File) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
 					Return(func(buffer []byte) int { return copy(buffer, "test") }, io.EOF)
@@ -39,7 +39,7 @@ func TestReadCode(test *testing.T) {
 		{
 			name: "success with a file source",
 			args: args{"file"},
-			initializeDependencies: func(_ *mocks.Reader, fileSystem *mocks.FileSystem, file *mocks.File) {
+			initializeDependencies: func(_ *MockReader, fileSystem *mocks.FileSystem, file *mocks.File) {
 				fileSystem.On("Open", "file").Return(file, nil)
 
 				file.
@@ -53,14 +53,14 @@ func TestReadCode(test *testing.T) {
 		{
 			name: "error on a file opening",
 			args: args{"file"},
-			initializeDependencies: func(_ *mocks.Reader, fileSystem *mocks.FileSystem, _ *mocks.File) {
+			initializeDependencies: func(_ *MockReader, fileSystem *mocks.FileSystem, _ *mocks.File) {
 				fileSystem.On("Open", "file").Return(nil, iotest.ErrTimeout)
 			},
 			wantErr: assert.Error,
 		},
 		{
 			name: "error on a default source reading",
-			initializeDependencies: func(defaultReader *mocks.Reader, _ *mocks.FileSystem, _ *mocks.File) {
+			initializeDependencies: func(defaultReader *MockReader, _ *mocks.FileSystem, _ *mocks.File) {
 				defaultReader.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
 			},
 			wantErr: assert.Error,
@@ -68,7 +68,7 @@ func TestReadCode(test *testing.T) {
 		{
 			name: "error on a file reading",
 			args: args{"file"},
-			initializeDependencies: func(_ *mocks.Reader, fileSystem *mocks.FileSystem, file *mocks.File) {
+			initializeDependencies: func(_ *MockReader, fileSystem *mocks.FileSystem, file *mocks.File) {
 				fileSystem.On("Open", "file").Return(file, nil)
 
 				file.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
@@ -78,7 +78,7 @@ func TestReadCode(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			defaultReader, fileSystem, file := new(mocks.Reader), new(mocks.FileSystem), new(mocks.File)
+			defaultReader, fileSystem, file := new(MockReader), new(mocks.FileSystem), new(mocks.File)
 			testData.initializeDependencies(defaultReader, fileSystem, file)
 
 			got, err := readCode(testData.args.filename, ReaderDependencies{defaultReader, fileSystem})

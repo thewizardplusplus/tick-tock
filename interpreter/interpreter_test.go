@@ -23,7 +23,7 @@ func TestInterpret(test *testing.T) {
 			options Options,
 			context *MockContext,
 			waiter *MockWaitGroup,
-			defaultReader *testutilsmocks.Reader,
+			defaultReader *MockReader,
 		)
 		wantErr assert.ErrorAssertionFunc
 	}{
@@ -33,7 +33,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *MockContext,
 				waiter *MockWaitGroup,
-				defaultReader *testutilsmocks.Reader,
+				defaultReader *MockReader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(types.Nil{}, true)
@@ -64,7 +64,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *MockContext,
 				waiter *MockWaitGroup,
-				defaultReader *testutilsmocks.Reader,
+				defaultReader *MockReader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 				context.On("Value", "test").Return(float64(23), true)
@@ -95,7 +95,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *MockContext,
 				waiter *MockWaitGroup,
-				defaultReader *testutilsmocks.Reader,
+				defaultReader *MockReader,
 			) {
 				defaultReader.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
 			},
@@ -107,7 +107,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *MockContext,
 				waiter *MockWaitGroup,
-				defaultReader *testutilsmocks.Reader,
+				defaultReader *MockReader,
 			) {
 				defaultReader.
 					On("Read", mock.AnythingOfType("[]uint8")).
@@ -121,7 +121,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *MockContext,
 				waiter *MockWaitGroup,
-				defaultReader *testutilsmocks.Reader,
+				defaultReader *MockReader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 
@@ -142,7 +142,7 @@ func TestInterpret(test *testing.T) {
 				options Options,
 				context *MockContext,
 				waiter *MockWaitGroup,
-				defaultReader *testutilsmocks.Reader,
+				defaultReader *MockReader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
 
@@ -169,7 +169,7 @@ func TestInterpret(test *testing.T) {
 				InitialMessage: "__initialize__",
 			}
 			context := new(MockContext)
-			defaultReader := new(testutilsmocks.Reader)
+			defaultReader := new(MockReader)
 			fileSystem := new(testutilsmocks.FileSystem)
 			errorHandler := new(MockErrorHandler)
 			testData.initializeDependencies(options, context, waiter, defaultReader)
