@@ -14,7 +14,6 @@ import (
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	testutilsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
-	contextmocks "github.com/thewizardplusplus/tick-tock/runtime/context/mocks"
 	runtimemocks "github.com/thewizardplusplus/tick-tock/runtime/mocks"
 	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
@@ -24,7 +23,7 @@ func TestInterpret(test *testing.T) {
 		name                   string
 		initializeDependencies func(
 			options Options,
-			context *contextmocks.Context,
+			context *MockContext,
 			waiter *waitermocks.Waiter,
 			defaultReader *testutilsmocks.Reader,
 		)
@@ -34,7 +33,7 @@ func TestInterpret(test *testing.T) {
 			name: "success",
 			initializeDependencies: func(
 				options Options,
-				context *contextmocks.Context,
+				context *MockContext,
 				waiter *waitermocks.Waiter,
 				defaultReader *testutilsmocks.Reader,
 			) {
@@ -65,7 +64,7 @@ func TestInterpret(test *testing.T) {
 			name: "success with the expression",
 			initializeDependencies: func(
 				options Options,
-				context *contextmocks.Context,
+				context *MockContext,
 				waiter *waitermocks.Waiter,
 				defaultReader *testutilsmocks.Reader,
 			) {
@@ -96,7 +95,7 @@ func TestInterpret(test *testing.T) {
 			name: "error on code reading",
 			initializeDependencies: func(
 				options Options,
-				context *contextmocks.Context,
+				context *MockContext,
 				waiter *waitermocks.Waiter,
 				defaultReader *testutilsmocks.Reader,
 			) {
@@ -108,7 +107,7 @@ func TestInterpret(test *testing.T) {
 			name: "error on code parsing",
 			initializeDependencies: func(
 				options Options,
-				context *contextmocks.Context,
+				context *MockContext,
 				waiter *waitermocks.Waiter,
 				defaultReader *testutilsmocks.Reader,
 			) {
@@ -122,7 +121,7 @@ func TestInterpret(test *testing.T) {
 			name: "error on code translation",
 			initializeDependencies: func(
 				options Options,
-				context *contextmocks.Context,
+				context *MockContext,
 				waiter *waitermocks.Waiter,
 				defaultReader *testutilsmocks.Reader,
 			) {
@@ -143,7 +142,7 @@ func TestInterpret(test *testing.T) {
 			name: "error with the expression",
 			initializeDependencies: func(
 				options Options,
-				context *contextmocks.Context,
+				context *MockContext,
 				waiter *waitermocks.Waiter,
 				defaultReader *testutilsmocks.Reader,
 			) {
@@ -171,7 +170,7 @@ func TestInterpret(test *testing.T) {
 				InitialState:   "__initialization__",
 				InitialMessage: "__initialize__",
 			}
-			context := new(contextmocks.Context)
+			context := new(MockContext)
 			defaultReader := new(testutilsmocks.Reader)
 			fileSystem := new(testutilsmocks.FileSystem)
 			errorHandler := new(runtimemocks.ErrorHandler)
