@@ -14,7 +14,6 @@ import (
 	syncutils "github.com/thewizardplusplus/go-sync-utils"
 	testutilsmocks "github.com/thewizardplusplus/tick-tock/internal/test-utils/mocks"
 	"github.com/thewizardplusplus/tick-tock/runtime"
-	waitermocks "github.com/thewizardplusplus/tick-tock/runtime/waiter/mocks"
 )
 
 func TestInterpret(test *testing.T) {
@@ -23,7 +22,7 @@ func TestInterpret(test *testing.T) {
 		initializeDependencies func(
 			options Options,
 			context *MockContext,
-			waiter *waitermocks.Waiter,
+			waiter *MockWaitGroup,
 			defaultReader *testutilsmocks.Reader,
 		)
 		wantErr assert.ErrorAssertionFunc
@@ -33,7 +32,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *waitermocks.Waiter,
+				waiter *MockWaitGroup,
 				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
@@ -64,7 +63,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *waitermocks.Waiter,
+				waiter *MockWaitGroup,
 				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
@@ -95,7 +94,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *waitermocks.Waiter,
+				waiter *MockWaitGroup,
 				defaultReader *testutilsmocks.Reader,
 			) {
 				defaultReader.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
@@ -107,7 +106,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *waitermocks.Waiter,
+				waiter *MockWaitGroup,
 				defaultReader *testutilsmocks.Reader,
 			) {
 				defaultReader.
@@ -121,7 +120,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *waitermocks.Waiter,
+				waiter *MockWaitGroup,
 				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
@@ -142,7 +141,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *waitermocks.Waiter,
+				waiter *MockWaitGroup,
 				defaultReader *testutilsmocks.Reader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
@@ -161,7 +160,7 @@ func TestInterpret(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			waiter := new(waitermocks.Waiter)
+			waiter := new(MockWaitGroup)
 			waiter.On("Wait").Times(1)
 
 			options := Options{
