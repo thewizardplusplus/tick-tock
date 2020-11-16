@@ -91,9 +91,9 @@ func TestInterpret(test *testing.T) {
 		{
 			name: "error on code reading",
 			initializeDependencies: func(
-				options Options,
-				context *MockContext,
-				waiter *MockWaitGroup,
+				_ Options,
+				_ *MockContext,
+				_ *MockWaitGroup,
 				defaultReader *MockReader,
 			) {
 				defaultReader.On("Read", mock.AnythingOfType("[]uint8")).Return(0, iotest.ErrTimeout)
@@ -103,9 +103,9 @@ func TestInterpret(test *testing.T) {
 		{
 			name: "error on code parsing",
 			initializeDependencies: func(
-				options Options,
-				context *MockContext,
-				waiter *MockWaitGroup,
+				_ Options,
+				_ *MockContext,
+				_ *MockWaitGroup,
 				defaultReader *MockReader,
 			) {
 				defaultReader.
@@ -119,7 +119,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *MockWaitGroup,
+				_ *MockWaitGroup,
 				defaultReader *MockReader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))
@@ -140,7 +140,7 @@ func TestInterpret(test *testing.T) {
 			initializeDependencies: func(
 				options Options,
 				context *MockContext,
-				waiter *MockWaitGroup,
+				_ *MockWaitGroup,
 				defaultReader *MockReader,
 			) {
 				context.On("ValuesNames").Return(mapset.NewSet("test"))

@@ -17,13 +17,9 @@ func TestReadCode(test *testing.T) {
 	for _, testData := range []struct {
 		name                   string
 		args                   args
-		initializeDependencies func(
-			defaultReader *MockReader,
-			fileSystem *MockFileSystem,
-			file *MockFile,
-		)
-		want    string
-		wantErr assert.ErrorAssertionFunc
+		initializeDependencies func(defaultReader *MockReader, fileSystem *MockFileSystem, file *MockFile)
+		want                   string
+		wantErr                assert.ErrorAssertionFunc
 	}{
 		{
 			name: "success with a default source",
@@ -116,6 +112,7 @@ func TestIsEmptyFilename(test *testing.T) {
 	for _, testData := range tests {
 		test.Run(testData.name, func(test *testing.T) {
 			got := isEmptyFilename(testData.args.filename)
+
 			assert.Equal(test, testData.want, got)
 		})
 	}
