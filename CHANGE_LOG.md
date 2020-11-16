@@ -1,6 +1,6 @@
 # Change Log
 
-## [v2.2](https://github.com/thewizardplusplus/tick-tock/tree/v2.2) (2020-09-11)
+## [v2.2](https://github.com/thewizardplusplus/tick-tock/tree/v2.2) (2020-09-16)
 
 - support expression evaluation:
   - support operations:
