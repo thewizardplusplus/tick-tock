@@ -58,3 +58,13 @@ type WaitGroup interface {
 type File interface {
 	afero.File
 }
+
+//go:generate mockery -name=FileSystem -inpkg -case=underscore -testonly
+
+// FileSystem ...
+//
+// It's used only for mock generating.
+//
+type FileSystem interface {
+	afero.Fs
+}
