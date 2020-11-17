@@ -2748,7 +2748,8 @@ func TestParseToAST_withExpression(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
-			err := parseToAST(testData.args.code, testData.args.ast)
+			err := ParseToAST(testData.args.code, testData.args.ast)
+
 			assert.Equal(test, testData.wantAST, testData.args.ast)
 			testData.wantErr(test, err)
 		})
