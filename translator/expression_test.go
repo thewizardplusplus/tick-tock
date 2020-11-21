@@ -2443,18 +2443,13 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/nonempty/success",
 			args: args{
-				unary: &parser.Unary{
-					Operation: "-",
-					Unary: &parser.Unary{
-						Operation: "~",
-						Unary: &parser.Unary{
-							Operation: "!",
-							Unary: &parser.Unary{
-								Accessor: &parser.Accessor{Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)}},
-							},
-						},
-					},
-				},
+				unary: func() *parser.Unary {
+					unary := new(parser.Unary)
+					err := parser.ParseToAST("-~!23", unary)
+					require.NoError(test, err)
+
+					return unary
+				}(),
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2473,105 +2468,39 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/nonempty/success/with setted states",
 			args: args{
-				unary: &parser.Unary{
-					Operation: "-",
-					Unary: &parser.Unary{
-						Operation: "!",
-						Unary: &parser.Unary{
-							Accessor: &parser.Accessor{
-								Atom: &parser.Atom{
-									ConditionalExpression: &parser.ConditionalExpression{
-										ConditionalCases: []*parser.ConditionalCase{
-											{
-												Condition: &parser.Expression{
-													ListConstruction: &parser.ListConstruction{
-														NilCoalescing: &parser.NilCoalescing{
-															Disjunction: &parser.Disjunction{
-																Conjunction: &parser.Conjunction{
-																	Equality: &parser.Equality{
-																		Comparison: &parser.Comparison{
-																			BitwiseDisjunction: &parser.BitwiseDisjunction{
-																				BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																					BitwiseConjunction: &parser.BitwiseConjunction{
-																						Shift: &parser.Shift{
-																							Addition: &parser.Addition{
-																								Multiplication: &parser.Multiplication{
-																									Unary: &parser.Unary{
-																										Accessor: &parser.Accessor{
-																											Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
-																										},
-																									},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
-											},
-											{
-												Condition: &parser.Expression{
-													ListConstruction: &parser.ListConstruction{
-														NilCoalescing: &parser.NilCoalescing{
-															Disjunction: &parser.Disjunction{
-																Conjunction: &parser.Conjunction{
-																	Equality: &parser.Equality{
-																		Comparison: &parser.Comparison{
-																			BitwiseDisjunction: &parser.BitwiseDisjunction{
-																				BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																					BitwiseConjunction: &parser.BitwiseConjunction{
-																						Shift: &parser.Shift{
-																							Addition: &parser.Addition{
-																								Multiplication: &parser.Multiplication{
-																									Unary: &parser.Unary{
-																										Accessor: &parser.Accessor{
-																											Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
-																										},
-																									},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-												Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				unary: func() *parser.Unary {
+					const code = `
+						-~!when
+							=> 23
+								set one()
+							=> 42
+								set two()
+						;
+					`
+
+					unary := new(parser.Unary)
+					err := parser.ParseToAST(code, unary)
+					require.NoError(test, err)
+
+					return unary
+				}(),
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
 				ArithmeticNegationFunctionName,
 				[]expressions.Expression{
-					expressions.NewFunctionCall(LogicalNegationFunctionName, []expressions.Expression{
-						expressions.NewConditionalExpression([]expressions.ConditionalCase{
-							{
-								Condition: expressions.NewNumber(23),
-								Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
-							},
-							{
-								Condition: expressions.NewNumber(42),
-								Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
-							},
+					expressions.NewFunctionCall(BitwiseNegationFunctionName, []expressions.Expression{
+						expressions.NewFunctionCall(LogicalNegationFunctionName, []expressions.Expression{
+							expressions.NewConditionalExpression([]expressions.ConditionalCase{
+								{
+									Condition: expressions.NewNumber(23),
+									Command:   runtime.CommandGroup{commands.NewSetCommand("one", nil)},
+								},
+								{
+									Condition: expressions.NewNumber(42),
+									Command:   runtime.CommandGroup{commands.NewSetCommand("two", nil)},
+								},
+							}),
 						}),
 					}),
 				},
@@ -2582,15 +2511,13 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/nonempty/error",
 			args: args{
-				unary: &parser.Unary{
-					Operation: "-",
-					Unary: &parser.Unary{
-						Operation: "!",
-						Unary: &parser.Unary{
-							Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
-						},
-					},
-				},
+				unary: func() *parser.Unary {
+					unary := new(parser.Unary)
+					err := parser.ParseToAST("-~!unknown", unary)
+					require.NoError(test, err)
+
+					return unary
+				}(),
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2599,9 +2526,13 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/empty/success",
 			args: args{
-				unary: &parser.Unary{
-					Accessor: &parser.Accessor{Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)}},
-				},
+				unary: func() *parser.Unary {
+					unary := new(parser.Unary)
+					err := parser.ParseToAST("23", unary)
+					require.NoError(test, err)
+
+					return unary
+				}(),
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -2611,84 +2542,22 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/empty/success/with setted states",
 			args: args{
-				unary: &parser.Unary{
-					Accessor: &parser.Accessor{
-						Atom: &parser.Atom{
-							ConditionalExpression: &parser.ConditionalExpression{
-								ConditionalCases: []*parser.ConditionalCase{
-									{
-										Condition: &parser.Expression{
-											ListConstruction: &parser.ListConstruction{
-												NilCoalescing: &parser.NilCoalescing{
-													Disjunction: &parser.Disjunction{
-														Conjunction: &parser.Conjunction{
-															Equality: &parser.Equality{
-																Comparison: &parser.Comparison{
-																	BitwiseDisjunction: &parser.BitwiseDisjunction{
-																		BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																			BitwiseConjunction: &parser.BitwiseConjunction{
-																				Shift: &parser.Shift{
-																					Addition: &parser.Addition{
-																						Multiplication: &parser.Multiplication{
-																							Unary: &parser.Unary{
-																								Accessor: &parser.Accessor{
-																									Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(23)},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-										Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "one"}}},
-									},
-									{
-										Condition: &parser.Expression{
-											ListConstruction: &parser.ListConstruction{
-												NilCoalescing: &parser.NilCoalescing{
-													Disjunction: &parser.Disjunction{
-														Conjunction: &parser.Conjunction{
-															Equality: &parser.Equality{
-																Comparison: &parser.Comparison{
-																	BitwiseDisjunction: &parser.BitwiseDisjunction{
-																		BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																			BitwiseConjunction: &parser.BitwiseConjunction{
-																				Shift: &parser.Shift{
-																					Addition: &parser.Addition{
-																						Multiplication: &parser.Multiplication{
-																							Unary: &parser.Unary{
-																								Accessor: &parser.Accessor{
-																									Atom: &parser.Atom{IntegerNumber: pointer.ToInt64(42)},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-										Commands: []*parser.Command{{Set: &parser.SetCommand{Name: "two"}}},
-									},
-								},
-							},
-						},
-					},
-				},
+				unary: func() *parser.Unary {
+					const code = `
+						when
+							=> 23
+								set one()
+							=> 42
+								set two()
+						;
+					`
+
+					unary := new(parser.Unary)
+					err := parser.ParseToAST(code, unary)
+					require.NoError(test, err)
+
+					return unary
+				}(),
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -2707,9 +2576,13 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/empty/error",
 			args: args{
-				unary: &parser.Unary{
-					Accessor: &parser.Accessor{Atom: &parser.Atom{Identifier: pointer.ToString("unknown")}},
-				},
+				unary: func() *parser.Unary {
+					unary := new(parser.Unary)
+					err := parser.ParseToAST("unknown", unary)
+					require.NoError(test, err)
+
+					return unary
+				}(),
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
