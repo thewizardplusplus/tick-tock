@@ -1944,7 +1944,7 @@ func TestTranslateMultiplication(test *testing.T) {
 
 func TestTranslateUnary(test *testing.T) {
 	type args struct {
-		unary               *parser.Unary
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -1958,13 +1958,7 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/nonempty/success",
 			args: args{
-				unary: func() *parser.Unary {
-					unary := new(parser.Unary)
-					err := parser.ParseToAST("-~!23", unary)
-					require.NoError(test, err)
-
-					return unary
-				}(),
+				code:                "-~!23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -1983,22 +1977,14 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/nonempty/success/with setted states",
 			args: args{
-				unary: func() *parser.Unary {
-					const code = `
-						-~!when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					unary := new(parser.Unary)
-					err := parser.ParseToAST(code, unary)
-					require.NoError(test, err)
-
-					return unary
-				}(),
+				code: `
+					-~!when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2026,13 +2012,7 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/nonempty/error",
 			args: args{
-				unary: func() *parser.Unary {
-					unary := new(parser.Unary)
-					err := parser.ParseToAST("-~!unknown", unary)
-					require.NoError(test, err)
-
-					return unary
-				}(),
+				code:                "-~!unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2041,13 +2021,7 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/empty/success",
 			args: args{
-				unary: func() *parser.Unary {
-					unary := new(parser.Unary)
-					err := parser.ParseToAST("23", unary)
-					require.NoError(test, err)
-
-					return unary
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -2057,22 +2031,14 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/empty/success/with setted states",
 			args: args{
-				unary: func() *parser.Unary {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					unary := new(parser.Unary)
-					err := parser.ParseToAST(code, unary)
-					require.NoError(test, err)
-
-					return unary
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -2091,13 +2057,7 @@ func TestTranslateUnary(test *testing.T) {
 		{
 			name: "Unary/empty/error",
 			args: args{
-				unary: func() *parser.Unary {
-					unary := new(parser.Unary)
-					err := parser.ParseToAST("unknown", unary)
-					require.NoError(test, err)
-
-					return unary
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2105,8 +2065,12 @@ func TestTranslateUnary(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			unary := new(parser.Unary)
+			err := parser.ParseToAST(data.args.code, unary)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateUnary(data.args.unary, data.args.declaredIdentifiers)
+				translateUnary(unary, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
