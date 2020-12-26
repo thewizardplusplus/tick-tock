@@ -2864,7 +2864,7 @@ func TestTranslateListDefinition(test *testing.T) {
 
 func TestTranslateHashTableDefinition(test *testing.T) {
 	type args struct {
-		hashTableDefinition *parser.HashTableDefinition
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -2878,13 +2878,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/success/name/few entries/unknown key identifiers",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST("{x: 12, y: 23, z: 42}", hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code:                "{x: 12, y: 23, z: 42}",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2909,13 +2903,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/success/name/few entries/known key identifiers",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST("{x: 12, y: 23, z: 42}", hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code:                "{x: 12, y: 23, z: 42}",
 				declaredIdentifiers: mapset.NewSet("x", "y", "z"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2940,28 +2928,20 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/success/name/few entries/with setted states",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					const code = `{
-						x: when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;,
-						y: when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;,
-					}`
-
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST(code, hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code: `{
+					x: when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;,
+					y: when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;,
+				}`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -3000,13 +2980,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/success/expression",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST("{[test]: 23}", hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code:                "{[test]: 23}",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -3023,22 +2997,14 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/success/expression/with setted states",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					const code = `{
-						[when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;]: 23,
-					}`
-
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST(code, hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code: `{
+					[when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;]: 23,
+				}`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -3064,13 +3030,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/success/no entries",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST("{}", hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code:                "{}",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewIdentifier(EmptyHashTableConstantName),
@@ -3080,13 +3040,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/error/unknown identifier in the expression",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST("{[unknown]: 23}", hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code:                "{[unknown]: 23}",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
@@ -3096,13 +3050,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		{
 			name: "HashTableDefinition/error/unknown identifier in the value",
 			args: args{
-				hashTableDefinition: func() *parser.HashTableDefinition {
-					hashTableDefinition := new(parser.HashTableDefinition)
-					err := parser.ParseToAST("{x: 12, y: 23, z: unknown}", hashTableDefinition)
-					require.NoError(test, err)
-
-					return hashTableDefinition
-				}(),
+				code:                "{x: 12, y: 23, z: unknown}",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
@@ -3111,8 +3059,12 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			hashTableDefinition := new(parser.HashTableDefinition)
+			err := parser.ParseToAST(data.args.code, hashTableDefinition)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateHashTableDefinition(data.args.hashTableDefinition, data.args.declaredIdentifiers)
+				translateHashTableDefinition(hashTableDefinition, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
