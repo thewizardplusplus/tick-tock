@@ -89,7 +89,7 @@ func TestTranslateExpression(test *testing.T) {
 
 func TestTranslateListConstruction(test *testing.T) {
 	type args struct {
-		listConstruction    *parser.ListConstruction
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -103,13 +103,7 @@ func TestTranslateListConstruction(test *testing.T) {
 		{
 			name: "ListConstruction/nonempty/success",
 			args: args{
-				listConstruction: func() *parser.ListConstruction {
-					listConstruction := new(parser.ListConstruction)
-					err := parser.ParseToAST("12 : test", listConstruction)
-					require.NoError(test, err)
-
-					return listConstruction
-				}(),
+				code:                "12 : test",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -122,28 +116,20 @@ func TestTranslateListConstruction(test *testing.T) {
 		{
 			name: "ListConstruction/nonempty/success/with setted states",
 			args: args{
-				listConstruction: func() *parser.ListConstruction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						: when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					listConstruction := new(parser.ListConstruction)
-					err := parser.ParseToAST(code, listConstruction)
-					require.NoError(test, err)
-
-					return listConstruction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					: when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -177,13 +163,7 @@ func TestTranslateListConstruction(test *testing.T) {
 		{
 			name: "ListConstruction/nonempty/error",
 			args: args{
-				listConstruction: func() *parser.ListConstruction {
-					listConstruction := new(parser.ListConstruction)
-					err := parser.ParseToAST("12 : unknown", listConstruction)
-					require.NoError(test, err)
-
-					return listConstruction
-				}(),
+				code:                "12 : unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -192,13 +172,7 @@ func TestTranslateListConstruction(test *testing.T) {
 		{
 			name: "ListConstruction/empty/success",
 			args: args{
-				listConstruction: func() *parser.ListConstruction {
-					listConstruction := new(parser.ListConstruction)
-					err := parser.ParseToAST("23", listConstruction)
-					require.NoError(test, err)
-
-					return listConstruction
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -208,22 +182,14 @@ func TestTranslateListConstruction(test *testing.T) {
 		{
 			name: "ListConstruction/empty/success/with setted states",
 			args: args{
-				listConstruction: func() *parser.ListConstruction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					listConstruction := new(parser.ListConstruction)
-					err := parser.ParseToAST(code, listConstruction)
-					require.NoError(test, err)
-
-					return listConstruction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -242,13 +208,7 @@ func TestTranslateListConstruction(test *testing.T) {
 		{
 			name: "ListConstruction/empty/error",
 			args: args{
-				listConstruction: func() *parser.ListConstruction {
-					listConstruction := new(parser.ListConstruction)
-					err := parser.ParseToAST("unknown", listConstruction)
-					require.NoError(test, err)
-
-					return listConstruction
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -256,8 +216,12 @@ func TestTranslateListConstruction(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			listConstruction := new(parser.ListConstruction)
+			err := parser.ParseToAST(data.args.code, listConstruction)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateListConstruction(data.args.listConstruction, data.args.declaredIdentifiers)
+				translateListConstruction(listConstruction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
