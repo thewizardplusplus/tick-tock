@@ -810,7 +810,7 @@ func TestTranslateEquality(test *testing.T) {
 
 func TestTranslateComparison(test *testing.T) {
 	type args struct {
-		comparison          *parser.Comparison
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -824,13 +824,7 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/nonempty/success/less",
 			args: args{
-				comparison: func() *parser.Comparison {
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST("12 < 23 < 42", comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code:                "12 < 23 < 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(LessFunctionName, []expressions.Expression{
@@ -846,13 +840,7 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/nonempty/success/less or equal",
 			args: args{
-				comparison: func() *parser.Comparison {
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST("12 <= 23 <= 42", comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code:                "12 <= 23 <= 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(LessOrEqualFunctionName, []expressions.Expression{
@@ -868,13 +856,7 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/nonempty/success/great",
 			args: args{
-				comparison: func() *parser.Comparison {
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST("12 > 23 > 42", comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code:                "12 > 23 > 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(GreaterFunctionName, []expressions.Expression{
@@ -890,13 +872,7 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/nonempty/success/great or equal",
 			args: args{
-				comparison: func() *parser.Comparison {
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST("12 >= 23 >= 42", comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code:                "12 >= 23 >= 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(GreaterOrEqualFunctionName, []expressions.Expression{
@@ -912,28 +888,20 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/nonempty/success/with setted states",
 			args: args{
-				comparison: func() *parser.Comparison {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						< when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST(code, comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					< when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(LessFunctionName, []expressions.Expression{
@@ -964,13 +932,7 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/nonempty/error",
 			args: args{
-				comparison: func() *parser.Comparison {
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST("12 < 23 < unknown", comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code:                "12 < 23 < unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -979,13 +941,7 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/empty/success",
 			args: args{
-				comparison: func() *parser.Comparison {
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST("23", comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -995,22 +951,14 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/empty/success/with setted states",
 			args: args{
-				comparison: func() *parser.Comparison {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST(code, comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -1029,13 +977,7 @@ func TestTranslateComparison(test *testing.T) {
 		{
 			name: "Comparison/empty/error",
 			args: args{
-				comparison: func() *parser.Comparison {
-					comparison := new(parser.Comparison)
-					err := parser.ParseToAST("unknown", comparison)
-					require.NoError(test, err)
-
-					return comparison
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -1043,8 +985,12 @@ func TestTranslateComparison(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			comparison := new(parser.Comparison)
+			err := parser.ParseToAST(data.args.code, comparison)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateComparison(data.args.comparison, data.args.declaredIdentifiers)
+				translateComparison(comparison, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
