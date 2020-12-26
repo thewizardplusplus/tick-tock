@@ -1456,7 +1456,7 @@ func TestTranslateBitwiseConjunction(test *testing.T) {
 
 func TestTranslateShift(test *testing.T) {
 	type args struct {
-		shift               *parser.Shift
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -1470,13 +1470,7 @@ func TestTranslateShift(test *testing.T) {
 		{
 			name: "Shift/nonempty/success",
 			args: args{
-				shift: func() *parser.Shift {
-					shift := new(parser.Shift)
-					err := parser.ParseToAST("5 << 12 >> 23 >>> 42", shift)
-					require.NoError(test, err)
-
-					return shift
-				}(),
+				code:                "5 << 12 >> 23 >>> 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -1498,28 +1492,20 @@ func TestTranslateShift(test *testing.T) {
 		{
 			name: "Shift/nonempty/success/with setted states",
 			args: args{
-				shift: func() *parser.Shift {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						<< when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					shift := new(parser.Shift)
-					err := parser.ParseToAST(code, shift)
-					require.NoError(test, err)
-
-					return shift
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					<< when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -1553,13 +1539,7 @@ func TestTranslateShift(test *testing.T) {
 		{
 			name: "Shift/nonempty/error",
 			args: args{
-				shift: func() *parser.Shift {
-					shift := new(parser.Shift)
-					err := parser.ParseToAST("5 << 12 >> 23 >>> unknown", shift)
-					require.NoError(test, err)
-
-					return shift
-				}(),
+				code:                "5 << 12 >> 23 >>> unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
@@ -1569,13 +1549,7 @@ func TestTranslateShift(test *testing.T) {
 		{
 			name: "Shift/empty/success",
 			args: args{
-				shift: func() *parser.Shift {
-					shift := new(parser.Shift)
-					err := parser.ParseToAST("23", shift)
-					require.NoError(test, err)
-
-					return shift
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -1585,22 +1559,14 @@ func TestTranslateShift(test *testing.T) {
 		{
 			name: "Shift/empty/success/with setted states",
 			args: args{
-				shift: func() *parser.Shift {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					shift := new(parser.Shift)
-					err := parser.ParseToAST(code, shift)
-					require.NoError(test, err)
-
-					return shift
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -1619,13 +1585,7 @@ func TestTranslateShift(test *testing.T) {
 		{
 			name: "Shift/empty/error",
 			args: args{
-				shift: func() *parser.Shift {
-					shift := new(parser.Shift)
-					err := parser.ParseToAST("unknown", shift)
-					require.NoError(test, err)
-
-					return shift
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
@@ -1634,8 +1594,12 @@ func TestTranslateShift(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			shift := new(parser.Shift)
+			err := parser.ParseToAST(data.args.code, shift)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateShift(data.args.shift, data.args.declaredIdentifiers)
+				translateShift(shift, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
