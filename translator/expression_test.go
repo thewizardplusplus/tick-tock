@@ -375,7 +375,7 @@ func TestTranslateNilCoalescing(test *testing.T) {
 
 func TestTranslateDisjunction(test *testing.T) {
 	type args struct {
-		disjunction         *parser.Disjunction
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -389,13 +389,7 @@ func TestTranslateDisjunction(test *testing.T) {
 		{
 			name: "Disjunction/nonempty/success",
 			args: args{
-				disjunction: func() *parser.Disjunction {
-					disjunction := new(parser.Disjunction)
-					err := parser.ParseToAST("12 || 23 || 42", disjunction)
-					require.NoError(test, err)
-
-					return disjunction
-				}(),
+				code:                "12 || 23 || 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewBooleanOperator(
@@ -413,28 +407,20 @@ func TestTranslateDisjunction(test *testing.T) {
 		{
 			name: "Disjunction/nonempty/success/with setted states",
 			args: args{
-				disjunction: func() *parser.Disjunction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						|| when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					disjunction := new(parser.Disjunction)
-					err := parser.ParseToAST(code, disjunction)
-					require.NoError(test, err)
-
-					return disjunction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					|| when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewBooleanOperator(
@@ -466,13 +452,7 @@ func TestTranslateDisjunction(test *testing.T) {
 		{
 			name: "Disjunction/nonempty/error",
 			args: args{
-				disjunction: func() *parser.Disjunction {
-					disjunction := new(parser.Disjunction)
-					err := parser.ParseToAST("12 || 23 || unknown", disjunction)
-					require.NoError(test, err)
-
-					return disjunction
-				}(),
+				code:                "12 || 23 || unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -481,13 +461,7 @@ func TestTranslateDisjunction(test *testing.T) {
 		{
 			name: "Disjunction/empty/success",
 			args: args{
-				disjunction: func() *parser.Disjunction {
-					disjunction := new(parser.Disjunction)
-					err := parser.ParseToAST("23", disjunction)
-					require.NoError(test, err)
-
-					return disjunction
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -497,22 +471,14 @@ func TestTranslateDisjunction(test *testing.T) {
 		{
 			name: "Disjunction/empty/success/with setted states",
 			args: args{
-				disjunction: func() *parser.Disjunction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					disjunction := new(parser.Disjunction)
-					err := parser.ParseToAST(code, disjunction)
-					require.NoError(test, err)
-
-					return disjunction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -531,13 +497,7 @@ func TestTranslateDisjunction(test *testing.T) {
 		{
 			name: "Disjunction/empty/error",
 			args: args{
-				disjunction: func() *parser.Disjunction {
-					disjunction := new(parser.Disjunction)
-					err := parser.ParseToAST("unknown", disjunction)
-					require.NoError(test, err)
-
-					return disjunction
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -545,8 +505,12 @@ func TestTranslateDisjunction(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			disjunction := new(parser.Disjunction)
+			err := parser.ParseToAST(data.args.code, disjunction)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateDisjunction(data.args.disjunction, data.args.declaredIdentifiers)
+				translateDisjunction(disjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
