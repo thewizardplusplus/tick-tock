@@ -3075,7 +3075,7 @@ func TestTranslateHashTableDefinition(test *testing.T) {
 
 func TestTranslateFunctionCall(test *testing.T) {
 	type args struct {
-		functionCall        *parser.FunctionCall
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -3089,13 +3089,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 		{
 			name: "FunctionCall/success/few arguments",
 			args: args{
-				functionCall: func() *parser.FunctionCall {
-					functionCall := new(parser.FunctionCall)
-					err := parser.ParseToAST("test(12, 23, 42)", functionCall)
-					require.NoError(test, err)
-
-					return functionCall
-				}(),
+				code:                "test(12, 23, 42)",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall("test", []expressions.Expression{
@@ -3109,28 +3103,20 @@ func TestTranslateFunctionCall(test *testing.T) {
 		{
 			name: "FunctionCall/success/few arguments/with setted states",
 			args: args{
-				functionCall: func() *parser.FunctionCall {
-					const code = `test(
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;,
-						when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;,
-					)`
-
-					functionCall := new(parser.FunctionCall)
-					err := parser.ParseToAST(code, functionCall)
-					require.NoError(test, err)
-
-					return functionCall
-				}(),
+				code: `test(
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;,
+					when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;,
+				)`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall("test", []expressions.Expression{
@@ -3161,13 +3147,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 		{
 			name: "FunctionCall/success/no arguments",
 			args: args{
-				functionCall: func() *parser.FunctionCall {
-					functionCall := new(parser.FunctionCall)
-					err := parser.ParseToAST("test()", functionCall)
-					require.NoError(test, err)
-
-					return functionCall
-				}(),
+				code:                "test()",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewFunctionCall("test", nil),
@@ -3177,13 +3157,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 		{
 			name: "FunctionCall/error/unknown function",
 			args: args{
-				functionCall: func() *parser.FunctionCall {
-					functionCall := new(parser.FunctionCall)
-					err := parser.ParseToAST("unknown(12, 23, 42)", functionCall)
-					require.NoError(test, err)
-
-					return functionCall
-				}(),
+				code:                "unknown(12, 23, 42)",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -3192,13 +3166,7 @@ func TestTranslateFunctionCall(test *testing.T) {
 		{
 			name: "FunctionCall/error/argument translating",
 			args: args{
-				functionCall: func() *parser.FunctionCall {
-					functionCall := new(parser.FunctionCall)
-					err := parser.ParseToAST("test(12, 23, unknown)", functionCall)
-					require.NoError(test, err)
-
-					return functionCall
-				}(),
+				code:                "test(12, 23, unknown)",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -3206,8 +3174,12 @@ func TestTranslateFunctionCall(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			functionCall := new(parser.FunctionCall)
+			err := parser.ParseToAST(data.args.code, functionCall)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateFunctionCall(data.args.functionCall, data.args.declaredIdentifiers)
+				translateFunctionCall(functionCall, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
