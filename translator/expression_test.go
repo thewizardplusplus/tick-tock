@@ -667,7 +667,7 @@ func TestTranslateConjunction(test *testing.T) {
 
 func TestTranslateEquality(test *testing.T) {
 	type args struct {
-		equality            *parser.Equality
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -681,13 +681,7 @@ func TestTranslateEquality(test *testing.T) {
 		{
 			name: "Equality/nonempty/success",
 			args: args{
-				equality: func() *parser.Equality {
-					equality := new(parser.Equality)
-					err := parser.ParseToAST("12 == 23 != 42", equality)
-					require.NoError(test, err)
-
-					return equality
-				}(),
+				code:                "12 == 23 != 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(EqualFunctionName, []expressions.Expression{
@@ -703,28 +697,20 @@ func TestTranslateEquality(test *testing.T) {
 		{
 			name: "Equality/nonempty/success/with setted states",
 			args: args{
-				equality: func() *parser.Equality {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						== when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					equality := new(parser.Equality)
-					err := parser.ParseToAST(code, equality)
-					require.NoError(test, err)
-
-					return equality
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					== when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(EqualFunctionName, []expressions.Expression{
@@ -755,13 +741,7 @@ func TestTranslateEquality(test *testing.T) {
 		{
 			name: "Equality/nonempty/error",
 			args: args{
-				equality: func() *parser.Equality {
-					equality := new(parser.Equality)
-					err := parser.ParseToAST("12 == 23 != unknown", equality)
-					require.NoError(test, err)
-
-					return equality
-				}(),
+				code:                "12 == 23 != unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -770,13 +750,7 @@ func TestTranslateEquality(test *testing.T) {
 		{
 			name: "Equality/empty/success",
 			args: args{
-				equality: func() *parser.Equality {
-					equality := new(parser.Equality)
-					err := parser.ParseToAST("23", equality)
-					require.NoError(test, err)
-
-					return equality
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -786,22 +760,14 @@ func TestTranslateEquality(test *testing.T) {
 		{
 			name: "Equality/empty/success/with setted states",
 			args: args{
-				equality: func() *parser.Equality {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					equality := new(parser.Equality)
-					err := parser.ParseToAST(code, equality)
-					require.NoError(test, err)
-
-					return equality
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -820,13 +786,7 @@ func TestTranslateEquality(test *testing.T) {
 		{
 			name: "Equality/empty/error",
 			args: args{
-				equality: func() *parser.Equality {
-					equality := new(parser.Equality)
-					err := parser.ParseToAST("unknown", equality)
-					require.NoError(test, err)
-
-					return equality
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -834,8 +794,12 @@ func TestTranslateEquality(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			equality := new(parser.Equality)
+			err := parser.ParseToAST(data.args.code, equality)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateEquality(data.args.equality, data.args.declaredIdentifiers)
+				translateEquality(equality, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
