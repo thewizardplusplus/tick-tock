@@ -1610,7 +1610,7 @@ func TestTranslateShift(test *testing.T) {
 
 func TestTranslateAddition(test *testing.T) {
 	type args struct {
-		addition            *parser.Addition
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -1624,13 +1624,7 @@ func TestTranslateAddition(test *testing.T) {
 		{
 			name: "Addition/nonempty/success/addition",
 			args: args{
-				addition: func() *parser.Addition {
-					addition := new(parser.Addition)
-					err := parser.ParseToAST("12 + 23 + 42", addition)
-					require.NoError(test, err)
-
-					return addition
-				}(),
+				code:                "12 + 23 + 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(AdditionFunctionName, []expressions.Expression{
@@ -1646,13 +1640,7 @@ func TestTranslateAddition(test *testing.T) {
 		{
 			name: "Addition/nonempty/success/subtraction",
 			args: args{
-				addition: func() *parser.Addition {
-					addition := new(parser.Addition)
-					err := parser.ParseToAST("12 - 23 - 42", addition)
-					require.NoError(test, err)
-
-					return addition
-				}(),
+				code:                "12 - 23 - 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(SubtractionFunctionName, []expressions.Expression{
@@ -1668,28 +1656,20 @@ func TestTranslateAddition(test *testing.T) {
 		{
 			name: "Addition/nonempty/success/with setted states",
 			args: args{
-				addition: func() *parser.Addition {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						+ when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					addition := new(parser.Addition)
-					err := parser.ParseToAST(code, addition)
-					require.NoError(test, err)
-
-					return addition
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					+ when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(AdditionFunctionName, []expressions.Expression{
@@ -1720,13 +1700,7 @@ func TestTranslateAddition(test *testing.T) {
 		{
 			name: "Addition/nonempty/error",
 			args: args{
-				addition: func() *parser.Addition {
-					addition := new(parser.Addition)
-					err := parser.ParseToAST("12 + 23 + unknown", addition)
-					require.NoError(test, err)
-
-					return addition
-				}(),
+				code:                "12 + 23 + unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -1735,13 +1709,7 @@ func TestTranslateAddition(test *testing.T) {
 		{
 			name: "Addition/empty/success",
 			args: args{
-				addition: func() *parser.Addition {
-					addition := new(parser.Addition)
-					err := parser.ParseToAST("23", addition)
-					require.NoError(test, err)
-
-					return addition
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -1751,22 +1719,14 @@ func TestTranslateAddition(test *testing.T) {
 		{
 			name: "Addition/empty/success/with setted states",
 			args: args{
-				addition: func() *parser.Addition {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					addition := new(parser.Addition)
-					err := parser.ParseToAST(code, addition)
-					require.NoError(test, err)
-
-					return addition
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -1785,13 +1745,7 @@ func TestTranslateAddition(test *testing.T) {
 		{
 			name: "Addition/empty/error",
 			args: args{
-				addition: func() *parser.Addition {
-					addition := new(parser.Addition)
-					err := parser.ParseToAST("unknown", addition)
-					require.NoError(test, err)
-
-					return addition
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -1799,8 +1753,12 @@ func TestTranslateAddition(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			addition := new(parser.Addition)
+			err := parser.ParseToAST(data.args.code, addition)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateAddition(data.args.addition, data.args.declaredIdentifiers)
+				translateAddition(addition, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
