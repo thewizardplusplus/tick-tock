@@ -15,7 +15,7 @@ import (
 
 func TestTranslateExpression(test *testing.T) {
 	type args struct {
-		expression          *parser.Expression
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -29,13 +29,7 @@ func TestTranslateExpression(test *testing.T) {
 		{
 			name: "Expression/success",
 			args: args{
-				expression: func() *parser.Expression {
-					expression := new(parser.Expression)
-					err := parser.ParseToAST("23", expression)
-					require.NoError(test, err)
-
-					return expression
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -45,22 +39,14 @@ func TestTranslateExpression(test *testing.T) {
 		{
 			name: "Expression/success/with setted states",
 			args: args{
-				expression: func() *parser.Expression {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					expression := new(parser.Expression)
-					err := parser.ParseToAST(code, expression)
-					require.NoError(test, err)
-
-					return expression
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -79,13 +65,7 @@ func TestTranslateExpression(test *testing.T) {
 		{
 			name: "Expression/error",
 			args: args{
-				expression: func() *parser.Expression {
-					expression := new(parser.Expression)
-					err := parser.ParseToAST("unknown", expression)
-					require.NoError(test, err)
-
-					return expression
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -93,8 +73,12 @@ func TestTranslateExpression(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			expression := new(parser.Expression)
+			err := parser.ParseToAST(data.args.code, expression)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateExpression(data.args.expression, data.args.declaredIdentifiers)
+				translateExpression(expression, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
