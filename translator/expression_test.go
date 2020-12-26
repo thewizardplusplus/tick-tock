@@ -2744,7 +2744,7 @@ func TestTranslateAtom(test *testing.T) {
 
 func TestTranslateListDefinition(test *testing.T) {
 	type args struct {
-		listDefinition      *parser.ListDefinition
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -2758,13 +2758,7 @@ func TestTranslateListDefinition(test *testing.T) {
 		{
 			name: "ListDefinition/success/few items",
 			args: args{
-				listDefinition: func() *parser.ListDefinition {
-					listDefinition := new(parser.ListDefinition)
-					err := parser.ParseToAST("[12, 23, 42]", listDefinition)
-					require.NoError(test, err)
-
-					return listDefinition
-				}(),
+				code:                "[12, 23, 42]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2786,28 +2780,20 @@ func TestTranslateListDefinition(test *testing.T) {
 		{
 			name: "ListDefinition/success/few items/with setted states",
 			args: args{
-				listDefinition: func() *parser.ListDefinition {
-					const code = `[
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;,
-						when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;,
-					]`
-
-					listDefinition := new(parser.ListDefinition)
-					err := parser.ParseToAST(code, listDefinition)
-					require.NoError(test, err)
-
-					return listDefinition
-				}(),
+				code: `[
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;,
+					when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;,
+				]`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2844,13 +2830,7 @@ func TestTranslateListDefinition(test *testing.T) {
 		{
 			name: "ListDefinition/success/no items",
 			args: args{
-				listDefinition: func() *parser.ListDefinition {
-					listDefinition := new(parser.ListDefinition)
-					err := parser.ParseToAST("[]", listDefinition)
-					require.NoError(test, err)
-
-					return listDefinition
-				}(),
+				code:                "[]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewIdentifier(EmptyListConstantName),
@@ -2860,13 +2840,7 @@ func TestTranslateListDefinition(test *testing.T) {
 		{
 			name: "ListDefinition/error",
 			args: args{
-				listDefinition: func() *parser.ListDefinition {
-					listDefinition := new(parser.ListDefinition)
-					err := parser.ParseToAST("[12, 23, unknown]", listDefinition)
-					require.NoError(test, err)
-
-					return listDefinition
-				}(),
+				code:                "[12, 23, unknown]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2874,8 +2848,12 @@ func TestTranslateListDefinition(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			listDefinition := new(parser.ListDefinition)
+			err := parser.ParseToAST(data.args.code, listDefinition)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateListDefinition(data.args.listDefinition, data.args.declaredIdentifiers)
+				translateListDefinition(listDefinition, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
