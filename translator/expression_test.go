@@ -2081,7 +2081,7 @@ func TestTranslateUnary(test *testing.T) {
 
 func TestTranslateAccessor(test *testing.T) {
 	type args struct {
-		accessor            *parser.Accessor
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -2095,13 +2095,7 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/nonempty/success/expressions",
 			args: args{
-				accessor: func() *parser.Accessor {
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST("test[12][23]", accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code:                "test[12][23]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
@@ -2117,13 +2111,7 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/nonempty/success/names",
 			args: args{
-				accessor: func() *parser.Accessor {
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST("test.one.two", accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code:                "test.one.two",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
@@ -2139,13 +2127,7 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/nonempty/success/names and expressions",
 			args: args{
-				accessor: func() *parser.Accessor {
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST("test.one[12].two[23]", accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code:                "test.one[12].two[23]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
@@ -2167,29 +2149,21 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/nonempty/success/with setted states",
 			args: args{
-				accessor: func() *parser.Accessor {
-					const code = `
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;[
 						when
-							=> 23
-								set one()
-							=> 42
+							=> 24
 								set two()
-						;[
-							when
-								=> 24
-									set two()
-								=> 43
-									set three()
-							;
-						]
-					`
-
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST(code, accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+							=> 43
+								set three()
+						;
+					]
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(KeyAccessorFunctionName, []expressions.Expression{
@@ -2220,13 +2194,7 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/nonempty/error/atom translating",
 			args: args{
-				accessor: func() *parser.Accessor {
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST("unknown[12][23]", accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code:                "unknown[12][23]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2235,13 +2203,7 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/nonempty/error/key translating",
 			args: args{
-				accessor: func() *parser.Accessor {
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST("test[12][unknown]", accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code:                "test[12][unknown]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2250,13 +2212,7 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/empty/success",
 			args: args{
-				accessor: func() *parser.Accessor {
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST("23", accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -2266,22 +2222,14 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/empty/success/with setted states",
 			args: args{
-				accessor: func() *parser.Accessor {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST(code, accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -2300,13 +2248,7 @@ func TestTranslateAccessor(test *testing.T) {
 		{
 			name: "Accessor/empty/error",
 			args: args{
-				accessor: func() *parser.Accessor {
-					accessor := new(parser.Accessor)
-					err := parser.ParseToAST("unknown", accessor)
-					require.NoError(test, err)
-
-					return accessor
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2314,8 +2256,12 @@ func TestTranslateAccessor(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			accessor := new(parser.Accessor)
+			err := parser.ParseToAST(data.args.code, accessor)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateAccessor(data.args.accessor, data.args.declaredIdentifiers)
+				translateAccessor(accessor, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
