@@ -521,7 +521,7 @@ func TestTranslateDisjunction(test *testing.T) {
 
 func TestTranslateConjunction(test *testing.T) {
 	type args struct {
-		conjunction         *parser.Conjunction
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -535,13 +535,7 @@ func TestTranslateConjunction(test *testing.T) {
 		{
 			name: "Conjunction/nonempty/success",
 			args: args{
-				conjunction: func() *parser.Conjunction {
-					conjunction := new(parser.Conjunction)
-					err := parser.ParseToAST("12 && 23 && 42", conjunction)
-					require.NoError(test, err)
-
-					return conjunction
-				}(),
+				code:                "12 && 23 && 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewBooleanOperator(
@@ -559,28 +553,20 @@ func TestTranslateConjunction(test *testing.T) {
 		{
 			name: "Conjunction/nonempty/success/with setted states",
 			args: args{
-				conjunction: func() *parser.Conjunction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						&& when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					conjunction := new(parser.Conjunction)
-					err := parser.ParseToAST(code, conjunction)
-					require.NoError(test, err)
-
-					return conjunction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					&& when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewBooleanOperator(
@@ -612,13 +598,7 @@ func TestTranslateConjunction(test *testing.T) {
 		{
 			name: "Conjunction/nonempty/error",
 			args: args{
-				conjunction: func() *parser.Conjunction {
-					conjunction := new(parser.Conjunction)
-					err := parser.ParseToAST("12 && 23 && unknown", conjunction)
-					require.NoError(test, err)
-
-					return conjunction
-				}(),
+				code:                "12 && 23 && unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -627,13 +607,7 @@ func TestTranslateConjunction(test *testing.T) {
 		{
 			name: "Conjunction/empty/success",
 			args: args{
-				conjunction: func() *parser.Conjunction {
-					conjunction := new(parser.Conjunction)
-					err := parser.ParseToAST("23", conjunction)
-					require.NoError(test, err)
-
-					return conjunction
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -643,22 +617,14 @@ func TestTranslateConjunction(test *testing.T) {
 		{
 			name: "Conjunction/empty/success/with setted states",
 			args: args{
-				conjunction: func() *parser.Conjunction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					conjunction := new(parser.Conjunction)
-					err := parser.ParseToAST(code, conjunction)
-					require.NoError(test, err)
-
-					return conjunction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -677,13 +643,7 @@ func TestTranslateConjunction(test *testing.T) {
 		{
 			name: "Conjunction/empty/error",
 			args: args{
-				conjunction: func() *parser.Conjunction {
-					conjunction := new(parser.Conjunction)
-					err := parser.ParseToAST("unknown", conjunction)
-					require.NoError(test, err)
-
-					return conjunction
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -691,8 +651,12 @@ func TestTranslateConjunction(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			conjunction := new(parser.Conjunction)
+			err := parser.ParseToAST(data.args.code, conjunction)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateConjunction(data.args.conjunction, data.args.declaredIdentifiers)
+				translateConjunction(conjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
