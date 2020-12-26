@@ -1001,7 +1001,7 @@ func TestTranslateComparison(test *testing.T) {
 
 func TestTranslateBitwiseDisjunction(test *testing.T) {
 	type args struct {
-		bitwiseDisjunction  *parser.BitwiseDisjunction
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -1015,13 +1015,7 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 		{
 			name: "BitwiseDisjunction/nonempty/success",
 			args: args{
-				bitwiseDisjunction: func() *parser.BitwiseDisjunction {
-					bitwiseDisjunction := new(parser.BitwiseDisjunction)
-					err := parser.ParseToAST("12 | 23 | 42", bitwiseDisjunction)
-					require.NoError(test, err)
-
-					return bitwiseDisjunction
-				}(),
+				code:                "12 | 23 | 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -1040,28 +1034,20 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 		{
 			name: "BitwiseDisjunction/nonempty/success/with setted states",
 			args: args{
-				bitwiseDisjunction: func() *parser.BitwiseDisjunction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						| when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					bitwiseDisjunction := new(parser.BitwiseDisjunction)
-					err := parser.ParseToAST(code, bitwiseDisjunction)
-					require.NoError(test, err)
-
-					return bitwiseDisjunction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					| when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -1095,13 +1081,7 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 		{
 			name: "BitwiseDisjunction/nonempty/error",
 			args: args{
-				bitwiseDisjunction: func() *parser.BitwiseDisjunction {
-					bitwiseDisjunction := new(parser.BitwiseDisjunction)
-					err := parser.ParseToAST("12 | 23 | unknown", bitwiseDisjunction)
-					require.NoError(test, err)
-
-					return bitwiseDisjunction
-				}(),
+				code:                "12 | 23 | unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
@@ -1111,13 +1091,7 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 		{
 			name: "BitwiseDisjunction/empty/success",
 			args: args{
-				bitwiseDisjunction: func() *parser.BitwiseDisjunction {
-					bitwiseDisjunction := new(parser.BitwiseDisjunction)
-					err := parser.ParseToAST("23", bitwiseDisjunction)
-					require.NoError(test, err)
-
-					return bitwiseDisjunction
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -1127,22 +1101,14 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 		{
 			name: "BitwiseDisjunction/empty/success/with setted states",
 			args: args{
-				bitwiseDisjunction: func() *parser.BitwiseDisjunction {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					bitwiseDisjunction := new(parser.BitwiseDisjunction)
-					err := parser.ParseToAST(code, bitwiseDisjunction)
-					require.NoError(test, err)
-
-					return bitwiseDisjunction
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -1161,13 +1127,7 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 		{
 			name: "BitwiseDisjunction/empty/error",
 			args: args{
-				bitwiseDisjunction: func() *parser.BitwiseDisjunction {
-					bitwiseDisjunction := new(parser.BitwiseDisjunction)
-					err := parser.ParseToAST("unknown", bitwiseDisjunction)
-					require.NoError(test, err)
-
-					return bitwiseDisjunction
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
@@ -1176,8 +1136,12 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			bitwiseDisjunction := new(parser.BitwiseDisjunction)
+			err := parser.ParseToAST(data.args.code, bitwiseDisjunction)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateBitwiseDisjunction(data.args.bitwiseDisjunction, data.args.declaredIdentifiers)
+				translateBitwiseDisjunction(bitwiseDisjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
