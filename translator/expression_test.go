@@ -232,7 +232,7 @@ func TestTranslateListConstruction(test *testing.T) {
 
 func TestTranslateNilCoalescing(test *testing.T) {
 	type args struct {
-		nilCoalescing       *parser.NilCoalescing
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -246,13 +246,7 @@ func TestTranslateNilCoalescing(test *testing.T) {
 		{
 			name: "NilCoalescing/nonempty/success",
 			args: args{
-				nilCoalescing: func() *parser.NilCoalescing {
-					nilCoalescing := new(parser.NilCoalescing)
-					err := parser.ParseToAST("12 ?? 23 ?? 42", nilCoalescing)
-					require.NoError(test, err)
-
-					return nilCoalescing
-				}(),
+				code:                "12 ?? 23 ?? 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewNilCoalescingOperator(
@@ -268,28 +262,20 @@ func TestTranslateNilCoalescing(test *testing.T) {
 		{
 			name: "NilCoalescing/nonempty/success/with setted states",
 			args: args{
-				nilCoalescing: func() *parser.NilCoalescing {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						?? when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					nilCoalescing := new(parser.NilCoalescing)
-					err := parser.ParseToAST(code, nilCoalescing)
-					require.NoError(test, err)
-
-					return nilCoalescing
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					?? when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewNilCoalescingOperator(
@@ -320,13 +306,7 @@ func TestTranslateNilCoalescing(test *testing.T) {
 		{
 			name: "NilCoalescing/nonempty/error",
 			args: args{
-				nilCoalescing: func() *parser.NilCoalescing {
-					nilCoalescing := new(parser.NilCoalescing)
-					err := parser.ParseToAST("12 ?? 23 ?? unknown", nilCoalescing)
-					require.NoError(test, err)
-
-					return nilCoalescing
-				}(),
+				code:                "12 ?? 23 ?? unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -335,13 +315,7 @@ func TestTranslateNilCoalescing(test *testing.T) {
 		{
 			name: "NilCoalescing/empty/success",
 			args: args{
-				nilCoalescing: func() *parser.NilCoalescing {
-					nilCoalescing := new(parser.NilCoalescing)
-					err := parser.ParseToAST("23", nilCoalescing)
-					require.NoError(test, err)
-
-					return nilCoalescing
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -351,22 +325,14 @@ func TestTranslateNilCoalescing(test *testing.T) {
 		{
 			name: "NilCoalescing/empty/success/with setted states",
 			args: args{
-				nilCoalescing: func() *parser.NilCoalescing {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					nilCoalescing := new(parser.NilCoalescing)
-					err := parser.ParseToAST(code, nilCoalescing)
-					require.NoError(test, err)
-
-					return nilCoalescing
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -385,13 +351,7 @@ func TestTranslateNilCoalescing(test *testing.T) {
 		{
 			name: "NilCoalescing/empty/error",
 			args: args{
-				nilCoalescing: func() *parser.NilCoalescing {
-					nilCoalescing := new(parser.NilCoalescing)
-					err := parser.ParseToAST("unknown", nilCoalescing)
-					require.NoError(test, err)
-
-					return nilCoalescing
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -399,8 +359,12 @@ func TestTranslateNilCoalescing(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			nilCoalescing := new(parser.NilCoalescing)
+			err := parser.ParseToAST(data.args.code, nilCoalescing)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateNilCoalescing(data.args.nilCoalescing, data.args.declaredIdentifiers)
+				translateNilCoalescing(nilCoalescing, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
