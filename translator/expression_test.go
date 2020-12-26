@@ -2272,7 +2272,7 @@ func TestTranslateAccessor(test *testing.T) {
 
 func TestTranslateAtom(test *testing.T) {
 	type args struct {
-		atom                *parser.Atom
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -2286,13 +2286,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/number/integer",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("23", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -2302,13 +2296,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/number/floating-point",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("2.3", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "2.3",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(2.3),
@@ -2318,13 +2306,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/symbol/latin1",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("'t'", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "'t'",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(116),
@@ -2334,13 +2316,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/symbol/not latin1",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("'т'", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "'т'",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(1090),
@@ -2350,13 +2326,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/string",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(`"test"`, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                `"test"`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewString("test"),
@@ -2366,13 +2336,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/list definition/success",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("[12, 23, 42]", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "[12, 23, 42]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2394,28 +2358,20 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/list definition/success/with setted states",
 			args: args{
-				atom: func() *parser.Atom {
-					const code = `[
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;,
-						when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;,
-					]`
-
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(code, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code: `[
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;,
+					when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;,
+				]`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2455,13 +2411,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/list definition/error",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("[12, 23, unknown]", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "[12, 23, unknown]",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2470,13 +2420,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/hash table definition/success",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("{x: 12, y: 23, z: 42}", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "{x: 12, y: 23, z: 42}",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2501,28 +2445,20 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/hash table definition/success/with setted states",
 			args: args{
-				atom: func() *parser.Atom {
-					const code = `{
-						x: when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;,
-						y: when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;,
-					}`
-
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(code, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code: `{
+					x: when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;,
+					y: when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;,
+				}`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(
@@ -2561,13 +2497,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/hash table definition/error",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("{x: 12, y: 23, z: unknown}", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "{x: 12, y: 23, z: unknown}",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   nil,
@@ -2577,13 +2507,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/function call/success",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("test(12, 23, 42)", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "test(12, 23, 42)",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall("test", []expressions.Expression{
@@ -2597,28 +2521,20 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/function call/success/with setted states",
 			args: args{
-				atom: func() *parser.Atom {
-					const code = `test(
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;,
-						when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;,
-					)`
-
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(code, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code: `test(
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;,
+					when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;,
+				)`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall("test", []expressions.Expression{
@@ -2649,13 +2565,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/function call/error",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("test(12, 23, unknown)", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "test(12, 23, unknown)",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2664,27 +2574,19 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/conditional expression/success",
 			args: args{
-				atom: func() *parser.Atom {
-					const code = `
-						when
-							=> 12
-								23
-								42
-							=> 13
-								24
-								43
-							=> 14
-								25
-								44
-						;
-					`
-
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(code, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code: `
+					when
+						=> 12
+							23
+							42
+						=> 13
+							24
+							43
+						=> 14
+							25
+							44
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -2716,22 +2618,14 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/conditional expression/success/with setted states",
 			args: args{
-				atom: func() *parser.Atom {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(code, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -2750,27 +2644,19 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/conditional expression/error",
 			args: args{
-				atom: func() *parser.Atom {
-					const code = `
-						when
-							=> 12
-								23
-								42
-							=> 13
-								24
-								43
-							=> 14
-								25
-								unknown
-						;
-					`
-
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(code, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code: `
+					when
+						=> 12
+							23
+							42
+						=> 13
+							24
+							43
+						=> 14
+							25
+							unknown
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2779,13 +2665,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/identifier/success",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("test", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "test",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewIdentifier("test"),
@@ -2795,13 +2675,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/identifier/error",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("unknown", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2810,13 +2684,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/expression/success",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("(23)", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "(23)",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -2826,22 +2694,14 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/expression/success/with setted states",
 			args: args{
-				atom: func() *parser.Atom {
-					const code = `
-						(when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;)
-					`
-
-					atom := new(parser.Atom)
-					err := parser.ParseToAST(code, atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code: `
+					(when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;)
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -2860,13 +2720,7 @@ func TestTranslateAtom(test *testing.T) {
 		{
 			name: "Atom/expression/error",
 			args: args{
-				atom: func() *parser.Atom {
-					atom := new(parser.Atom)
-					err := parser.ParseToAST("(unknown)", atom)
-					require.NoError(test, err)
-
-					return atom
-				}(),
+				code:                "(unknown)",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -2874,8 +2728,12 @@ func TestTranslateAtom(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			atom := new(parser.Atom)
+			err := parser.ParseToAST(data.args.code, atom)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateAtom(data.args.atom, data.args.declaredIdentifiers)
+				translateAtom(atom, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
