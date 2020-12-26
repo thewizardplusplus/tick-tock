@@ -1769,7 +1769,7 @@ func TestTranslateAddition(test *testing.T) {
 
 func TestTranslateMultiplication(test *testing.T) {
 	type args struct {
-		multiplication      *parser.Multiplication
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -1783,13 +1783,7 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/nonempty/success/multiplication",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST("12 * 23 * 42", multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code:                "12 * 23 * 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(MultiplicationFunctionName, []expressions.Expression{
@@ -1805,13 +1799,7 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/nonempty/success/division",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST("12 / 23 / 42", multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code:                "12 / 23 / 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(DivisionFunctionName, []expressions.Expression{
@@ -1827,13 +1815,7 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/nonempty/success/modulo",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST("12 % 23 % 42", multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code:                "12 % 23 % 42",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(ModuloFunctionName, []expressions.Expression{
@@ -1849,28 +1831,20 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/nonempty/success/with setted states",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-						* when
-							=> 24
-								set two()
-							=> 43
-								set three()
-						;
-					`
-
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST(code, multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+					* when
+						=> 24
+							set two()
+						=> 43
+							set three()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewFunctionCall(MultiplicationFunctionName, []expressions.Expression{
@@ -1901,13 +1875,7 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/nonempty/error",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST("12 * 23 * unknown", multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code:                "12 * 23 * unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -1916,13 +1884,7 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/empty/success",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST("23", multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code:                "23",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression:   expressions.NewNumber(23),
@@ -1932,22 +1894,14 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/empty/success/with setted states",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					const code = `
-						when
-							=> 23
-								set one()
-							=> 42
-								set two()
-						;
-					`
-
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST(code, multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code: `
+					when
+						=> 23
+							set one()
+						=> 42
+							set two()
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: expressions.NewConditionalExpression([]expressions.ConditionalCase{
@@ -1966,13 +1920,7 @@ func TestTranslateMultiplication(test *testing.T) {
 		{
 			name: "Multiplication/empty/error",
 			args: args{
-				multiplication: func() *parser.Multiplication {
-					multiplication := new(parser.Multiplication)
-					err := parser.ParseToAST("unknown", multiplication)
-					require.NoError(test, err)
-
-					return multiplication
-				}(),
+				code:                "unknown",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantExpression: nil,
@@ -1980,8 +1928,12 @@ func TestTranslateMultiplication(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
+			multiplication := new(parser.Multiplication)
+			err := parser.ParseToAST(data.args.code, multiplication)
+			require.NoError(test, err)
+
 			gotExpression, gotSettedStates, gotErr :=
-				translateMultiplication(data.args.multiplication, data.args.declaredIdentifiers)
+				translateMultiplication(multiplication, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
