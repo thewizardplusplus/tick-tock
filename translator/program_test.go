@@ -491,7 +491,7 @@ func TestTranslate(test *testing.T) {
 
 func TestTranslateDefinition(test *testing.T) {
 	type args struct {
-		definition          *parser.Definition
+		code                string
 		declaredIdentifiers mapset.Set
 		options             Options
 		dependencies        runtime.Dependencies
@@ -508,12 +508,10 @@ func TestTranslateDefinition(test *testing.T) {
 		{
 			name: "Definition/actor/success",
 			args: args{
-				definition: &parser.Definition{
-					Actor: &parser.Actor{
-						Name:   "Test",
-						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-					},
-				},
+				code: `actor Test()
+					state state_0();
+					state state_1();
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -544,12 +542,10 @@ func TestTranslateDefinition(test *testing.T) {
 		{
 			name: "Definition/actor/error",
 			args: args{
-				definition: &parser.Definition{
-					Actor: &parser.Actor{
-						Name:   "Test",
-						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-					},
-				},
+				code: `actor Test()
+					state state_0();
+					state state_1();
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
 				dependencies: runtime.Dependencies{
@@ -565,12 +561,10 @@ func TestTranslateDefinition(test *testing.T) {
 		{
 			name: "Definition/actor class/success",
 			args: args{
-				definition: &parser.Definition{
-					ActorClass: &parser.ActorClass{
-						Name:   "Test",
-						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-					},
-				},
+				code: `class Test()
+					state state_0();
+					state state_1();
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -601,12 +595,10 @@ func TestTranslateDefinition(test *testing.T) {
 		{
 			name: "Definition/actor class/error",
 			args: args{
-				definition: &parser.Definition{
-					ActorClass: &parser.ActorClass{
-						Name:   "Test",
-						States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-					},
-				},
+				code: `class Test()
+					state state_0();
+					state state_1();
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
 				dependencies: runtime.Dependencies{
@@ -621,8 +613,12 @@ func TestTranslateDefinition(test *testing.T) {
 		},
 	} {
 		test.Run(testData.name, func(test *testing.T) {
+			definition := new(parser.Definition)
+			err := parser.ParseToAST(testData.args.code, definition)
+			require.NoError(test, err)
+
 			gotTranslatedActorClass, gotActor, err := translateDefinition(
-				testData.args.definition,
+				definition,
 				testData.args.declaredIdentifiers,
 				testData.args.options,
 				testData.args.dependencies,
