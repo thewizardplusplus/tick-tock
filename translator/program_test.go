@@ -998,8 +998,11 @@ func TestTranslateActorClass(test *testing.T) {
 }
 
 func TestTranslateStates(test *testing.T) {
+	type statesWrapper struct {
+		States []*parser.State `parser:"{ @@ }"`
+	}
 	type args struct {
-		states              []*parser.State
+		code                string
 		declaredIdentifiers mapset.Set
 	}
 
@@ -1012,10 +1015,16 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "success with nonempty states",
 			args: args{
-				states: []*parser.State{
-					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
-					{Name: "state_1", Messages: []*parser.Message{{Name: "message_2"}, {Name: "message_3"}}},
-				},
+				code: `
+					state state_0()
+						message message_0();
+						message message_1();
+					;
+					state state_1()
+						message message_2();
+						message message_3();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
@@ -1033,7 +1042,7 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "success with empty states",
 			args: args{
-				states:              []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
+				code:                "state state_0(); state state_1();",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
@@ -1045,51 +1054,11 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "success with the expression",
 			args: args{
-				states: []*parser.State{
-					{
-						Name: "state_0",
-						Messages: []*parser.Message{
-							{
-								Name: "message_0",
-								Commands: []*parser.Command{
-									{
-										Expression: &parser.Expression{
-											ListConstruction: &parser.ListConstruction{
-												NilCoalescing: &parser.NilCoalescing{
-													Disjunction: &parser.Disjunction{
-														Conjunction: &parser.Conjunction{
-															Equality: &parser.Equality{
-																Comparison: &parser.Comparison{
-																	BitwiseDisjunction: &parser.BitwiseDisjunction{
-																		BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																			BitwiseConjunction: &parser.BitwiseConjunction{
-																				Shift: &parser.Shift{
-																					Addition: &parser.Addition{
-																						Multiplication: &parser.Multiplication{
-																							Unary: &parser.Unary{
-																								Accessor: &parser.Accessor{
-																									Atom: &parser.Atom{Identifier: pointer.ToString("test")},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				code: `state state_0()
+					message message_0()
+						test
+					;
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
@@ -1104,85 +1073,12 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "success with parameters",
 			args: args{
-				states: []*parser.State{
-					{
-						Name:       "state_0",
-						Parameters: []string{"one", "two"},
-						Messages: []*parser.Message{
-							{
-								Name: "message_0",
-								Commands: []*parser.Command{
-									{
-										Expression: &parser.Expression{
-											ListConstruction: &parser.ListConstruction{
-												NilCoalescing: &parser.NilCoalescing{
-													Disjunction: &parser.Disjunction{
-														Conjunction: &parser.Conjunction{
-															Equality: &parser.Equality{
-																Comparison: &parser.Comparison{
-																	BitwiseDisjunction: &parser.BitwiseDisjunction{
-																		BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																			BitwiseConjunction: &parser.BitwiseConjunction{
-																				Shift: &parser.Shift{
-																					Addition: &parser.Addition{
-																						Multiplication: &parser.Multiplication{
-																							Unary: &parser.Unary{
-																								Accessor: &parser.Accessor{
-																									Atom: &parser.Atom{Identifier: pointer.ToString("one")},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-									{
-										Expression: &parser.Expression{
-											ListConstruction: &parser.ListConstruction{
-												NilCoalescing: &parser.NilCoalescing{
-													Disjunction: &parser.Disjunction{
-														Conjunction: &parser.Conjunction{
-															Equality: &parser.Equality{
-																Comparison: &parser.Comparison{
-																	BitwiseDisjunction: &parser.BitwiseDisjunction{
-																		BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																			BitwiseConjunction: &parser.BitwiseConjunction{
-																				Shift: &parser.Shift{
-																					Addition: &parser.Addition{
-																						Multiplication: &parser.Multiplication{
-																							Unary: &parser.Unary{
-																								Accessor: &parser.Accessor{
-																									Atom: &parser.Atom{Identifier: pointer.ToString("two")},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				code: `state state_0(one, two)
+					message message_0()
+						one
+						two
+					;
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: runtime.StateGroup{
@@ -1198,7 +1094,7 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "error without states",
 			args: args{
-				states:              nil,
+				code:                "",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: nil,
@@ -1207,7 +1103,7 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "error with duplicate states",
 			args: args{
-				states:              []*parser.State{{Name: "test"}, {Name: "test"}},
+				code:                "state test(); state test();",
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: nil,
@@ -1216,10 +1112,16 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "error with messages translation",
 			args: args{
-				states: []*parser.State{
-					{Name: "state_0", Messages: []*parser.Message{{Name: "message_0"}, {Name: "message_1"}}},
-					{Name: "state_1", Messages: []*parser.Message{{Name: "test"}, {Name: "test"}}},
-				},
+				code: `
+					state state_0()
+						message message_0();
+						message message_1();
+					;
+					state state_1()
+						message test();
+						message test();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: nil,
@@ -1228,27 +1130,16 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "error with an unknown state",
 			args: args{
-				states: []*parser.State{
-					{
-						Name: "state_0",
-						Messages: []*parser.Message{
-							{
-								Name: "message_0",
-								Commands: []*parser.Command{
-									{Send: &parser.SendCommand{Name: "command_0"}},
-									{Set: &parser.SetCommand{Name: "state_unknown"}},
-								},
-							},
-							{
-								Name: "message_1",
-								Commands: []*parser.Command{
-									{Send: &parser.SendCommand{Name: "command_2"}},
-									{Set: &parser.SetCommand{Name: "state_unknown"}},
-								},
-							},
-						},
-					},
-				},
+				code: `state state_0()
+					message message_0()
+						send command_0()
+						set state_unknown()
+					;
+					message message_1()
+						send command_2()
+						set state_unknown()
+					;
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: nil,
@@ -1257,51 +1148,11 @@ func TestTranslateStates(test *testing.T) {
 		{
 			name: "error with the expression",
 			args: args{
-				states: []*parser.State{
-					{
-						Name: "state_0",
-						Messages: []*parser.Message{
-							{
-								Name: "message_0",
-								Commands: []*parser.Command{
-									{
-										Expression: &parser.Expression{
-											ListConstruction: &parser.ListConstruction{
-												NilCoalescing: &parser.NilCoalescing{
-													Disjunction: &parser.Disjunction{
-														Conjunction: &parser.Conjunction{
-															Equality: &parser.Equality{
-																Comparison: &parser.Comparison{
-																	BitwiseDisjunction: &parser.BitwiseDisjunction{
-																		BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																			BitwiseConjunction: &parser.BitwiseConjunction{
-																				Shift: &parser.Shift{
-																					Addition: &parser.Addition{
-																						Multiplication: &parser.Multiplication{
-																							Unary: &parser.Unary{
-																								Accessor: &parser.Accessor{
-																									Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				code: `state state_0()
+					message message_0()
+						unknown
+					;
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 			},
 			wantStates: nil,
@@ -1311,7 +1162,11 @@ func TestTranslateStates(test *testing.T) {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
-			gotStates, err := translateStates(testData.args.states, testData.args.declaredIdentifiers)
+			statesWrapper := new(statesWrapper)
+			err := parser.ParseToAST(testData.args.code, statesWrapper)
+			require.NoError(test, err)
+
+			gotStates, err := translateStates(statesWrapper.States, testData.args.declaredIdentifiers)
 
 			assert.Equal(test, originDeclaredIdentifiers, testData.args.declaredIdentifiers)
 			assert.Equal(test, testData.wantStates, gotStates)
