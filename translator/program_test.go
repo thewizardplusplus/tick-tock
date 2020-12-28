@@ -3,7 +3,6 @@ package translator
 import (
 	"testing"
 
-	"github.com/AlekSi/pointer"
 	mapset "github.com/deckarep/golang-set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -644,7 +643,7 @@ func TestTranslateDefinition(test *testing.T) {
 
 func TestTranslateActorClass(test *testing.T) {
 	type args struct {
-		actorClass          *parser.ActorClass
+		code                string
 		declaredIdentifiers mapset.Set
 		options             Options
 		dependencies        runtime.Dependencies
@@ -659,10 +658,10 @@ func TestTranslateActorClass(test *testing.T) {
 		{
 			name: "success",
 			args: args{
-				actorClass: &parser.ActorClass{
-					Name:   "Test",
-					States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-				},
+				code: `class Test()
+					state state_0();
+					state state_1();
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -691,54 +690,13 @@ func TestTranslateActorClass(test *testing.T) {
 		{
 			name: "success with the expression",
 			args: args{
-				actorClass: &parser.ActorClass{
-					Name: "Test",
-					States: []*parser.State{
-						{
-							Name: "state_0",
-							Messages: []*parser.Message{
-								{
-									Name: "message_0",
-									Commands: []*parser.Command{
-										{
-											Expression: &parser.Expression{
-												ListConstruction: &parser.ListConstruction{
-													NilCoalescing: &parser.NilCoalescing{
-														Disjunction: &parser.Disjunction{
-															Conjunction: &parser.Conjunction{
-																Equality: &parser.Equality{
-																	Comparison: &parser.Comparison{
-																		BitwiseDisjunction: &parser.BitwiseDisjunction{
-																			BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																				BitwiseConjunction: &parser.BitwiseConjunction{
-																					Shift: &parser.Shift{
-																						Addition: &parser.Addition{
-																							Multiplication: &parser.Multiplication{
-																								Unary: &parser.Unary{
-																									Accessor: &parser.Accessor{
-																										Atom: &parser.Atom{Identifier: pointer.ToString("test")},
-																									},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				code: `class Test()
+					state state_0()
+						message message_0()
+							test
+						;
+					;
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -770,88 +728,14 @@ func TestTranslateActorClass(test *testing.T) {
 		{
 			name: "success with parameters",
 			args: args{
-				actorClass: &parser.ActorClass{
-					Name:       "Test",
-					Parameters: []string{"one", "two"},
-					States: []*parser.State{
-						{
-							Name: "state_0",
-							Messages: []*parser.Message{
-								{
-									Name: "message_0",
-									Commands: []*parser.Command{
-										{
-											Expression: &parser.Expression{
-												ListConstruction: &parser.ListConstruction{
-													NilCoalescing: &parser.NilCoalescing{
-														Disjunction: &parser.Disjunction{
-															Conjunction: &parser.Conjunction{
-																Equality: &parser.Equality{
-																	Comparison: &parser.Comparison{
-																		BitwiseDisjunction: &parser.BitwiseDisjunction{
-																			BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																				BitwiseConjunction: &parser.BitwiseConjunction{
-																					Shift: &parser.Shift{
-																						Addition: &parser.Addition{
-																							Multiplication: &parser.Multiplication{
-																								Unary: &parser.Unary{
-																									Accessor: &parser.Accessor{
-																										Atom: &parser.Atom{Identifier: pointer.ToString("one")},
-																									},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-										{
-											Expression: &parser.Expression{
-												ListConstruction: &parser.ListConstruction{
-													NilCoalescing: &parser.NilCoalescing{
-														Disjunction: &parser.Disjunction{
-															Conjunction: &parser.Conjunction{
-																Equality: &parser.Equality{
-																	Comparison: &parser.Comparison{
-																		BitwiseDisjunction: &parser.BitwiseDisjunction{
-																			BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																				BitwiseConjunction: &parser.BitwiseConjunction{
-																					Shift: &parser.Shift{
-																						Addition: &parser.Addition{
-																							Multiplication: &parser.Multiplication{
-																								Unary: &parser.Unary{
-																									Accessor: &parser.Accessor{
-																										Atom: &parser.Atom{Identifier: pointer.ToString("two")},
-																									},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				code: `class Test(one, two)
+					state state_0()
+						message message_0()
+							one
+							two
+						;
+					;
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -882,10 +766,10 @@ func TestTranslateActorClass(test *testing.T) {
 		{
 			name: "error with states translation",
 			args: args{
-				actorClass: &parser.ActorClass{
-					Name:   "Test",
-					States: []*parser.State{{Name: "state_0"}, {Name: "state_0"}},
-				},
+				code: `class Test()
+					state state_0();
+					state state_0();
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -899,10 +783,10 @@ func TestTranslateActorClass(test *testing.T) {
 		{
 			name: "error with factory construction",
 			args: args{
-				actorClass: &parser.ActorClass{
-					Name:   "Test",
-					States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-				},
+				code: `class Test()
+					state state_0();
+					state state_1();
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "unknown"}},
 				dependencies: runtime.Dependencies{
@@ -916,54 +800,13 @@ func TestTranslateActorClass(test *testing.T) {
 		{
 			name: "error with the expression",
 			args: args{
-				actorClass: &parser.ActorClass{
-					Name: "Test",
-					States: []*parser.State{
-						{
-							Name: "state_0",
-							Messages: []*parser.Message{
-								{
-									Name: "message_0",
-									Commands: []*parser.Command{
-										{
-											Expression: &parser.Expression{
-												ListConstruction: &parser.ListConstruction{
-													NilCoalescing: &parser.NilCoalescing{
-														Disjunction: &parser.Disjunction{
-															Conjunction: &parser.Conjunction{
-																Equality: &parser.Equality{
-																	Comparison: &parser.Comparison{
-																		BitwiseDisjunction: &parser.BitwiseDisjunction{
-																			BitwiseExclusiveDisjunction: &parser.BitwiseExclusiveDisjunction{
-																				BitwiseConjunction: &parser.BitwiseConjunction{
-																					Shift: &parser.Shift{
-																						Addition: &parser.Addition{
-																							Multiplication: &parser.Multiplication{
-																								Unary: &parser.Unary{
-																									Accessor: &parser.Accessor{
-																										Atom: &parser.Atom{Identifier: pointer.ToString("unknown")},
-																									},
-																								},
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				code: `class Test()
+					state state_0()
+						message message_0()
+							unknown
+						;
+					;
+				;`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -978,8 +821,12 @@ func TestTranslateActorClass(test *testing.T) {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
+			actorClass := new(parser.ActorClass)
+			err := parser.ParseToAST(testData.args.code, actorClass)
+			require.NoError(test, err)
+
 			gotTranslatedActorClass, err := translateActorClass(
-				testData.args.actorClass,
+				actorClass,
 				testData.args.declaredIdentifiers,
 				testData.args.options,
 				testData.args.dependencies,
