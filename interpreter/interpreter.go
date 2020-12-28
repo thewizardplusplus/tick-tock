@@ -28,8 +28,8 @@ func Interpret(ctx context.Context, options Options, dependencies Dependencies) 
 		return err
 	}
 
-	program, err := parser.Parse(code)
-	if err != nil {
+	program := new(parser.Program)
+	if err = parser.ParseToAST(code, program); err != nil {
 		return err
 	}
 
