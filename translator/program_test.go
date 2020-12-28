@@ -16,7 +16,7 @@ import (
 
 func TestTranslate(test *testing.T) {
 	type args struct {
-		program             *parser.Program
+		code                string
 		declaredIdentifiers mapset.Set
 		options             Options
 		dependencies        runtime.Dependencies
@@ -32,9 +32,7 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "success without definitions",
 			args: args{
-				program: &parser.Program{
-					Definitions: nil,
-				},
+				code:                "",
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -49,22 +47,16 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "success with only few actors",
 			args: args{
-				program: &parser.Program{
-					Definitions: []*parser.Definition{
-						{
-							Actor: &parser.Actor{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							Actor: &parser.Actor{
-								Name:   "Test1",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-					},
-				},
+				code: `
+					actor Test0()
+						state state_0();
+						state state_1();
+					;
+					actor Test1()
+						state state_0();
+						state state_1();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -145,22 +137,16 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "success with only few actor classes",
 			args: args{
-				program: &parser.Program{
-					Definitions: []*parser.Definition{
-						{
-							ActorClass: &parser.ActorClass{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							ActorClass: &parser.ActorClass{
-								Name:   "Test1",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-					},
-				},
+				code: `
+					class Test0()
+						state state_0();
+						state state_1();
+					;
+					class Test1()
+						state state_0();
+						state state_1();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -208,34 +194,24 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "success with few actors and actor classes",
 			args: args{
-				program: &parser.Program{
-					Definitions: []*parser.Definition{
-						{
-							Actor: &parser.Actor{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							ActorClass: &parser.ActorClass{
-								Name:   "Test1",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							Actor: &parser.Actor{
-								Name:   "Test2",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							ActorClass: &parser.ActorClass{
-								Name:   "Test3",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-					},
-				},
+				code: `
+					actor Test0()
+						state state_0();
+						state state_1();
+					;
+					class Test1()
+						state state_0();
+						state state_1();
+					;
+					actor Test2()
+						state state_0();
+						state state_1();
+					;
+					class Test3()
+						state state_0();
+						state state_1();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -348,22 +324,16 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "error with definition translation",
 			args: args{
-				program: &parser.Program{
-					Definitions: []*parser.Definition{
-						{
-							Actor: &parser.Actor{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							Actor: &parser.Actor{
-								Name:   "Test1",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_0"}},
-							},
-						},
-					},
-				},
+				code: `
+					actor Test0()
+						state state_0();
+						state state_1();
+					;
+					actor Test1()
+						state state_0();
+						state state_0();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -378,22 +348,16 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "error with duplicate actors",
 			args: args{
-				program: &parser.Program{
-					Definitions: []*parser.Definition{
-						{
-							Actor: &parser.Actor{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							Actor: &parser.Actor{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-					},
-				},
+				code: `
+					actor Test0()
+						state state_0();
+						state state_1();
+					;
+					actor Test0()
+						state state_0();
+						state state_1();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -408,22 +372,16 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "error with duplicate actor classes",
 			args: args{
-				program: &parser.Program{
-					Definitions: []*parser.Definition{
-						{
-							ActorClass: &parser.ActorClass{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							ActorClass: &parser.ActorClass{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-					},
-				},
+				code: `
+					class Test0()
+						state state_0();
+						state state_1();
+					;
+					class Test0()
+						state state_0();
+						state state_1();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -438,22 +396,16 @@ func TestTranslate(test *testing.T) {
 		{
 			name: "error with the actor and the actor class with the same name",
 			args: args{
-				program: &parser.Program{
-					Definitions: []*parser.Definition{
-						{
-							Actor: &parser.Actor{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-						{
-							ActorClass: &parser.ActorClass{
-								Name:   "Test0",
-								States: []*parser.State{{Name: "state_0"}, {Name: "state_1"}},
-							},
-						},
-					},
-				},
+				code: `
+					actor Test0()
+						state state_0();
+						state state_1();
+					;
+					class Test0()
+						state state_0();
+						state state_1();
+					;
+				`,
 				declaredIdentifiers: mapset.NewSet("test"),
 				options:             Options{InboxSize: 23, InitialState: context.State{Name: "state_0"}},
 				dependencies: runtime.Dependencies{
@@ -469,8 +421,12 @@ func TestTranslate(test *testing.T) {
 		test.Run(testData.name, func(test *testing.T) {
 			originDeclaredIdentifiers := testData.args.declaredIdentifiers.Clone()
 
+			program := new(parser.Program)
+			err := parser.ParseToAST(testData.args.code, program)
+			require.NoError(test, err)
+
 			gotDefinitions, gotTranslatedActors, err := Translate(
-				testData.args.program,
+				program,
 				testData.args.declaredIdentifiers,
 				testData.args.options,
 				testData.args.dependencies,
