@@ -16,8 +16,8 @@ type Options struct {
 	InitialState context.State
 }
 
-// Translate ...
-func Translate(
+// TranslateProgram ...
+func TranslateProgram(
 	program *parser.Program,
 	declaredIdentifiers mapset.Set,
 	options Options,

@@ -33,7 +33,7 @@ func Interpret(ctx context.Context, options Options, dependencies Dependencies) 
 		return err
 	}
 
-	definitions, initialFactories, err := translator.Translate(
+	definitions, initialFactories, err := translator.TranslateProgram(
 		program,
 		ctx.ValuesNames(),
 		translator.Options{

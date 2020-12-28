@@ -14,7 +14,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
-func TestTranslate(test *testing.T) {
+func TestTranslateProgram(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -425,7 +425,7 @@ func TestTranslate(test *testing.T) {
 			err := parser.ParseToAST(testData.args.code, program)
 			require.NoError(test, err)
 
-			gotDefinitions, gotTranslatedActors, err := Translate(
+			gotDefinitions, gotTranslatedActors, err := TranslateProgram(
 				program,
 				testData.args.declaredIdentifiers,
 				testData.args.options,
