@@ -40,7 +40,8 @@ const (
 	KeyAccessorFunctionName                 = "__item__"
 )
 
-func translateExpression(
+// TranslateExpression ...
+func TranslateExpression(
 	expression *parser.Expression,
 	declaredIdentifiers mapset.Set,
 ) (
@@ -522,7 +523,7 @@ func translateAccessor(
 			argumentTwo = expressions.NewString(*key.Name)
 			settedStates2 = mapset.NewSet()
 		case key.Expression != nil:
-			argumentTwo, settedStates2, err = translateExpression(key.Expression, declaredIdentifiers)
+			argumentTwo, settedStates2, err = TranslateExpression(key.Expression, declaredIdentifiers)
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "unable to translate the key #%d of the accessor", index)
 			}
@@ -587,7 +588,7 @@ func translateAtom(
 			return nil, nil, errors.Wrap(err, "unable to translate the conditional expression")
 		}
 	case atom.Expression != nil:
-		expression, settedStates, err = translateExpression(atom.Expression, declaredIdentifiers)
+		expression, settedStates, err = TranslateExpression(atom.Expression, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to translate the expression")
 		}
@@ -608,7 +609,7 @@ func translateListDefinition(
 	settedStates = mapset.NewSet()
 	for index := len(listDefinition.Items) - 1; index >= 0; index-- {
 		argumentOne, settedStates2, err :=
-			translateExpression(listDefinition.Items[index], declaredIdentifiers)
+			TranslateExpression(listDefinition.Items[index], declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
 				err,
@@ -645,7 +646,7 @@ func translateHashTableDefinition(
 			argumentTwo = expressions.NewString(*entry.Name)
 			settedStates2 = mapset.NewSet()
 		case entry.Expression != nil:
-			argumentTwo, settedStates2, err = translateExpression(entry.Expression, declaredIdentifiers)
+			argumentTwo, settedStates2, err = TranslateExpression(entry.Expression, declaredIdentifiers)
 			if err != nil {
 				return nil, nil, errors.Wrapf(
 					err,
@@ -655,7 +656,7 @@ func translateHashTableDefinition(
 			}
 		}
 
-		argumentThree, settedStates3, err := translateExpression(entry.Value, declaredIdentifiers)
+		argumentThree, settedStates3, err := TranslateExpression(entry.Value, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
 				err,
@@ -690,7 +691,7 @@ func translateFunctionCall(
 	var arguments []expressions.Expression
 	settedStates = mapset.NewSet()
 	for index, argument := range functionCall.Arguments {
-		result, settedStates2, err := translateExpression(argument, declaredIdentifiers)
+		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
 				err,
@@ -720,7 +721,7 @@ func translateConditionalExpression(
 	settedStates = mapset.NewSet()
 	for index, conditionalCase := range conditionalExpression.ConditionalCases {
 		condition, settedStates2, err :=
-			translateExpression(conditionalCase.Condition, declaredIdentifiers)
+			TranslateExpression(conditionalCase.Condition, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "unable to translate the condition #%d", index)
 		}

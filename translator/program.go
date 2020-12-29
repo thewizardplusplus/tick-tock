@@ -251,7 +251,7 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 	switch {
 	case command.Let != nil:
 		var expression expressions.Expression
-		expression, settedStates, err = translateExpression(command.Let.Expression, declaredIdentifiers)
+		expression, settedStates, err = TranslateExpression(command.Let.Expression, declaredIdentifiers)
 		if err != nil {
 			return nil, "", nil, false, errors.Wrap(err, "unable to translate the let command")
 		}
@@ -281,7 +281,7 @@ func translateCommand(command *parser.Command, declaredIdentifiers mapset.Set) (
 		didReturn = true
 	case command.Expression != nil:
 		var expression expressions.Expression
-		expression, settedStates, err = translateExpression(command.Expression, declaredIdentifiers)
+		expression, settedStates, err = TranslateExpression(command.Expression, declaredIdentifiers)
 		if err != nil {
 			return nil, "", nil, false, errors.Wrap(err, "unable to translate the expression command")
 		}
@@ -309,7 +309,7 @@ func translateStartCommand(startCommand *parser.StartCommand, declaredIdentifier
 		settedStates = mapset.NewSet()
 	case startCommand.Expression != nil:
 		actorFactory, settedStates, err =
-			translateExpression(startCommand.Expression, declaredIdentifiers)
+			TranslateExpression(startCommand.Expression, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "unable to translate the actor class for the start command")
 		}
@@ -317,7 +317,7 @@ func translateStartCommand(startCommand *parser.StartCommand, declaredIdentifier
 
 	var arguments []expressions.Expression
 	for index, argument := range startCommand.Arguments {
-		result, settedStates2, err := translateExpression(argument, declaredIdentifiers)
+		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
 				err,
@@ -342,7 +342,7 @@ func translateSendCommand(sendCommand *parser.SendCommand, declaredIdentifiers m
 	var arguments []expressions.Expression
 	settedStates = mapset.NewSet()
 	for index, argument := range sendCommand.Arguments {
-		result, settedStates2, err := translateExpression(argument, declaredIdentifiers)
+		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
 				err,
@@ -367,7 +367,7 @@ func translateSetCommand(setCommand *parser.SetCommand, declaredIdentifiers maps
 	var arguments []expressions.Expression
 	settedStates = mapset.NewSet()
 	for index, argument := range setCommand.Arguments {
-		result, settedStates2, err := translateExpression(argument, declaredIdentifiers)
+		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
 				err,

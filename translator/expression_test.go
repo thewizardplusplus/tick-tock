@@ -78,7 +78,7 @@ func TestTranslateExpression(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateExpression(expression, data.args.declaredIdentifiers)
+				TranslateExpression(expression, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
