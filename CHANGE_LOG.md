@@ -1,5 +1,24 @@
 # Change Log
 
+## [v2.2.1](https://github.com/thewizardplusplus/tick-tock/tree/v2.2.1) (2020-12-30)
+
+- improving tests:
+  - generate mocks inside packages in which they are used;
+  - simplify tests:
+    - of the `translator` package;
+    - of the `builtin` package;
+- refactoring:
+  - use the `github.com/thewizardplusplus/go-sync-utils` package:
+    - replace the `waiter.Waiter` interface to `syncutils.WaitGroup` one;
+    - replace the `testutils.NewSynchronousWaiter` type to `syncutils.MultiWaitGroup` one;
+    - use the `syncutils.UnboundedSend()` function in the `runtime.ConcurrentActor.SendMessage()` method;
+  - fix functions:
+    - make public:
+      - `parser.ParseToAST()` function;
+      - `translator.TranslateExpression()` function;
+    - rename the `translator.Translate()` function to `translator.TranslateProgram()` one;
+    - remove the `parser.Parse()` function.
+
 ## [v2.2](https://github.com/thewizardplusplus/tick-tock/tree/v2.2) (2020-09-16)
 
 - support expression evaluation:
