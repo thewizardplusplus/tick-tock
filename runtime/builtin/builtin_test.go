@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime"
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
@@ -22,509 +23,295 @@ func TestValues(test *testing.T) {
 	for _, data := range []struct {
 		name                  string
 		additionalDefinitions context.ValueGroup
-		expression            expressions.Expression
+		code                  string
 		wantResult            interface{}
 		wantErr               assert.ErrorAssertionFunc
 	}{
 		{
 			name:       "empty list",
-			expression: expressions.NewIdentifier(translator.EmptyListConstantName),
+			code:       "[]",
 			wantResult: (*types.Pair)(nil),
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "empty hash table",
-			expression: expressions.NewIdentifier(translator.EmptyHashTableConstantName),
+			code:       "{}",
 			wantResult: (types.HashTable)(nil),
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "nil",
-			expression: expressions.NewIdentifier("nil"),
+			code:       "nil",
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "false",
-			expression: expressions.NewIdentifier("false"),
+			code:       "false",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "true",
-			expression: expressions.NewIdentifier("true"),
+			code:       "true",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "inf",
-			expression: expressions.NewIdentifier("inf"),
+			code:       "inf",
 			wantResult: math.Inf(+1),
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "pi",
-			expression: expressions.NewIdentifier("pi"),
+			code:       "pi",
 			wantResult: math.Pi,
 			wantErr:    assert.NoError,
 		},
 		{
 			name:       "e",
-			expression: expressions.NewIdentifier("e"),
+			code:       "e",
 			wantResult: math.E,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "list construction",
-			expression: expressions.NewFunctionCall(
-				translator.ListConstructionFunctionName,
-				[]expressions.Expression{
-					expressions.NewNumber(12),
-					expressions.NewFunctionCall(
-						translator.ListConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewNumber(23),
-							expressions.NewFunctionCall(
-								translator.ListConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewNumber(42),
-									expressions.NewIdentifier(translator.EmptyListConstantName),
-								},
-							),
-						},
-					),
-				},
-			),
+			name:       "list construction",
+			code:       "[12, 23, 42]",
 			wantResult: types.NewPairFromSlice([]interface{}{12.0, 23.0, 42.0}),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "hash table construction/success",
-			expression: expressions.NewFunctionCall(
-				translator.HashTableConstructionFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.HashTableConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewFunctionCall(
-								translator.HashTableConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-									expressions.NewString("x"),
-									expressions.NewNumber(12),
-								},
-							),
-							expressions.NewString("y"),
-							expressions.NewNumber(23),
-						},
-					),
-					expressions.NewString("z"),
-					expressions.NewNumber(42),
-				},
-			),
+			name:       "hash table construction/success",
+			code:       "{x: 12, y: 23, z: 42}",
 			wantResult: types.HashTable{"x": 12.0, "y": 23.0, "z": 42.0},
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "hash table construction/error",
-			expression: expressions.NewFunctionCall(
-				translator.HashTableConstructionFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.HashTableConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewFunctionCall(
-								translator.HashTableConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-									expressions.NewString("x"),
-									expressions.NewNumber(12),
-								},
-							),
-							expressions.NewFunctionCall(
-								translator.ListConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewNumber(-23),
-									expressions.NewIdentifier(translator.EmptyListConstantName),
-								},
-							),
-							expressions.NewNumber(23),
-						},
-					),
-					expressions.NewString("z"),
-					expressions.NewNumber(42),
-				},
-			),
+			name:       "hash table construction/error",
+			code:       "{x: 12, [[-23]]: 23, z: 42}",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "equal/success/false/same types",
-			expression: expressions.NewFunctionCall(
-				translator.EqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "equal/success/false/same types",
+			code:       "2 == 3",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "equal/success/false/different types",
-			expression: expressions.NewFunctionCall(
-				translator.EqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
-			),
+			name:       "equal/success/false/different types",
+			code:       "2 == nil",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "equal/success/true",
-			expression: expressions.NewFunctionCall(
-				translator.EqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
-			),
+			name:       "equal/success/true",
+			code:       "2 == 2",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "equal/error",
-			expression: expressions.NewFunctionCall(
-				translator.EqualFunctionName,
-				[]expressions.Expression{
-					expressions.NewIdentifier(translator.EqualFunctionName),
-					expressions.NewIdentifier("nil"),
-				},
-			),
+			name:       "equal/error",
+			code:       "__eq__ == nil",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "not equal/success/false/same types",
-			expression: expressions.NewFunctionCall(
-				translator.NotEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
-			wantResult: types.True,
-			wantErr:    assert.NoError,
-		},
-		{
-			name: "not equal/success/false/different types",
-			expression: expressions.NewFunctionCall(
-				translator.NotEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
-			),
-			wantResult: types.True,
-			wantErr:    assert.NoError,
-		},
-		{
-			name: "not equal/success/true",
-			expression: expressions.NewFunctionCall(
-				translator.NotEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
-			),
+			name:       "not equal/success/false",
+			code:       "2 != 2",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "not equal/error",
-			expression: expressions.NewFunctionCall(
-				translator.NotEqualFunctionName,
-				[]expressions.Expression{
-					expressions.NewIdentifier(translator.NotEqualFunctionName),
-					expressions.NewIdentifier("nil"),
-				},
-			),
+			name:       "not equal/success/true/same types",
+			code:       "2 != 3",
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:       "not equal/success/true/different types",
+			code:       "2 != nil",
+			wantResult: types.True,
+			wantErr:    assert.NoError,
+		},
+		{
+			name:       "not equal/error",
+			code:       "__eq__ != nil",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "less/success/false",
-			expression: expressions.NewFunctionCall(
-				translator.LessFunctionName,
-				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
-			),
+			name:       "less/success/false",
+			code:       "4 < 2",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "less/success/true",
-			expression: expressions.NewFunctionCall(
-				translator.LessFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "less/success/true",
+			code:       "2 < 3",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "less/error",
-			expression: expressions.NewFunctionCall(
-				translator.LessFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
-			),
+			name:       "less/error",
+			code:       "2 < nil",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "less or equal/success/false",
-			expression: expressions.NewFunctionCall(
-				translator.LessOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
-			),
+			name:       "less or equal/success/false",
+			code:       "4 <= 2",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "less or equal/success/true/less",
-			expression: expressions.NewFunctionCall(
-				translator.LessOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "less or equal/success/true/less",
+			code:       "2 <= 3",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "less or equal/success/true/equal",
-			expression: expressions.NewFunctionCall(
-				translator.LessOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
-			),
+			name:       "less or equal/success/true/equal",
+			code:       "2 <= 2",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "less or equal/error",
-			expression: expressions.NewFunctionCall(
-				translator.LessOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
-			),
+			name:       "less or equal/error",
+			code:       "2 <= nil",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "greater/success/false",
-			expression: expressions.NewFunctionCall(
-				translator.GreaterFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "greater/success/false",
+			code:       "2 > 3",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "greater/success/true",
-			expression: expressions.NewFunctionCall(
-				translator.GreaterFunctionName,
-				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
-			),
+			name:       "greater/success/true",
+			code:       "4 > 2",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "greater/error",
-			expression: expressions.NewFunctionCall(
-				translator.GreaterFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
-			),
+			name:       "greater/error",
+			code:       "2 > nil",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "greater or equal/success/false",
-			expression: expressions.NewFunctionCall(
-				translator.GreaterOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "greater or equal/success/false",
+			code:       "2 >= 3",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "greater or equal/success/true/greater",
-			expression: expressions.NewFunctionCall(
-				translator.GreaterOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(4), expressions.NewNumber(2)},
-			),
+			name:       "greater or equal/success/true/greater",
+			code:       "4 >= 2",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "greater or equal/success/true/equal",
-			expression: expressions.NewFunctionCall(
-				translator.GreaterOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(2)},
-			),
+			name:       "greater or equal/success/true/equal",
+			code:       "2 >= 2",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "greater or equal/error",
-			expression: expressions.NewFunctionCall(
-				translator.GreaterOrEqualFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewIdentifier("nil")},
-			),
+			name:       "greater or equal/error",
+			code:       "2 >= nil",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "bitwise disjunction/positive",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseDisjunctionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(23), expressions.NewNumber(42)},
-			),
+			name:       "bitwise disjunction/positive",
+			code:       "23 | 42",
 			wantResult: 63.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bitwise disjunction/negative",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseDisjunctionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(-23), expressions.NewNumber(-42)},
-			),
+			name:       "bitwise disjunction/negative",
+			code:       "-23 | -42",
 			wantResult: -1.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bitwise exclusive disjunction/positive",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseExclusiveDisjunctionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(23), expressions.NewNumber(42)},
-			),
+			name:       "bitwise exclusive disjunction/positive",
+			code:       "23 ^ 42",
 			wantResult: 61.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bitwise exclusive disjunction/negative",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseExclusiveDisjunctionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(-23), expressions.NewNumber(-42)},
-			),
+			name:       "bitwise exclusive disjunction/negative",
+			code:       "-23 ^ -42",
 			wantResult: 63.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bitwise conjunction/positive",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseConjunctionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(23), expressions.NewNumber(42)},
-			),
+			name:       "bitwise conjunction/positive",
+			code:       "23 & 42",
 			wantResult: 2.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bitwise conjunction/negative",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseConjunctionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(-23), expressions.NewNumber(-42)},
-			),
+			name:       "bitwise conjunction/negative",
+			code:       "-23 & -42",
 			wantResult: -64.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "left shift/positive",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseLeftShiftFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "left shift/positive",
+			code:       "2 << 3",
 			wantResult: 16.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "left shift/negative",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseLeftShiftFunctionName,
-				[]expressions.Expression{expressions.NewNumber(-2), expressions.NewNumber(3)},
-			),
+			name:       "left shift/negative",
+			code:       "-2 << 3",
 			wantResult: -16.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "right shift/positive",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseRightShiftFunctionName,
-				[]expressions.Expression{expressions.NewNumber(16), expressions.NewNumber(3)},
-			),
+			name:       "right shift/positive",
+			code:       "16 >> 3",
 			wantResult: 2.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "right shift/negative",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseRightShiftFunctionName,
-				[]expressions.Expression{expressions.NewNumber(-16), expressions.NewNumber(3)},
-			),
+			name:       "right shift/negative",
+			code:       "-16 >> 3",
 			wantResult: -2.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "unsigned right shift/positive",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseUnsignedRightShiftFunctionName,
-				[]expressions.Expression{expressions.NewNumber(16), expressions.NewNumber(3)},
-			),
+			name:       "unsigned right shift/positive",
+			code:       "16 >>> 3",
 			wantResult: 2.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "unsigned right shift/negative",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseUnsignedRightShiftFunctionName,
-				[]expressions.Expression{expressions.NewNumber(-16), expressions.NewNumber(3)},
-			),
+			name:       "unsigned right shift/negative",
+			code:       "-16 >>> 3",
 			wantResult: 536870910.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "addition/success/float64",
-			expression: expressions.NewFunctionCall(
-				translator.AdditionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "addition/success/float64",
+			code:       "2 + 3",
 			wantResult: 5.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "addition/success/*types.Pair",
-			expression: expressions.NewFunctionCall(
-				translator.AdditionFunctionName,
-				[]expressions.Expression{expressions.NewString("te"), expressions.NewString("st")},
-			),
+			name:       "addition/success/*types.Pair",
+			code:       `"te" + "st"`,
 			wantResult: types.NewPairFromText("test"),
 			wantErr:    assert.NoError,
 		},
 		{
 			name: "addition/success/types.HashTable",
-			expression: expressions.NewFunctionCall(
-				translator.AdditionFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.HashTableConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewFunctionCall(
-								translator.HashTableConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-									expressions.NewNumber(12),
-									expressions.NewString("one"),
-								},
-							),
-							expressions.NewNumber(23),
-							expressions.NewString("two"),
-						},
-					),
-					expressions.NewFunctionCall(
-						translator.HashTableConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewFunctionCall(
-								translator.HashTableConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-									expressions.NewNumber(23),
-									expressions.NewString("three"),
-								},
-							),
-							expressions.NewNumber(42),
-							expressions.NewString("four"),
-						},
-					),
-				},
-			),
+			code: `{[12]: "one", [23]: "two"} + {[23]: "three", [42]: "four"}`,
 			wantResult: types.HashTable{
 				12.0: types.NewPairFromText("one"),
 				23.0: types.NewPairFromText("three"),
@@ -533,399 +320,146 @@ func TestValues(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "addition/error/argument #0",
-			expression: expressions.NewFunctionCall(
-				translator.AdditionFunctionName,
-				[]expressions.Expression{
-					expressions.NewIdentifier(translator.AdditionFunctionName),
-					expressions.NewIdentifier(translator.EmptyListConstantName),
-				},
-			),
+			name:       "addition/error/argument #0",
+			code:       "__add__ + []",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "addition/error/argument #1",
-			expression: expressions.NewFunctionCall(
-				translator.AdditionFunctionName,
-				[]expressions.Expression{
-					expressions.NewNumber(23),
-					expressions.NewIdentifier(translator.EmptyListConstantName),
-				},
-			),
+			name:       "addition/error/argument #1",
+			code:       "23 + []",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "subtraction",
-			expression: expressions.NewFunctionCall(
-				translator.SubtractionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "subtraction",
+			code:       "2 - 3",
 			wantResult: -1.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "multiplication",
-			expression: expressions.NewFunctionCall(
-				translator.MultiplicationFunctionName,
-				[]expressions.Expression{expressions.NewNumber(2), expressions.NewNumber(3)},
-			),
+			name:       "multiplication",
+			code:       "2 * 3",
 			wantResult: 6.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "division",
-			expression: expressions.NewFunctionCall(
-				translator.DivisionFunctionName,
-				[]expressions.Expression{expressions.NewNumber(10), expressions.NewNumber(2)},
-			),
+			name:       "division",
+			code:       "10 / 2",
 			wantResult: 5.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "modulo",
-			expression: expressions.NewFunctionCall(translator.ModuloFunctionName, []expressions.Expression{
-				expressions.NewNumber(10),
-				expressions.NewNumber(3),
-			}),
+			name:       "modulo",
+			code:       "10 % 3",
 			wantResult: 1.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "arithmetic negation",
-			expression: expressions.NewFunctionCall(
-				translator.ArithmeticNegationFunctionName,
-				[]expressions.Expression{expressions.NewNumber(23)},
-			),
+			name:       "arithmetic negation",
+			code:       "-23",
 			wantResult: -23.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bitwise negation/positive",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseNegationFunctionName,
-				[]expressions.Expression{expressions.NewNumber(23)},
-			),
+			name:       "bitwise negation/positive",
+			code:       "~23",
 			wantResult: -24.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bitwise negation/negative",
-			expression: expressions.NewFunctionCall(
-				translator.BitwiseNegationFunctionName,
-				[]expressions.Expression{expressions.NewNumber(-23)},
-			),
+			name:       "bitwise negation/negative",
+			code:       "~-23",
 			wantResult: 22.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "logical negation/success/false",
-			expression: expressions.NewFunctionCall(
-				translator.LogicalNegationFunctionName,
-				[]expressions.Expression{expressions.NewIdentifier("false")},
-			),
+			name:       "logical negation/success/false",
+			code:       "!false",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "logical negation/success/true",
-			expression: expressions.NewFunctionCall(
-				translator.LogicalNegationFunctionName,
-				[]expressions.Expression{expressions.NewIdentifier("true")},
-			),
+			name:       "logical negation/success/true",
+			code:       "!true",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "logical negation/error",
-			expression: expressions.NewFunctionCall(
-				translator.LogicalNegationFunctionName,
-				[]expressions.Expression{expressions.NewIdentifier(translator.LogicalNegationFunctionName)},
-			),
+			name:       "logical negation/error",
+			code:       "!__logical_not__",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "key accessor/success/*types.Pair/index in range",
-			expression: expressions.NewFunctionCall(
-				translator.KeyAccessorFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.ListConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewNumber(12),
-							expressions.NewFunctionCall(
-								translator.ListConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewNumber(23),
-									expressions.NewFunctionCall(
-										translator.ListConstructionFunctionName,
-										[]expressions.Expression{
-											expressions.NewNumber(42),
-											expressions.NewIdentifier(translator.EmptyListConstantName),
-										},
-									),
-								},
-							),
-						},
-					),
-					expressions.NewNumber(1),
-				},
-			),
+			name:       "key accessor/success/*types.Pair/index in range",
+			code:       "[12, 23, 42][1]",
 			wantResult: 23.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "key accessor/success/*types.Pair/index out of range",
-			expression: expressions.NewFunctionCall(
-				translator.KeyAccessorFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.ListConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewNumber(12),
-							expressions.NewFunctionCall(
-								translator.ListConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewNumber(23),
-									expressions.NewFunctionCall(
-										translator.ListConstructionFunctionName,
-										[]expressions.Expression{
-											expressions.NewNumber(42),
-											expressions.NewIdentifier(translator.EmptyListConstantName),
-										},
-									),
-								},
-							),
-						},
-					),
-					expressions.NewNumber(23),
-				},
-			),
+			name:       "key accessor/success/*types.Pair/index out of range",
+			code:       "[12, 23, 42][23]",
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "key accessor/success/types.HashTable/existing key",
-			expression: expressions.NewFunctionCall(
-				translator.KeyAccessorFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.HashTableConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewFunctionCall(
-								translator.HashTableConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewFunctionCall(
-										translator.HashTableConstructionFunctionName,
-										[]expressions.Expression{
-											expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-											expressions.NewString("x"),
-											expressions.NewNumber(12),
-										},
-									),
-									expressions.NewString("y"),
-									expressions.NewNumber(23),
-								},
-							),
-							expressions.NewString("z"),
-							expressions.NewNumber(42),
-						},
-					),
-					expressions.NewString("y"),
-				},
-			),
+			name:       "key accessor/success/types.HashTable/existing key",
+			code:       `{x: 12, y: 23, z: 42}["y"]`,
 			wantResult: 23.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "key accessor/success/types.HashTable/nonexistent key",
-			expression: expressions.NewFunctionCall(
-				translator.KeyAccessorFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.HashTableConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewFunctionCall(
-								translator.HashTableConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewFunctionCall(
-										translator.HashTableConstructionFunctionName,
-										[]expressions.Expression{
-											expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-											expressions.NewString("x"),
-											expressions.NewNumber(12),
-										},
-									),
-									expressions.NewString("y"),
-									expressions.NewNumber(23),
-								},
-							),
-							expressions.NewString("z"),
-							expressions.NewNumber(42),
-						},
-					),
-					expressions.NewString("nonexistent"),
-				},
-			),
+			name:       "key accessor/success/types.HashTable/nonexistent key",
+			code:       `{x: 12, y: 23, z: 42}["nonexistent"]`,
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "key accessor/error/incorrect index for *types.Pair",
-			expression: expressions.NewFunctionCall(
-				translator.KeyAccessorFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.ListConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewNumber(12),
-							expressions.NewFunctionCall(
-								translator.ListConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewNumber(23),
-									expressions.NewFunctionCall(
-										translator.ListConstructionFunctionName,
-										[]expressions.Expression{
-											expressions.NewNumber(42),
-											expressions.NewIdentifier(translator.EmptyListConstantName),
-										},
-									),
-								},
-							),
-						},
-					),
-					expressions.NewString("incorrect"),
-				},
-			),
+			name:       "key accessor/error/incorrect index for *types.Pair",
+			code:       `[12, 23, 42]["incorrect"]`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "key accessor/error/incorrect key for types.HashTable",
-			expression: expressions.NewFunctionCall(
-				translator.KeyAccessorFunctionName,
-				[]expressions.Expression{
-					expressions.NewFunctionCall(
-						translator.HashTableConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewFunctionCall(
-								translator.HashTableConstructionFunctionName,
-								[]expressions.Expression{
-									expressions.NewFunctionCall(
-										translator.HashTableConstructionFunctionName,
-										[]expressions.Expression{
-											expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-											expressions.NewString("x"),
-											expressions.NewNumber(12),
-										},
-									),
-									expressions.NewString("y"),
-									expressions.NewNumber(23),
-								},
-							),
-							expressions.NewString("z"),
-							expressions.NewNumber(42),
-						},
-					),
-					expressions.NewFunctionCall(
-						translator.ListConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewNumber(-23),
-							expressions.NewIdentifier(translator.EmptyListConstantName),
-						},
-					),
-				},
-			),
+			name:       "key accessor/error/incorrect key for types.HashTable",
+			code:       `{x: 12, y: 23, z: 42}[[-23]]`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "key accessor/error/unsupported type",
-			expression: expressions.NewFunctionCall(
-				translator.KeyAccessorFunctionName,
-				[]expressions.Expression{
-					expressions.NewIdentifier(translator.KeyAccessorFunctionName),
-					expressions.NewNumber(1),
-				},
-			),
+			name:       "key accessor/error/unsupported type",
+			code:       "__item__[1]",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "type/success/nil",
-			expression: expressions.NewFunctionCall("type", []expressions.Expression{
-				expressions.NewIdentifier("nil"),
-			}),
+			name:       "type/success/nil",
+			code:       "type(nil)",
 			wantResult: types.NewPairFromText("nil"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "type/success/float64",
-			expression: expressions.NewFunctionCall("type", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			name:       "type/success/float64",
+			code:       "type(23)",
 			wantResult: types.NewPairFromText("num"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "type/success/*types.Pair",
-			expression: expressions.NewFunctionCall("type", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(23),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "type/success/*types.Pair",
+			code:       "type([12, 23, 42])",
 			wantResult: types.NewPairFromText("list"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "type/success/types.HashTable",
-			expression: expressions.NewFunctionCall("type", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewString("x"),
-										expressions.NewNumber(12),
-									},
-								),
-								expressions.NewString("y"),
-								expressions.NewNumber(23),
-							},
-						),
-						expressions.NewString("z"),
-						expressions.NewNumber(42),
-					},
-				),
-			}),
+			name:       "type/success/types.HashTable",
+			code:       "type({x: 12, y: 23, z: 42})",
 			wantResult: types.NewPairFromText("hash"),
 			wantErr:    assert.NoError,
 		},
 		{
 			name: "type/success/actor class",
+			code: "type(Test)",
 			additionalDefinitions: context.ValueGroup{
 				"Test": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
@@ -936,22 +470,18 @@ func TestValues(test *testing.T) {
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 				}(),
 			},
-			expression: expressions.NewFunctionCall("type", []expressions.Expression{
-				expressions.NewIdentifier("Test"),
-			}),
 			wantResult: types.NewPairFromText("class"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "type/error",
-			expression: expressions.NewFunctionCall("type", []expressions.Expression{
-				expressions.NewIdentifier("type"),
-			}),
+			name:       "type/error",
+			code:       "type(type)",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
 			name: "name",
+			code: "name(Test)",
 			additionalDefinitions: context.ValueGroup{
 				"Test": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
@@ -962,487 +492,186 @@ func TestValues(test *testing.T) {
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 				}(),
 			},
-			expression: expressions.NewFunctionCall("name", []expressions.Expression{
-				expressions.NewIdentifier("Test"),
-			}),
 			wantResult: types.NewPairFromText("Test"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "size/success/*types.Pair",
-			expression: expressions.NewFunctionCall("size", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(23),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "size/success/*types.Pair",
+			code:       "size([12, 23, 42])",
 			wantResult: 3.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "size/success/types.HashTable",
-			expression: expressions.NewFunctionCall("size", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewString("x"),
-										expressions.NewNumber(12),
-									},
-								),
-								expressions.NewString("y"),
-								expressions.NewNumber(23),
-							},
-						),
-						expressions.NewString("z"),
-						expressions.NewNumber(42),
-					},
-				),
-			}),
+			name:       "size/success/types.HashTable",
+			code:       "size({x: 12, y: 23, z: 42})",
 			wantResult: 3.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "size/error",
-			expression: expressions.NewFunctionCall("size", []expressions.Expression{
-				expressions.NewIdentifier("size"),
-			}),
+			name:       "size/error",
+			code:       "size(size)",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "bool/success/false",
-			expression: expressions.NewFunctionCall("bool", []expressions.Expression{
-				expressions.NewString(""),
-			}),
+			name:       "bool/success/false",
+			code:       `bool("")`,
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bool/success/true",
-			expression: expressions.NewFunctionCall("bool", []expressions.Expression{
-				expressions.NewString("test"),
-			}),
+			name:       "bool/success/true",
+			code:       `bool("test")`,
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "bool/error",
-			expression: expressions.NewFunctionCall("bool", []expressions.Expression{
-				expressions.NewIdentifier("bool"),
-			}),
+			name:       "bool/error",
+			code:       "bool(bool)",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "floor",
-			expression: expressions.NewFunctionCall("floor", []expressions.Expression{
-				expressions.NewNumber(2.5),
-			}),
+			name:       "floor",
+			code:       "floor(2.5)",
 			wantResult: 2.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "ceil",
-			expression: expressions.NewFunctionCall("ceil", []expressions.Expression{
-				expressions.NewNumber(2.5),
-			}),
+			name:       "ceil",
+			code:       "ceil(2.5)",
 			wantResult: 3.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "trunc",
-			expression: expressions.NewFunctionCall("trunc", []expressions.Expression{
-				expressions.NewNumber(2.5),
-			}),
+			name:       "trunc",
+			code:       "trunc(2.5)",
 			wantResult: 2.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "round",
-			expression: expressions.NewFunctionCall("round", []expressions.Expression{
-				expressions.NewNumber(2.5),
-			}),
+			name:       "round",
+			code:       "round(2.5)",
 			wantResult: 3.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "pow",
-			expression: expressions.NewFunctionCall("pow", []expressions.Expression{
-				expressions.NewNumber(2),
-				expressions.NewNumber(3),
-			}),
+			name:       "pow",
+			code:       "pow(2, 3)",
 			wantResult: 8.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "sqrt",
-			expression: expressions.NewFunctionCall("sqrt", []expressions.Expression{
-				expressions.NewNumber(4),
-			}),
+			name:       "sqrt",
+			code:       "sqrt(4)",
 			wantResult: 2.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "abs",
-			expression: expressions.NewFunctionCall("abs", []expressions.Expression{
-				expressions.NewNumber(-23),
-			}),
+			name:       "abs",
+			code:       "abs(-23)",
 			wantResult: 23.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "is_nan/false",
-			expression: expressions.NewFunctionCall("is_nan", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			name:       "is_nan/false",
+			code:       "is_nan(23)",
 			wantResult: types.False,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "is_nan/true",
-			expression: expressions.NewFunctionCall("is_nan", []expressions.Expression{
-				expressions.NewIdentifier("nan"),
-			}),
+			name:       "is_nan/true",
+			code:       "is_nan(nan)",
 			wantResult: types.True,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "head/success",
-			expression: expressions.NewFunctionCall("head", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(23),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "head/success",
+			code:       "head([12, 23, 42])",
 			wantResult: 12.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "head/error",
-			expression: expressions.NewFunctionCall("head", []expressions.Expression{
-				expressions.NewIdentifier(translator.EmptyListConstantName),
-			}),
+			name:       "head/error",
+			code:       "head([])",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "tail/success/nonempty tail",
-			expression: expressions.NewFunctionCall("tail", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(23),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
-			wantResult: &types.Pair{
-				Head: 23.0,
-				Tail: &types.Pair{
-					Head: 42.0,
-					Tail: nil,
-				},
-			},
-			wantErr: assert.NoError,
+			name:       "tail/success/nonempty tail",
+			code:       "tail([12, 23, 42])",
+			wantResult: &types.Pair{Head: 23.0, Tail: &types.Pair{Head: 42.0, Tail: nil}},
+			wantErr:    assert.NoError,
 		},
 		{
-			name: "tail/success/empty tail",
-			expression: expressions.NewFunctionCall("tail", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(23),
-						expressions.NewIdentifier(translator.EmptyListConstantName),
-					},
-				),
-			}),
+			name:       "tail/success/empty tail",
+			code:       "tail([23])",
 			wantResult: (*types.Pair)(nil),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "tail/error",
-			expression: expressions.NewFunctionCall("tail", []expressions.Expression{
-				expressions.NewIdentifier(translator.EmptyListConstantName),
-			}),
+			name:       "tail/error",
+			code:       "tail([])",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "num/success/correct number",
-			expression: expressions.NewFunctionCall("num", []expressions.Expression{
-				expressions.NewString("23"),
-			}),
+			name:       "num/success/correct number",
+			code:       `num("23")`,
 			wantResult: 23.0,
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "num/success/incorrect number",
-			expression: expressions.NewFunctionCall("num", []expressions.Expression{
-				expressions.NewString("test"),
-			}),
+			name:       "num/success/incorrect number",
+			code:       `num("test")`,
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "num/error",
-			expression: expressions.NewFunctionCall("num", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(float64('t')),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('h')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('i')),
-												expressions.NewIdentifier(translator.EmptyListConstantName),
-											},
-										),
-									},
-								),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('s')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('t')),
-												expressions.NewIdentifier(translator.EmptyListConstantName),
-											},
-										),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "num/error",
+			code:       `num(['t', "hi", 's', 't'])`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "str/success/nil",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewIdentifier("nil"),
-			}),
+			name:       "str/success/nil",
+			code:       "str(nil)",
 			wantResult: types.NewPairFromText("null"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/float64",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			name:       "str/success/float64",
+			code:       "str(23)",
 			wantResult: types.NewPairFromText("23"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/*types.Pair/tree in the head",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(float64('h')),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('i')),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(23),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "str/success/*types.Pair/tree in the head",
+			code:       `str(["hi", 23, 42])`,
 			wantResult: types.NewPairFromText("[[104,105],23,42]"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/*types.Pair/tree in the tail",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('h')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('i')),
-												expressions.NewIdentifier(translator.EmptyListConstantName),
-											},
-										),
-									},
-								),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "str/success/*types.Pair/tree in the tail",
+			code:       `str([12, "hi", 42])`,
 			wantResult: types.NewPairFromText("[12,[104,105],42]"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/*types.Pair/with the nil type",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewIdentifier("nil"),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "str/success/*types.Pair/with the nil type",
+			code:       "str([12, nil, 42])",
 			wantResult: types.NewPairFromText("[12,null,42]"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/*types.Pair/with the hash table",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewFunctionCall(
-											translator.HashTableConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewFunctionCall(
-													translator.HashTableConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-														expressions.NewString("x"),
-														expressions.NewNumber(12),
-													},
-												),
-												expressions.NewString("y"),
-												expressions.NewNumber(23),
-											},
-										),
-										expressions.NewString("z"),
-										expressions.NewNumber(42),
-									},
-								),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "str/success/*types.Pair/with the hash table",
+			code:       "str([12, {x: 12, y: 23, z: 42}, 42])",
 			wantResult: types.NewPairFromText(`[12,{"x":12,"y":23,"z":42},42]`),
 			wantErr:    assert.NoError,
 		},
 		{
 			name: "str/success/*types.Pair/with the actor class",
+			code: "str([12, Test, 42])",
 			additionalDefinitions: context.ValueGroup{
 				"Test": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
@@ -1453,158 +682,30 @@ func TestValues(test *testing.T) {
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 				}(),
 			},
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewIdentifier("Test"),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
 			wantResult: types.NewPairFromText(`[12,"<class Test>",42]`),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/types.HashTable/tree",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewString("x"),
-										expressions.NewNumber(12),
-									},
-								),
-								expressions.NewString("y"),
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewFunctionCall(
-											translator.HashTableConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewFunctionCall(
-													translator.HashTableConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-														expressions.NewString("x"),
-														expressions.NewNumber(12),
-													},
-												),
-												expressions.NewString("y"),
-												expressions.NewNumber(23),
-											},
-										),
-										expressions.NewString("z"),
-										expressions.NewNumber(42),
-									},
-								),
-							},
-						),
-						expressions.NewString("z"),
-						expressions.NewNumber(42),
-					},
-				),
-			}),
+			name:       "str/success/types.HashTable/tree",
+			code:       "str({x: 12, y: {x: 12, y: 23, z: 42}, z: 42})",
 			wantResult: types.NewPairFromText(`{"x":12,"y":{"x":12,"y":23,"z":42},"z":42}`),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/types.HashTable/with the nil type",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewString("x"),
-										expressions.NewNumber(12),
-									},
-								),
-								expressions.NewString("y"),
-								expressions.NewIdentifier("nil"),
-							},
-						),
-						expressions.NewString("z"),
-						expressions.NewNumber(42),
-					},
-				),
-			}),
+			name:       "str/success/types.HashTable/with the nil type",
+			code:       "str({x: 12, y: nil, z: 42})",
 			wantResult: types.NewPairFromText(`{"x":12,"z":42}`),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/success/types.HashTable/with the list",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewString("x"),
-										expressions.NewNumber(12),
-									},
-								),
-								expressions.NewString("y"),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(12),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(23),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(42),
-														expressions.NewIdentifier(translator.EmptyListConstantName),
-													},
-												),
-											},
-										),
-									},
-								),
-							},
-						),
-						expressions.NewString("z"),
-						expressions.NewNumber(42),
-					},
-				),
-			}),
+			name:       "str/success/types.HashTable/with the list",
+			code:       "str({x: 12, y: [12, 23, 42], z: 42})",
 			wantResult: types.NewPairFromText(`{"x":12,"y":[12,23,42],"z":42}`),
 			wantErr:    assert.NoError,
 		},
 		{
 			name: "str/success/types.HashTable/with the actor class",
+			code: "str({x: 12, y: Test, z: 42})",
 			additionalDefinitions: context.ValueGroup{
 				"Test": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
@@ -1615,35 +716,12 @@ func TestValues(test *testing.T) {
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 				}(),
 			},
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewString("x"),
-										expressions.NewNumber(12),
-									},
-								),
-								expressions.NewString("y"),
-								expressions.NewIdentifier("Test"),
-							},
-						),
-						expressions.NewString("z"),
-						expressions.NewNumber(42),
-					},
-				),
-			}),
 			wantResult: types.NewPairFromText(`{"x":12,"y":"<class Test>","z":42}`),
 			wantErr:    assert.NoError,
 		},
 		{
 			name: "str/success/actor class",
+			code: "str(Test)",
 			additionalDefinitions: context.ValueGroup{
 				"Test": func() runtime.ConcurrentActorFactory {
 					actorFactory, _ := runtime.NewActorFactory(
@@ -1654,664 +732,138 @@ func TestValues(test *testing.T) {
 					return runtime.NewConcurrentActorFactory(actorFactory, 0, runtime.Dependencies{})
 				}(),
 			},
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewIdentifier("Test"),
-			}),
 			wantResult: types.NewPairFromText("<class Test>"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "str/error/deep value/*types.Pair",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewFunctionCall(
-											translator.HashTableConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewFunctionCall(
-													translator.HashTableConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-														expressions.NewNumber(12),
-														expressions.NewString("one"),
-													},
-												),
-												expressions.NewNumber(23),
-												expressions.NewString("two"),
-											},
-										),
-										expressions.NewNumber(42),
-										expressions.NewString("three"),
-									},
-								),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "str/error/deep value/*types.Pair",
+			code:       `str([12, {[12]: "one", [23]: "two", [42]: "three"}, 42])`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "str/error/deep value/types.HashTable",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewNumber(12),
-										expressions.NewString("one"),
-									},
-								),
-								expressions.NewNumber(23),
-								expressions.NewString("two"),
-							},
-						),
-						expressions.NewNumber(42),
-						expressions.NewString("three"),
-					},
-				),
-			}),
+			name:       "str/error/deep value/types.HashTable",
+			code:       `str({[12]: "one", [23]: "two", [42]: "three"})`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "str/error/JSON marshalling/*types.Pair",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(12),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewIdentifier("str"),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(42),
-										expressions.NewIdentifier(translator.EmptyListConstantName),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "str/error/JSON marshalling/*types.Pair",
+			code:       "str([12, str, 42])",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "str/error/JSON marshalling/types.HashTable",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.HashTableConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.HashTableConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.HashTableConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-										expressions.NewString("x"),
-										expressions.NewNumber(12),
-									},
-								),
-								expressions.NewString("y"),
-								expressions.NewIdentifier("str"),
-							},
-						),
-						expressions.NewString("z"),
-						expressions.NewNumber(42),
-					},
-				),
-			}),
+			name:       "str/error/JSON marshalling/types.HashTable",
+			code:       "str({x: 12, y: str, z: 42})",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "str/error/unsupported type",
-			expression: expressions.NewFunctionCall("str", []expressions.Expression{
-				expressions.NewIdentifier("str"),
-			}),
+			name:       "str/error/unsupported type",
+			code:       "str(str)",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strb/success/false",
-			expression: expressions.NewFunctionCall("strb", []expressions.Expression{
-				expressions.NewString(""),
-			}),
+			name:       "strb/success/false",
+			code:       `strb("")`,
 			wantResult: types.NewPairFromText("false"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "strb/success/true",
-			expression: expressions.NewFunctionCall("strb", []expressions.Expression{
-				expressions.NewString("test"),
-			}),
+			name:       "strb/success/true",
+			code:       `strb("test")`,
 			wantResult: types.NewPairFromText("true"),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "strb/error",
-			expression: expressions.NewFunctionCall("strb", []expressions.Expression{
-				expressions.NewIdentifier("strb"),
-			}),
+			name:       "strb/error",
+			code:       "strb(strb)",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strs/success",
-			expression: expressions.NewFunctionCall("strs", []expressions.Expression{
-				expressions.NewString(`"test"`),
-			}),
+			name:       "strs/success",
+			code:       `strs("\"test\"")`,
 			wantResult: types.NewPairFromText(`"\"test\""`),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "strs/error",
-			expression: expressions.NewFunctionCall("strs", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(float64('t')),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('h')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('i')),
-												expressions.NewIdentifier(translator.EmptyListConstantName),
-											},
-										),
-									},
-								),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('s')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('t')),
-												expressions.NewIdentifier(translator.EmptyListConstantName),
-											},
-										),
-									},
-								),
-							},
-						),
-					},
-				),
-			}),
+			name:       "strs/error",
+			code:       `strs(['t', "hi", 's', 't'])`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strl/success",
-			expression: expressions.NewFunctionCall("strl", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(float64('"')),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('o')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('n')),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('e')),
-														expressions.NewFunctionCall(
-															translator.ListConstructionFunctionName,
-															[]expressions.Expression{
-																expressions.NewNumber(float64('"')),
-																expressions.NewIdentifier(translator.EmptyListConstantName),
-															},
-														),
-													},
-												),
-											},
-										),
-									},
-								),
-							},
-						),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('"')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('t')),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('w')),
-														expressions.NewFunctionCall(
-															translator.ListConstructionFunctionName,
-															[]expressions.Expression{
-																expressions.NewNumber(float64('o')),
-																expressions.NewFunctionCall(
-																	translator.ListConstructionFunctionName,
-																	[]expressions.Expression{
-																		expressions.NewNumber(float64('"')),
-																		expressions.NewIdentifier(translator.EmptyListConstantName),
-																	},
-																),
-															},
-														),
-													},
-												),
-											},
-										),
-									},
-								),
-								expressions.NewIdentifier(translator.EmptyListConstantName),
-							},
-						),
-					},
-				),
-			}),
+			name:       "strl/success",
+			code:       `strl(["\"one\"", "\"two\""])`,
 			wantResult: types.NewPairFromText(`["\"one\"","\"two\""]`),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "strl/error/incorrect type",
-			expression: expressions.NewFunctionCall("strl", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(float64('"')),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('o')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('n')),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('e')),
-														expressions.NewFunctionCall(
-															translator.ListConstructionFunctionName,
-															[]expressions.Expression{
-																expressions.NewNumber(float64('"')),
-																expressions.NewIdentifier(translator.EmptyListConstantName),
-															},
-														),
-													},
-												),
-											},
-										),
-									},
-								),
-							},
-						),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(23),
-								expressions.NewIdentifier(translator.EmptyListConstantName),
-							},
-						),
-					},
-				),
-			}),
+			name:       "strl/error/incorrect type",
+			code:       `strl(["\"one\"", 23])`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strl/error/string conversion",
-			expression: expressions.NewFunctionCall("strl", []expressions.Expression{
-				expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(float64('"')),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('o')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('n')),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('e')),
-														expressions.NewFunctionCall(
-															translator.ListConstructionFunctionName,
-															[]expressions.Expression{
-																expressions.NewNumber(float64('"')),
-																expressions.NewIdentifier(translator.EmptyListConstantName),
-															},
-														),
-													},
-												),
-											},
-										),
-									},
-								),
-							},
-						),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('"')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('h')),
-														expressions.NewFunctionCall(
-															translator.ListConstructionFunctionName,
-															[]expressions.Expression{
-																expressions.NewNumber(float64('i')),
-																expressions.NewIdentifier(translator.EmptyListConstantName),
-															},
-														),
-													},
-												),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('w')),
-														expressions.NewFunctionCall(
-															translator.ListConstructionFunctionName,
-															[]expressions.Expression{
-																expressions.NewNumber(float64('o')),
-																expressions.NewFunctionCall(
-																	translator.ListConstructionFunctionName,
-																	[]expressions.Expression{
-																		expressions.NewNumber(float64('"')),
-																		expressions.NewIdentifier(translator.EmptyListConstantName),
-																	},
-																),
-															},
-														),
-													},
-												),
-											},
-										),
-									},
-								),
-								expressions.NewIdentifier(translator.EmptyListConstantName),
-							},
-						),
-					},
-				),
-			}),
+			name:       "strl/error/string conversion",
+			code:       `strl(["\"one\"", ['\x22', "hi", 'w', 'o', '\x22']])`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strh/success",
-			expression: expressions.NewFunctionCall("strh", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewNumber(12),
-						}),
-						expressions.NewString("two"),
-						expressions.NewNumber(23),
-					}),
-					expressions.NewString("three"),
-					expressions.NewNumber(42),
-				}),
-			}),
+			name:       "strh/success",
+			code:       "strh({one: 12, two: 23, three: 42})",
 			wantResult: types.NewPairFromText(`{"one":12,"three":42,"two":23}`),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "strh/error/incorrect key",
-			expression: expressions.NewFunctionCall("strh", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewNumber(5),
-						}),
-						expressions.NewNumber(12),
-						expressions.NewNumber(23),
-					}),
-					expressions.NewString("three"),
-					expressions.NewNumber(42),
-				}),
-			}),
+			name:       "strh/error/incorrect key",
+			code:       "strh({one: 5, [12]: 23, three: 42})",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strh/error/incorrect value",
-			expression: expressions.NewFunctionCall("strh", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewNumber(12),
-						}),
-						expressions.NewString("two"),
-						expressions.NewIdentifier("strh"),
-					}),
-					expressions.NewString("three"),
-					expressions.NewNumber(42),
-				}),
-			}),
+			name:       "strh/error/incorrect value",
+			code:       "strh({one: 12, two: strh, three: 42})",
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strhh/success",
-			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewString("two"),
-						}),
-						expressions.NewString("three"),
-						expressions.NewString("four"),
-					}),
-					expressions.NewString("five"),
-					expressions.NewString("six"),
-				}),
-			}),
+			name:       "strhh/success",
+			code:       `strhh({one: "two", three: "four", five: "six"})`,
 			wantResult: types.NewPairFromText(`{"five":"six","one":"two","three":"four"}`),
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "strhh/error/incorrect key type",
-			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewString("two"),
-						}),
-						expressions.NewNumber(23),
-						expressions.NewString("four"),
-					}),
-					expressions.NewString("five"),
-					expressions.NewString("six"),
-				}),
-			}),
+			name:       "strhh/error/incorrect key type",
+			code:       `strhh({one: "two", [23]: "four", five: "six"})`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strhh/error/incorrect value type",
-			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewString("two"),
-						}),
-						expressions.NewString("three"),
-						expressions.NewNumber(23),
-					}),
-					expressions.NewString("five"),
-					expressions.NewString("six"),
-				}),
-			}),
+			name:       "strhh/error/incorrect value type",
+			code:       `strhh({one: "two", three: 23, five: "six"})`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "strhh/error/string conversion",
-			expression: expressions.NewFunctionCall("strhh", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewString("two"),
-						}),
-						expressions.NewString("three"),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewNumber(float64('t')),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('h')),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('i')),
-														expressions.NewIdentifier(translator.EmptyListConstantName),
-													},
-												),
-											},
-										),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('s')),
-												expressions.NewFunctionCall(
-													translator.ListConstructionFunctionName,
-													[]expressions.Expression{
-														expressions.NewNumber(float64('t')),
-														expressions.NewIdentifier(translator.EmptyListConstantName),
-													},
-												),
-											},
-										),
-									},
-								),
-							},
-						),
-					}),
-					expressions.NewString("five"),
-					expressions.NewString("six"),
-				}),
-			}),
+			name:       "strhh/error/string conversion",
+			code:       `strhh({one: "two", three: ['t', "hi", 's', 't'], five: "six"})`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
 		{
-			name: "with/success",
-			expression: expressions.NewFunctionCall("with", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-						expressions.NewString("x"),
-						expressions.NewNumber(12),
-					}),
-					expressions.NewString("y"),
-					expressions.NewNumber(23),
-				}),
-				expressions.NewString("z"),
-				expressions.NewNumber(42),
-			}),
+			name:       "with/success",
+			code:       `with({x: 12, y: 23}, "z", 42)`,
 			wantResult: types.HashTable{"x": 12.0, "y": 23.0, "z": 42.0},
 			wantErr:    assert.NoError,
 		},
 		{
-			name: "with/error",
-			expression: expressions.NewFunctionCall("with", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-						expressions.NewString("x"),
-						expressions.NewNumber(12),
-					}),
-					expressions.NewFunctionCall(
-						translator.ListConstructionFunctionName,
-						[]expressions.Expression{
-							expressions.NewNumber(-23),
-							expressions.NewIdentifier(translator.EmptyListConstantName),
-						},
-					),
-					expressions.NewNumber(23),
-				}),
-				expressions.NewString("z"),
-				expressions.NewNumber(42),
-			}),
+			name:       "with/error",
+			code:       `with({x: 12, [[-23]]: 23}, "z", 42)`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
@@ -2321,7 +873,14 @@ func TestValues(test *testing.T) {
 			context.SetValues(ctx, Values)
 			context.SetValues(ctx, data.additionalDefinitions)
 
-			gotResult, gotErr := data.expression.Evaluate(ctx)
+			expressionAST := new(parser.Expression)
+			err := parser.ParseToAST(data.code, expressionAST)
+			require.NoError(test, err)
+
+			expression, _, err := translator.TranslateExpression(expressionAST, ctx.ValuesNames())
+			require.NoError(test, err)
+
+			gotResult, gotErr := expression.Evaluate(ctx)
 
 			assert.Equal(test, data.wantResult, gotResult)
 			data.wantErr(test, gotErr)
