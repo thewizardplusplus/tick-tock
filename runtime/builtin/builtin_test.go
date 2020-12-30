@@ -1201,7 +1201,7 @@ func TestValues_input(test *testing.T) {
 	for _, data := range []struct {
 		name       string
 		prepare    func(test *testing.T, tempFile *os.File)
-		expression expressions.Expression
+		code       string
 		wantResult interface{}
 	}{
 		{
@@ -1210,9 +1210,7 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("in", []expressions.Expression{
-				expressions.NewNumber(2),
-			}),
+			code:       "in(2)",
 			wantResult: types.NewPairFromText("te"),
 		},
 		{
@@ -1221,17 +1219,13 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("in", []expressions.Expression{
-				expressions.NewNumber(4),
-			}),
+			code:       "in(4)",
 			wantResult: types.NewPairFromText("test"),
 		},
 		{
-			name:    "in/part of symbols/error/without symbols",
-			prepare: func(test *testing.T, tempFile *os.File) {},
-			expression: expressions.NewFunctionCall("in", []expressions.Expression{
-				expressions.NewNumber(2),
-			}),
+			name:       "in/part of symbols/error/without symbols",
+			prepare:    func(test *testing.T, tempFile *os.File) {},
+			code:       "in(2)",
 			wantResult: types.Nil{},
 		},
 		{
@@ -1240,9 +1234,7 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("in", []expressions.Expression{
-				expressions.NewNumber(5),
-			}),
+			code:       "in(5)",
 			wantResult: types.Nil{},
 		},
 		{
@@ -1251,17 +1243,13 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("in", []expressions.Expression{
-				expressions.NewNumber(-1),
-			}),
+			code:       "in(-1)",
 			wantResult: types.NewPairFromText("test"),
 		},
 		{
-			name:    "in/all symbols/without symbols",
-			prepare: func(test *testing.T, tempFile *os.File) {},
-			expression: expressions.NewFunctionCall("in", []expressions.Expression{
-				expressions.NewNumber(-1),
-			}),
+			name:       "in/all symbols/without symbols",
+			prepare:    func(test *testing.T, tempFile *os.File) {},
+			code:       "in(-1)",
 			wantResult: (*types.Pair)(nil),
 		},
 		{
@@ -1270,9 +1258,7 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(2),
-			}),
+			code:       "inln(2)",
 			wantResult: types.NewPairFromText("te"),
 		},
 		{
@@ -1281,17 +1267,13 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(4),
-			}),
+			code:       "inln(4)",
 			wantResult: types.NewPairFromText("test"),
 		},
 		{
-			name:    "inln/part of symbols/error/without symbols",
-			prepare: func(test *testing.T, tempFile *os.File) {},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(2),
-			}),
+			name:       "inln/part of symbols/error/without symbols",
+			prepare:    func(test *testing.T, tempFile *os.File) {},
+			code:       "inln(2)",
 			wantResult: types.Nil{},
 		},
 		{
@@ -1300,9 +1282,7 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(5),
-			}),
+			code:       "inln(5)",
 			wantResult: types.Nil{},
 		},
 		{
@@ -1311,9 +1291,7 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test #1\ntest #2\n")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(-1),
-			}),
+			code:       "inln(-1)",
 			wantResult: types.NewPairFromText("test #1"),
 		},
 		{
@@ -1322,9 +1300,7 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("\ntest #2\n")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(-1),
-			}),
+			code:       "inln(-1)",
 			wantResult: (*types.Pair)(nil),
 		},
 		{
@@ -1333,17 +1309,13 @@ func TestValues_input(test *testing.T) {
 				_, err := tempFile.WriteString("test")
 				require.NoError(test, err)
 			},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(-1),
-			}),
+			code:       "inln(-1)",
 			wantResult: types.Nil{},
 		},
 		{
-			name:    "inln/all symbols/error/without symbols",
-			prepare: func(test *testing.T, tempFile *os.File) {},
-			expression: expressions.NewFunctionCall("inln", []expressions.Expression{
-				expressions.NewNumber(-1),
-			}),
+			name:       "inln/all symbols/error/without symbols",
+			prepare:    func(test *testing.T, tempFile *os.File) {},
+			code:       "inln(-1)",
 			wantResult: types.Nil{},
 		},
 	} {
@@ -1367,7 +1339,14 @@ func TestValues_input(test *testing.T) {
 			ctx := context.NewDefaultContext()
 			context.SetValues(ctx, Values)
 
-			gotResult, gotErr := data.expression.Evaluate(ctx)
+			expressionAST := new(parser.Expression)
+			err = parser.ParseToAST(data.code, expressionAST)
+			require.NoError(test, err)
+
+			expression, _, err := translator.TranslateExpression(expressionAST, ctx.ValuesNames())
+			require.NoError(test, err)
+
+			gotResult, gotErr := expression.Evaluate(ctx)
 
 			assert.Equal(test, data.wantResult, gotResult)
 			assert.NoError(test, gotErr)
