@@ -903,79 +903,58 @@ func TestValues_nan(test *testing.T) {
 
 func TestValues_inDelta(test *testing.T) {
 	for _, data := range []struct {
-		name       string
-		expression expressions.Expression
-		want       float64
+		name string
+		code string
+		want float64
 	}{
 		{
 			name: "sin",
-			expression: expressions.NewFunctionCall("sin", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			code: "sin(23)",
 			want: -0.846220,
 		},
 		{
 			name: "cos",
-			expression: expressions.NewFunctionCall("cos", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			code: "cos(23)",
 			want: -0.532833,
 		},
 		{
 			name: "tn",
-			expression: expressions.NewFunctionCall("tn", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			code: "tn(23)",
 			want: 1.588153,
 		},
 		{
 			name: "arcsin",
-			expression: expressions.NewFunctionCall("arcsin", []expressions.Expression{
-				expressions.NewNumber(0.5),
-			}),
+			code: "arcsin(0.5)",
 			want: 0.523598,
 		},
 		{
 			name: "arccos",
-			expression: expressions.NewFunctionCall("arccos", []expressions.Expression{
-				expressions.NewNumber(0.5),
-			}),
+			code: "arccos(0.5)",
 			want: 1.047197,
 		},
 		{
 			name: "arctn",
-			expression: expressions.NewFunctionCall("arctn", []expressions.Expression{
-				expressions.NewNumber(0.5),
-			}),
+			code: "arctn(0.5)",
 			want: 0.463647,
 		},
 		{
 			name: "angle",
-			expression: expressions.NewFunctionCall("angle", []expressions.Expression{
-				expressions.NewNumber(2),
-				expressions.NewNumber(3),
-			}),
+			code: "angle(2, 3)",
 			want: 0.982793,
 		},
 		{
 			name: "exp",
-			expression: expressions.NewFunctionCall("exp", []expressions.Expression{
-				expressions.NewNumber(2.3),
-			}),
+			code: "exp(2.3)",
 			want: 9.974182,
 		},
 		{
 			name: "ln",
-			expression: expressions.NewFunctionCall("ln", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			code: "ln(23)",
 			want: 3.135494,
 		},
 		{
 			name: "lg",
-			expression: expressions.NewFunctionCall("lg", []expressions.Expression{
-				expressions.NewNumber(23),
-			}),
+			code: "lg(23)",
 			want: 1.361727,
 		},
 	} {
@@ -983,7 +962,14 @@ func TestValues_inDelta(test *testing.T) {
 			ctx := context.NewDefaultContext()
 			context.SetValues(ctx, Values)
 
-			got, err := data.expression.Evaluate(ctx)
+			expressionAST := new(parser.Expression)
+			err := parser.ParseToAST(data.code, expressionAST)
+			require.NoError(test, err)
+
+			expression, _, err := translator.TranslateExpression(expressionAST, ctx.ValuesNames())
+			require.NoError(test, err)
+
+			got, err := expression.Evaluate(ctx)
 
 			if assert.NoError(test, err) {
 				require.IsType(test, float64(0), got)
