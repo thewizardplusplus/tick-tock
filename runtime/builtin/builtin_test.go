@@ -1019,53 +1019,23 @@ func TestValues_random(test *testing.T) {
 
 func TestValues_keys(test *testing.T) {
 	for _, data := range []struct {
-		name       string
-		expression expressions.Expression
-		want       []interface{}
+		name string
+		code string
+		want []interface{}
 	}{
 		{
 			name: "empty",
-			expression: expressions.NewFunctionCall("keys", []expressions.Expression{
-				expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-			}),
+			code: "keys({})",
 			want: nil,
 		},
 		{
 			name: "float64",
-			expression: expressions.NewFunctionCall("keys", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewNumber(12),
-							expressions.NewString("one"),
-						}),
-						expressions.NewNumber(23),
-						expressions.NewString("two"),
-					}),
-					expressions.NewNumber(42),
-					expressions.NewString("three"),
-				}),
-			}),
+			code: `keys({[12]: "one", [23]: "two", [42]: "three"})`,
 			want: []interface{}{12.0, 23.0, 42.0},
 		},
 		{
 			name: "*types.Pair",
-			expression: expressions.NewFunctionCall("keys", []expressions.Expression{
-				expressions.NewFunctionCall("with", []expressions.Expression{
-					expressions.NewFunctionCall("with", []expressions.Expression{
-						expressions.NewFunctionCall("with", []expressions.Expression{
-							expressions.NewIdentifier(translator.EmptyHashTableConstantName),
-							expressions.NewString("one"),
-							expressions.NewNumber(12),
-						}),
-						expressions.NewString("two"),
-						expressions.NewNumber(23),
-					}),
-					expressions.NewString("three"),
-					expressions.NewNumber(42),
-				}),
-			}),
+			code: `keys({one: 12, two: 23, three: 42})`,
 			want: []interface{}{
 				types.NewPairFromText("one"),
 				types.NewPairFromText("two"),
@@ -1077,7 +1047,14 @@ func TestValues_keys(test *testing.T) {
 			ctx := context.NewDefaultContext()
 			context.SetValues(ctx, Values)
 
-			got, err := data.expression.Evaluate(ctx)
+			expressionAST := new(parser.Expression)
+			err := parser.ParseToAST(data.code, expressionAST)
+			require.NoError(test, err)
+
+			expression, _, err := translator.TranslateExpression(expressionAST, ctx.ValuesNames())
+			require.NoError(test, err)
+
+			got, err := expression.Evaluate(ctx)
 
 			if assert.IsType(test, (*types.Pair)(nil), got) {
 				assert.ElementsMatch(test, data.want, got.(*types.Pair).Slice())
