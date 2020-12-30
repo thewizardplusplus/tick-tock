@@ -1,6 +1,7 @@
 package builtin
 
 import (
+	"fmt"
 	"io/ioutil"
 	"math"
 	"math/rand"
@@ -1065,15 +1066,12 @@ func TestValues_keys(test *testing.T) {
 }
 
 func TestValues_env(test *testing.T) {
-	type args struct {
-		name expressions.Expression
-	}
-
 	const envName = "TEST"
+
 	for _, data := range []struct {
 		name       string
 		prepare    func(test *testing.T)
-		args       args
+		code       string
 		wantResult interface{}
 		wantErr    assert.ErrorAssertionFunc
 	}{
@@ -1083,9 +1081,7 @@ func TestValues_env(test *testing.T) {
 				err := os.Setenv(envName, "test")
 				require.NoError(test, err)
 			},
-			args: args{
-				name: expressions.NewString(envName),
-			},
+			code:       fmt.Sprintf("env(%q)", envName),
 			wantResult: types.NewPairFromText("test"),
 			wantErr:    assert.NoError,
 		},
@@ -1095,9 +1091,7 @@ func TestValues_env(test *testing.T) {
 				err := os.Setenv(envName, "")
 				require.NoError(test, err)
 			},
-			args: args{
-				name: expressions.NewString(envName),
-			},
+			code:       fmt.Sprintf("env(%q)", envName),
 			wantResult: (*types.Pair)(nil),
 			wantErr:    assert.NoError,
 		},
@@ -1107,54 +1101,14 @@ func TestValues_env(test *testing.T) {
 				err := os.Unsetenv(envName)
 				require.NoError(test, err)
 			},
-			args: args{
-				name: expressions.NewString(envName),
-			},
+			code:       fmt.Sprintf("env(%q)", envName),
 			wantResult: types.Nil{},
 			wantErr:    assert.NoError,
 		},
 		{
-			name:    "error",
-			prepare: func(test *testing.T) {},
-			args: args{
-				name: expressions.NewFunctionCall(
-					translator.ListConstructionFunctionName,
-					[]expressions.Expression{
-						expressions.NewNumber(float64('t')),
-						expressions.NewFunctionCall(
-							translator.ListConstructionFunctionName,
-							[]expressions.Expression{
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('h')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('i')),
-												expressions.NewIdentifier(translator.EmptyListConstantName),
-											},
-										),
-									},
-								),
-								expressions.NewFunctionCall(
-									translator.ListConstructionFunctionName,
-									[]expressions.Expression{
-										expressions.NewNumber(float64('s')),
-										expressions.NewFunctionCall(
-											translator.ListConstructionFunctionName,
-											[]expressions.Expression{
-												expressions.NewNumber(float64('t')),
-												expressions.NewIdentifier(translator.EmptyListConstantName),
-											},
-										),
-									},
-								),
-							},
-						),
-					},
-				),
-			},
+			name:       "error",
+			prepare:    func(test *testing.T) {},
+			code:       `env(['t', "hi", 's', 't'])`,
 			wantResult: nil,
 			wantErr:    assert.Error,
 		},
@@ -1172,7 +1126,13 @@ func TestValues_env(test *testing.T) {
 			ctx := context.NewDefaultContext()
 			context.SetValues(ctx, Values)
 
-			expression := expressions.NewFunctionCall("env", []expressions.Expression{data.args.name})
+			expressionAST := new(parser.Expression)
+			err := parser.ParseToAST(data.code, expressionAST)
+			require.NoError(test, err)
+
+			expression, _, err := translator.TranslateExpression(expressionAST, ctx.ValuesNames())
+			require.NoError(test, err)
+
 			gotResult, gotErr := expression.Evaluate(ctx)
 
 			assert.Equal(test, data.wantResult, gotResult)
