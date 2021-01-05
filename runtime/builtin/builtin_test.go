@@ -1,6 +1,7 @@
 package builtin
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -1372,8 +1373,8 @@ func TestValues_input(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			previousStdin := os.Stdin
-			defer func() { os.Stdin = previousStdin }()
+			previousStdin := bufferedStdin
+			defer func() { bufferedStdin = previousStdin }()
 
 			tempFile, err := ioutil.TempFile("", "test.*")
 			require.NoError(test, err)
@@ -1386,7 +1387,7 @@ func TestValues_input(test *testing.T) {
 
 			tempFile, err = os.Open(tempFile.Name())
 			require.NoError(test, err)
-			os.Stdin = tempFile
+			bufferedStdin = bufio.NewReader(tempFile)
 
 			ctx := context.NewDefaultContext()
 			context.SetValues(ctx, Values)

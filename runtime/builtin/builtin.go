@@ -27,6 +27,11 @@ const (
 	withLineBreak
 )
 
+// nolint: gochecknoglobals
+var (
+	bufferedStdin = bufio.NewReader(os.Stdin)
+)
+
 // ...
 // nolint: gochecknoglobals
 var (
@@ -481,7 +486,7 @@ var (
 				return readChunk(count)
 			}
 
-			textBytes, err := ioutil.ReadAll(os.Stdin)
+			textBytes, err := ioutil.ReadAll(bufferedStdin)
 			if err != nil {
 				return types.Nil{}, nil
 			}
@@ -493,7 +498,7 @@ var (
 				return readChunk(count)
 			}
 
-			textBytes, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
+			textBytes, err := bufferedStdin.ReadBytes('\n')
 			if err != nil {
 				return types.Nil{}, nil
 			}
@@ -539,7 +544,7 @@ func marshalToJSON(value interface{}) (string, error) {
 
 func readChunk(size float64) (interface{}, error) {
 	chunkBytes := make([]byte, int(size))
-	if _, err := io.ReadFull(os.Stdin, chunkBytes); err != nil {
+	if _, err := io.ReadFull(bufferedStdin, chunkBytes); err != nil {
 		return types.Nil{}, nil
 	}
 
