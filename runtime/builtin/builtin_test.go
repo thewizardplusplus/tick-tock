@@ -1371,6 +1371,58 @@ func TestValues_input(test *testing.T) {
 			code:       "inln(-1)",
 			wantResult: types.Nil{},
 		},
+		{
+			name: "in & inln/part of symbols/sequential calls",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			// simulate sequential calls via wrapping into a list
+			code: "[in(2), inln(2)]",
+			wantResult: types.NewPairFromSlice([]interface{}{
+				types.NewPairFromText("te"),
+				types.NewPairFromText("st"),
+			}),
+		},
+		{
+			name: "in & inln/all symbols/sequential calls",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test #1\ntest #2\n")
+				require.NoError(test, err)
+			},
+			// simulate sequential calls via wrapping into a list
+			code: "[in(-1), inln(-1)]",
+			wantResult: types.NewPairFromSlice([]interface{}{
+				types.NewPairFromText("test #1\ntest #2\n"),
+				types.Nil{},
+			}),
+		},
+		{
+			name: "inln & in/part of symbols/sequential calls",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test")
+				require.NoError(test, err)
+			},
+			// simulate sequential calls via wrapping into a list
+			code: "[inln(2), in(2)]",
+			wantResult: types.NewPairFromSlice([]interface{}{
+				types.NewPairFromText("te"),
+				types.NewPairFromText("st"),
+			}),
+		},
+		{
+			name: "inln & in/all symbols/sequential calls",
+			prepare: func(test *testing.T, tempFile *os.File) {
+				_, err := tempFile.WriteString("test #1\ntest #2\n")
+				require.NoError(test, err)
+			},
+			// simulate sequential calls via wrapping into a list
+			code: "[inln(-1), in(-1)]",
+			wantResult: types.NewPairFromSlice([]interface{}{
+				types.NewPairFromText("test #1"),
+				types.NewPairFromText("test #2\n"),
+			}),
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			previousStdin := bufferedStdin
