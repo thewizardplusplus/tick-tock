@@ -544,10 +544,12 @@ func marshalToJSON(value interface{}) (string, error) {
 
 func readChunk(size float64) (interface{}, error) {
 	chunkBytes := make([]byte, int(size))
-	if _, err := io.ReadFull(bufferedStdin, chunkBytes); err != nil {
+	readSize, err := io.ReadFull(bufferedStdin, chunkBytes)
+	if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
 		return types.Nil{}, nil
 	}
 
+	chunkBytes = chunkBytes[:readSize]
 	return types.NewPairFromText(string(chunkBytes)), nil
 }
 

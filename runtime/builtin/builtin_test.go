@@ -1240,7 +1240,7 @@ func TestValues_input(test *testing.T) {
 			name:       "in/part of symbols/error/without symbols",
 			prepare:    func(test *testing.T, tempFile *os.File) {},
 			code:       "in(2)",
-			wantResult: types.Nil{},
+			wantResult: (*types.Pair)(nil),
 		},
 		{
 			name: "in/part of symbols/error/with lack of symbols",
@@ -1249,7 +1249,7 @@ func TestValues_input(test *testing.T) {
 				require.NoError(test, err)
 			},
 			code:       "in(5)",
-			wantResult: types.Nil{},
+			wantResult: types.NewPairFromText("test"),
 		},
 		{
 			name: "in/all symbols/with symbols",
@@ -1314,7 +1314,7 @@ func TestValues_input(test *testing.T) {
 			name:       "inln/part of symbols/error/without symbols",
 			prepare:    func(test *testing.T, tempFile *os.File) {},
 			code:       "inln(2)",
-			wantResult: types.Nil{},
+			wantResult: (*types.Pair)(nil),
 		},
 		{
 			name: "inln/part of symbols/error/with lack of symbols",
@@ -1323,7 +1323,7 @@ func TestValues_input(test *testing.T) {
 				require.NoError(test, err)
 			},
 			code:       "inln(5)",
-			wantResult: types.Nil{},
+			wantResult: types.NewPairFromText("test"),
 		},
 		{
 			name: "inln/all symbols/success/with symbols",
