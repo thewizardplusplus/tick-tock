@@ -499,11 +499,15 @@ var (
 			}
 
 			textBytes, err := bufferedStdin.ReadBytes('\n')
-			if err != nil {
+			if err != nil && err != io.EOF {
 				return types.Nil{}, nil
 			}
 
-			textBytes = textBytes[:len(textBytes)-1] // remove the line break
+			// remove the line break in case of success
+			if err == nil {
+				textBytes = textBytes[:len(textBytes)-1]
+			}
+
 			return types.NewPairFromText(string(textBytes)), nil
 		},
 		"out": func(text *types.Pair) (types.Nil, error) {

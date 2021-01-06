@@ -1363,13 +1363,13 @@ func TestValues_input(test *testing.T) {
 				require.NoError(test, err)
 			},
 			code:       "inln(-1)",
-			wantResult: types.Nil{},
+			wantResult: types.NewPairFromText("test"),
 		},
 		{
 			name:       "inln/all symbols/error/without symbols",
 			prepare:    func(test *testing.T, tempFile *os.File) {},
 			code:       "inln(-1)",
-			wantResult: types.Nil{},
+			wantResult: (*types.Pair)(nil),
 		},
 		{
 			name: "in & inln/part of symbols/sequential calls",
@@ -1394,7 +1394,7 @@ func TestValues_input(test *testing.T) {
 			code: "[in(-1), inln(-1)]",
 			wantResult: types.NewPairFromSlice([]interface{}{
 				types.NewPairFromText("test #1\ntest #2\n"),
-				types.Nil{},
+				(*types.Pair)(nil),
 			}),
 		},
 		{
