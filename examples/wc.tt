@@ -1,0 +1,92 @@
+// The 3-Clause BSD License (BSD-3-Clause)
+//
+// Copyright (C) 2019 Chris Penner https://github.com/ChrisPenner/wc
+// Copyright (C) 2021 thewizardplusplus <thewizardplusplus@yandex.ru>
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice,
+// this list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation
+// and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors
+// may be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+// OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+// LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+// OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+// OF SUCH DAMAGE.
+
+actor Counter()
+  state __initialization__()
+    message count_stats(text, stats)
+      let stats = stats ?? { line_count: 0, word_count: 0, symbol_count: 0, was_space: true }
+      when
+        => text == ""
+          let add_word = when
+            => !stats.was_space
+              1
+            => true
+              0
+          ;
+          let stats = with(stats, "word_count", stats.word_count + add_word)
+          send stats_counted(stats)
+          return
+      ;
+
+      let symbol = head(text)
+      let is_space = symbol == ' '
+        || symbol == '\t'
+        || symbol == '\n'
+        || symbol == '\v'
+        || symbol == '\f'
+        || symbol == '\r'
+      let add_line = when
+        => symbol == '\n'
+          1
+        => true
+          0
+      ;
+      let add_word = when
+        => !stats.was_space && is_space
+          1
+        => true
+          0
+      ;
+      send count_stats(tail(text), {
+        line_count: stats.line_count + add_line,
+        word_count: stats.word_count + add_word,
+        symbol_count: stats.symbol_count + 1,
+        was_space: is_space,
+      })
+    ;
+  ;
+;
+
+actor Main()
+  state __initialization__()
+    message __initialize__()
+      let text = in(-1)
+      send count_stats(text)
+    ;
+
+    message stats_counted(stats)
+      let result = str(stats.line_count) + " "
+        + str(stats.word_count) + " "
+        + str(stats.symbol_count)
+      outln(result)
+    ;
+  ;
+;
