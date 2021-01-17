@@ -35,4 +35,4 @@ Copyright &copy; 2012 The GoSublime Authors
 
 Copyright &copy; 2014 GitHub Inc.
 
-Copyright &copy; 2019-2020 thewizardplusplus
+Copyright &copy; 2019-2021 thewizardplusplus
