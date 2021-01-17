@@ -29,24 +29,16 @@
 // OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 // OF SUCH DAMAGE.
 
-actor Counter()
+actor ChunkCounter()
   state __initialization__()
-    message count_stats(text, stats)
-      let stats = stats ?? { line_count: 0, word_count: 0, symbol_count: 0, was_space: true }
+    message count_chunk_stats(chunk_text, stats)
       when
-        => text == ""
-          let add_word = when
-            => !stats.was_space
-              1
-            => true
-              0
-          ;
-          let stats = with(stats, "word_count", stats.word_count + add_word)
-          send stats_counted(stats)
+        => chunk_text == ""
+          send chunk_stats_counted(stats)
           return
       ;
 
-      let symbol = head(text)
+      let symbol = head(chunk_text)
       let is_space = symbol == ' '
         || symbol == '\t'
         || symbol == '\n'
@@ -65,7 +57,7 @@ actor Counter()
         => true
           0
       ;
-      send count_stats(tail(text), {
+      send count_chunk_stats(tail(chunk_text), {
         line_count: stats.line_count + add_line,
         word_count: stats.word_count + add_word,
         symbol_count: stats.symbol_count + 1,
@@ -75,11 +67,43 @@ actor Counter()
   ;
 ;
 
+actor ChunkProcessor()
+  state __initialization__(stats)
+    message read_chunk()
+      let chunk_text = in(1024)
+      let stats = stats ?? {
+        line_count: 0,
+        word_count: 0,
+        symbol_count: 0,
+        was_space: true,
+      }
+      when
+        => chunk_text == ""
+          let add_word = when
+            => !stats.was_space
+              1
+            => true
+              0
+          ;
+          send stats_counted(stats + { word_count: stats.word_count + add_word })
+
+          return
+      ;
+
+      send count_chunk_stats(chunk_text, stats)
+    ;
+
+    message chunk_stats_counted(stats)
+      set __initialization__(stats)
+      send read_chunk()
+    ;
+  ;
+;
+
 actor Main()
   state __initialization__()
     message __initialize__()
-      let text = in(-1)
-      send count_stats(text)
+      send read_chunk()
     ;
 
     message stats_counted(stats)
