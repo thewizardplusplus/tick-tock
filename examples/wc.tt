@@ -31,10 +31,10 @@
 
 actor ChunkCounter()
   state __initialization__()
-    message count_chunk_stats(chunk_text, stats)
+    message count_chunk_stats(chunk_size, chunk_text, stats)
       when
         => chunk_text == ""
-          send chunk_stats_counted(stats)
+          send chunk_stats_counted(chunk_size, stats)
           return
       ;
 
@@ -57,7 +57,7 @@ actor ChunkCounter()
         => true
           0
       ;
-      send count_chunk_stats(tail(chunk_text), {
+      send count_chunk_stats(chunk_size, tail(chunk_text), {
         line_count: stats.line_count + add_line,
         word_count: stats.word_count + add_word,
         symbol_count: stats.symbol_count + 1,
@@ -69,8 +69,8 @@ actor ChunkCounter()
 
 actor ChunkProcessor()
   state __initialization__(stats)
-    message read_chunk()
-      let chunk_text = in(1024)
+    message read_chunk(chunk_size)
+      let chunk_text = in(chunk_size)
       let stats = stats ?? {
         line_count: 0,
         word_count: 0,
@@ -90,12 +90,12 @@ actor ChunkProcessor()
           return
       ;
 
-      send count_chunk_stats(chunk_text, stats)
+      send count_chunk_stats(chunk_size, chunk_text, stats)
     ;
 
-    message chunk_stats_counted(stats)
+    message chunk_stats_counted(chunk_size, stats)
       set __initialization__(stats)
-      send read_chunk()
+      send read_chunk(chunk_size)
     ;
   ;
 ;
@@ -103,7 +103,14 @@ actor ChunkProcessor()
 actor Main()
   state __initialization__()
     message __initialize__()
-      send read_chunk()
+      let chunk_size = num(env("CHUNK_SIZE") ?? "1024")
+      when
+        => chunk_size == nil
+          errln("Error: unable to parse the chunk size.")
+          return
+      ;
+
+      send read_chunk(chunk_size)
     ;
 
     message stats_counted(stats)
