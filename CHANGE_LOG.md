@@ -1,5 +1,23 @@
 # Change Log
 
+## [v2.2.2](https://github.com/thewizardplusplus/tick-tock/tree/v2.2.2) (2021-01-17)
+
+- рантайм:
+  - функции:
+    - функции для ввода/вывода:
+      - affected functions:
+        - `in(count: num): nil|str`;
+        - `inln(count: num): nil|str`;
+      - improvements:
+        - use a single buffered input stream;
+        - support reading partial data;
+        - support reading data without a line break;
+      - tests:
+        - add tests with sequential calls:
+          - of affected functions;
+          - of combinations of affected functions;
+- add the new example with a word counter.
+
 ## [v2.2.1](https://github.com/thewizardplusplus/tick-tock/tree/v2.2.1) (2020-12-30)
 
 - improving tests:
