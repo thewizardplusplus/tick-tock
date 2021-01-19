@@ -316,7 +316,7 @@ func translateStartCommand(startCommand *parser.StartCommand, declaredIdentifier
 	}
 
 	var arguments []expressions.Expression
-	for index, argument := range startCommand.Arguments {
+	for index, argument := range startCommand.Arguments.Expressions {
 		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
