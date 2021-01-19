@@ -70,6 +70,6 @@ type SendCommand struct {
 
 // SetCommand ...
 type SetCommand struct {
-	Name      string        `parser:"\"set\" @Ident"`
-	Arguments []*Expression `parser:"\"(\" [ @@ { \",\" @@ } [ \",\" ] ] \")\""`
+	Name      string          `parser:"\"set\" @Ident"`
+	Arguments ExpressionGroup `parser:"\"(\" @@ \")\""`
 }
