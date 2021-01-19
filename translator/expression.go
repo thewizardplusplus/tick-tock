@@ -607,9 +607,9 @@ func translateListDefinition(
 ) {
 	argumentTwo := expressions.Expression(expressions.NewIdentifier(EmptyListConstantName))
 	settedStates = mapset.NewSet()
-	for index := len(listDefinition.Items) - 1; index >= 0; index-- {
+	for index := len(listDefinition.Items.Expressions) - 1; index >= 0; index-- {
 		argumentOne, settedStates2, err :=
-			TranslateExpression(listDefinition.Items[index], declaredIdentifiers)
+			TranslateExpression(listDefinition.Items.Expressions[index], declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
 				err,

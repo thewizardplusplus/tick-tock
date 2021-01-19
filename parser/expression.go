@@ -140,7 +140,7 @@ type Atom struct {
 
 // ListDefinition ...
 type ListDefinition struct {
-	Items []*Expression `parser:"\"[\" [ @@ { \",\" @@ } [ \",\" ] ] \"]\""`
+	Items ExpressionGroup `parser:"\"[\" @@ \"]\""`
 }
 
 // HashTableDefinition ...
