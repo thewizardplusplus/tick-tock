@@ -341,7 +341,7 @@ func translateSendCommand(sendCommand *parser.SendCommand, declaredIdentifiers m
 ) {
 	var arguments []expressions.Expression
 	settedStates = mapset.NewSet()
-	for index, argument := range sendCommand.Arguments {
+	for index, argument := range sendCommand.Arguments.Expressions {
 		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(
