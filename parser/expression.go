@@ -140,7 +140,7 @@ type Atom struct {
 
 // ListDefinition ...
 type ListDefinition struct {
-	Items ExpressionGroup `parser:"\"[\" @@ \"]\""`
+	Items *ExpressionGroup `parser:"\"[\" @@ \"]\""`
 }
 
 // HashTableDefinition ...
@@ -157,8 +157,8 @@ type HashTableEntry struct {
 
 // FunctionCall ...
 type FunctionCall struct {
-	Name      string          `parser:"@Ident"`
-	Arguments ExpressionGroup `parser:"\"(\" @@ \")\""`
+	Name      string           `parser:"@Ident"`
+	Arguments *ExpressionGroup `parser:"\"(\" @@ \")\""`
 }
 
 // ConditionalExpression ...

@@ -59,9 +59,11 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Command/start/identifier/no arguments",
-			args:    args{"start Test()", new(Command)},
-			wantAST: &Command{Start: &StartCommand{Name: pointer.ToString("Test")}},
+			name: "Command/start/identifier/no arguments",
+			args: args{"start Test()", new(Command)},
+			wantAST: &Command{
+				Start: &StartCommand{Name: pointer.ToString("Test"), Arguments: &ExpressionGroup{}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -70,7 +72,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Command{
 				Start: &StartCommand{
 					Name: pointer.ToString("Test"),
-					Arguments: ExpressionGroup{
+					Arguments: &ExpressionGroup{
 						Expressions: []*Expression{
 							{
 								ListConstruction: &ListConstruction{
@@ -184,7 +186,11 @@ func TestParseToAST_withProgram(test *testing.T) {
 																Addition: &Addition{
 																	Multiplication: &Multiplication{
 																		Unary: &Unary{
-																			Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+																			Accessor: &Accessor{
+																				Atom: &Atom{
+																					FunctionCall: &FunctionCall{Name: "test", Arguments: &ExpressionGroup{}},
+																				},
+																			},
 																		},
 																	},
 																},
@@ -199,6 +205,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 							},
 						},
 					},
+					Arguments: &ExpressionGroup{},
 				},
 			},
 			wantErr: assert.NoError,
@@ -206,7 +213,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 		{
 			name:    "Command/send/no arguments",
 			args:    args{"send test()", new(Command)},
-			wantAST: &Command{Send: &SendCommand{Name: "test"}},
+			wantAST: &Command{Send: &SendCommand{Name: "test", Arguments: &ExpressionGroup{}}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -215,7 +222,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Command{
 				Send: &SendCommand{
 					Name: "test",
-					Arguments: ExpressionGroup{
+					Arguments: &ExpressionGroup{
 						Expressions: []*Expression{
 							{
 								ListConstruction: &ListConstruction{
@@ -313,7 +320,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 		{
 			name:    "Command/set/no arguments",
 			args:    args{"set test()", new(Command)},
-			wantAST: &Command{Set: &SetCommand{Name: "test"}},
+			wantAST: &Command{Set: &SetCommand{Name: "test", Arguments: &ExpressionGroup{}}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -322,7 +329,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Command{
 				Set: &SetCommand{
 					Name: "test",
-					Arguments: ExpressionGroup{
+					Arguments: &ExpressionGroup{
 						Expressions: []*Expression{
 							{
 								ListConstruction: &ListConstruction{
@@ -441,7 +448,11 @@ func TestParseToAST_withProgram(test *testing.T) {
 															Addition: &Addition{
 																Multiplication: &Multiplication{
 																	Unary: &Unary{
-																		Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+																		Accessor: &Accessor{
+																			Atom: &Atom{
+																				FunctionCall: &FunctionCall{Name: "test", Arguments: &ExpressionGroup{}},
+																			},
+																		},
 																	},
 																},
 															},
@@ -463,8 +474,11 @@ func TestParseToAST_withProgram(test *testing.T) {
 			name: "Message/nonempty/no parameters",
 			args: args{"message test() send one() send two();", new(Message)},
 			wantAST: &Message{
-				Name:     "test",
-				Commands: []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
+				Name: "test",
+				Commands: []*Command{
+					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
+					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -474,7 +488,10 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x"},
-				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
+				Commands: []*Command{
+					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
+					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -484,7 +501,10 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x"},
-				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
+				Commands: []*Command{
+					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
+					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -494,7 +514,10 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x", "y", "z"},
-				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
+				Commands: []*Command{
+					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
+					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -504,7 +527,10 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: []string{"x", "y", "z"},
-				Commands:   []*Command{{Send: &SendCommand{Name: "one"}}, {Send: &SendCommand{Name: "two"}}},
+				Commands: []*Command{
+					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
+					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
+				},
 			},
 			wantErr: assert.NoError,
 		},

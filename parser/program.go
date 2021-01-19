@@ -57,19 +57,19 @@ type LetCommand struct {
 
 // StartCommand ...
 type StartCommand struct {
-	Name       *string         `parser:"\"start\" ( @Ident"`
-	Expression *Expression     `parser:"| \"[\" @@ \"]\" )"`
-	Arguments  ExpressionGroup `parser:"\"(\" @@ \")\""`
+	Name       *string          `parser:"\"start\" ( @Ident"`
+	Expression *Expression      `parser:"| \"[\" @@ \"]\" )"`
+	Arguments  *ExpressionGroup `parser:"\"(\" @@ \")\""`
 }
 
 // SendCommand ...
 type SendCommand struct {
-	Name      string          `parser:"\"send\" @Ident"`
-	Arguments ExpressionGroup `parser:"\"(\" @@ \")\""`
+	Name      string           `parser:"\"send\" @Ident"`
+	Arguments *ExpressionGroup `parser:"\"(\" @@ \")\""`
 }
 
 // SetCommand ...
 type SetCommand struct {
-	Name      string          `parser:"\"set\" @Ident"`
-	Arguments ExpressionGroup `parser:"\"(\" @@ \")\""`
+	Name      string           `parser:"\"set\" @Ident"`
+	Arguments *ExpressionGroup `parser:"\"(\" @@ \")\""`
 }

@@ -88,7 +88,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Atom/list definition/no items",
 			args:    args{"[]", new(Atom)},
-			wantAST: &Atom{ListDefinition: &ListDefinition{Items: ExpressionGroup{}}},
+			wantAST: &Atom{ListDefinition: &ListDefinition{Items: &ExpressionGroup{}}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -96,7 +96,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			args: args{"[12, 23, 42]", new(Atom)},
 			wantAST: &Atom{
 				ListDefinition: &ListDefinition{
-					Items: ExpressionGroup{
+					Items: &ExpressionGroup{
 						Expressions: []*Expression{
 							{
 								ListConstruction: &ListConstruction{
@@ -518,7 +518,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 																		Addition: &Addition{
 																			Multiplication: &Multiplication{
 																				Unary: &Unary{
-																					Accessor: &Accessor{Atom: &Atom{FunctionCall: &FunctionCall{Name: "test"}}},
+																					Accessor: &Accessor{
+																						Atom: &Atom{
+																							FunctionCall: &FunctionCall{Name: "test", Arguments: &ExpressionGroup{}},
+																						},
+																					},
 																				},
 																			},
 																		},
@@ -571,7 +575,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Atom/function call/no arguments",
 			args:    args{"test()", new(Atom)},
-			wantAST: &Atom{FunctionCall: &FunctionCall{Name: "test"}},
+			wantAST: &Atom{FunctionCall: &FunctionCall{Name: "test", Arguments: &ExpressionGroup{}}},
 			wantErr: assert.NoError,
 		},
 		{
@@ -580,7 +584,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Atom{
 				FunctionCall: &FunctionCall{
 					Name: "test",
-					Arguments: ExpressionGroup{
+					Arguments: &ExpressionGroup{
 						Expressions: []*Expression{
 							{
 								ListConstruction: &ListConstruction{
@@ -2246,7 +2250,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 																	Accessor: &Accessor{
 																		Atom: &Atom{
 																			ListDefinition: &ListDefinition{
-																				Items: ExpressionGroup{
+																				Items: &ExpressionGroup{
 																					Expressions: []*Expression{
 																						{
 																							ListConstruction: &ListConstruction{
