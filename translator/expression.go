@@ -690,7 +690,7 @@ func translateFunctionCall(
 
 	var arguments []expressions.Expression
 	settedStates = mapset.NewSet()
-	for index, argument := range functionCall.Arguments {
+	for index, argument := range functionCall.Arguments.Expressions {
 		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
 		if err != nil {
 			return nil, nil, errors.Wrapf(

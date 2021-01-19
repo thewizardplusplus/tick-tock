@@ -157,8 +157,8 @@ type HashTableEntry struct {
 
 // FunctionCall ...
 type FunctionCall struct {
-	Name      string        `parser:"@Ident"`
-	Arguments []*Expression `parser:"\"(\" [ @@ { \",\" @@ } [ \",\" ] ] \")\""`
+	Name      string          `parser:"@Ident"`
+	Arguments ExpressionGroup `parser:"\"(\" @@ \")\""`
 }
 
 // ConditionalExpression ...
