@@ -46,7 +46,10 @@ func TestParseToAST(test *testing.T) {
 				ast:  new(Program),
 			},
 			wantAST: &Program{
-				Definitions: []*Definition{{Actor: &Actor{Name: "One"}}, {Actor: &Actor{Name: "Three"}}},
+				Definitions: []*Definition{
+					{Actor: &Actor{"One", &IdentifierGroup{}, nil}},
+					{Actor: &Actor{"Three", &IdentifierGroup{}, nil}},
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -57,7 +60,10 @@ func TestParseToAST(test *testing.T) {
 				ast:  new(Program),
 			},
 			wantAST: &Program{
-				Definitions: []*Definition{{Actor: &Actor{Name: "One"}}, {Actor: &Actor{Name: "Three"}}},
+				Definitions: []*Definition{
+					{Actor: &Actor{"One", &IdentifierGroup{}, nil}},
+					{Actor: &Actor{"Three", &IdentifierGroup{}, nil}},
+				},
 			},
 			wantErr: assert.NoError,
 		},
