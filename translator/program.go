@@ -140,7 +140,7 @@ func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 		}
 
 		localDeclaredIdentifiers := declaredIdentifiers.Clone()
-		for _, parameter := range state.Parameters {
+		for _, parameter := range state.Parameters.Identifiers {
 			localDeclaredIdentifiers.Add(parameter)
 		}
 
@@ -151,7 +151,7 @@ func translateStates(states []*parser.State, declaredIdentifiers mapset.Set) (
 		}
 
 		translatedStates[state.Name] =
-			runtime.NewParameterizedMessageGroup(state.Parameters, translatedMessages)
+			runtime.NewParameterizedMessageGroup(state.Parameters.Identifiers, translatedMessages)
 		for message, settedStates := range settedStatesByMessages {
 			for _, state := range settedStates.ToSlice() {
 				messagesWithSettingsByStates[state.(string)] = append(

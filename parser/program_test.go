@@ -543,19 +543,27 @@ func TestParseToAST_withProgram(test *testing.T) {
 		{
 			name:    "State/nonempty/no parameters",
 			args:    args{"state test() message one(); message two();;", new(State)},
-			wantAST: &State{"test", nil, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			wantAST: &State{"test", &IdentifierGroup{}, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "State/nonempty/single parameter",
-			args:    args{"state test(x) message one(); message two();;", new(State)},
-			wantAST: &State{"test", []string{"x"}, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			name: "State/nonempty/single parameter",
+			args: args{"state test(x) message one(); message two();;", new(State)},
+			wantAST: &State{
+				Name:       "test",
+				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
+				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "State/nonempty/single parameter/trailing comma",
-			args:    args{"state test(x,) message one(); message two();;", new(State)},
-			wantAST: &State{"test", []string{"x"}, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			name: "State/nonempty/single parameter/trailing comma",
+			args: args{"state test(x,) message one(); message two();;", new(State)},
+			wantAST: &State{
+				Name:       "test",
+				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
+				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -563,7 +571,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			args: args{"state test(x, y, z) message one(); message two();;", new(State)},
 			wantAST: &State{
 				Name:       "test",
-				Parameters: []string{"x", "y", "z"},
+				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
 				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
 			},
 			wantErr: assert.NoError,
@@ -573,7 +581,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			args: args{"state test(x, y, z,) message one(); message two();;", new(State)},
 			wantAST: &State{
 				Name:       "test",
-				Parameters: []string{"x", "y", "z"},
+				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
 				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
 			},
 			wantErr: assert.NoError,
@@ -581,13 +589,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 		{
 			name:    "State/empty",
 			args:    args{"state test();", new(State)},
-			wantAST: &State{"test", nil, nil},
+			wantAST: &State{"test", &IdentifierGroup{}, nil},
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "Actor/nonempty/no parameters",
-			args:    args{"actor Main() state one(); state two();;", new(Actor)},
-			wantAST: &Actor{"Main", &IdentifierGroup{}, []*State{{"one", nil, nil}, {"two", nil, nil}}},
+			name: "Actor/nonempty/no parameters",
+			args: args{"actor Main() state one(); state two();;", new(Actor)},
+			wantAST: &Actor{
+				Name:       "Main",
+				Parameters: &IdentifierGroup{},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -596,7 +608,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Actor{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -606,7 +618,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Actor{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -616,7 +628,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Actor{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -626,7 +638,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Actor{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -637,9 +649,13 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "ActorClass/nonempty/no parameters",
-			args:    args{"class Main() state one(); state two();;", new(ActorClass)},
-			wantAST: &ActorClass{"Main", &IdentifierGroup{}, []*State{{"one", nil, nil}, {"two", nil, nil}}},
+			name: "ActorClass/nonempty/no parameters",
+			args: args{"class Main() state one(); state two();;", new(ActorClass)},
+			wantAST: &ActorClass{
+				Name:       "Main",
+				Parameters: &IdentifierGroup{},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -648,7 +664,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &ActorClass{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -658,7 +674,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &ActorClass{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -668,7 +684,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &ActorClass{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -678,7 +694,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &ActorClass{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -692,7 +708,11 @@ func TestParseToAST_withProgram(test *testing.T) {
 			name: "Definition/actor",
 			args: args{"actor Main() state one(); state two();;", new(Definition)},
 			wantAST: &Definition{
-				Actor: &Actor{"Main", &IdentifierGroup{}, []*State{{"one", nil, nil}, {"two", nil, nil}}},
+				Actor: &Actor{
+					Name:       "Main",
+					Parameters: &IdentifierGroup{},
+					States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -703,7 +723,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 				ActorClass: &ActorClass{
 					Name:       "Main",
 					Parameters: &IdentifierGroup{},
-					States:     []*State{{"one", nil, nil}, {"two", nil, nil}},
+					States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 				},
 			},
 			wantErr: assert.NoError,
