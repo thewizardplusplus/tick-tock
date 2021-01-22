@@ -186,7 +186,7 @@ func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Se
 		}
 
 		localDeclaredIdentifiers := declaredIdentifiers.Clone()
-		for _, parameter := range message.Parameters {
+		for _, parameter := range message.Parameters.Identifiers {
 			localDeclaredIdentifiers.Add(parameter)
 		}
 
@@ -197,7 +197,7 @@ func translateMessages(messages []*parser.Message, declaredIdentifiers mapset.Se
 		}
 
 		translatedMessages[message.Name] =
-			runtime.NewParameterizedCommandGroup(message.Parameters, translatedCommands)
+			runtime.NewParameterizedCommandGroup(message.Parameters.Identifiers, translatedCommands)
 		settedStatesByMessages[message.Name] = settedStates
 	}
 

@@ -474,7 +474,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 			name: "Message/nonempty/no parameters",
 			args: args{"message test() send one() send two();", new(Message)},
 			wantAST: &Message{
-				Name: "test",
+				Name:       "test",
+				Parameters: &IdentifierGroup{},
 				Commands: []*Command{
 					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
 					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
@@ -487,7 +488,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			args: args{"message test(x) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
-				Parameters: []string{"x"},
+				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
 				Commands: []*Command{
 					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
 					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
@@ -500,7 +501,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			args: args{"message test(x,) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
-				Parameters: []string{"x"},
+				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
 				Commands: []*Command{
 					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
 					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
@@ -513,7 +514,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			args: args{"message test(x, y, z) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
-				Parameters: []string{"x", "y", "z"},
+				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
 				Commands: []*Command{
 					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
 					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
@@ -526,7 +527,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			args: args{"message test(x, y, z,) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
-				Parameters: []string{"x", "y", "z"},
+				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
 				Commands: []*Command{
 					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
 					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
@@ -537,13 +538,17 @@ func TestParseToAST_withProgram(test *testing.T) {
 		{
 			name:    "Message/empty",
 			args:    args{"message test();", new(Message)},
-			wantAST: &Message{"test", nil, nil},
+			wantAST: &Message{"test", &IdentifierGroup{}, nil},
 			wantErr: assert.NoError,
 		},
 		{
-			name:    "State/nonempty/no parameters",
-			args:    args{"state test() message one(); message two();;", new(State)},
-			wantAST: &State{"test", &IdentifierGroup{}, []*Message{{"one", nil, nil}, {"two", nil, nil}}},
+			name: "State/nonempty/no parameters",
+			args: args{"state test() message one(); message two();;", new(State)},
+			wantAST: &State{
+				Name:       "test",
+				Parameters: &IdentifierGroup{},
+				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -552,7 +557,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &State{
 				Name:       "test",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -562,7 +567,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &State{
 				Name:       "test",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -572,7 +577,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &State{
 				Name:       "test",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
@@ -582,7 +587,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &State{
 				Name:       "test",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				Messages:   []*Message{{"one", nil, nil}, {"two", nil, nil}},
+				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
 			},
 			wantErr: assert.NoError,
 		},
