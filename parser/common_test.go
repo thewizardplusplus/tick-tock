@@ -20,6 +20,36 @@ func TestParseToAST_withCommon(test *testing.T) {
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
+			name:    "IdentifierGroup/no items",
+			args:    args{"", new(IdentifierGroup)},
+			wantAST: &IdentifierGroup{},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "IdentifierGroup/single item",
+			args:    args{"x", new(IdentifierGroup)},
+			wantAST: &IdentifierGroup{Identifiers: []string{"x"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "IdentifierGroup/single item/trailing comma",
+			args:    args{"x,", new(IdentifierGroup)},
+			wantAST: &IdentifierGroup{Identifiers: []string{"x"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "IdentifierGroup/few items",
+			args:    args{"x, y, z", new(IdentifierGroup)},
+			wantAST: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "IdentifierGroup/few items/trailing comma",
+			args:    args{"x, y, z,", new(IdentifierGroup)},
+			wantAST: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "ExpressionGroup/no items",
 			args:    args{"", new(ExpressionGroup)},
 			wantAST: &ExpressionGroup{},
