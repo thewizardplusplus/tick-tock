@@ -608,38 +608,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "Actor/nonempty/single parameter",
-			args: args{"actor Main(x) state one(); state two();;", new(Actor)},
-			wantAST: &Actor{
-				Name:       "Main",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Actor/nonempty/single parameter/trailing comma",
-			args: args{"actor Main(x,) state one(); state two();;", new(Actor)},
-			wantAST: &Actor{
-				Name:       "Main",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
-			},
-			wantErr: assert.NoError,
-		},
-		{
 			name: "Actor/nonempty/few parameters",
 			args: args{"actor Main(x, y, z) state one(); state two();;", new(Actor)},
-			wantAST: &Actor{
-				Name:       "Main",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				States:     []*State{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Actor/nonempty/few parameters/trailing comma",
-			args: args{"actor Main(x, y, z,) state one(); state two();;", new(Actor)},
 			wantAST: &Actor{
 				Name:       "Main",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
