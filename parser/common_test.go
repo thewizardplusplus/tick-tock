@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/AlekSi/pointer"
@@ -330,5 +331,26 @@ func TestParseToAST_withCommon(test *testing.T) {
 			assert.Equal(test, testData.wantAST, testData.args.ast)
 			testData.wantErr(test, err)
 		})
+	}
+}
+
+func setInnerField(rootValue interface{}, fieldName string, fieldValue interface{}) interface{} {
+	value := reflect.ValueOf(rootValue).Elem()
+	for {
+		field := value.FieldByName(fieldName)
+		if field.IsValid() {
+			field.Set(reflect.ValueOf(fieldValue))
+			return rootValue
+		}
+
+		fieldIndex := 0
+		if valueType := value.Type(); valueType.Name() == "Unary" {
+			fieldIndex = valueType.NumField() - 1
+		}
+
+		field = value.Field(fieldIndex)
+		field.Set(reflect.New(field.Type().Elem()))
+
+		value = field.Elem()
 	}
 }
