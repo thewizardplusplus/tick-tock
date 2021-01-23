@@ -484,47 +484,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "Message/nonempty/single parameter",
-			args: args{"message test(x) send one() send two();", new(Message)},
-			wantAST: &Message{
-				Name:       "test",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				Commands: []*Command{
-					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
-					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Message/nonempty/single parameter/trailing comma",
-			args: args{"message test(x,) send one() send two();", new(Message)},
-			wantAST: &Message{
-				Name:       "test",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				Commands: []*Command{
-					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
-					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
 			name: "Message/nonempty/few parameters",
 			args: args{"message test(x, y, z) send one() send two();", new(Message)},
-			wantAST: &Message{
-				Name:       "test",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				Commands: []*Command{
-					{Send: &SendCommand{Name: "one", Arguments: &ExpressionGroup{}}},
-					{Send: &SendCommand{Name: "two", Arguments: &ExpressionGroup{}}},
-				},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "Message/nonempty/few parameters/trailing comma",
-			args: args{"message test(x, y, z,) send one() send two();", new(Message)},
 			wantAST: &Message{
 				Name:       "test",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
