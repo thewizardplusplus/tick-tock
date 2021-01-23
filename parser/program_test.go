@@ -552,38 +552,8 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "State/nonempty/single parameter",
-			args: args{"state test(x) message one(); message two();;", new(State)},
-			wantAST: &State{
-				Name:       "test",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "State/nonempty/single parameter/trailing comma",
-			args: args{"state test(x,) message one(); message two();;", new(State)},
-			wantAST: &State{
-				Name:       "test",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x"}},
-				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
-			},
-			wantErr: assert.NoError,
-		},
-		{
 			name: "State/nonempty/few parameters",
 			args: args{"state test(x, y, z) message one(); message two();;", new(State)},
-			wantAST: &State{
-				Name:       "test",
-				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
-				Messages:   []*Message{{"one", &IdentifierGroup{}, nil}, {"two", &IdentifierGroup{}, nil}},
-			},
-			wantErr: assert.NoError,
-		},
-		{
-			name: "State/nonempty/few parameters/trailing comma",
-			args: args{"state test(x, y, z,) message one(); message two();;", new(State)},
 			wantAST: &State{
 				Name:       "test",
 				Parameters: &IdentifierGroup{Identifiers: []string{"x", "y", "z"}},
