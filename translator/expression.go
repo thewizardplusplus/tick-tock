@@ -682,21 +682,14 @@ func translateFunctionCall(
 		return nil, nil, errors.Errorf("unknown function %s", functionCall.Name)
 	}
 
-	var arguments []expressions.Expression
-	settedStates = mapset.NewSet()
-	for index, argument := range functionCall.Arguments.Expressions {
-		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
-		if err != nil {
-			return nil, nil, errors.Wrapf(
-				err,
-				"unable to translate the argument #%d for the function %s",
-				index,
-				functionCall.Name,
-			)
-		}
-
-		arguments = append(arguments, result)
-		settedStates = settedStates.Union(settedStates2)
+	arguments, settedStates, err :=
+		translateExpressionGroup(functionCall.Arguments, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrapf(
+			err,
+			"unable to translate arguments for the function %s",
+			functionCall.Name,
+		)
 	}
 
 	expression = expressions.NewFunctionCall(functionCall.Name, arguments)
