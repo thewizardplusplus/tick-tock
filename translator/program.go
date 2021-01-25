@@ -332,20 +332,10 @@ func translateSendCommand(sendCommand *parser.SendCommand, declaredIdentifiers m
 	settedStates mapset.Set,
 	err error,
 ) {
-	var arguments []expressions.Expression
-	settedStates = mapset.NewSet()
-	for index, argument := range sendCommand.Arguments.Expressions {
-		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
-		if err != nil {
-			return nil, nil, errors.Wrapf(
-				err,
-				"unable to translate the argument #%d for the send command",
-				index,
-			)
-		}
-
-		arguments = append(arguments, result)
-		settedStates = settedStates.Union(settedStates2)
+	arguments, settedStates, err :=
+		translateExpressionGroup(sendCommand.Arguments, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrapf(err, "unable to translate arguments for the send command")
 	}
 
 	translatedCommand = commands.NewSendCommand(sendCommand.Name, arguments)
