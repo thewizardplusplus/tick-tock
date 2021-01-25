@@ -347,20 +347,9 @@ func translateSetCommand(setCommand *parser.SetCommand, declaredIdentifiers maps
 	settedStates mapset.Set,
 	err error,
 ) {
-	var arguments []expressions.Expression
-	settedStates = mapset.NewSet()
-	for index, argument := range setCommand.Arguments.Expressions {
-		result, settedStates2, err := TranslateExpression(argument, declaredIdentifiers)
-		if err != nil {
-			return nil, nil, errors.Wrapf(
-				err,
-				"unable to translate the argument #%d for the set command",
-				index,
-			)
-		}
-
-		arguments = append(arguments, result)
-		settedStates = settedStates.Union(settedStates2)
+	arguments, settedStates, err := translateExpressionGroup(setCommand.Arguments, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrapf(err, "unable to translate arguments for the set command")
 	}
 
 	translatedCommand = commands.NewSetCommand(setCommand.Name, arguments)
