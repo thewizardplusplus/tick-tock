@@ -97,9 +97,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Atom{
 				ListDefinition: &ListDefinition{
 					Items: &ExpressionGroup{[]*Expression{
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 					}},
 				},
 			},
@@ -119,7 +119,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Entries: []*HashTableEntry{
 						{
 							Name:  pointer.ToString("x"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 						},
 					},
 				},
@@ -134,7 +134,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Entries: []*HashTableEntry{
 						{
 							Name:  pointer.ToString("x"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 						},
 					},
 				},
@@ -149,15 +149,15 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Entries: []*HashTableEntry{
 						{
 							Name:  pointer.ToString("x"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 						},
 						{
 							Name:  pointer.ToString("y"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
 						},
 						{
 							Name:  pointer.ToString("z"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 						},
 					},
 				},
@@ -172,15 +172,15 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Entries: []*HashTableEntry{
 						{
 							Name:  pointer.ToString("x"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 						},
 						{
 							Name:  pointer.ToString("y"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
 						},
 						{
 							Name:  pointer.ToString("z"),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 						},
 					},
 				},
@@ -194,11 +194,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 				HashTableDefinition: &HashTableDefinition{
 					Entries: []*HashTableEntry{
 						{
-							Expression: setInnerField(&Expression{}, "FunctionCall", &FunctionCall{
+							Expression: SetInnerField(&Expression{}, "FunctionCall", &FunctionCall{
 								Name:      "test",
 								Arguments: &ExpressionGroup{},
 							}).(*Expression),
-							Value: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+							Value: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 						},
 					},
 				},
@@ -218,9 +218,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 				FunctionCall: &FunctionCall{
 					Name: "test",
 					Arguments: &ExpressionGroup{[]*Expression{
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 					}},
 				},
 			},
@@ -233,15 +233,15 @@ func TestParseToAST_withExpression(test *testing.T) {
 				ConditionalExpression: &ConditionalExpression{
 					ConditionalCases: []*ConditionalCase{
 						{
-							Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+							Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 							Commands: []*Command{
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										23,
 									)).(*Expression),
 								},
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										42,
 									)).(*Expression),
 								},
@@ -258,7 +258,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Atom{
 				ConditionalExpression: &ConditionalExpression{
 					ConditionalCases: []*ConditionalCase{
-						{Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
+						{Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
 					},
 				},
 			},
@@ -271,45 +271,45 @@ func TestParseToAST_withExpression(test *testing.T) {
 				ConditionalExpression: &ConditionalExpression{
 					ConditionalCases: []*ConditionalCase{
 						{
-							Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+							Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 							Commands: []*Command{
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										23,
 									)).(*Expression),
 								},
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										42,
 									)).(*Expression),
 								},
 							},
 						},
 						{
-							Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(13)).(*Expression),
+							Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(13)).(*Expression),
 							Commands: []*Command{
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										24,
 									)).(*Expression),
 								},
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										43,
 									)).(*Expression),
 								},
 							},
 						},
 						{
-							Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(14)).(*Expression),
+							Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(14)).(*Expression),
 							Commands: []*Command{
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										25,
 									)).(*Expression),
 								},
 								{
-									Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
+									Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(
 										44,
 									)).(*Expression),
 								},
@@ -326,9 +326,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Atom{
 				ConditionalExpression: &ConditionalExpression{
 					ConditionalCases: []*ConditionalCase{
-						{Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
-						{Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression)},
-						{Condition: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression)},
+						{Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
+						{Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression)},
+						{Condition: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression)},
 					},
 				},
 			},
@@ -344,7 +344,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "Atom/expression",
 			args: args{"(23)", new(Atom)},
 			wantAST: &Atom{
-				Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+				Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
 			},
 			wantErr: assert.NoError,
 		},
@@ -354,8 +354,8 @@ func TestParseToAST_withExpression(test *testing.T) {
 			wantAST: &Accessor{
 				Atom: &Atom{Identifier: pointer.ToString("test")},
 				Keys: []*AccessorKey{
-					{Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
-					{Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression)},
+					{Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
+					{Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression)},
 				},
 			},
 			wantErr: assert.NoError,
@@ -376,9 +376,9 @@ func TestParseToAST_withExpression(test *testing.T) {
 				Atom: &Atom{Identifier: pointer.ToString("test")},
 				Keys: []*AccessorKey{
 					{Name: pointer.ToString("one")},
-					{Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
+					{Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression)},
 					{Name: pointer.ToString("two")},
-					{Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression)},
+					{Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression)},
 				},
 			},
 			wantErr: assert.NoError,
@@ -398,7 +398,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 					Operation: "~",
 					Unary: &Unary{
 						Operation: "!",
-						Unary:     setInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(23)).(*Unary),
+						Unary:     SetInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(23)).(*Unary),
 					},
 				},
 			},
@@ -407,23 +407,23 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Unary/empty",
 			args:    args{"23", new(Unary)},
-			wantAST: setInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(23)).(*Unary),
+			wantAST: SetInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(23)).(*Unary),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Multiplication/nonempty",
 			args: args{"5 * 12 / 23 % 42", new(Multiplication)},
 			wantAST: &Multiplication{
-				Unary:     setInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(5)).(*Unary),
+				Unary:     SetInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(5)).(*Unary),
 				Operation: "*",
 				Multiplication: &Multiplication{
-					Unary:     setInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(12)).(*Unary),
+					Unary:     SetInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(12)).(*Unary),
 					Operation: "/",
 					Multiplication: &Multiplication{
-						Unary:     setInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(23)).(*Unary),
+						Unary:     SetInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(23)).(*Unary),
 						Operation: "%",
 						Multiplication: &Multiplication{
-							Unary: setInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(42)).(*Unary),
+							Unary: SetInnerField(&Unary{}, "IntegerNumber", pointer.ToInt64(42)).(*Unary),
 						},
 					},
 				},
@@ -433,7 +433,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name: "Multiplication/empty",
 			args: args{"23", new(Multiplication)},
-			wantAST: setInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
+			wantAST: SetInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
 				23,
 			)).(*Multiplication),
 			wantErr: assert.NoError,
@@ -442,17 +442,17 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "Addition/nonempty",
 			args: args{"12 + 23 - 42", new(Addition)},
 			wantAST: &Addition{
-				Multiplication: setInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
+				Multiplication: SetInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*Multiplication),
 				Operation: "+",
 				Addition: &Addition{
-					Multiplication: setInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
+					Multiplication: SetInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*Multiplication),
 					Operation: "-",
 					Addition: &Addition{
-						Multiplication: setInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
+						Multiplication: SetInnerField(&Multiplication{}, "IntegerNumber", pointer.ToInt64(
 							42,
 						)).(*Multiplication),
 					},
@@ -463,23 +463,23 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Addition/empty",
 			args:    args{"23", new(Addition)},
-			wantAST: setInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(23)).(*Addition),
+			wantAST: SetInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(23)).(*Addition),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Shift/nonempty",
 			args: args{"5 << 12 >> 23 >>> 42", new(Shift)},
 			wantAST: &Shift{
-				Addition:  setInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(5)).(*Addition),
+				Addition:  SetInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(5)).(*Addition),
 				Operation: "<<",
 				Shift: &Shift{
-					Addition:  setInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(12)).(*Addition),
+					Addition:  SetInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(12)).(*Addition),
 					Operation: ">>",
 					Shift: &Shift{
-						Addition:  setInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(23)).(*Addition),
+						Addition:  SetInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(23)).(*Addition),
 						Operation: ">>>",
 						Shift: &Shift{
-							Addition: setInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(42)).(*Addition),
+							Addition: SetInnerField(&Addition{}, "IntegerNumber", pointer.ToInt64(42)).(*Addition),
 						},
 					},
 				},
@@ -489,18 +489,18 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Shift/empty",
 			args:    args{"23", new(Shift)},
-			wantAST: setInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(23)).(*Shift),
+			wantAST: SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(23)).(*Shift),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "BitwiseConjunction/nonempty",
 			args: args{"12 & 23 & 42", new(BitwiseConjunction)},
 			wantAST: &BitwiseConjunction{
-				Shift: setInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(12)).(*Shift),
+				Shift: SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(12)).(*Shift),
 				BitwiseConjunction: &BitwiseConjunction{
-					Shift: setInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(23)).(*Shift),
+					Shift: SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(23)).(*Shift),
 					BitwiseConjunction: &BitwiseConjunction{
-						Shift: setInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(42)).(*Shift),
+						Shift: SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(42)).(*Shift),
 					},
 				},
 			},
@@ -509,7 +509,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name: "BitwiseConjunction/empty",
 			args: args{"23", new(BitwiseConjunction)},
-			wantAST: setInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
+			wantAST: SetInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
 				23,
 			)).(*BitwiseConjunction),
 			wantErr: assert.NoError,
@@ -518,15 +518,15 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "BitwiseExclusiveDisjunction/nonempty",
 			args: args{"12 ^ 23 ^ 42", new(BitwiseExclusiveDisjunction)},
 			wantAST: &BitwiseExclusiveDisjunction{
-				BitwiseConjunction: setInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
+				BitwiseConjunction: SetInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*BitwiseConjunction),
 				BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-					BitwiseConjunction: setInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
+					BitwiseConjunction: SetInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*BitwiseConjunction),
 					BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
-						BitwiseConjunction: setInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
+						BitwiseConjunction: SetInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
 						)).(*BitwiseConjunction),
 					},
@@ -537,7 +537,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name: "BitwiseExclusiveDisjunction/empty",
 			args: args{"23", new(BitwiseExclusiveDisjunction)},
-			wantAST: setInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
+			wantAST: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
 				23,
 			)).(*BitwiseExclusiveDisjunction),
 			wantErr: assert.NoError,
@@ -546,15 +546,15 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "BitwiseDisjunction/nonempty",
 			args: args{"12 | 23 | 42", new(BitwiseDisjunction)},
 			wantAST: &BitwiseDisjunction{
-				BitwiseExclusiveDisjunction: setInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
+				BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*BitwiseExclusiveDisjunction),
 				BitwiseDisjunction: &BitwiseDisjunction{
-					BitwiseExclusiveDisjunction: setInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
+					BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*BitwiseExclusiveDisjunction),
 					BitwiseDisjunction: &BitwiseDisjunction{
-						BitwiseExclusiveDisjunction: setInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
+						BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
 						)).(*BitwiseExclusiveDisjunction),
 					},
@@ -565,7 +565,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name: "BitwiseDisjunction/empty",
 			args: args{"23", new(BitwiseDisjunction)},
-			wantAST: setInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
+			wantAST: SetInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
 				23,
 			)).(*BitwiseDisjunction),
 			wantErr: assert.NoError,
@@ -574,17 +574,17 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "Comparison/nonempty/less",
 			args: args{"12 < 23 <= 42", new(Comparison)},
 			wantAST: &Comparison{
-				BitwiseDisjunction: setInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
+				BitwiseDisjunction: SetInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*BitwiseDisjunction),
 				Operation: "<",
 				Comparison: &Comparison{
-					BitwiseDisjunction: setInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
+					BitwiseDisjunction: SetInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*BitwiseDisjunction),
 					Operation: "<=",
 					Comparison: &Comparison{
-						BitwiseDisjunction: setInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
+						BitwiseDisjunction: SetInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
 						)).(*BitwiseDisjunction),
 					},
@@ -596,17 +596,17 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "Comparison/nonempty/great",
 			args: args{"12 > 23 >= 42", new(Comparison)},
 			wantAST: &Comparison{
-				BitwiseDisjunction: setInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
+				BitwiseDisjunction: SetInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*BitwiseDisjunction),
 				Operation: ">",
 				Comparison: &Comparison{
-					BitwiseDisjunction: setInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
+					BitwiseDisjunction: SetInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*BitwiseDisjunction),
 					Operation: ">=",
 					Comparison: &Comparison{
-						BitwiseDisjunction: setInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
+						BitwiseDisjunction: SetInnerField(&BitwiseDisjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
 						)).(*BitwiseDisjunction),
 					},
@@ -617,20 +617,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Comparison/empty",
 			args:    args{"23", new(Comparison)},
-			wantAST: setInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(23)).(*Comparison),
+			wantAST: SetInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(23)).(*Comparison),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Equality/nonempty",
 			args: args{"12 == 23 != 42", new(Equality)},
 			wantAST: &Equality{
-				Comparison: setInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(12)).(*Comparison),
+				Comparison: SetInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(12)).(*Comparison),
 				Operation:  "==",
 				Equality: &Equality{
-					Comparison: setInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(23)).(*Comparison),
+					Comparison: SetInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(23)).(*Comparison),
 					Operation:  "!=",
 					Equality: &Equality{
-						Comparison: setInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(42)).(*Comparison),
+						Comparison: SetInnerField(&Comparison{}, "IntegerNumber", pointer.ToInt64(42)).(*Comparison),
 					},
 				},
 			},
@@ -639,18 +639,18 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Equality/empty",
 			args:    args{"23", new(Equality)},
-			wantAST: setInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(23)).(*Equality),
+			wantAST: SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(23)).(*Equality),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Conjunction/nonempty",
 			args: args{"12 && 23 && 42", new(Conjunction)},
 			wantAST: &Conjunction{
-				Equality: setInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(12)).(*Equality),
+				Equality: SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(12)).(*Equality),
 				Conjunction: &Conjunction{
-					Equality: setInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(23)).(*Equality),
+					Equality: SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(23)).(*Equality),
 					Conjunction: &Conjunction{
-						Equality: setInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(42)).(*Equality),
+						Equality: SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(42)).(*Equality),
 					},
 				},
 			},
@@ -659,22 +659,22 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Conjunction/empty",
 			args:    args{"23", new(Conjunction)},
-			wantAST: setInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(23)).(*Conjunction),
+			wantAST: SetInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(23)).(*Conjunction),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Disjunction/nonempty",
 			args: args{"12 || 23 || 42", new(Disjunction)},
 			wantAST: &Disjunction{
-				Conjunction: setInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
+				Conjunction: SetInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*Conjunction),
 				Disjunction: &Disjunction{
-					Conjunction: setInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
+					Conjunction: SetInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*Conjunction),
 					Disjunction: &Disjunction{
-						Conjunction: setInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
+						Conjunction: SetInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
 						)).(*Conjunction),
 					},
@@ -685,22 +685,22 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Disjunction/empty",
 			args:    args{"23", new(Disjunction)},
-			wantAST: setInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(23)).(*Disjunction),
+			wantAST: SetInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(23)).(*Disjunction),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "NilCoalescing/nonempty",
 			args: args{"12 ?? 23 ?? 42", new(NilCoalescing)},
 			wantAST: &NilCoalescing{
-				Disjunction: setInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(
+				Disjunction: SetInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*Disjunction),
 				NilCoalescing: &NilCoalescing{
-					Disjunction: setInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(
+					Disjunction: SetInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*Disjunction),
 					NilCoalescing: &NilCoalescing{
-						Disjunction: setInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(
+						Disjunction: SetInnerField(&Disjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
 						)).(*Disjunction),
 					},
@@ -711,20 +711,20 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "NilCoalescing/empty",
 			args:    args{"23", new(NilCoalescing)},
-			wantAST: setInnerField(&NilCoalescing{}, "IntegerNumber", pointer.ToInt64(23)).(*NilCoalescing),
+			wantAST: SetInnerField(&NilCoalescing{}, "IntegerNumber", pointer.ToInt64(23)).(*NilCoalescing),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "ListConstruction/nonempty",
 			args: args{"12 : [23, 42]", new(ListConstruction)},
 			wantAST: &ListConstruction{
-				NilCoalescing: setInnerField(&NilCoalescing{}, "IntegerNumber", pointer.ToInt64(
+				NilCoalescing: SetInnerField(&NilCoalescing{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*NilCoalescing),
-				ListConstruction: setInnerField(&ListConstruction{}, "ListDefinition", &ListDefinition{
+				ListConstruction: SetInnerField(&ListConstruction{}, "ListDefinition", &ListDefinition{
 					Items: &ExpressionGroup{[]*Expression{
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 					}},
 				}).(*ListConstruction),
 			},
@@ -733,7 +733,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name: "ListConstruction/empty",
 			args: args{"23", new(ListConstruction)},
-			wantAST: setInnerField(&ListConstruction{}, "IntegerNumber", pointer.ToInt64(
+			wantAST: SetInnerField(&ListConstruction{}, "IntegerNumber", pointer.ToInt64(
 				23,
 			)).(*ListConstruction),
 			wantErr: assert.NoError,
@@ -741,7 +741,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 		{
 			name:    "Expression",
 			args:    args{"23", new(Expression)},
-			wantAST: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+			wantAST: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
 			wantErr: assert.NoError,
 		},
 	} {

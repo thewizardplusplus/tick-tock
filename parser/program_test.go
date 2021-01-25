@@ -25,7 +25,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			wantAST: &Command{
 				Let: &LetCommand{
 					Identifier: "number",
-					Expression: setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+					Expression: SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
 				},
 			},
 			wantErr: assert.NoError,
@@ -45,9 +45,9 @@ func TestParseToAST_withProgram(test *testing.T) {
 				Start: &StartCommand{
 					Name: pointer.ToString("Test"),
 					Arguments: &ExpressionGroup{[]*Expression{
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 					}},
 				},
 			},
@@ -58,7 +58,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			args: args{"start [test()]()", new(Command)},
 			wantAST: &Command{
 				Start: &StartCommand{
-					Expression: setInnerField(&Expression{}, "FunctionCall", &FunctionCall{
+					Expression: SetInnerField(&Expression{}, "FunctionCall", &FunctionCall{
 						Name:      "test",
 						Arguments: &ExpressionGroup{},
 					}).(*Expression),
@@ -80,9 +80,9 @@ func TestParseToAST_withProgram(test *testing.T) {
 				Send: &SendCommand{
 					Name: "test",
 					Arguments: &ExpressionGroup{[]*Expression{
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 					}},
 				},
 			},
@@ -101,9 +101,9 @@ func TestParseToAST_withProgram(test *testing.T) {
 				Set: &SetCommand{
 					Name: "test",
 					Arguments: &ExpressionGroup{[]*Expression{
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-						setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 					}},
 				},
 			},
@@ -119,7 +119,7 @@ func TestParseToAST_withProgram(test *testing.T) {
 			name: "Command/expression",
 			args: args{"test()", new(Command)},
 			wantAST: &Command{
-				Expression: setInnerField(&Expression{}, "FunctionCall", &FunctionCall{
+				Expression: SetInnerField(&Expression{}, "FunctionCall", &FunctionCall{
 					Name:      "test",
 					Arguments: &ExpressionGroup{},
 				}).(*Expression),

@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/AlekSi/pointer"
@@ -60,7 +59,7 @@ func TestParseToAST_withCommon(test *testing.T) {
 			name: "ExpressionGroup/single item",
 			args: args{"12", new(ExpressionGroup)},
 			wantAST: &ExpressionGroup{[]*Expression{
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 			}},
 			wantErr: assert.NoError,
 		},
@@ -68,7 +67,7 @@ func TestParseToAST_withCommon(test *testing.T) {
 			name: "ExpressionGroup/single item/trailing comma",
 			args: args{"12,", new(ExpressionGroup)},
 			wantAST: &ExpressionGroup{[]*Expression{
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
 			}},
 			wantErr: assert.NoError,
 		},
@@ -76,9 +75,9 @@ func TestParseToAST_withCommon(test *testing.T) {
 			name: "ExpressionGroup/few items",
 			args: args{"12, 23, 42", new(ExpressionGroup)},
 			wantAST: &ExpressionGroup{[]*Expression{
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 			}},
 			wantErr: assert.NoError,
 		},
@@ -86,9 +85,9 @@ func TestParseToAST_withCommon(test *testing.T) {
 			name: "ExpressionGroup/few items/trailing comma",
 			args: args{"12, 23, 42,", new(ExpressionGroup)},
 			wantAST: &ExpressionGroup{[]*Expression{
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-				setInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(12)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+				SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
 			}},
 			wantErr: assert.NoError,
 		},
@@ -99,26 +98,5 @@ func TestParseToAST_withCommon(test *testing.T) {
 			assert.Equal(test, testData.wantAST, testData.args.ast)
 			testData.wantErr(test, err)
 		})
-	}
-}
-
-func setInnerField(rootValue interface{}, fieldName string, fieldValue interface{}) interface{} {
-	value := reflect.ValueOf(rootValue).Elem()
-	for {
-		field := value.FieldByName(fieldName)
-		if field.IsValid() {
-			field.Set(reflect.ValueOf(fieldValue))
-			return rootValue
-		}
-
-		fieldIndex := 0
-		if valueType := value.Type(); valueType.Name() == "Unary" {
-			fieldIndex = valueType.NumField() - 1
-		}
-
-		field = value.Field(fieldIndex)
-		field.Set(reflect.New(field.Type().Elem()))
-
-		value = field.Elem()
 	}
 }
