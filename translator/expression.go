@@ -605,24 +605,18 @@ func translateListDefinition(
 	settedStates mapset.Set,
 	err error,
 ) {
-	argumentTwo := expressions.Expression(expressions.NewIdentifier(EmptyListConstantName))
-	settedStates = mapset.NewSet()
-	for index := len(listDefinition.Items.Expressions) - 1; index >= 0; index-- {
-		argumentOne, settedStates2, err :=
-			TranslateExpression(listDefinition.Items.Expressions[index], declaredIdentifiers)
-		if err != nil {
-			return nil, nil, errors.Wrapf(
-				err,
-				"unable to translate the item #%d of the list definition",
-				index,
-			)
-		}
+	items, settedStates, err := translateExpressionGroup(listDefinition.Items, declaredIdentifiers)
+	if err != nil {
+		return nil, nil, errors.Wrapf(err, "unable to translate items for the list definition")
+	}
 
+	argumentTwo := expressions.Expression(expressions.NewIdentifier(EmptyListConstantName))
+	for index := len(items) - 1; index >= 0; index-- {
+		argumentOne := items[index]
 		argumentTwo = expressions.NewFunctionCall(
 			ListConstructionFunctionName,
 			[]expressions.Expression{argumentOne, argumentTwo},
 		)
-		settedStates = settedStates.Union(settedStates2)
 	}
 
 	return argumentTwo, settedStates, nil
