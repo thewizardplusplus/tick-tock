@@ -37,7 +37,8 @@ type ListConstruction struct {
 // NilCoalescing ...
 type NilCoalescing struct {
 	Disjunction   *Disjunction   `parser:"@@"`
-	NilCoalescing *NilCoalescing `parser:"[ \"?\" \"?\" @@ ]"`
+	Operation     string         `parser:"[ @( \"?\" \"?\" )"`
+	NilCoalescing *NilCoalescing `parser:"@@ ]"`
 }
 
 // Disjunction ...
