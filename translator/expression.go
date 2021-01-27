@@ -156,7 +156,8 @@ func translateConjunction(
 	settedStates mapset.Set,
 	err error,
 ) {
-	argumentOne, settedStates, err := translateEquality(conjunction.Equality, declaredIdentifiers)
+	argumentOne, settedStates, err :=
+		translateBinaryOperation(conjunction.Equality, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the equality")
 	}
@@ -171,43 +172,6 @@ func translateConjunction(
 	}
 
 	expression = expressions.NewBooleanOperator(argumentOne, argumentTwo, types.False)
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateEquality(
-	equality *parser.Equality,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err :=
-		translateBinaryOperation(equality.Comparison, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the comparison")
-	}
-	if equality.Equality == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err := translateEquality(equality.Equality, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the equality")
-	}
-
-	var functionName string
-	switch equality.Operation {
-	case "==":
-		functionName = EqualFunctionName
-	case "!=":
-		functionName = NotEqualFunctionName
-	}
-
-	expression =
-		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil
