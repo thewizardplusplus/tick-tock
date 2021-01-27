@@ -49,44 +49,12 @@ func TranslateExpression(
 	err error,
 ) {
 	result, settedStates, err =
-		translateListConstruction(expression.ListConstruction, declaredIdentifiers)
+		translateBinaryOperation(expression.ListConstruction, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the list construction")
 	}
 
 	return result, settedStates, nil
-}
-
-func translateListConstruction(
-	listConstruction *parser.ListConstruction,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err :=
-		translateBinaryOperation(listConstruction.NilCoalescing, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the nil coalescing")
-	}
-	if listConstruction.ListConstruction == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err :=
-		translateListConstruction(listConstruction.ListConstruction, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the list construction")
-	}
-
-	expression = expressions.NewFunctionCall(
-		ListConstructionFunctionName,
-		[]expressions.Expression{argumentOne, argumentTwo},
-	)
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
 }
 
 func translateUnary(

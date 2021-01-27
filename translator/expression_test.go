@@ -87,7 +87,7 @@ func TestTranslateExpression(test *testing.T) {
 	}
 }
 
-func TestTranslateListConstruction(test *testing.T) {
+func TestTranslateBinaryOperation_listConstruction(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -221,7 +221,7 @@ func TestTranslateListConstruction(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateListConstruction(listConstruction, data.args.declaredIdentifiers)
+				translateBinaryOperation(listConstruction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
