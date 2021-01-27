@@ -15,7 +15,7 @@ func SetInnerField(rootValue interface{}, fieldName string, fieldValue interface
 		}
 
 		fieldIndex := 0
-		if valueType := value.Type(); valueType.Name() == "Unary" {
+		if valueType := value.Type(); valueType == reflect.TypeOf(Unary{}) {
 			fieldIndex = valueType.NumField() - 1
 		}
 
