@@ -360,7 +360,7 @@ func translateShift(
 	settedStates mapset.Set,
 	err error,
 ) {
-	argumentOne, settedStates, err := translateAddition(shift.Addition, declaredIdentifiers)
+	argumentOne, settedStates, err := translateBinaryOperation(shift.Addition, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the addition")
 	}
@@ -381,43 +381,6 @@ func translateShift(
 		functionName = BitwiseRightShiftFunctionName
 	case ">>>":
 		functionName = BitwiseUnsignedRightShiftFunctionName
-	}
-
-	expression =
-		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateAddition(
-	addition *parser.Addition,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err :=
-		translateBinaryOperation(addition.Multiplication, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the multiplication")
-	}
-	if addition.Addition == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err := translateAddition(addition.Addition, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the addition")
-	}
-
-	var functionName string
-	switch addition.Operation {
-	case "+":
-		functionName = AdditionFunctionName
-	case "-":
-		functionName = SubtractionFunctionName
 	}
 
 	expression =

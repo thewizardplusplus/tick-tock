@@ -1608,7 +1608,7 @@ func TestTranslateShift(test *testing.T) {
 	}
 }
 
-func TestTranslateAddition(test *testing.T) {
+func TestTranslateBinaryOperation_addition(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -1758,7 +1758,7 @@ func TestTranslateAddition(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateAddition(addition, data.args.declaredIdentifiers)
+				translateBinaryOperation(addition, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
