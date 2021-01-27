@@ -728,18 +728,24 @@ func TestParseToAST_withExpression(test *testing.T) {
 		},
 		{
 			name: "ListConstruction/nonempty",
-			args: args{"12 : [23, 42]", new(ListConstruction)},
+			args: args{"5 : 12 : [23, 42]", new(ListConstruction)},
 			wantAST: &ListConstruction{
 				NilCoalescing: SetInnerField(&NilCoalescing{}, "IntegerNumber", pointer.ToInt64(
-					12,
+					5,
 				)).(*NilCoalescing),
 				Operation: ":",
-				ListConstruction: SetInnerField(&ListConstruction{}, "ListDefinition", &ListDefinition{
-					Items: &ExpressionGroup{[]*Expression{
-						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
-						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
-					}},
-				}).(*ListConstruction),
+				ListConstruction: &ListConstruction{
+					NilCoalescing: SetInnerField(&NilCoalescing{}, "IntegerNumber", pointer.ToInt64(
+						12,
+					)).(*NilCoalescing),
+					Operation: ":",
+					ListConstruction: SetInnerField(&ListConstruction{}, "ListDefinition", &ListDefinition{
+						Items: &ExpressionGroup{[]*Expression{
+							SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),
+							SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(42)).(*Expression),
+						}},
+					}).(*ListConstruction),
+				},
 			},
 			wantErr: assert.NoError,
 		},
