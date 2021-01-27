@@ -550,19 +550,25 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "BitwiseDisjunction/nonempty",
 			args: args{"12 | 23 | 42", new(BitwiseDisjunction)},
 			wantAST: &BitwiseDisjunction{
-				BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
-					12,
-				)).(*BitwiseExclusiveDisjunction),
+				BitwiseExclusiveDisjunction: SetInnerField(
+					&BitwiseExclusiveDisjunction{},
+					"IntegerNumber",
+					pointer.ToInt64(12),
+				).(*BitwiseExclusiveDisjunction),
 				Operation: "|",
 				BitwiseDisjunction: &BitwiseDisjunction{
-					BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
-						23,
-					)).(*BitwiseExclusiveDisjunction),
+					BitwiseExclusiveDisjunction: SetInnerField(
+						&BitwiseExclusiveDisjunction{},
+						"IntegerNumber",
+						pointer.ToInt64(23),
+					).(*BitwiseExclusiveDisjunction),
 					Operation: "|",
 					BitwiseDisjunction: &BitwiseDisjunction{
-						BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
-							42,
-						)).(*BitwiseExclusiveDisjunction),
+						BitwiseExclusiveDisjunction: SetInnerField(
+							&BitwiseExclusiveDisjunction{},
+							"IntegerNumber",
+							pointer.ToInt64(42),
+						).(*BitwiseExclusiveDisjunction),
 					},
 				},
 			},

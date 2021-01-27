@@ -314,7 +314,7 @@ var (
 			return types.Nil{}, nil
 		},
 		"random": func() (float64, error) {
-			return rand.Float64(), nil
+			return rand.Float64(), nil // nolint: gosec
 		},
 		"head": func(pair *types.Pair) (interface{}, error) {
 			if pair == nil {
