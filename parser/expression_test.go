@@ -733,6 +733,7 @@ func TestParseToAST_withExpression(test *testing.T) {
 				NilCoalescing: SetInnerField(&NilCoalescing{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*NilCoalescing),
+				Operation: ":",
 				ListConstruction: SetInnerField(&ListConstruction{}, "ListDefinition", &ListDefinition{
 					Items: &ExpressionGroup{[]*Expression{
 						SetInnerField(&Expression{}, "IntegerNumber", pointer.ToInt64(23)).(*Expression),

@@ -31,7 +31,8 @@ type Expression struct {
 // ListConstruction ...
 type ListConstruction struct {
 	NilCoalescing    *NilCoalescing    `parser:"@@"`
-	ListConstruction *ListConstruction `parser:"[ \":\" @@ ]"`
+	Operation        string            `parser:"[ @\":\""`
+	ListConstruction *ListConstruction `parser:"@@ ]"`
 }
 
 // NilCoalescing ...
