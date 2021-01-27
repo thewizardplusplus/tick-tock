@@ -329,7 +329,8 @@ func translateBitwiseConjunction(
 	settedStates mapset.Set,
 	err error,
 ) {
-	argumentOne, settedStates, err := translateShift(bitwiseConjunction.Shift, declaredIdentifiers)
+	argumentOne, settedStates, err :=
+		translateBinaryOperation(bitwiseConjunction.Shift, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the shift")
 	}
@@ -347,44 +348,6 @@ func translateBitwiseConjunction(
 		BitwiseConjunctionFunctionName,
 		[]expressions.Expression{argumentOne, argumentTwo},
 	)
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateShift(
-	shift *parser.Shift,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err := translateBinaryOperation(shift.Addition, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the addition")
-	}
-	if shift.Shift == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err := translateShift(shift.Shift, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the shift")
-	}
-
-	var functionName string
-	switch shift.Operation {
-	case "<<":
-		functionName = BitwiseLeftShiftFunctionName
-	case ">>":
-		functionName = BitwiseRightShiftFunctionName
-	case ">>>":
-		functionName = BitwiseUnsignedRightShiftFunctionName
-	}
-
-	expression =
-		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil
