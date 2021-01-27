@@ -999,7 +999,7 @@ func TestTranslateComparison(test *testing.T) {
 	}
 }
 
-func TestTranslateBitwiseDisjunction(test *testing.T) {
+func TestTranslateBinaryOperation_bitwiseDisjunction(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -1141,7 +1141,7 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateBitwiseDisjunction(bitwiseDisjunction, data.args.declaredIdentifiers)
+				translateBinaryOperation(bitwiseDisjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)

@@ -221,7 +221,7 @@ func translateComparison(
 	err error,
 ) {
 	argumentOne, settedStates, err :=
-		translateBitwiseDisjunction(comparison.BitwiseDisjunction, declaredIdentifiers)
+		translateBinaryOperation(comparison.BitwiseDisjunction, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the bitwise disjunction")
 	}
@@ -248,38 +248,6 @@ func translateComparison(
 
 	expression =
 		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateBitwiseDisjunction(
-	bitwiseDisjunction *parser.BitwiseDisjunction,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err :=
-		translateBinaryOperation(bitwiseDisjunction.BitwiseExclusiveDisjunction, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the bitwise exclusive disjunction")
-	}
-	if bitwiseDisjunction.BitwiseDisjunction == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err :=
-		translateBitwiseDisjunction(bitwiseDisjunction.BitwiseDisjunction, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the bitwise disjunction")
-	}
-
-	expression = expressions.NewFunctionCall(
-		BitwiseDisjunctionFunctionName,
-		[]expressions.Expression{argumentOne, argumentTwo},
-	)
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil
