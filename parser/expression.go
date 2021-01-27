@@ -69,7 +69,8 @@ type Comparison struct {
 // BitwiseDisjunction ...
 type BitwiseDisjunction struct {
 	BitwiseExclusiveDisjunction *BitwiseExclusiveDisjunction `parser:"@@"`
-	BitwiseDisjunction          *BitwiseDisjunction          `parser:"[ \"|\" @@ ]"`
+	Operation                   string                       `parser:"[ @\"|\""`
+	BitwiseDisjunction          *BitwiseDisjunction          `parser:"@@ ]"`
 }
 
 // BitwiseExclusiveDisjunction ...

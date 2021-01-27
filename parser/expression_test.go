@@ -553,10 +553,12 @@ func TestParseToAST_withExpression(test *testing.T) {
 				BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*BitwiseExclusiveDisjunction),
+				Operation: "|",
 				BitwiseDisjunction: &BitwiseDisjunction{
 					BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*BitwiseExclusiveDisjunction),
+					Operation: "|",
 					BitwiseDisjunction: &BitwiseDisjunction{
 						BitwiseExclusiveDisjunction: SetInnerField(&BitwiseExclusiveDisjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
