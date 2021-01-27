@@ -399,7 +399,7 @@ func translateAddition(
 	err error,
 ) {
 	argumentOne, settedStates, err :=
-		translateMultiplication(addition.Multiplication, declaredIdentifiers)
+		translateBinaryOperation(addition.Multiplication, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the multiplication")
 	}
@@ -418,45 +418,6 @@ func translateAddition(
 		functionName = AdditionFunctionName
 	case "-":
 		functionName = SubtractionFunctionName
-	}
-
-	expression =
-		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateMultiplication(
-	multiplication *parser.Multiplication,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err := translateUnary(multiplication.Unary, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the unary")
-	}
-	if multiplication.Multiplication == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err :=
-		translateMultiplication(multiplication.Multiplication, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the multiplication")
-	}
-
-	var functionName string
-	switch multiplication.Operation {
-	case "*":
-		functionName = MultiplicationFunctionName
-	case "/":
-		functionName = DivisionFunctionName
-	case "%":
-		functionName = ModuloFunctionName
 	}
 
 	expression =
