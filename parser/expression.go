@@ -81,7 +81,8 @@ type BitwiseExclusiveDisjunction struct {
 // BitwiseConjunction ...
 type BitwiseConjunction struct {
 	Shift              *Shift              `parser:"@@"`
-	BitwiseConjunction *BitwiseConjunction `parser:"[ \"&\" @@ ]"`
+	Operation          string              `parser:"[ @\"&\""`
+	BitwiseConjunction *BitwiseConjunction `parser:"@@ ]"`
 }
 
 // Shift ...

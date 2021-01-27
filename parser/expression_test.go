@@ -496,9 +496,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "BitwiseConjunction/nonempty",
 			args: args{"12 & 23 & 42", new(BitwiseConjunction)},
 			wantAST: &BitwiseConjunction{
-				Shift: SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(12)).(*Shift),
+				Shift:     SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(12)).(*Shift),
+				Operation: "&",
 				BitwiseConjunction: &BitwiseConjunction{
-					Shift: SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(23)).(*Shift),
+					Shift:     SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(23)).(*Shift),
+					Operation: "&",
 					BitwiseConjunction: &BitwiseConjunction{
 						Shift: SetInnerField(&Shift{}, "IntegerNumber", pointer.ToInt64(42)).(*Shift),
 					},
