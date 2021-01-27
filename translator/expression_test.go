@@ -1150,7 +1150,7 @@ func TestTranslateBitwiseDisjunction(test *testing.T) {
 	}
 }
 
-func TestTranslateBitwiseExclusiveDisjunction(test *testing.T) {
+func TestTranslateBinaryOperation_bitwiseExclusiveDisjunction(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -1291,10 +1291,8 @@ func TestTranslateBitwiseExclusiveDisjunction(test *testing.T) {
 			err := parser.ParseToAST(data.args.code, bitwiseExclusiveDisjunction)
 			require.NoError(test, err)
 
-			gotExpression, gotSettedStates, gotErr := translateBitwiseExclusiveDisjunction(
-				bitwiseExclusiveDisjunction,
-				data.args.declaredIdentifiers,
-			)
+			gotExpression, gotSettedStates, gotErr :=
+				translateBinaryOperation(bitwiseExclusiveDisjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
