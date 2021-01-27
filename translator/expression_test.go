@@ -373,7 +373,7 @@ func TestTranslateNilCoalescing(test *testing.T) {
 	}
 }
 
-func TestTranslateDisjunction(test *testing.T) {
+func TestTranslateBinaryOperation_disjunction(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -510,7 +510,7 @@ func TestTranslateDisjunction(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateDisjunction(disjunction, data.args.declaredIdentifiers)
+				translateBinaryOperation(disjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)

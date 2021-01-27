@@ -7,7 +7,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/thewizardplusplus/tick-tock/parser"
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
-	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
 // ...
@@ -99,7 +98,7 @@ func translateNilCoalescing(
 	err error,
 ) {
 	argumentOne, settedStates, err :=
-		translateDisjunction(nilCoalescing.Disjunction, declaredIdentifiers)
+		translateBinaryOperation(nilCoalescing.Disjunction, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the disjunction")
 	}
@@ -114,35 +113,6 @@ func translateNilCoalescing(
 	}
 
 	expression = expressions.NewNilCoalescingOperator(argumentOne, argumentTwo)
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateDisjunction(
-	disjunction *parser.Disjunction,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err :=
-		translateBinaryOperation(disjunction.Conjunction, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the conjunction")
-	}
-	if disjunction.Disjunction == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err :=
-		translateDisjunction(disjunction.Disjunction, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the disjunction")
-	}
-
-	expression = expressions.NewBooleanOperator(argumentOne, argumentTwo, types.True)
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil
