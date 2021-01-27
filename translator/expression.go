@@ -128,7 +128,7 @@ func translateDisjunction(
 	err error,
 ) {
 	argumentOne, settedStates, err :=
-		translateConjunction(disjunction.Conjunction, declaredIdentifiers)
+		translateBinaryOperation(disjunction.Conjunction, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the conjunction")
 	}
@@ -143,35 +143,6 @@ func translateDisjunction(
 	}
 
 	expression = expressions.NewBooleanOperator(argumentOne, argumentTwo, types.True)
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateConjunction(
-	conjunction *parser.Conjunction,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err :=
-		translateBinaryOperation(conjunction.Equality, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the equality")
-	}
-	if conjunction.Conjunction == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err :=
-		translateConjunction(conjunction.Conjunction, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the conjunction")
-	}
-
-	expression = expressions.NewBooleanOperator(argumentOne, argumentTwo, types.False)
 	settedStates = settedStates.Union(settedStates2)
 
 	return expression, settedStates, nil

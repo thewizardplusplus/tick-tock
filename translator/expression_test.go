@@ -519,7 +519,7 @@ func TestTranslateDisjunction(test *testing.T) {
 	}
 }
 
-func TestTranslateConjunction(test *testing.T) {
+func TestTranslateBinaryOperation_conjunction(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -656,7 +656,7 @@ func TestTranslateConjunction(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateConjunction(conjunction, data.args.declaredIdentifiers)
+				translateBinaryOperation(conjunction, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
