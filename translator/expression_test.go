@@ -808,7 +808,7 @@ func TestTranslateEquality(test *testing.T) {
 	}
 }
 
-func TestTranslateComparison(test *testing.T) {
+func TestTranslateBinaryOperation_comparison(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -990,7 +990,7 @@ func TestTranslateComparison(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateComparison(comparison, data.args.declaredIdentifiers)
+				translateBinaryOperation(comparison, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)

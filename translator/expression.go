@@ -184,7 +184,8 @@ func translateEquality(
 	settedStates mapset.Set,
 	err error,
 ) {
-	argumentOne, settedStates, err := translateComparison(equality.Comparison, declaredIdentifiers)
+	argumentOne, settedStates, err :=
+		translateBinaryOperation(equality.Comparison, declaredIdentifiers)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to translate the comparison")
 	}
@@ -203,47 +204,6 @@ func translateEquality(
 		functionName = EqualFunctionName
 	case "!=":
 		functionName = NotEqualFunctionName
-	}
-
-	expression =
-		expressions.NewFunctionCall(functionName, []expressions.Expression{argumentOne, argumentTwo})
-	settedStates = settedStates.Union(settedStates2)
-
-	return expression, settedStates, nil
-}
-
-func translateComparison(
-	comparison *parser.Comparison,
-	declaredIdentifiers mapset.Set,
-) (
-	expression expressions.Expression,
-	settedStates mapset.Set,
-	err error,
-) {
-	argumentOne, settedStates, err :=
-		translateBinaryOperation(comparison.BitwiseDisjunction, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the bitwise disjunction")
-	}
-	if comparison.Comparison == nil {
-		return argumentOne, settedStates, nil
-	}
-
-	argumentTwo, settedStates2, err := translateComparison(comparison.Comparison, declaredIdentifiers)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "unable to translate the comparison")
-	}
-
-	var functionName string
-	switch comparison.Operation {
-	case "<":
-		functionName = LessFunctionName
-	case "<=":
-		functionName = LessOrEqualFunctionName
-	case ">":
-		functionName = GreaterFunctionName
-	case ">=":
-		functionName = GreaterOrEqualFunctionName
 	}
 
 	expression =
