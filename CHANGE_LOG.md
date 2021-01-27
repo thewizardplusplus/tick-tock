@@ -1,5 +1,16 @@
 # Change Log
 
+## [v2.2.3](https://github.com/thewizardplusplus/tick-tock/tree/v2.2.3) (2021-01-27)
+
+- refactoring:
+  - `parser` package:
+    - add the `parser.ExpressionGroup` structure;
+    - add the `parser.IdentifierGroup` structure;
+    - add the `parser.SetInnerField()` function;
+  - `translator` package:
+    - add the `translator.translateExpressionGroup()` function;
+    - add the `translator.translateBinaryOperation()` function.
+
 ## [v2.2.2](https://github.com/thewizardplusplus/tick-tock/tree/v2.2.2) (2021-01-17)
 
 - рантайм:
