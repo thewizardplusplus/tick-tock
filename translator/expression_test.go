@@ -230,7 +230,7 @@ func TestTranslateListConstruction(test *testing.T) {
 	}
 }
 
-func TestTranslateNilCoalescing(test *testing.T) {
+func TestTranslateBinaryOperation_nilCoalescing(test *testing.T) {
 	type args struct {
 		code                string
 		declaredIdentifiers mapset.Set
@@ -364,7 +364,7 @@ func TestTranslateNilCoalescing(test *testing.T) {
 			require.NoError(test, err)
 
 			gotExpression, gotSettedStates, gotErr :=
-				translateNilCoalescing(nilCoalescing, data.args.declaredIdentifiers)
+				translateBinaryOperation(nilCoalescing, data.args.declaredIdentifiers)
 
 			assert.Equal(test, data.wantExpression, gotExpression)
 			assert.Equal(test, data.wantSettedStates, gotSettedStates)
