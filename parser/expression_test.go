@@ -652,9 +652,11 @@ func TestParseToAST_withExpression(test *testing.T) {
 			name: "Conjunction/nonempty",
 			args: args{"12 && 23 && 42", new(Conjunction)},
 			wantAST: &Conjunction{
-				Equality: SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(12)).(*Equality),
+				Equality:  SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(12)).(*Equality),
+				Operation: "&&",
 				Conjunction: &Conjunction{
-					Equality: SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(23)).(*Equality),
+					Equality:  SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(23)).(*Equality),
+					Operation: "&&",
 					Conjunction: &Conjunction{
 						Equality: SetInnerField(&Equality{}, "IntegerNumber", pointer.ToInt64(42)).(*Equality),
 					},

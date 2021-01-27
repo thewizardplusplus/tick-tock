@@ -49,7 +49,8 @@ type Disjunction struct {
 // Conjunction ...
 type Conjunction struct {
 	Equality    *Equality    `parser:"@@"`
-	Conjunction *Conjunction `parser:"[ \"&\" \"&\" @@ ]"`
+	Operation   string       `parser:"[ @( \"&\" \"&\" )"`
+	Conjunction *Conjunction `parser:"@@ ]"`
 }
 
 // Equality ...
