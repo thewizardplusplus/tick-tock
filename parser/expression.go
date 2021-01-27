@@ -75,7 +75,8 @@ type BitwiseDisjunction struct {
 // BitwiseExclusiveDisjunction ...
 type BitwiseExclusiveDisjunction struct {
 	BitwiseConjunction          *BitwiseConjunction          `parser:"@@"`
-	BitwiseExclusiveDisjunction *BitwiseExclusiveDisjunction `parser:"[ \"^\" @@ ]"`
+	Operation                   string                       `parser:"[ @\"^\""`
+	BitwiseExclusiveDisjunction *BitwiseExclusiveDisjunction `parser:"@@ ]"`
 }
 
 // BitwiseConjunction ...

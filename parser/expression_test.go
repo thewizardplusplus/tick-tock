@@ -523,10 +523,12 @@ func TestParseToAST_withExpression(test *testing.T) {
 				BitwiseConjunction: SetInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*BitwiseConjunction),
+				Operation: "^",
 				BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
 					BitwiseConjunction: SetInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*BitwiseConjunction),
+					Operation: "^",
 					BitwiseExclusiveDisjunction: &BitwiseExclusiveDisjunction{
 						BitwiseConjunction: SetInnerField(&BitwiseConjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,
