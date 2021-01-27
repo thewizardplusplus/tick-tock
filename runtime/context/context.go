@@ -6,7 +6,7 @@ type Message struct {
 	Arguments []interface{}
 }
 
-//go:generate mockery -name=MessageSender -inpkg -case=underscore -testonly
+//go:generate mockery --name=MessageSender --inpackage --case=underscore --testonly
 
 // MessageSender ...
 type MessageSender interface {
@@ -19,7 +19,7 @@ type State struct {
 	Arguments []interface{}
 }
 
-//go:generate mockery -name=StateHolder -inpkg -case=underscore -testonly
+//go:generate mockery --name=StateHolder --inpackage --case=underscore --testonly
 
 // StateHolder ...
 type StateHolder interface {
@@ -33,14 +33,14 @@ type Actor interface {
 	Start(context Context, arguments []interface{})
 }
 
-//go:generate mockery -name=ActorRegister -inpkg -case=underscore -testonly
+//go:generate mockery --name=ActorRegister --inpackage --case=underscore --testonly
 
 // ActorRegister ...
 type ActorRegister interface {
 	RegisterActor(actor Actor, arguments []interface{})
 }
 
-//go:generate mockery -name=Context -inpkg -case=underscore -testonly
+//go:generate mockery --name=Context --inpackage --case=underscore --testonly
 
 // Context ...
 type Context interface {

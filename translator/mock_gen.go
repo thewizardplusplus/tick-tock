@@ -5,7 +5,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime"
 )
 
-//go:generate mockery -name=Waiter -inpkg -case=underscore -testonly
+//go:generate mockery --name=Waiter --inpackage --case=underscore --testonly
 
 // Waiter ...
 //
@@ -15,7 +15,7 @@ type Waiter interface {
 	syncutils.WaitGroup
 }
 
-//go:generate mockery -name=ErrorHandler -inpkg -case=underscore -testonly
+//go:generate mockery --name=ErrorHandler --inpackage --case=underscore --testonly
 
 // ErrorHandler ...
 //

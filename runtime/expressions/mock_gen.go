@@ -5,7 +5,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
-//go:generate mockery -name=Context -inpkg -case=underscore -testonly
+//go:generate mockery --name=Context --inpackage --case=underscore --testonly
 
 // Context ...
 //
@@ -15,7 +15,7 @@ type Context interface {
 	context.Context
 }
 
-//go:generate mockery -name=Command -inpkg -case=underscore -testonly
+//go:generate mockery --name=Command --inpackage --case=underscore --testonly
 
 // Command ...
 //

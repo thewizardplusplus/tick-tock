@@ -6,7 +6,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
-//go:generate mockery -name=Command -inpkg -case=underscore -testonly
+//go:generate mockery --name=Command --inpackage --case=underscore --testonly
 
 // Command ...
 type Command interface {

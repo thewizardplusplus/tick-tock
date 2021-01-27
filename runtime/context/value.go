@@ -4,7 +4,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/types"
 )
 
-//go:generate mockery -name=ValueHolder -inpkg -case=underscore -testonly
+//go:generate mockery --name=ValueHolder --inpackage --case=underscore --testonly
 
 // ValueHolder ...
 type ValueHolder interface {

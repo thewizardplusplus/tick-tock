@@ -7,7 +7,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/context"
 )
 
-//go:generate mockery -name=Writer -inpkg -case=underscore -testonly
+//go:generate mockery --name=Writer --inpackage --case=underscore --testonly
 
 // Writer ...
 //
@@ -17,7 +17,7 @@ type Writer interface {
 	io.Writer
 }
 
-//go:generate mockery -name=Context -inpkg -case=underscore -testonly
+//go:generate mockery --name=Context --inpackage --case=underscore --testonly
 
 // Context ...
 //
@@ -27,7 +27,7 @@ type Context interface {
 	context.Context
 }
 
-//go:generate mockery -name=WaitGroup -inpkg -case=underscore -testonly
+//go:generate mockery --name=WaitGroup --inpackage --case=underscore --testonly
 
 // WaitGroup ...
 //
@@ -37,7 +37,7 @@ type WaitGroup interface {
 	syncutils.WaitGroup
 }
 
-//go:generate mockery -name=ExiterInterface -inpkg -case=underscore -testonly
+//go:generate mockery --name=ExiterInterface --inpackage --case=underscore --testonly
 
 // ExiterInterface ...
 //

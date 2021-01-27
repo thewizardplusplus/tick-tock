@@ -5,7 +5,7 @@ import (
 	"github.com/thewizardplusplus/tick-tock/runtime/expressions"
 )
 
-//go:generate mockery -name=Context -inpkg -case=underscore -testonly
+//go:generate mockery --name=Context --inpackage --case=underscore --testonly
 
 // Context ...
 //
@@ -15,7 +15,7 @@ type Context interface {
 	context.Context
 }
 
-//go:generate mockery -name=Expression -inpkg -case=underscore -testonly
+//go:generate mockery --name=Expression --inpackage --case=underscore --testonly
 
 // Expression ...
 //
