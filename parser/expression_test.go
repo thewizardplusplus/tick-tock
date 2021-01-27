@@ -677,10 +677,12 @@ func TestParseToAST_withExpression(test *testing.T) {
 				Conjunction: SetInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
 					12,
 				)).(*Conjunction),
+				Operation: "||",
 				Disjunction: &Disjunction{
 					Conjunction: SetInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
 						23,
 					)).(*Conjunction),
+					Operation: "||",
 					Disjunction: &Disjunction{
 						Conjunction: SetInnerField(&Conjunction{}, "IntegerNumber", pointer.ToInt64(
 							42,

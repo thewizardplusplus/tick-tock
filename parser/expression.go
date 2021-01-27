@@ -43,7 +43,8 @@ type NilCoalescing struct {
 // Disjunction ...
 type Disjunction struct {
 	Conjunction *Conjunction `parser:"@@"`
-	Disjunction *Disjunction `parser:"[ \"|\" \"|\" @@ ]"`
+	Operation   string       `parser:"[ @( \"|\" \"|\" )"`
+	Disjunction *Disjunction `parser:"@@ ]"`
 }
 
 // Conjunction ...
