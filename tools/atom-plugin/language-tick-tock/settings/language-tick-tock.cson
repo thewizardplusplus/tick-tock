@@ -9,5 +9,5 @@
     'decreaseIndentPattern': '(?x)
       ^\\s*;
       | ^\\s*[\\)\\]\\}]
-      | ^\\s*=>
+      | ^\\s*=>\\s*$
     '
