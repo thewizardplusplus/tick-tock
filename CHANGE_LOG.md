@@ -1,5 +1,15 @@
 # Change Log
 
+## [v2.2.4](https://github.com/thewizardplusplus/tick-tock/tree/v2.2.4) (2021-01-29)
+
+- Atom plugin:
+  - syntax highlighting:
+    - describe syntax highlighting for declarations and calls;
+    - replace syntax highlighting for variables to it for property declarations and calls;
+  - editor settings:
+    - remove increasing of an indent on a closing parenthesis;
+    - improve decreasing of an indent on a conditional case.
+
 ## [v2.2.3](https://github.com/thewizardplusplus/tick-tock/tree/v2.2.3) (2021-01-27)
 
 - refactoring:
