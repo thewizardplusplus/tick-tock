@@ -94,10 +94,24 @@
     'name': 'support.function.builtin.ticktock'
   }
 
-  # variables
+  # property declarations
   {
-    'match': '\\w+'
-    'name': 'variable.other.ticktock'
+    'match': '(\\w+)(:)'
+    'captures':
+      '1':
+        'name': 'variable.property.ticktock'
+      '2':
+        'name': 'punctuation.other.ticktock'
+  }
+
+  # property calls
+  {
+    'match': '(\\.)(\\w+)'
+    'captures':
+      '1':
+        'name': 'punctuation.other.ticktock'
+      '2':
+        'name': 'variable.property.ticktock'
   }
 
   # operators
