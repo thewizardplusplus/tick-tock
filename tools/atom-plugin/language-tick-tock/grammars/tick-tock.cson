@@ -57,6 +57,25 @@
     'name': 'string.quoted.raw.ticktock',
   }
 
+  # declarations and calls
+  {
+    'match': '\\b(actor|class|state|message|start|send|set)\\s+(\\w+)'
+    'captures':
+      '1':
+        'name': 'keyword.ticktock'
+      '2':
+        'patterns': [
+          {
+            'match': '\\b(__initialization__|__initialize__)\\b'
+            'name': 'constant.language.ticktock'
+          }
+          {
+            'match': '\\w+'
+            'name': 'entity.name.function.ticktock'
+          }
+        ]
+  }
+
   # keywords
   {
     'match': '\\b(actor|class|state|message|let|start|send|set|return|when)\\b'
@@ -65,7 +84,7 @@
 
   # built-in constants
   {
-    'match': '\\b(__initialization__|__initialize__|__empty_list__|__empty_hash__|nil|false|true|nan|inf|pi|e)\\b'
+    'match': '\\b(__empty_list__|__empty_hash__|nil|false|true|nan|inf|pi|e)\\b'
     'name': 'constant.language.ticktock'
   }
 
