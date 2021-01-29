@@ -4,7 +4,6 @@
     'increaseIndentPattern': '(?x)
       \\b(actor|class|state|message|when)\\b[^;]*$
       | [\\(\\[\\{]\\s*$
-      | ^\\s*\\)
       | ^\\s*=>
     '
     'decreaseIndentPattern': '(?x)
